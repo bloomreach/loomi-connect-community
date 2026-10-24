@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Scenario QA"
+  short_description: "Pre-launch QA of a Bloomreach Engagement scenario: links, Jinja, compliance, flow"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true
