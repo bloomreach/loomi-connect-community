@@ -1,0 +1,51 @@
+{
+ "customer": {
+  "first_name": "Alex",
+  "last_name": "Example",
+  "email": "customer@example.com"
+ },
+ "event": {
+  "action": "add",
+  "product_list": [
+   {
+    "product_id": "sku-1001",
+    "quantity": 1
+   },
+   {
+    "product_id": "sku-1002",
+    "quantity": 1
+   }
+  ]
+ },
+ "catalogs": {
+  "products": {
+   "sku-1001": {
+    "title": "Example Running Short",
+    "price": 68,
+    "image": "https://example.com/a.jpg",
+    "url": "https://example.com/a"
+   },
+   "sku-1002": {
+    "title": "Example Training Pant",
+    "price": 128,
+    "image": "https://example.com/b.jpg",
+    "url": "https://example.com/b"
+   }
+  }
+ },
+ "project_variables": {
+  "company_name": "Example Brand"
+ },
+ "aggregates": {
+  "<id of an aggregate = last cart_update.product_list>": [
+   {
+    "product_id": "sku-1001",
+    "quantity": 1
+   },
+   {
+    "product_id": "sku-1002",
+    "quantity": 1
+   }
+  ]
+ }
+}

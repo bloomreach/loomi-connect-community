@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Convert Klaviyo Email to Bloomreach"
+  short_description: "Migrate Klaviyo email exports into Bloomreach Engagement as editable draft scenarios"
+policy:
+  # This skill writes data (image uploads, draft scenarios), so it only runs when called by name.
+  allow_implicit_invocation: false

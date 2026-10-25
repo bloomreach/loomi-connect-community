@@ -1,0 +1,13 @@
+{
+  "scenario_name": "[Migrated – Klaviyo] Abandoned cart #1",
+  "node_name": "Abandoned cart #1",
+  "subject": "{{ person.first_name|default:'Hey' }}, you left something behind",
+  "preheader": "Your cart is saved",
+  "sender_name": "Brand",
+  "sender_email": "hello@example.com",
+  "consent_category": "newsletter",
+  "provider": {"type": "global"},
+  "trigger": {"type": "event", "event": "cart_update",
+              "filter": [{"attribute": {"type": "property", "property": "action"},
+                          "constraint": {"type": "string", "operator": "equals", "operands": [{"type": "constant", "value": "add"}]}}]}
+}
