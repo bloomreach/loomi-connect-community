@@ -1,11 +1,11 @@
 ---
 name: scenario-qa
-description: Pre-launch QA for one Bloomreach Engagement scenario (journey, automation, flow) using Loomi Connect. Checks every email, SMS/MMS and mobile push step for broken links, Jinja personalization errors, compliance gaps (unsubscribe, postal address, STOP/HELP, consent), deliverability and spam risk, then checks the flow for dead ends, orphans and unresolved references, and returns a severity-ranked GO / NO-GO report. Use when the user asks to QA, check, test, review or proof a scenario or journey before launch, or asks whether a flow is ready to go live.
+description: Pre-launch QA for one Bloomreach Engagement scenario (journey, automation, flow) using Loomi Connect. Checks every email, SMS/MMS and mobile push step for broken links, Jinja personalization errors, compliance gaps (unsubscribe, postal address, STOP/HELP, consent, US SMS quiet hours and state rules, Canada CASL), deliverability and spam risk, then checks the flow for dead ends, orphans and unresolved references, and returns a severity-ranked GO / NO-GO report. Use when the user asks to QA, check, test, review or proof a scenario or journey before launch, or asks whether a flow is ready to go live.
 license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement). Live link checks need a client that can make web requests.
 metadata:
   author: jeffbird13-bloomreach
-  version: "1.0.0"
+  version: "1.2.0"
   products: engagement
   access: read-only
 ---
@@ -38,6 +38,7 @@ You need:
 | Scenario | yes | Name or ID. Resolve names to IDs. |
 | Sample customers | no | Test profiles the user trusts for Jinja rendering. Chosen automatically if not given. |
 | Vertical | no | Ask only if the scenario sends SMS and the industry is unclear. Regulated industries get stricter SMS checks. |
+| Recipient locations | no | Countries and US states the scenario can reach. Read them from the scenario's filters first; ask only if the scenario sends SMS or may reach Canada and nothing limits the audience. Drives the North America checks. |
 
 If a name matches nothing or more than one item, stop and ask. List the candidates with their IDs.
 
@@ -81,6 +82,7 @@ Print a short banner before each step, for example `━━━ STEP 1 / DISCOVERY
 4. Collect every event, property, aggregate, catalog and recommendation referenced by the trigger, conditions and sends.
 5. Call `get_event_schema` and `get_customer_property_schema` and check every reference resolves. These responses are large; keep only what you need.
 6. If the scenario has more than about 25 sends, tell the user the run will take longer before continuing.
+7. **Work out where recipients are** if the scenario sends SMS or MMS, or may reach Canada. Follow "Where recipients are" in the "SMS and MMS: North America" section of [references/check-catalog.md](references/check-catalog.md). State the result at the top of the report, for example "Audience: all US states plus Canada (no location filter; assumed)".
 
 ### Step 2: Check each send
 
@@ -92,12 +94,22 @@ Run the channel checks in [references/check-catalog.md](references/check-catalog
 |---|---|---|---|
 | Links | ✔ | ✔ | deep link and web fallback |
 | Jinja render against sample profiles | ✔ | ✔ | ✔ |
-| Compliance | CAN-SPAM | STOP/HELP, consent, brand ID | consent category |
+| Compliance | CAN-SPAM, CASL (Canada) | STOP/HELP, consent, brand ID, US quiet hours and state rules, CASL (Canada), Texas SB 140 | consent category |
 | Deliverability / rendering | subject, preheader, alt text, size, dark mode | segments, length | title and body length |
 | Spam / content risk | spam heuristics | prohibited content | — |
 | Configuration | sender, consent, frequency policy | sender, shortener, consent | consent, frequency |
 
-**Links.** Only check links live if this client can make web requests. If it can't, list every link under "couldn't verify (no web access in this client)" and carry on with the other checks.
+**Links.** Work through every link in two passes. The full rules are in the Links section of [references/check-catalog.md](references/check-catalog.md).
+
+1. **Static checks first (no web access needed).** Look for missing schemes, `http://`, placeholder words in the path and near-miss hosts. These catch some broken links even when nothing can be loaded.
+2. **Then load each link, trying every method this client offers, in order:**
+   1. A web-fetch tool, if there is one.
+   2. If that tool is missing, or refuses the URL (for example "not on allowlist" or a blocked domain), a browser tool if the client has one: for example Claude in Chrome, the built-in browser in the Claude desktop app, or another client's browser tool. Open each link in a new tab and read the real HTTP status with a one-line script where the tool allows it. Check other links on the same host from that page. Never click, sign in, solve a CAPTCHA or submit anything.
+   3. Only when no method can load a link, mark it **not checked**.
+
+   A tool that refuses one domain doesn't prove the others will fail, so keep trying the next method for each link.
+
+**Unchecked links are findings, not footnotes.** Every primary call-to-action or hero link that couldn't be checked gets its own **warning** row in the triage table ("Not checked: click before launch"). Group the remaining unchecked links into one warning row. Never leave an unchecked primary link only in "couldn't verify".
 
 **Sample profiles.** Use the user's test profiles first. Otherwise call `list_customers` **with a query and a small `count`** (without a query it returns every customer), and pick 3–5 profiles with varying data completeness: one rich, one sparse, one missing key attributes.
 
@@ -117,6 +129,8 @@ Return the report in the format below. If the user wants to share it, offer to t
 
 Counts include issues on individual steps and flow-level issues.
 
+If any link couldn't be checked, the best possible verdict is **GO WITH CAUTION**, even with no other issues: an unchecked link can't earn a clean GO.
+
 ## Output
 
 Write for a CRM or email marketer: verdict first, then a table to scan, then detail. Use placeholders only in this template; the real report shows only data from the scenario under test.
@@ -127,7 +141,7 @@ Write for a CRM or email marketer: verdict first, then a table to scan, then det
 🔴 NO-GO — <scenario name> · 1 blocker · 2 warnings · 0 nitpicks · Channels: Email, MMS
 ```
 
-Use 🟢 GO, 🟡 GO WITH CAUTION or 🔴 NO-GO.
+Use 🟢 GO, 🟡 GO WITH CAUTION or 🔴 NO-GO. When links couldn't be checked, add the count to the banner, for example `· 3 links not checked`.
 
 **2. Triage table (most severe first)**
 
@@ -164,7 +178,10 @@ A short list of what passed, so the reader can trust the clean areas, and every 
 | Pitfall | Do instead |
 |---|---|
 | Fetching every design in step 1 | Structure first; designs one step at a time in step 2 |
-| Calling a 403 or bot-blocked link "broken" | Report it as "couldn't verify" |
+| Calling a 403 or bot-blocked link "broken" | Report it as "not checked" |
+| Giving up on links after the web-fetch tool refuses a domain | Try the browser tool next, link by link |
+| Leaving an unchecked call-to-action at the bottom of the report | Give it a warning row in the triage table |
+| Trusting a link because it looks normal | Load it: a valid-looking URL can still 404 |
 | Checking a URL with unrendered Jinja | Render it against a sample profile first |
 | Flagging an A/B holdout group as a dead end | It's intentional; note it only |
 | Reusing a project from an earlier run | Confirm the project every time |
