@@ -20,6 +20,7 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [engagement-send-collision-check](skills/engagement-send-collision-check/) | Overlapping sends, busy days, channel clashes and missing frequency caps | Read-only |
 | [engagement-scenario-explainer](skills/engagement-scenario-explainer/) | Explains a scenario in plain English; audit mode for stale or broken flows | Read-only |
 | [engagement-scenario-builder](skills/engagement-scenario-builder/) | Builds or changes a scenario from a plain-English description, saved as a draft after confirmation | **Writes** |
+| [convert-klaviyo-email-to-bloomreach](skills/convert-klaviyo-email-to-bloomreach/) | Migrates Klaviyo email exports into editable Visual Builder emails, saved as draft scenarios after confirmation | **Writes** |
 | [engagement-scenario-performance](skills/engagement-scenario-performance/) | Step-by-step results for one scenario: sends, clicks, purchases after, split assignments | Read-only |
 | [onsite-experience-audit](skills/onsite-experience-audit/) | Expired, overlapping, untested or abandoned banners, weblayers and surveys | Read-only |
 | [engagement-experiment-readout](skills/engagement-experiment-readout/) | A/B test results for scenarios and campaigns: call a winner, keep running or stop | Read-only |

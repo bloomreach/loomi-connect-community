@@ -2,6 +2,9 @@
 """Klaviyo HTML export -> Bloomreach Engagement (BEE template + jinja_html + scenario payload).
 
 Subcommands
+  setup    --venv DIR
+      Create a virtual environment at DIR (standard library only, no network) and print the
+      pip command that installs beautifulsoup4 and jinja2 into it.
   analyze  <export.html> --out-dir DIR
       Parse the export into DIR/model.json and print a migration report (JSON):
       tokens found, images to rehost, flow/event usage, dead links, placeholder copy,
@@ -14,10 +17,45 @@ Subcommands
       Render jinja_html locally with Jinja2 against real project data (customer properties,
       catalog items, trigger event) to catch template errors before pushing.
 
-Requires: beautifulsoup4 (pip install --break-system-packages beautifulsoup4), jinja2 for render-check.
+Every subcommand except setup takes --venv DIR and re-runs itself with that environment's
+Python, so beautifulsoup4 and jinja2 (render-check) never need installing into the system Python.
 """
-import argparse, copy, json, re, secrets, sys, uuid
-from bs4 import BeautifulSoup, NavigableString, Comment
+import argparse, copy, json, os, re, secrets, sys, uuid
+
+# ----------------------------------------------------------------------------------------------
+# virtual environment: create it (setup), or re-run this script with its Python (--venv)
+# ----------------------------------------------------------------------------------------------
+def venv_python(venv):
+    return os.path.join(venv, "Scripts", "python.exe") if os.name == "nt" else os.path.join(venv, "bin", "python3")
+
+def bootstrap_venv(argv):
+    if "--venv" not in argv or argv.index("--venv") + 1 >= len(argv):
+        return
+    venv = os.path.realpath(argv[argv.index("--venv") + 1])
+    skill_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
+    if os.path.commonpath([venv, skill_dir]) == skill_dir:
+        sys.exit(json.dumps({"ok": False, "error": "Put the venv in your working folder, not inside the skill's folder"}))
+    if len(argv) > 1 and argv[1] == "setup":
+        import venv as venvlib
+        try:
+            venvlib.create(venv, with_pip=True)
+        except Exception as e:
+            sys.exit(json.dumps({"ok": False, "error": f"Couldn't create the venv: {e}"}))
+        pip = os.path.join(os.path.dirname(venv_python(venv)), "pip")
+        print(json.dumps({"ok": True, "venv": venv, "next": f"{pip} install beautifulsoup4 jinja2"}))
+        sys.exit(0)
+    if os.path.realpath(sys.prefix) != venv:
+        py = venv_python(venv)
+        if not os.path.exists(py):
+            sys.exit(json.dumps({"ok": False, "error": f"No venv at {venv}; run setup --venv {venv} first"}))
+        os.execv(py, [py, os.path.realpath(__file__)] + argv[1:])
+
+bootstrap_venv(sys.argv)
+
+try:
+    from bs4 import BeautifulSoup, NavigableString, Comment
+except ImportError:
+    sys.exit(json.dumps({"ok": False, "error": "beautifulsoup4 isn't installed: run setup --venv <work>/.venv, install with its pip, then pass --venv"}))
 
 # ----------------------------------------------------------------------------------------------
 # helpers
@@ -926,7 +964,7 @@ def build(args):
 # RENDER-CHECK
 # ----------------------------------------------------------------------------------------------
 def render_check(args):
-    import jinja2
+    import jinja2, jinja2.sandbox
     ctxd = json.load(open(args.context))
     undefined = []
     class Rec(jinja2.ChainableUndefined):
@@ -942,7 +980,8 @@ def render_check(args):
         def __missing__(self, k): return Pool(k)
     cats = {k: Catalog(v) for k, v in ctxd.get("catalogs", {}).items()}
     recs_items = list(next(iter(ctxd.get("catalogs", {}).values()), {}).values())
-    env = jinja2.Environment(undefined=Rec)
+    # The template comes from a client's export, so render it sandboxed.
+    env = jinja2.sandbox.SandboxedEnvironment(undefined=Rec)
     html = open(args.html, encoding="utf-8").read()
     try:
         out = env.from_string(html).render(customer=ctxd.get("customer", {}), event=ctxd.get("event", {}), catalogs=cats,
@@ -952,7 +991,7 @@ def render_check(args):
                                             email={"view": "https://view.example", "unsubscribe": "https://unsub.example"},
                                             recommendations=lambda *a, **k: recs_items[: (a[1] if len(a) > 1 else 4)],
                                             brand_name=ctxd.get("project_variables", {}).get("company_name", ""))
-    except jinja2.TemplateError as e:
+    except jinja2.TemplateError as e:  # includes SecurityError
         print(json.dumps({"ok": False, "error": f"{type(e).__name__}: {e}"})); sys.exit(1)
     if args.out:
         open(args.out, "w", encoding="utf-8").write(out)
@@ -965,10 +1004,12 @@ def render_check(args):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
+    s = sub.add_parser("setup"); s.add_argument("--venv", required=True)
     a = sub.add_parser("analyze"); a.add_argument("export"); a.add_argument("--out-dir", required=True)
     b = sub.add_parser("build")
     for f in ("--model", "--mapping", "--meta", "--out-dir"): b.add_argument(f, required=True)
     r = sub.add_parser("render-check"); r.add_argument("--html", required=True); r.add_argument("--context", required=True); r.add_argument("--out")
+    for p in (a, b, r): p.add_argument("--venv")
     args = ap.parse_args()
     if args.cmd == "analyze": analyze(args.export, args.out_dir)
     elif args.cmd == "build": build(args)

@@ -9,7 +9,6 @@ Loomi Connect only shows part of its ~190 tools directly. If a tool below isn't 
 |---|---|---|
 | Bootstrap | **1 / sec** | `list_cloud_organizations`, `list_projects`, `list_workspaces` |
 | Engagement | 3 / sec, 60 / min | everything project-scoped |
-| Deletes | **1 / 10 sec** | `delete_email_campaign`, `delete_scenario` |
 | Feedback | 1 / 10 sec | `submit_llm_feedback` |
 
 A 429 says how long to wait. Serialize calls rather than firing them in parallel.
@@ -48,8 +47,9 @@ A 429 says how long to wait. Serialize calls rather than firing them in parallel
 | `import_media_file(project_id, source_url, name)` | public URL only; 2MB images; returns `data.variants.original.url` (brxcdn.com) and `.dimensions` (`"228x66"`) |
 | `create_scenario(project_id, payload)` | always draft; `send-email-action` with `design.type: "beefree"` keeps the Visual Builder design |
 | `update_scenario_node(project_id, scenario_id, node_id, patch)` | fix one node in place (shallow merge — send the whole `design` object) |
-| `create_email_campaign` | `design.type: "raw"` only (no Visual Builder) — use only for preview tests or when asked |
-| `delete_email_campaign` / `delete_scenario` | only for objects you created in this run; 1 per 10 sec |
+| `create_email_campaign` | `design.type: "raw"` only (no Visual Builder). Not used by this skill unless the user asks; add it to the step 4b write plan first |
+
+This skill never calls `delete_*` tools. If a draft it created is wrong, fix it with `update_scenario_node` or tell the user.
 
 ## Verified gotchas
 

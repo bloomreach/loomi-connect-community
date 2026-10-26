@@ -2,7 +2,7 @@
 name: convert-klaviyo-email-to-bloomreach
 description: Migrates Klaviyo email templates (HTML exports) into Bloomreach Engagement — translates Klaviyo template tags to Bloomreach Jinja against the target project's real data, rebuilds the layout as an editable Visual Builder (BEE) email, rehosts images, and pushes each email as a draft scenario via Loomi Connect. Use when someone has Klaviyo email HTML (campaign or flow emails) to move to Bloomreach, mentions migrating from Klaviyo, or pastes HTML containing Klaviyo tags like {{ person.first_name }}, {% unsubscribe %} or {% catalog %}.
 license: Apache-2.0
-compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement) and Python 3 with beautifulsoup4 and jinja2 (installed with pip in step 0; needs a client that can install packages).
+compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement) and Python 3 with beautifulsoup4 and jinja2 (installed with pip into a virtual environment in step 0; needs a client that can install packages).
 metadata:
   author: jeffbird13-bloomreach
   version: "1.0.0"
@@ -24,14 +24,14 @@ This skill **writes** to Bloomreach Engagement. It can:
 - **create draft scenarios** (`create_scenario`), one per migrated email, each with one trigger and one email node;
 - **fix a node in a scenario it created in this run** (`update_scenario_node`), only when a push needs a correction.
 
-It never activates, starts, sends or test-sends anything, never edits or deletes objects it didn't create in this
+It never activates, starts, sends or test-sends anything, never deletes anything, never edits objects it didn't create in this
 run, and never changes project settings, consent, catalogs or customer data.
 
 **Before the first write, show the user exactly what will be created and wait for an explicit "yes"** (step 4b).
 If the plan changes afterwards (more images, extra emails, a different project), show the new plan and ask again.
 
 ```
-0. Setup                                  pip install beautifulsoup4 jinja2
+0. Setup                                  scripts/... setup → venv + pip install
 1. Collect inputs + confirm project      (ask; never assume)
 2. Analyze the Klaviyo export(s)          scripts/klaviyo_to_bloomreach.py analyze
 3. Audit the Bloomreach project           Loomi Connect reads → mapping.json
@@ -51,23 +51,33 @@ Read before starting:
 
 ## 0. Setup
 
-Install the two packages the script needs (check first with `pip show beautifulsoup4 jinja2`):
+The script needs `beautifulsoup4` and `jinja2`. Install them into a virtual environment in your working folder,
+never into the system Python. Create it once per working folder:
 
 ```bash
-pip install --break-system-packages beautifulsoup4 jinja2
+python3 <skill>/scripts/klaviyo_to_bloomreach.py setup --venv <work>/.venv
 ```
 
-If the client can't install packages, tell the user this skill can't run there and stop.
+It prints the install command for that venv's own pip; run it as printed:
+
+```bash
+<work>/.venv/bin/pip install beautifulsoup4 jinja2
+```
+
+On Windows the pip is `<work>\.venv\Scripts\pip`. Then pass `--venv <work>/.venv` to every other script call, as
+the steps show; the script re-runs itself with the venv's Python. If the venv can't be created or the client can't
+install packages, tell the user this skill can't run there and stop.
 
 ### Running the scripts
 
-Run each script as one plain command, as the steps show it: `python3 scripts/klaviyo_to_bloomreach.py` and its
-arguments, from this skill's folder (`cd` there first, joined with `&&`, or give the script's full path). Keep the
-working files (`model.json`, `mapping.json`, `meta.json`, `ctx.json`, outputs) in a working folder outside the skill,
-shown below as `<work>`, and pass every file by its full path. Don't add `-I` or other Python flags, shell variables,
-`;`, redirects (`>`), `$(...)` or line breaks: some apps only allow plain commands and refuse the rest. The script
-writes its files through `--out-dir` and `--out`; otherwise read what it prints. Piping the output to `jq` or `head`
-is fine.
+Run each script as one plain command from your own working folder, giving the script's full path:
+`python3 <skill>/scripts/klaviyo_to_bloomreach.py` and its arguments, where `<skill>` is this skill's folder. Keep
+the venv and the working files (`model.json`, `mapping.json`, `meta.json`, `ctx.json`, outputs) in your working
+folder, shown below as `<work>`, never inside the skill's folder, and pass every file by its full path. Don't `cd`
+into the skill's folder, and don't add `-I` or other Python flags, shell variables, `;`, redirects (`>`), `$(...)`
+or line breaks: some apps only allow plain commands, refuse the rest and keep skill folders read-only. The script
+writes its files through `--out-dir` and `--out`; otherwise read what it prints. Piping the output to `jq` or
+`head` is fine.
 
 ---
 
@@ -89,7 +99,7 @@ user has approved the write plan in step 4b.
 ## 2. Analyze
 
 ```bash
-python3 scripts/klaviyo_to_bloomreach.py analyze <export.html> --out-dir <work>/<email-slug>
+python3 <skill>/scripts/klaviyo_to_bloomreach.py analyze <export.html> --out-dir <work>/<email-slug> --venv <work>/.venv
 ```
 
 Writes `model.json` (rows → columns → blocks) and prints a report. From it, note:
@@ -209,7 +219,7 @@ that carries the list in `mapping.event_lists` (e.g. `cart_update` with `action 
 `{"attribute": {"type": "property", "property": "action"}, "constraint": {"type": "string", "operator": "equals", "operands": [{"type": "constant", "value": "add"}]}}`.
 
 ```bash
-python3 scripts/klaviyo_to_bloomreach.py build --model <work>/<slug>/model.json --mapping <work>/mapping.json --meta <work>/<slug>/meta.json --out-dir <work>/<slug>
+python3 <skill>/scripts/klaviyo_to_bloomreach.py build --model <work>/<slug>/model.json --mapping <work>/mapping.json --meta <work>/<slug>/meta.json --out-dir <work>/<slug> --venv <work>/.venv
 ```
 
 Writes `bee.json`, `email.html` (compact jinja_html, ~10–15KB instead of Klaviyo's ~80KB) and
@@ -220,7 +230,7 @@ no voucher pool, event data with a `now` trigger).
 Then render it locally against real project data:
 
 ```bash
-python3 scripts/klaviyo_to_bloomreach.py render-check --html <work>/<slug>/email.html --context <work>/ctx.json --out <work>/<slug>/rendered.html
+python3 <skill>/scripts/klaviyo_to_bloomreach.py render-check --html <work>/<slug>/email.html --context <work>/ctx.json --out <work>/<slug>/rendered.html --venv <work>/.venv
 ```
 
 `ctx.json` = `{"customer": {...one real customer's properties...}, "event": {...one real trigger event's
@@ -276,7 +286,7 @@ recommendations, replace static codes with a voucher pool) — don't do them una
   both in sync (spacing is spacer rows, fonts are registered web fonts, headings are heading modules) — never
   hand-edit only `email.html`.
 
-- **Drafts only.** Never call activation, never delete anything you didn't create in this run.
+- **Drafts only.** Never call activation and never delete anything. If a draft is wrong, fix it with `update_scenario_node` or tell the user.
 - **Project every time.** Confirm the target project per run; consent, sender and provider are looked up fresh.
 - **Vouchers:** `{{ vouchers['pool'].assign_available() }}` — `voucher('pool')` does not exist.
 - **Unsubscribe:** `{{ consent.page }}` (consent framework on) or `{{ email.unsubscribe }}` (legacy). Every email must have one.

@@ -7,7 +7,7 @@ Migrates Klaviyo email templates into Bloomreach Engagement for agencies and par
 | **Products** | Engagement |
 | **Access** | **Writes**: uploads images to the media library (`import_media_file`), creates draft scenarios (`create_scenario`), and can fix a node in a scenario it created in the same run (`update_scenario_node`). Shows the full write plan and waits for a "yes" before the first write. Never activates or sends anything |
 | **Loomi Connect tools** | `list_cloud_organizations`, `list_projects`, `get_mapping`, `get_customer_property_schema`, `get_consent_settings`*, `list_project_variables`, `get_event_schema`, `search_catalogs`, `search_catalog_items`, `search_aggregates`, `search_voucher_pools`*, `list_customers`, `list_customer_events`, `get_customer_properties`, `search_scenarios`, `search_scenario_nodes`*, `import_media_file`*, `create_scenario`, `update_scenario_node`* (* found with `search_tools` and run with `call_tool`) |
-| **Other requirements** | Python 3 with `beautifulsoup4` and `jinja2` (installed with pip). The client must be able to install packages |
+| **Other requirements** | Python 3 with `beautifulsoup4` and `jinja2`, installed with pip into a virtual environment in the working folder (the script's `setup` subcommand creates it), never the system Python. The client must be able to install packages |
 | **Tested with** | Claude (claude.ai): real Klaviyo exports (campaign with product loops, split blocks and images on Klaviyo's CDN) converted, rendered and pushed as draft scenarios to demo projects, with images rehosted and the design verified after the push. Not yet tested in an OpenAI client |
 | **Maintainer** | @jeffbird13-bloomreach |
 
