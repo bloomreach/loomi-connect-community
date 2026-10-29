@@ -1,0 +1,26 @@
+{
+ "success": true,
+ "data": {
+  "metric": "revenue",
+  "current": [
+   {
+    "cdate": "20261025",
+    "revenue": 7100
+   },
+   {
+    "cdate": "20261026",
+    "revenue": 6900
+   }
+  ],
+  "previous": [
+   {
+    "cdate": "20261023",
+    "revenue": 7000
+   },
+   {
+    "cdate": "20261024",
+    "revenue": 7050
+   }
+  ]
+ }
+}

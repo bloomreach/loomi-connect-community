@@ -1,0 +1,2541 @@
+[
+  {
+    "name": "string equals",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "country"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "US"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "every string operator",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "city"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "York"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "city"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "does not equal",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "York"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "city"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "contains",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "York"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "city"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "does not contain",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "York"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "city"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "starts with",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "York"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "city"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "ends with",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "York"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0&F1|F2&!F3|(F4&F5)"
+    }
+  },
+  {
+    "name": "string value given as value, not operands",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "tier"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "value": "gold"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "string operand with no value is empty",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "tier"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "string null value can't be written",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "tier"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "value": null
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "string unknown operator",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "tier"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "matches regex",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "g.*"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "string number value",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "zip"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": 10001
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "every number operator",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "orders"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "orders"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "does not equal",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "orders"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "greater than",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "orders"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "greater than or equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "orders"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "less than",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "orders"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "less than or equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "3"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0|F1|F2|F3|F4|F5"
+    }
+  },
+  {
+    "name": "number coercions",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": " 7 "
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1e3"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "0x10"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": 2.5
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": 3.0
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "-0"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": 1e-07
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": 1e+21
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "2."
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": ".5"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": 1234567.125
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0&F1&F2&F3&F4&F5&F6&F7&F8&F9&F10"
+    }
+  },
+  {
+    "name": "number empty value",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": ""
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "number not a number",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "greater than",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "abc"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "number with underscores is not a number",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "greater than",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1_000"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "number infinity",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "greater than",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "Infinity"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "number boolean value",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "equal to",
+            "operands": [
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "number string operator",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "contains",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "boolean true and false",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "vip"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is",
+            "value": "true"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "vip"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is",
+            "value": "false"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "vip"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is",
+            "value": false
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "vip"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is"
+          }
+        }
+      ],
+      "formula": "F0|F1|F2|F3"
+    }
+  },
+  {
+    "name": "boolean other operator",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "vip"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "equals",
+            "value": "true"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "date windows",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "last_order_date"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "more than",
+            "amount": 30,
+            "units": "days"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "last_order_date"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "less than",
+            "amount": "2",
+            "units": "weeks",
+            "tense": "ahead"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "last_order_date"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "more than",
+            "amount": 1.5,
+            "units": "months",
+            "tense": "ago"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "last_order_date"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "less than",
+            "amount": 6,
+            "units": "hours",
+            "tense": "past"
+          }
+        }
+      ],
+      "formula": "F0&F1&F2&F3"
+    }
+  },
+  {
+    "name": "date unknown units",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "last_order_date"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "more than",
+            "amount": 1,
+            "units": "years"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "date bad amount",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "last_order_date"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "more than",
+            "amount": "soon",
+            "units": "days"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "date unknown operator",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "last_order_date"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "in the last",
+            "amount": 30,
+            "units": "days"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "date null amount counts as zero",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "last_order_date"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "more than",
+            "amount": null,
+            "units": "days"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "has value and no value on any type",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "email"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "has value",
+            "operands": []
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "phone"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "is set",
+            "operands": []
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "fax"
+          },
+          "constraint": {
+            "type": "date",
+            "operator": "has no value",
+            "operands": []
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "pager"
+          },
+          "constraint": {
+            "type": "list",
+            "operator": "is not set",
+            "operands": []
+          }
+        }
+      ],
+      "formula": "F0&F1&!(F2|F3)"
+    }
+  },
+  {
+    "name": "unknown constraint type",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "tags"
+          },
+          "constraint": {
+            "type": "list",
+            "operator": "contains",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "a"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "consent given, refused and missing value",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "consent",
+            "category": "newsletter"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is",
+            "value": "true"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "consent",
+            "category": "sms"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is",
+            "value": "false"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "consent",
+            "category": "push"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is"
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "consent",
+            "category": "post"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is",
+            "value": false
+          }
+        }
+      ],
+      "formula": "F0&F1&F2&F3"
+    }
+  },
+  {
+    "name": "identifier",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "id",
+            "id": "registered"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "ends with",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "@example.com"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "id",
+            "id": "cookie"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "has value"
+          }
+        }
+      ],
+      "formula": "F0|F1"
+    }
+  },
+  {
+    "name": "identifier with a comparison that can't be written",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "id",
+            "id": "registered"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "matches"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "event ever, no window",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": false,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 30,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "event in a window with where rules",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": [
+                {
+                  "attribute": {
+                    "type": "property",
+                    "property": "total_price"
+                  },
+                  "constraint": {
+                    "type": "number",
+                    "operator": "greater than",
+                    "operands": [
+                      {
+                        "type": "constant",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "attribute": {
+                    "type": "property",
+                    "property": "currency"
+                  },
+                  "constraint": {
+                    "type": "string",
+                    "operator": "equals",
+                    "operands": [
+                      {
+                        "type": "constant",
+                        "value": "USD"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 90,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "did not do it in the last 30 days",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 90,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        },
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 30,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0 & !F1"
+    }
+  },
+  {
+    "name": "funnel of several steps",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "view_item",
+              "name": "view_item",
+              "filter": []
+            },
+            {
+              "type": "cart_update",
+              "name": "cart_update",
+              "filter": [
+                {
+                  "attribute": {
+                    "type": "property",
+                    "property": "action"
+                  },
+                  "constraint": {
+                    "type": "string",
+                    "operator": "equals",
+                    "operands": [
+                      {
+                        "type": "constant",
+                        "value": "add"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 7,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "event with a hyphenated name and property",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "page-visit",
+              "name": "page-visit",
+              "filter": [
+                {
+                  "attribute": {
+                    "type": "property",
+                    "property": "user-agent"
+                  },
+                  "constraint": {
+                    "type": "string",
+                    "operator": "contains",
+                    "operands": [
+                      {
+                        "type": "constant",
+                        "value": "Mobile"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 12,
+              "units": "hours"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "absolute window",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": true,
+            "duration": {
+              "count": 30,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "window with unknown units",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 1,
+              "units": "years"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "window with zero count",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 0,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "window count as text",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": "14",
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "event filter on something other than a property",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "filter": [
+                {
+                  "attribute": {
+                    "type": "customer_attribute",
+                    "property": "country"
+                  },
+                  "constraint": {
+                    "type": "string",
+                    "operator": "equals",
+                    "operands": [
+                      {
+                        "type": "constant",
+                        "value": "US"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "date_filter": {
+            "enabled": false,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 30,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "event filter with a comparison that can't be written",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": [
+                {
+                  "attribute": {
+                    "type": "property",
+                    "property": "total_price"
+                  },
+                  "constraint": {
+                    "type": "number",
+                    "operator": "greater than",
+                    "operands": [
+                      {
+                        "type": "constant",
+                        "value": "lots"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "date_filter": {
+            "enabled": false,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 30,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "event step with no type",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": false,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 30,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "event rule with no steps",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [],
+          "date_filter": {
+            "enabled": false,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 30,
+              "units": "days"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "saved definitions, each named once",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "prediction",
+            "id": "0123456789abcdef01234567"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "VIP"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "segmentation",
+            "id": "0123456789abcdef01234567"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "VIP"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "aggregate",
+            "id": "0123456789abcdef01234567"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "VIP"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "segmentation",
+            "id": "0123456789abcdef01234567"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "VIP"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "expression",
+            "id": "0123456789abcdef01234567"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "VIP"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "embedded_aggregate",
+            "id": "0123456789abcdef01234567"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "VIP"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "country"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "US"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0&F1&F2&F3&F4&F5&F6"
+    }
+  },
+  {
+    "name": "mixed reasons in order",
+    "filter": {
+      "filters": [
+        {
+          "type": "funnel_steps",
+          "steps": [
+            {
+              "type": "purchase",
+              "name": "purchase",
+              "filter": []
+            }
+          ],
+          "date_filter": {
+            "enabled": true,
+            "type": "static",
+            "absolute": false,
+            "duration": {
+              "count": 1,
+              "units": "years"
+            }
+          },
+          "duration_filter": {
+            "enabled": false
+          },
+          "independent_if_reused": true
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "greater than",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "x"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "segmentation",
+            "id": "0123456789abcdef01234567"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "VIP"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "page_visit"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "value": "x"
+          }
+        }
+      ],
+      "formula": "F0|F1|F2|F3"
+    }
+  },
+  {
+    "name": "unknown attribute kind",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "geo"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "value": "x"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "attribute kind named like a built-in",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "toString"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "value": "x"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "operator named like a built-in",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "n"
+          },
+          "constraint": {
+            "type": "number",
+            "operator": "constructor",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "5"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "s"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "toString",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "x"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0|F1"
+    }
+  },
+  {
+    "name": "no rules is everyone",
+    "filter": {
+      "filters": [],
+      "formula": ""
+    }
+  },
+  {
+    "name": "formula 1 is everyone",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "country"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "US"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "1"
+    }
+  },
+  {
+    "name": "empty formula is everyone",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "country"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "US"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "  "
+    }
+  },
+  {
+    "name": "missing formula is everyone",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "country"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "US"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "formula given as the number 1",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "country"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "US"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": 1
+    }
+  },
+  {
+    "name": "formula with spaces, brackets and negation",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "a"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "b"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "c"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "3"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "  !(F0 | F1)&F2  "
+    }
+  },
+  {
+    "name": "formula refers to a rule that isn't there",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "a"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0|F7"
+    }
+  },
+  {
+    "name": "formula with leading zeros and a bare digit",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "a"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "b"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "2"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F01&1"
+    }
+  },
+  {
+    "name": "formula with a huge rule number",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "a"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0|F00000000000000000000000000000001|F99999999999999999999"
+    }
+  },
+  {
+    "name": "formula with words is refused",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "a"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0) or (1"
+    }
+  },
+  {
+    "name": "formula with a quote is refused",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "a"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0\"|F0"
+    }
+  },
+  {
+    "name": "formula with a tab and newline",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "a"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "b"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "2"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0\t&\nF1"
+    }
+  },
+  {
+    "name": "unsupported rule wins over a bad formula",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "prediction",
+            "id": "0123456789abcdef01234567"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "VIP"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0 or F1"
+    }
+  },
+  {
+    "name": "quotes and backslashes can't break out",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "name"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "a\" or customer.x = \"b"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "pa\"th\\"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "contains",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "C:\\temp\\"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "note"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "  padded  "
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "consent",
+            "category": "news\"letter"
+          },
+          "constraint": {
+            "type": "boolean",
+            "operator": "is",
+            "value": "true"
+          }
+        }
+      ],
+      "formula": "F0|F1|F2|F3"
+    }
+  },
+  {
+    "name": "formula operators inside values and comparisons stay as written",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "band"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "Rock & Roll!"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "tag"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "does not equal",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "a|b"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "my&prop!"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "contains",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "F1"
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0|!F1&F2"
+    }
+  },
+  {
+    "name": "unicode and line breaks in values",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "city"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "Zürich"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "note"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "contains",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "line1\nline2"
+              }
+            ]
+          }
+        },
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "nbsp"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": " x "
+              }
+            ]
+          }
+        }
+      ],
+      "formula": "F0&F1&F2"
+    }
+  },
+  {
+    "name": "rules that aren't objects are skipped",
+    "filter": {
+      "filters": [
+        "junk",
+        null,
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": "a"
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "equals",
+            "operands": [
+              {
+                "type": "constant",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        3
+      ],
+      "formula": "F0"
+    }
+  },
+  {
+    "name": "property name that is a number",
+    "filter": {
+      "filters": [
+        {
+          "type": "attribute",
+          "attribute": {
+            "type": "property",
+            "property": 42
+          },
+          "constraint": {
+            "type": "string",
+            "operator": "has value"
+          }
+        }
+      ],
+      "formula": "F0"
+    }
+  }
+]

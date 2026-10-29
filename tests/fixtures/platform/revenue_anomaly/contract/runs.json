@@ -1,0 +1,73 @@
+{
+ "about": "Each run's arguments to scripts/decompose_change.py, with paths relative to this folder. expected.json holds the script's output for each run.",
+ "runs": {
+  "full": [
+   "--overall",
+   "overall.json",
+   "--search",
+   "search.json",
+   "--category",
+   "category.json",
+   "--device",
+   "desktop=desktop.json",
+   "--device",
+   "mobile=mobile.json",
+   "--device",
+   "tablet=tablet.json",
+   "--table",
+   "queries=queries_a.json,queries_b.json",
+   "--table",
+   "categories=categories.json",
+   "--table",
+   "products=products_rev.json,products_prev.json",
+   "--table",
+   "brands=brands.json",
+   "--trend",
+   "trend_step.json",
+   "--offset-days",
+   "7"
+  ],
+  "overlap": [
+   "--overall",
+   "overlap_overall.json",
+   "--search",
+   "overlap_search.json",
+   "--category",
+   "overlap_category.json",
+   "--device",
+   "desktop=overlap_desktop.json",
+   "--device",
+   "mobile=overlap_mobile.json",
+   "--trend",
+   "trend_outlier.json"
+  ],
+  "minimal": [
+   "--overall",
+   "overlap_overall.json",
+   "--table",
+   "queries=minimal_queries.json",
+   "--top",
+   "2",
+   "--trend",
+   "trend_concentrated.json"
+  ],
+  "spread": [
+   "--overall",
+   "overall.json",
+   "--trend",
+   "trend_spread.json"
+  ],
+  "gaps": [
+   "--overall",
+   "overall.json",
+   "--trend",
+   "trend_gaps.json"
+  ],
+  "short": [
+   "--overall",
+   "overall.json",
+   "--trend",
+   "trend_short.json"
+  ]
+ }
+}

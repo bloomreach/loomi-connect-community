@@ -1,3 +1,4 @@
+import json
 import subprocess
 import sys
 import tempfile
@@ -44,6 +45,28 @@ class ScenarioGraphTest(unittest.TestCase):
         self.assertIn("Dangling wait [5]", warnings)
         self.assertNotIn("Dangling wait [9]", warnings)
         self.assertNotIn("Contextual\": variant percentages", warnings)
+
+    def test_condition_and_limit_with_no_branches_lead_nowhere(self):
+        scenario = {"success": True, "data": {"name": "Synthetic dead ends", "nodes": [
+            {"id": "1", "type": "on-event-trigger", "name": "Signed up", "event": {"type": "registration", "filter": []}},
+            {"id": "2", "type": "condition", "name": "Has email", "customer_filter": {"filters": [], "formula": ""}},
+            {"id": "3", "type": "limit", "name": "Cap", "steps": [{"group": "", "id": "b" * 24, "limit": "1"}]},
+            {"id": "4", "type": "limit", "name": "Cap ok", "steps": [{"group": "", "id": "c" * 24, "limit": "2"}]},
+            {"id": "5", "type": "send-email-action", "name": "Mail", "template_id": None}],
+            "connections": [
+                {"source": {"node_id": "1", "connector_index": 0}, "destination": {"node_id": "2", "connector_index": 0}},
+                {"source": {"node_id": "1", "connector_index": 0}, "destination": {"node_id": "3", "connector_index": 0}},
+                {"source": {"node_id": "1", "connector_index": 0}, "destination": {"node_id": "4", "connector_index": 0}},
+                {"source": {"node_id": "4", "connector_index": 1}, "destination": {"node_id": "5", "connector_index": 0}}]}}
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "dead_ends.json"
+            p.write_text(json.dumps(scenario))
+            r = run(p)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        warnings = r.stdout.split("## Warnings", 1)[1]
+        self.assertIn('[2] condition "Has email" leads nowhere', warnings)
+        self.assertIn('[3] limit "Cap" leads nowhere', warnings)
+        self.assertNotIn('[4] limit "Cap ok" leads nowhere', warnings)
 
     def test_error_response(self):
         r = run(FIXTURES / "denied.json")

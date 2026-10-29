@@ -1,0 +1,66 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "demo-job-23",
+    "type": "feed",
+    "status": "success",
+    "created_at": "2026-10-26T08:30:00Z",
+    "stopped_at": "2026-10-26T09:00:00Z",
+    "properties": {
+     "feed_data_type": "products"
+    }
+   },
+   {
+    "id": "demo-job-24",
+    "type": "feed",
+    "status": "success",
+    "created_at": "2026-10-25T08:30:00Z",
+    "stopped_at": "2026-10-25T09:00:00Z",
+    "properties": {
+     "feed_data_type": "products"
+    }
+   },
+   {
+    "id": "demo-job-25",
+    "type": "index",
+    "status": "success",
+    "created_at": "2026-10-26T09:30:00Z",
+    "stopped_at": "2026-10-26T10:00:00Z",
+    "properties": {
+     "index_mode": "update"
+    },
+    "stats": {
+     "product_doc_count": 12000
+    }
+   },
+   {
+    "id": "demo-job-26",
+    "type": "index",
+    "status": "success",
+    "created_at": "2026-10-25T09:30:00Z",
+    "stopped_at": "2026-10-25T10:00:00Z",
+    "properties": {
+     "index_mode": "update"
+    },
+    "stats": {
+     "product_doc_count": 11950
+    }
+   },
+   {
+    "id": "demo-job-27",
+    "type": "index",
+    "status": "success",
+    "created_at": "2026-10-25T15:30:00Z",
+    "stopped_at": "2026-10-25T16:00:00Z",
+    "properties": {
+     "index_mode": "refresh"
+    },
+    "stats": {
+     "product_doc_count": 12000
+    }
+   }
+  ]
+ }
+}

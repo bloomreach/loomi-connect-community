@@ -1,0 +1,52 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "brand": "Northwind",
+    "revenue": "$44,100.00",
+    "prev_revenue": "$52,300.00",
+    "visits": 9100,
+    "prev_visits": 9900,
+    "conversions": 260,
+    "prev_conversions": 300
+   },
+   {
+    "brand": "Fieldhouse",
+    "revenue": "$31,900.00",
+    "prev_revenue": "$33,400.00",
+    "visits": 7900,
+    "prev_visits": 8100,
+    "conversions": 210,
+    "prev_conversions": 225
+   },
+   {
+    "brand": "Lumen & Co",
+    "revenue": "$12,700.00",
+    "prev_revenue": "$10,950.00",
+    "visits": 4100,
+    "prev_visits": 3900,
+    "conversions": 160,
+    "prev_conversions": 140
+   },
+   {
+    "brand": "Coastline",
+    "revenue": "$6,200.00",
+    "prev_revenue": "$11,600.00",
+    "visits": 2300,
+    "prev_visits": 2900,
+    "conversions": 40,
+    "prev_conversions": 80
+   },
+   {
+    "brand": "Restwell",
+    "revenue": "$5,100.00",
+    "prev_revenue": "$5,100.00",
+    "visits": 1500,
+    "prev_visits": 1480,
+    "conversions": 51,
+    "prev_conversions": 50
+   }
+  ]
+ }
+}

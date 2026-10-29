@@ -8,7 +8,7 @@
     "name": "Boost denim",
     "enabled": true,
     "durationTag": "unscheduled",
-    "syncStatus": "SYNCED",
+    "syncStatus": "SUCCESS",
     "queries": [
      {
       "query": "jeans",
@@ -23,7 +23,7 @@
     "enabled": true,
     "durationTag": "scheduled",
     "endedAt": 1787408000000,
-    "syncStatus": "SYNCED",
+    "syncStatus": "SUCCESS",
     "queries": [
      {
       "query": "jeans",
@@ -37,7 +37,7 @@
     "name": "Boost wellies",
     "enabled": true,
     "durationTag": "unscheduled",
-    "syncStatus": "SYNCED",
+    "syncStatus": "SUCCESS",
     "queries": [
      {
       "query": "wellies",

@@ -21,7 +21,8 @@ response, or just its "data" list. Fetch every page first.
 --queries is a saved get_discovery_query_performance response (one big page,
 for example page_size=1000). --categories is a saved
 get_discovery_category_performance_table response. --experiments is a saved
-search_discovery_experiments listing (all statuses).
+search_discovery_experiments listing (all statuses). Without it, rules flagged as
+in a live A/B test can't be checked against the experiments that are really running.
 """
 import argparse
 import collections
@@ -35,6 +36,9 @@ SEASONAL = re.compile(r"sale|black ?friday|cyber|halloween|christmas|xmas|holida
                       r"valentine|easter|promo|campaign|launch|demo|test|hackathon|\b20\d\d\b", re.I)
 PROTECTED = re.compile(r"do not (delete|change|remove|update)|don'?t (delete|change)", re.I)
 SEVERITY = {"high": 0, "medium": 1, "low": 2, "info": 3}
+# Sync states that aren't a failure. An expired rule simply ended (the expired checks cover it);
+# null means never synced (a draft), checked separately.
+SYNC_FINE = {"SUCCESS", "EXPIRED"}
 
 
 def check(doc, path):
@@ -125,6 +129,7 @@ def main():
 
     exp_rules = collections.defaultdict(list)
     experiments = load(args.experiments) if args.experiments else []
+    running = [e for e in experiments if e.get("experimentStatus") == "RUNNING"]
     for e in experiments:
         for b in e.get("buckets") or []:
             info = b.get("ruleIdentifierInfo") or {}
@@ -142,9 +147,20 @@ def main():
         name = r.get("name") or ""
         expired = is_expired(r, now_ms)
         protected = bool(PROTECTED.search(name))
+        sync = r.get("syncStatus")
+        if isinstance(sync, str) and sync.upper() not in SYNC_FINE:
+            add("high", r, f"Sync failed (syncStatus {sync})",
+                "Open it in the Dashboard and save it again; if it fails again, raise it with Bloomreach support.")
         if r.get("isAbTestLive"):
-            add("info", r, "In a RUNNING A/B test", "Leave it. It can't be changed or deleted until the test ends.")
-            continue
+            if not args.experiments:
+                add("info", r, "Marked as in a live A/B test (not checked: no experiments list)",
+                    "Leave it until the test ends. Pass the experiments list to check a test is really running.")
+                continue
+            if running:
+                add("info", r, "In a RUNNING A/B test", "Leave it. It can't be changed or deleted until the test ends.")
+                continue
+            add("medium", r, "A/B test flag stuck on: no experiment is RUNNING",
+                "Check the experiment ended properly in the Dashboard; the flag may block changes to this rule.")
         if expired and enabled:
             add("high", r, "Expired but still switched on", "Disable it, or delete it if the campaign is over.")
         elif expired:
@@ -213,7 +229,10 @@ def main():
     enabled = sum(1 for r in rules if r.get("enabled"))
     print(f"Rules checked: {len(rules)} ({enabled} enabled). "
           + ", ".join(f"{k}: {v}" for k, v in sorted(counts.items())))
-    print(f"Findings: " + ", ".join(f"{s} {n}" for s, n in collections.Counter(f[0] for f in findings).most_common()) + "\n")
+    print(f"Findings: " + ", ".join(f"{s} {n}" for s, n in collections.Counter(f[0] for f in findings).most_common()))
+    if not args.experiments:
+        print("Not checked: stuck A/B test flags and experiments (no --experiments file given).")
+    print()
     print("| Priority | Rule | Type | Query | Issue | Suggested action |")
     print("|---|---|---|---|---|---|")
     for sev, r, issue, action in findings:

@@ -41,6 +41,47 @@ class AuditRulesTest(unittest.TestCase):
         self.assertIn("No searches for \"wellies\"", out)
         self.assertNotIn("No searches for \"jeans\"", out)
 
+    def sync_ab(self, *extra):
+        p = run("--rules", FIX / "ar_sync_ab_rules.json", "--today", "2026-10-01", *extra)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        return p.stdout
+
+    def row(self, out, rule_id):
+        return [l for l in out.splitlines() if l.startswith("| ") and f"| {rule_id} " in l]
+
+    def test_failed_sync_is_high(self):
+        rows = self.row(self.sync_ab(), "901")
+        self.assertTrue(any(r.startswith("| high |") and "Sync failed (syncStatus FAILED)" in r for r in rows), rows)
+
+    def test_success_and_expired_sync_not_flagged(self):
+        out = self.sync_ab()
+        self.assertEqual(out.count("Sync failed"), 1)
+        self.assertEqual(self.row(out, "902"), [])
+        self.assertFalse(any("Sync failed" in r for r in self.row(out, "903")))
+
+    def test_ab_live_with_running_experiment_skips_other_checks(self):
+        rows = self.row(self.sync_ab("--experiments", FIX / "ar_experiments_running.json"), "904")
+        self.assertEqual(len(rows), 1, rows)
+        self.assertIn("| info |", rows[0])
+        self.assertIn("In a RUNNING A/B test", rows[0])
+
+    def test_ab_live_without_running_experiment_is_stuck(self):
+        out = self.sync_ab("--experiments", FIX / "ar_experiments_completed.json")
+        rows = self.row(out, "904")
+        self.assertTrue(any(r.startswith("| medium |") and "A/B test flag stuck" in r for r in rows), rows)
+        # Its other checks still run: it is expired but switched on.
+        self.assertTrue(any(r.startswith("| high |") and "Expired but still switched on" in r for r in rows), rows)
+        self.assertNotIn("In a RUNNING A/B test", out)
+        self.assertNotIn("Not checked", out)
+
+    def test_ab_live_without_experiments_says_check_did_not_run(self):
+        out = self.sync_ab()
+        self.assertIn("Not checked: stuck A/B test flags", out)
+        rows = self.row(out, "904")
+        self.assertEqual(len(rows), 1, rows)
+        self.assertIn("not checked: no experiments list", rows[0])
+        self.assertNotIn("A/B test flag stuck", out)
+
     def test_error_returned_as_data_stops(self):
         for args in (("--rules", FIX / "denied.json"),
                      ("--rules", FIX / "ar_ranking_rules.json", "--queries", FIX / "denied.json")):

@@ -5,7 +5,7 @@ Usage:
   python3 briefing_numbers.py --overall overall.json [--search search.json] [--category category.json] \
       [--device mobile=m.json --device desktop=d.json --device tablet=t.json] \
       [--queries q.json[,q2.json]] [--categories cats.json] [--products p.json[,p2.json]] [--brands b.json] \
-      [--min-visits 100] [--min-sessions 30] [--top 3]
+      [--min-visits N] [--min-sessions N] [--top N]   (defaults: references/rules.json)
 
 Inputs are the raw JSON responses (or files the client saved them to):
   cards:  get_discovery_overall_performance / _search_performance / _category_performance
@@ -26,6 +26,10 @@ import argparse
 import json
 import math
 import sys
+from pathlib import Path
+
+# The thresholds live in references/rules.json, shared with apps that compute the same numbers.
+RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
 
 
 def number(v):
@@ -159,7 +163,7 @@ def median(values):
 def top_and_issues(rows, label, vol_key, min_vol, top, issue_top, dead_end_names=()):
     """Top rows by revenue, plus rows with problems ranked by revenue at stake.
 
-    The baseline is the median of the 20 highest-volume rows, so a row is judged against its peers.
+    The baseline is the median of the highest-volume rows (RULES["peers"]), so a row is judged against its peers.
     Revenue at stake = volume x (baseline conversion - conversion) x order value, or
     volume x baseline revenue per visit for dead ends. It is an upper bound for the week, not a forecast.
     """
@@ -179,7 +183,7 @@ def top_and_issues(rows, label, vol_key, min_vol, top, issue_top, dead_end_names
         })
     if not items:
         return {"considered": 0, "top": [], "issues": []}
-    peers = sorted(items, key=lambda i: -i["volume"])[:20]
+    peers = sorted(items, key=lambda i: -i["volume"])[:RULES["peers"]]
     base = {k: median([p[k] for p in peers if p[k] is not None])
             for k in ("conversion_pct", "bounce_pct", "views_per_visit", "rpv")}
     base_aov = median([p["aov"] for p in peers if p["aov"]])
@@ -192,17 +196,19 @@ def top_and_issues(rows, label, vol_key, min_vol, top, issue_top, dead_end_names
         reasons = []
         at_stake = 0.0
         conv, bounce = i["conversion_pct"], i["bounce_pct"]
-        if str(i["name"]).lower() in dead or (i["views_per_visit"] == 0 and bounce is not None and bounce >= 90):
+        if str(i["name"]).lower() in dead or (i["views_per_visit"] == 0 and bounce is not None and bounce >= RULES["dead_end_bounce_pct"]):
             reasons.append("dead end: no product views" + (", no results" if str(i["name"]).lower() in dead else ""))
             at_stake = i["volume"] * base["rpv"]
         else:
             if i["revenue"] == 0:
                 reasons.append("no revenue")
-            if conv is not None and base["conversion_pct"] and conv < 0.75 * base["conversion_pct"]:
+            if conv is not None and base["conversion_pct"] and conv < RULES["low_conversion_ratio"] * base["conversion_pct"]:
                 reasons.append(f"conversion {conv:.1f}% vs {base['conversion_pct']:.1f}% typical")
-            if bounce is not None and bounce > 1.25 * base["bounce_pct"] and bounce - base["bounce_pct"] >= 10:
+            if (bounce is not None and bounce > RULES["high_bounce_ratio"] * base["bounce_pct"]
+                    and bounce - base["bounce_pct"] >= RULES["high_bounce_min_points"]):
                 reasons.append(f"bounce {bounce:.0f}% vs {base['bounce_pct']:.0f}% typical")
-            if i["prev_revenue"] and i["revenue"] < 0.75 * i["prev_revenue"] and i["prev_revenue"] - i["revenue"] >= 1000:
+            if (i["prev_revenue"] and i["revenue"] < RULES["revenue_drop_ratio"] * i["prev_revenue"]
+                    and i["prev_revenue"] - i["revenue"] >= RULES["revenue_drop_min"]):
                 reasons.append(f"revenue {pct(i['revenue'], i['prev_revenue'])}% vs last week")
             gap = max(base["conversion_pct"] - conv, 0) / 100 if conv is not None else 0.0
             at_stake = i["volume"] * gap * (i["aov"] or base_aov)
@@ -234,12 +240,12 @@ def main():
     ap.add_argument("--categories")
     ap.add_argument("--products")
     ap.add_argument("--brands")
-    ap.add_argument("--min-visits", type=int, default=100)
-    ap.add_argument("--min-sessions", type=int, default=30)
-    ap.add_argument("--top", type=int, default=3)
+    ap.add_argument("--min-visits", type=int, default=RULES["min_visits"])
+    ap.add_argument("--min-sessions", type=int, default=RULES["min_sessions"])
+    ap.add_argument("--top", type=int, default=RULES["movers_top"])
     ap.add_argument("--dead-ends", help="comma-separated query files from the no_search_results / no_revenue presets")
-    ap.add_argument("--list-top", type=int, default=10, help="rows in the top searches / top categories lists")
-    ap.add_argument("--issue-top", type=int, default=5, help="rows in the searches / categories with issues lists")
+    ap.add_argument("--list-top", type=int, default=RULES["list_top"], help="rows in the top searches / top categories lists")
+    ap.add_argument("--issue-top", type=int, default=RULES["issue_top"], help="rows in the searches / categories with issues lists")
     a = ap.parse_args()
 
     o = card(a.overall)

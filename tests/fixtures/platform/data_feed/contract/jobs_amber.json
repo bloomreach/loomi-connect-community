@@ -1,0 +1,44 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "demo-job-a1",
+    "type": "feed",
+    "status": "success",
+    "created_at": "2026-10-25T05:30:00Z",
+    "stopped_at": "2026-10-25T06:00:00Z",
+    "properties": {
+     "feed_data_type": "products"
+    },
+    "status_message": "Feed data contains null values. Example product IDs: DEMO-202"
+   },
+   {
+    "id": "demo-job-a2",
+    "type": "index",
+    "status": "success",
+    "created_at": "2026-10-25T06:00:00Z",
+    "stopped_at": "2026-10-25T06:30:00Z",
+    "properties": {
+     "index_mode": "update"
+    },
+    "stats": {
+     "product_doc_count": 7000
+    }
+   },
+   {
+    "id": "demo-job-a3",
+    "type": "index",
+    "status": "success",
+    "created_at": "2026-10-24T06:00:00Z",
+    "stopped_at": "2026-10-24T06:30:00Z",
+    "properties": {
+     "index_mode": "update"
+    },
+    "stats": {
+     "product_doc_count": 7100
+    }
+   }
+  ]
+ }
+}

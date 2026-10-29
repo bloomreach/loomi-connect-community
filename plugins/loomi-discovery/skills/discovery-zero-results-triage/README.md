@@ -29,5 +29,6 @@ See [examples/example-apparel.md](examples/example-apparel.md) for a full exampl
 - Product grid responses are very large. The skill asks for few fields and rows, turns off facets, and includes `scripts/grid_summary.py` (standard library only) to summarise a saved response.
 - `simple_debug=false` returned HTTP 500 errors in testing, so the skill doesn't use it.
 - There is no read tool that lists query-level search-settings rules. The skill finds them in the product grid's `customizations.explain`.
-- Revenue figures are upper bounds, not forecasts.
+- Revenue figures are estimates at the typical revenue per search session, not forecasts.
+- `scripts/triage_candidates.py` (standard library only) suggests a likely fix for each dead-end query from the saved reports, synonyms and redirects, with the thresholds in `references/rules.json`. Its classes are suggestions: the product grid still decides each fix.
 - For one query in depth, use [discovery-query-diagnosis](../discovery-query-diagnosis/).

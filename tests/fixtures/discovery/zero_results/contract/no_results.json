@@ -1,0 +1,147 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "tshirt",
+    "browse_sessions": 120,
+    "prev_browse_sessions": 100,
+    "visits": 120,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "jeens",
+    "browse_sessions": 90,
+    "prev_browse_sessions": 40,
+    "visits": 90,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "capris",
+    "browse_sessions": 80,
+    "prev_browse_sessions": 60,
+    "visits": 80,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "sneekerss",
+    "browse_sessions": 70,
+    "prev_browse_sessions": 10,
+    "visits": 70,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "returns",
+    "browse_sessions": 60,
+    "prev_browse_sessions": 55,
+    "visits": 60,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "gift card",
+    "browse_sessions": 50,
+    "prev_browse_sessions": 48,
+    "visits": 50,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "corset",
+    "browse_sessions": 45,
+    "prev_browse_sessions": 30,
+    "visits": 45,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "flippers",
+    "browse_sessions": 35,
+    "prev_browse_sessions": 20,
+    "visits": 35,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "tee",
+    "browse_sessions": 32,
+    "prev_browse_sessions": 30,
+    "visits": 32,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "x",
+    "browse_sessions": 30,
+    "prev_browse_sessions": 25,
+    "visits": 30,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "bikini",
+    "browse_sessions": 28,
+    "prev_browse_sessions": 12,
+    "visits": 28,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "12345",
+    "browse_sessions": 25,
+    "prev_browse_sessions": 20,
+    "visits": 25,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "size chart",
+    "browse_sessions": 22,
+    "prev_browse_sessions": 18,
+    "visits": 22,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "hoodie",
+    "browse_sessions": 3,
+    "prev_browse_sessions": 8,
+    "visits": 3,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   }
+  ]
+ }
+}

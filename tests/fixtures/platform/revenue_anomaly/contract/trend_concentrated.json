@@ -1,0 +1,82 @@
+{
+ "success": true,
+ "data": {
+  "metric": "revenue",
+  "current": [
+   {
+    "cdate": "20261019",
+    "revenue": 9010
+   },
+   {
+    "cdate": "20261020",
+    "revenue": 4990
+   },
+   {
+    "cdate": "20261021",
+    "revenue": 7020
+   },
+   {
+    "cdate": "20261022",
+    "revenue": 4600
+   },
+   {
+    "cdate": "20261023",
+    "revenue": 4000
+   },
+   {
+    "cdate": "20261024",
+    "revenue": 8005
+   },
+   {
+    "cdate": "20261025",
+    "revenue": 5980
+   },
+   {
+    "cdate": "20261026",
+    "revenue": 9015
+   },
+   {
+    "cdate": "20261027",
+    "revenue": 4995
+   }
+  ],
+  "previous": [
+   {
+    "cdate": "20261010",
+    "revenue": 9000
+   },
+   {
+    "cdate": "20261011",
+    "revenue": 5000
+   },
+   {
+    "cdate": "20261012",
+    "revenue": 7000
+   },
+   {
+    "cdate": "20261013",
+    "revenue": 9500
+   },
+   {
+    "cdate": "20261014",
+    "revenue": 8500
+   },
+   {
+    "cdate": "20261015",
+    "revenue": 8000
+   },
+   {
+    "cdate": "20261016",
+    "revenue": 6000
+   },
+   {
+    "cdate": "20261017",
+    "revenue": 9000
+   },
+   {
+    "cdate": "20261018",
+    "revenue": 5000
+   }
+  ]
+ }
+}

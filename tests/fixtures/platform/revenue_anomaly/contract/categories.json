@@ -1,0 +1,67 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "category": "Living room",
+    "revenue": "$31,400.00",
+    "prev_revenue": "$36,900.00",
+    "visits": 9800,
+    "prev_visits": 10200,
+    "conversions": 230,
+    "prev_conversions": 262,
+    "cat_id": "cat100"
+   },
+   {
+    "category": "Dining",
+    "revenue": "$18,900.00",
+    "prev_revenue": "$19,450.00",
+    "visits": 6100,
+    "prev_visits": 6000,
+    "conversions": 140,
+    "prev_conversions": 141,
+    "cat_id": "cat200"
+   },
+   {
+    "category": "Bedroom",
+    "revenue": "$15,220.40",
+    "prev_revenue": "$18,870.10",
+    "visits": 5200,
+    "prev_visits": 5600,
+    "conversions": 110,
+    "prev_conversions": 140,
+    "cat_id": "cat300"
+   },
+   {
+    "category": "Lighting",
+    "revenue": "$9,800.00",
+    "prev_revenue": "$8,600.00",
+    "visits": 4100,
+    "prev_visits": 3900,
+    "conversions": 95,
+    "prev_conversions": 82,
+    "cat_id": "cat400"
+   },
+   {
+    "category": "Outdoor",
+    "revenue": "$4,100.00",
+    "prev_revenue": "$7,880.00",
+    "visits": 2600,
+    "prev_visits": 3000,
+    "conversions": 30,
+    "prev_conversions": 55,
+    "cat_id": "cat500"
+   },
+   {
+    "category": "Sale",
+    "revenue": "$9,500.00",
+    "prev_revenue": "$5,600.00",
+    "visits": 2315,
+    "prev_visits": 2320,
+    "conversions": 35,
+    "prev_conversions": 10,
+    "cat_id": "cat600"
+   }
+  ]
+ }
+}

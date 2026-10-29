@@ -1,0 +1,79 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "sofa",
+    "revenue": "$18,200.00",
+    "prev_revenue": "$24,950.50",
+    "visits": 2100,
+    "prev_visits": 2300,
+    "conversions": 160,
+    "prev_conversions": 205
+   },
+   {
+    "query": "dining table",
+    "revenue": "$9,870.10",
+    "prev_revenue": "$12,400.00",
+    "visits": 1500,
+    "prev_visits": 1480,
+    "conversions": 70,
+    "prev_conversions": 92
+   },
+   {
+    "query": "rug",
+    "revenue": "$7,410.00",
+    "prev_revenue": "$7,980.00",
+    "visits": 1900,
+    "prev_visits": 2400,
+    "conversions": 140,
+    "prev_conversions": 151
+   },
+   {
+    "query": "lamp",
+    "revenue": "$5,120.40",
+    "prev_revenue": "$4,300.00",
+    "visits": 1300,
+    "prev_visits": 1250,
+    "conversions": 120,
+    "prev_conversions": 101
+   },
+   {
+    "query": "bookcase",
+    "revenue": "$3,300.00",
+    "prev_revenue": "$5,100.00",
+    "visits": 640,
+    "prev_visits": 700,
+    "conversions": 30,
+    "prev_conversions": 46
+   },
+   {
+    "query": "mirror",
+    "revenue": "$2,950.00",
+    "prev_revenue": "$2,950.00",
+    "visits": 500,
+    "prev_visits": 510,
+    "conversions": 40,
+    "prev_conversions": 40
+   },
+   {
+    "query": "outdoor chair",
+    "revenue": "$0.00",
+    "prev_revenue": "$3,240.00",
+    "visits": 0,
+    "prev_visits": 420,
+    "conversions": 0,
+    "prev_conversions": 28
+   },
+   {
+    "query": "throw pillow",
+    "revenue": "$1,980.00",
+    "prev_revenue": "$1,410.00",
+    "visits": 980,
+    "prev_visits": 700,
+    "conversions": 88,
+    "prev_conversions": 60
+   }
+  ]
+ }
+}

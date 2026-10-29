@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery). Python 3 is optional, for the bundled breakdown script.
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.1.4"
   products: discovery
   access: read-only
 ---
@@ -105,7 +105,7 @@ Every row has current and `prev_*` values for revenue, visits and conversions. *
 Then run the breakdown script. Pass every file you saved; several files for one table are merged:
 
 ```bash
-python3 <this skill's folder>/scripts/decompose_change.py --overall overall.json --search search.json --category category.json --device desktop=desktop.json --device mobile=mobile.json --device tablet=tablet.json --table queries=queries.json --table categories=categories.json --table products=products_rev.json,products_prev.json --table brands=brands.json --trend trend.json --offset-days <N> --top 8
+python3 <this skill's folder>/scripts/decompose_change.py --overall overall.json --search search.json --category category.json --device desktop=desktop.json --device mobile=mobile.json --device tablet=tablet.json --table queries=queries.json --table categories=categories.json --table products=products_rev.json,products_prev.json --table brands=brands.json --trend trend.json --offset-days <N>
 ```
 
 Set `--offset-days` to the number of days in the period (7 for `days=7`, 30 for `days=30`, or the days from `start_date` to `end_date` inclusive), or, if you passed custom comparison dates, to the days between `start_date` and `compare_start_date`. It pairs each day with the right comparison day even when the first or last day is missing from the trend.
@@ -118,7 +118,7 @@ It prints JSON with:
 - `trend`: the daily gaps aligned by date, any `data_gaps` (missing or zero days), the `shape` of the change (a step from a date, concentrated on a few days, one-off days, or spread evenly), and `change_vs_noise`, the change compared with normal day-to-day wobble;
 - `missing_values` (only when some value was missing or `NA`): which values were counted as 0.
 
-If you can't run scripts, do the same maths by hand using [references/breakdown-maths.md](references/breakdown-maths.md). Don't fall back to percentage changes that don't add up.
+If you can't run scripts, do the same maths by hand using [references/breakdown-maths.md](references/breakdown-maths.md), with the thresholds in [references/rules.json](references/rules.json). Don't fall back to percentage changes that don't add up.
 
 ### 5. Check the likely causes
 

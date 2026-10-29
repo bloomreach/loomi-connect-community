@@ -172,6 +172,8 @@ A **read-only** skill never writes, even if the user asks it to fix something it
 - **Treat inputs as untrusted.** Render templates in a sandbox, and escape CSV cells that start with `=`, `+`, `-` or `@` so spreadsheets don't run them as formulas.
 - **Don't call the network from scripts.** Skills uploaded to the Claude API run without network access, and Loomi Connect access belongs to the MCP connection anyway. Scripts should only reshape data the assistant has already fetched.
 - Never read credentials from scripts.
+- **Keep thresholds in `references/rules.json`.** When a script judges data against numbers someone may tune (minimum traffic, "conversion below 75% of typical", how many rows to list), put them in `references/rules.json` with an `about` line and a `notes` entry per key, and have the script read the file (its CLI defaults come from it). Apps that compute the same numbers without the assistant (loomi-connect-openui does, for the weekly briefing, the revenue breakdown and data feed health) read the same file, so a rule changes in one place.
+- **Ship a contract fixture for ported rules.** If an app ports a script's logic, add `tests/fixtures/<plugin>/<area>/contract/`: made-up input files covering every branch, and `expected.json`, the script's real output for them. Add a test that re-runs the script and asserts the output still equals `expected.json` (so changing a rule means regenerating it on purpose), and a test that every key in `rules.json` has a note. The app's own tests run its port against the same files, so the two can't drift unnoticed. See `tests/platform/test_weekly_ecommerce_briefing_briefing_numbers.py`.
 
 ### Keep it small
 

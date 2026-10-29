@@ -8,7 +8,7 @@
     "name": "Denim banner",
     "enabled": true,
     "durationTag": "unscheduled",
-    "syncStatus": "SYNCED",
+    "syncStatus": "SUCCESS",
     "queries": [
      {
       "query": "jeans",

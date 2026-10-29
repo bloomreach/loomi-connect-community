@@ -1,6 +1,6 @@
 # Discovery rule audit
 
-Audits every merchandising rule in a Bloomreach Discovery account or site and produces a prioritised cleanup list. It covers ranking rules, media rules (banners), facet rules and redirects, across site search, category and global scopes. It flags rules that are expired but still on, disabled and stale, never-ending but seasonal, duplicated or conflicting, attached to searches or categories with no traffic, or tied to A/B tests. It never changes anything.
+Audits every merchandising rule in a Bloomreach Discovery account or site and produces a prioritised cleanup list. It covers ranking rules, media rules (banners), facet rules and redirects, across site search, category and global scopes. It flags rules that are expired but still on, failing to sync, disabled and stale, never-ending but seasonal, duplicated or conflicting, attached to searches or categories with no traffic, or tied to A/B tests (including a test flag left on when no test is running). It never changes anything.
 
 | | |
 |---|---|

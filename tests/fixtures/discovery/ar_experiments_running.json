@@ -1,0 +1,4 @@
+{"result": {"success": true, "data": [
+ {"id": "exp-1", "experimentName": "Boots layout", "experimentStatus": "RUNNING", "startedAt": 1788912000000,
+  "buckets": [{"ruleIdentifierInfo": {"id": "904"}}]}
+]}}

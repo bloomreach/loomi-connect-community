@@ -1,0 +1,25 @@
+{
+  "about": "The revenue anomaly explainer's thresholds. scripts/decompose_change.py reads this file, and so do apps that compute the same numbers, so change a rule here and nowhere else. Each key is explained under notes.",
+  "top": 8,
+  "outlier_spread_multiple": 3,
+  "concentrated_share": 0.8,
+  "concentrated_max_days_divisor": 3,
+  "step_min_days": 6,
+  "step_min_side_days": 2,
+  "step_shift_sd_multiple": 2,
+  "noise_min_days": 3,
+  "noise_normal_ratio": 1,
+  "noise_borderline_ratio": 2,
+  "notes": {
+    "top": "Rows in each table's rising and falling lists (the --top default).",
+    "outlier_spread_multiple": "A day is a one-off when its gap is more than this many typical deviations (median absolute deviation) from the median daily gap.",
+    "concentrated_share": "The change is concentrated when the fewest days that make up this share of the total gap are few enough (see concentrated_max_days_divisor).",
+    "concentrated_max_days_divisor": "Those days may be at most one in this many days of the period (at least one day).",
+    "step_min_days": "A step change is only looked for in a trend with at least this many days.",
+    "step_min_side_days": "A step needs at least this many days before it and after it.",
+    "step_shift_sd_multiple": "A step counts when the shift in the mean daily gap is at least this many times the scatter of days around it.",
+    "noise_min_days": "Days with data needed in the previous period to measure day-to-day noise; with fewer the verdict is unknown.",
+    "noise_normal_ratio": "A total change smaller than this many noise bands (daily standard deviation x square root of days) is within normal variation.",
+    "noise_borderline_ratio": "Below this many noise bands (and at least noise_normal_ratio) the change is borderline; at or above it, larger than normal variation."
+  }
+}

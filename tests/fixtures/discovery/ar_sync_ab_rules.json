@@ -1,0 +1,16 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {"id": "901", "ruleType": "ranking", "name": "Boost raincoats", "enabled": true, "durationTag": "unscheduled",
+    "syncStatus": "FAILED", "queries": [{"query": "raincoat", "queryType": "sitesearch"}]},
+   {"id": "902", "ruleType": "ranking", "name": "Boost umbrellas", "enabled": true, "durationTag": "unscheduled",
+    "syncStatus": "SUCCESS", "queries": [{"query": "umbrella", "queryType": "sitesearch"}]},
+   {"id": "903", "ruleType": "ranking", "name": "Old scarf push", "enabled": false, "durationTag": "expired",
+    "syncStatus": "EXPIRED", "queries": [{"query": "scarf", "queryType": "sitesearch"}]},
+   {"id": "904", "ruleType": "ranking", "name": "Test boots layout", "enabled": true, "durationTag": "expired",
+    "syncStatus": "SUCCESS", "isAbTestLive": true, "variantCount": 2,
+    "queries": [{"query": "boots", "queryType": "sitesearch"}]}
+  ]
+ }
+}

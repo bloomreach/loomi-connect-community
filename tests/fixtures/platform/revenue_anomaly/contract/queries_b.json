@@ -1,0 +1,52 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "Sofa",
+    "revenue": "$18,200.00",
+    "prev_revenue": "$24,950.50",
+    "visits": 2100,
+    "prev_visits": 2300,
+    "conversions": 160,
+    "prev_conversions": 205
+   },
+   {
+    "query": "velvet chair",
+    "revenue": "$4,450.00",
+    "prev_revenue": "$0.00",
+    "visits": 380,
+    "prev_visits": 0,
+    "conversions": 22,
+    "prev_conversions": 0
+   },
+   {
+    "query": "desk",
+    "revenue": "$6,010.00",
+    "prev_revenue": "$7,760.00",
+    "visits": "NA",
+    "prev_visits": 900,
+    "conversions": 51,
+    "prev_conversions": 66
+   },
+   {
+    "query": "bar stool",
+    "revenue": "$2,210.00",
+    "prev_revenue": "$2,980.00",
+    "visits": 600,
+    "prev_visits": 610,
+    "conversions": 25,
+    "prev_conversions": 31
+   },
+   {
+    "query": "planter",
+    "revenue": "$1,120.00",
+    "prev_revenue": "$980.00",
+    "visits": 410,
+    "prev_visits": 390,
+    "conversions": 30,
+    "prev_conversions": 27
+   }
+  ]
+ }
+}

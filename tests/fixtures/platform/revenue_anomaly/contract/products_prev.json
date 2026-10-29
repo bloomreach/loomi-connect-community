@@ -1,0 +1,40 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "product_title": "Harbor 3-seat sofa",
+    "revenue": "$12,400.00",
+    "prev_revenue": "$16,900.00",
+    "visits": 800,
+    "prev_visits": 900,
+    "conversions": 9,
+    "prev_conversions": 12,
+    "prod_id": "P100",
+    "brand": "Northwind"
+   },
+   {
+    "product_title": "Teak lounge chair",
+    "revenue": "$0.00",
+    "prev_revenue": "$2,700.00",
+    "visits": 0,
+    "prev_visits": 300,
+    "conversions": 0,
+    "prev_conversions": 6,
+    "prod_id": "P500",
+    "brand": "Coastline"
+   },
+   {
+    "product_title": "Linen duvet set",
+    "revenue": "$2,050.00",
+    "prev_revenue": "$2,980.00",
+    "visits": 410,
+    "prev_visits": 450,
+    "conversions": 14,
+    "prev_conversions": 20,
+    "prod_id": "P600",
+    "brand": "Restwell"
+   }
+  ]
+ }
+}

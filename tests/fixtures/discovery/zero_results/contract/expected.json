@@ -1,0 +1,213 @@
+{
+ "ok": true,
+ "note": "Suggestions only. Confirm each one with the product grid before recommending a fix.",
+ "typical_revenue_per_session": 2.5,
+ "summary": {
+  "dead_ends": 19,
+  "by_class": {
+   "covered_by_redirect": 1,
+   "noise": 4,
+   "none": 5,
+   "noop_synonym": 1,
+   "page_intent": 3,
+   "spelling_twin": 4,
+   "synonym_no_results": 1
+  },
+  "sessions": 992,
+  "revenue_at_stake": 2480.0,
+  "noise_sessions": 58
+ },
+ "queries": [
+  {
+   "query": "linen shirt",
+   "kind": "no_sales",
+   "sessions": 150,
+   "prev_sessions": 90,
+   "class": "none",
+   "reason": "No suggestion from the data alone.",
+   "revenue_at_stake": 375.0
+  },
+  {
+   "query": "tshirt",
+   "kind": "no_results",
+   "sessions": 120,
+   "prev_sessions": 100,
+   "class": "spelling_twin",
+   "reason": "Looks like another way of writing a search that sells. A synonym to it would probably show results.",
+   "revenue_at_stake": 300.0,
+   "twin": {
+    "query": "t shirt",
+    "sessions": 1000,
+    "revenue": 3000.0
+   }
+  },
+  {
+   "query": "track my order",
+   "kind": "no_results",
+   "sessions": 110,
+   "prev_sessions": 100,
+   "class": "page_intent",
+   "reason": "Shoppers want a page, not products. A redirect fits better than results.",
+   "revenue_at_stake": 275.0
+  },
+  {
+   "query": "jeens",
+   "kind": "no_results",
+   "sessions": 90,
+   "prev_sessions": 40,
+   "class": "spelling_twin",
+   "reason": "Looks like another way of writing a search that sells. A synonym to it would probably show results.",
+   "revenue_at_stake": 225.0,
+   "twin": {
+    "query": "jeans",
+    "sessions": 800,
+    "revenue": 2400.0
+   }
+  },
+  {
+   "query": "capris",
+   "kind": "no_results",
+   "sessions": 80,
+   "prev_sessions": 60,
+   "class": "synonym_no_results",
+   "reason": "It already has a synonym to another word and still finds nothing: likely a catalog gap.",
+   "revenue_at_stake": 200.0
+  },
+  {
+   "query": "sneekerss",
+   "kind": "no_results",
+   "sessions": 70,
+   "prev_sessions": 10,
+   "class": "spelling_twin",
+   "reason": "Looks like another way of writing a search that sells. A synonym to it would probably show results.",
+   "revenue_at_stake": 175.0,
+   "twin": {
+    "query": "sneakers",
+    "sessions": 500,
+    "revenue": 1500.0
+   }
+  },
+  {
+   "query": "returns",
+   "kind": "no_results",
+   "sessions": 60,
+   "prev_sessions": 55,
+   "class": "page_intent",
+   "reason": "Shoppers want a page, not products. A redirect fits better than results.",
+   "revenue_at_stake": 150.0
+  },
+  {
+   "query": "sneaker",
+   "kind": "no_sales",
+   "sessions": 60,
+   "prev_sessions": 50,
+   "class": "spelling_twin",
+   "reason": "Looks like another way of writing a search that sells. A synonym to it would probably show results.",
+   "revenue_at_stake": 150.0,
+   "twin": {
+    "query": "sneakers",
+    "sessions": 500,
+    "revenue": 1500.0
+   }
+  },
+  {
+   "query": "gift card",
+   "kind": "no_results",
+   "sessions": 50,
+   "prev_sessions": 48,
+   "class": "covered_by_redirect",
+   "reason": "An enabled redirect already lists this search. Check the page it goes to still exists.",
+   "revenue_at_stake": 125.0
+  },
+  {
+   "query": "corset",
+   "kind": "no_results",
+   "sessions": 45,
+   "prev_sessions": 30,
+   "class": "noop_synonym",
+   "reason": "Its only synonym points back to itself, so it does nothing.",
+   "revenue_at_stake": 112.5
+  },
+  {
+   "query": "returns policy",
+   "kind": "no_sales",
+   "sessions": 40,
+   "prev_sessions": 35,
+   "class": "none",
+   "reason": "No suggestion from the data alone.",
+   "revenue_at_stake": 100.0
+  },
+  {
+   "query": "flippers",
+   "kind": "no_results",
+   "sessions": 35,
+   "prev_sessions": 20,
+   "class": "none",
+   "reason": "No suggestion from the data alone.",
+   "revenue_at_stake": 87.5
+  },
+  {
+   "query": "tee",
+   "kind": "no_results",
+   "sessions": 32,
+   "prev_sessions": 30,
+   "class": "none",
+   "reason": "No suggestion from the data alone.",
+   "revenue_at_stake": 80.0
+  },
+  {
+   "query": "x",
+   "kind": "no_results",
+   "sessions": 30,
+   "prev_sessions": 25,
+   "class": "noise",
+   "reason": "Too few sessions, or not a real word, to be worth fixing.",
+   "revenue_at_stake": 75.0
+  },
+  {
+   "query": "bikini",
+   "kind": "no_results",
+   "sessions": 28,
+   "prev_sessions": 12,
+   "class": "none",
+   "reason": "No suggestion from the data alone.",
+   "revenue_at_stake": 70.0
+  },
+  {
+   "query": "12345",
+   "kind": "no_results",
+   "sessions": 25,
+   "prev_sessions": 20,
+   "class": "noise",
+   "reason": "Too few sessions, or not a real word, to be worth fixing.",
+   "revenue_at_stake": 62.5
+  },
+  {
+   "query": "size chart",
+   "kind": "no_results",
+   "sessions": 22,
+   "prev_sessions": 18,
+   "class": "page_intent",
+   "reason": "Shoppers want a page, not products. A redirect fits better than results.",
+   "revenue_at_stake": 55.0
+  },
+  {
+   "query": "hoodie",
+   "kind": "no_results",
+   "sessions": 3,
+   "prev_sessions": 8,
+   "class": "noise",
+   "reason": "Too few sessions, or not a real word, to be worth fixing.",
+   "revenue_at_stake": 7.5
+  },
+  {
+   "query": "old query",
+   "kind": "no_sales",
+   "sessions": 0,
+   "prev_sessions": 40,
+   "class": "noise",
+   "reason": "Too few sessions, or not a real word, to be worth fixing.",
+   "revenue_at_stake": 0.0
+  }
+ ]
+}

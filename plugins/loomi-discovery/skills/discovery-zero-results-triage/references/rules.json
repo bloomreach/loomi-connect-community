@@ -1,0 +1,26 @@
+{
+  "about": "The dead-end pre-triage rules. scripts/triage_candidates.py reads this file, and so do apps that suggest the same fixes, so change a rule here and nowhere else. Each key is explained under notes.",
+  "min_sessions": 5,
+  "min_query_chars": 2,
+  "lookalike_min_chars": 4,
+  "long_query_chars": 8,
+  "max_edits_short": 1,
+  "max_edits_long": 2,
+  "peers": 20,
+  "page_intent_words": [
+    "return", "returns", "refund", "track", "tracking", "order status", "my order",
+    "store", "stores", "locator", "hours", "gift card", "giftcard", "app", "contact",
+    "customer service", "shipping", "delivery", "size guide", "size chart", "coupon",
+    "promo", "discount code", "login", "sign in", "account", "careers", "jobs", "about"
+  ],
+  "notes": {
+    "min_sessions": "A dead-end search with fewer sessions than this in the period is noise.",
+    "min_query_chars": "A search with fewer letters and digits than this (after dropping spaces and punctuation) is noise. A search of digits only is noise too.",
+    "lookalike_min_chars": "Searches shorter than this (letters and digits only) are never matched to a spelling twin: short words are too easy to match by accident.",
+    "long_query_chars": "Searches this long or longer (letters and digits only) may be max_edits_long edits from their twin; shorter ones max_edits_short.",
+    "max_edits_short": "Most edits (insert, delete or change one character) between a short search and a selling search for them to count as spelling twins. Searches that are equal once spaces and punctuation are dropped always count.",
+    "max_edits_long": "See max_edits_short, for searches of long_query_chars or more.",
+    "peers": "The typical revenue per search session is the median over this many busiest top searches. Revenue at stake is a dead end's sessions times that.",
+    "page_intent_words": "Whole words or phrases that mean the shopper wants a page (returns, store hours, gift cards), not products. A no-results search containing one is a redirect candidate."
+  }
+}

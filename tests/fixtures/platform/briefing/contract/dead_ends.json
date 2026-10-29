@@ -1,0 +1,33 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "no results thing",
+    "browse_sessions": 300,
+    "prev_browse_sessions": 250,
+    "visits": 300,
+    "revenue": "$0.00",
+    "prev_revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "80%",
+    "product_page_views": 0,
+    "aov": "$0.00",
+    "rpv": "$0.00"
+   },
+   {
+    "query": "query 07",
+    "browse_sessions": 1510,
+    "prev_browse_sessions": 1400,
+    "visits": 1510,
+    "revenue": "$0.00",
+    "prev_revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "30%",
+    "product_page_views": 3000,
+    "aov": "$60.00",
+    "rpv": "$0.00"
+   }
+  ]
+ }
+}

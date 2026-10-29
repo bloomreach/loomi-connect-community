@@ -20,7 +20,7 @@ Usage:
       [--device mobile=mobile.json --device desktop=desktop.json --device tablet=tablet.json] \
       [--table queries=q1.json,q2.json] [--table categories=cats.json] \
       [--table products=p_by_rev.json,p_by_prev_rev.json] [--table brands=brands.json] \
-      [--trend trend.json --offset-days 7] [--top 8]
+      [--trend trend.json --offset-days 7] [--top N]
 
 Inputs:
   overall / search / category / device files: get_discovery_overall_performance,
@@ -38,6 +38,9 @@ Parent totals: queries -> search card; categories -> category card;
 products and brands -> overall card. If the parent card isn't given, the table's own
 row total is used and coverage is reported as unknown.
 
+The thresholds (list length, trend outliers, concentration, step changes and noise) live in
+references/rules.json, shared with apps that compute the same numbers.
+
 Standard library only; no network access.
 """
 import argparse
@@ -46,6 +49,10 @@ import json
 import math
 import statistics
 import sys
+from pathlib import Path
+
+# The thresholds live in references/rules.json, shared with apps that compute the same numbers.
+RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
 
 KEYS = {"queries": "query", "categories": "category", "products": "product_title", "brands": "brand"}
 ID_KEYS = {"categories": "cat_id", "products": "prod_id"}
@@ -129,9 +136,10 @@ def split(r0, v0, o0, r1, v1, o1):
         "conversion": L * math.log(cr1 / cr0),
         "order_value": L * math.log(aov1 / aov0),
     }
-    # Remove floating-point dust so the parts sum to the delta exactly.
-    parts["order_value"] += delta - sum(parts.values())
-    return {k: round(v, 2) for k, v in parts.items()} | {"unsplit": 0.0}
+    # The order-value part takes the rounding, so the three rounded parts add up to the change to the cent.
+    traffic, conversion = round(parts["traffic"], 2), round(parts["conversion"], 2)
+    return {"traffic": traffic, "conversion": conversion,
+            "order_value": round(round(delta, 2) - traffic - conversion, 2), "unsplit": 0.0}
 
 
 def pct(a, b):
@@ -263,11 +271,12 @@ def trend_report(path, offset_days=None):
     spread = statistics.median([abs(g - med) for g in gaps]) or (statistics.pstdev(gaps) or 1)
     outliers = []
     for x in days:
-        if abs(x["gap"] - med) > 3 * spread and abs(x["gap"]) > 0:
+        if abs(x["gap"] - med) > RULES["outlier_spread_multiple"] * spread and abs(x["gap"]) > 0:
             o = dict(x)
             o["share_of_total_gap_pct"] = share(x["gap"], total_gap)
             outliers.append(o)
-    # Concentration: the fewest days that make up 80% of the total gap.
+    # Concentration: the fewest days that make up most of the total gap (concentrated_share).
+    share_needed = RULES["concentrated_share"]
     concentrated = []
     if total_gap:
         sign = 1 if total_gap > 0 else -1
@@ -277,15 +286,16 @@ def trend_report(path, offset_days=None):
                 break
             concentrated.append(x["date"])
             acc += x["gap"]
-            if acc / total_gap >= 0.8:
+            if acc / total_gap >= share_needed:
                 break
-        if acc / total_gap < 0.8 or len(concentrated) > max(1, n // 3):
+        if acc / total_gap < share_needed or len(concentrated) > max(1, n // RULES["concentrated_max_days_divisor"]):
             concentrated = []
         else:
             concentrated = {"dates": concentrated, "share_of_total_gap_pct": share(acc, total_gap)}
-    # Where does the gap shift? Best split point with at least two days on each side.
+    # Where does the gap shift? Best split point with at least step_min_side_days on each side.
     best = None
-    for k in range(2, n - 1):
+    side = RULES["step_min_side_days"]
+    for k in range(side, n - side + 1):
         before, after = gaps[:k], gaps[k:]
         diff = statistics.mean(after) - statistics.mean(before)
         sse = sum((g - statistics.mean(before)) ** 2 for g in before) + sum((g - statistics.mean(after)) ** 2 for g in after)
@@ -297,20 +307,21 @@ def trend_report(path, offset_days=None):
     # Noise: how much the previous period's days vary. The period total would wobble by
     # about sd x sqrt(n) by chance. Day-of-week patterns inflate this, which is conservative.
     # Days with no data are left out of the noise estimate.
-    sd = statistics.stdev(prev_vals) if len(prev_vals) > 2 else None
+    sd = statistics.stdev(prev_vals) if len(prev_vals) >= max(RULES["noise_min_days"], 2) else None
     noise = sd * math.sqrt(n) if sd else None
     ratio = abs(total_gap) / noise if noise else None
     if ratio is None:
         verdict = "unknown"
-    elif ratio < 1:
+    elif ratio < RULES["noise_normal_ratio"]:
         verdict = "within normal day-to-day variation"
-    elif ratio < 2:
+    elif ratio < RULES["noise_borderline_ratio"]:
         verdict = "borderline: could be noise"
     else:
         verdict = "larger than normal variation"
     step = None
     # A step must be large compared with the scatter of days on each side of it.
-    if best and n >= 6 and abs(best["shift"]) >= 2 * max(best["within_sd"], 1e-9):
+    if (best and n >= RULES["step_min_days"]
+            and abs(best["shift"]) >= RULES["step_shift_sd_multiple"] * max(best["within_sd"], 1e-9)):
         step = {k: v for k, v in best.items() if k != "sse"}
     if gaps_in_data:
         shape = (f"unreliable: {len(gaps_in_data)} day(s) missing or zero; compare complete days only "
@@ -348,7 +359,7 @@ def main():
     ap.add_argument("--device", action="append", default=[], help="name=file")
     ap.add_argument("--table", action="append", default=[], help="queries|categories|products|brands=file[,file]")
     ap.add_argument("--trend")
-    ap.add_argument("--top", type=int, default=8)
+    ap.add_argument("--top", type=int, default=RULES["top"], help="rows in each table's rising and falling lists")
     ap.add_argument("--offset-days", type=int, help="days between a current day and its comparison day "
                     "(default: inferred; pass it when using custom comparison dates)")
     a = ap.parse_args()

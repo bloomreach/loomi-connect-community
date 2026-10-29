@@ -44,5 +44,20 @@ class BriefingNumbersTest(unittest.TestCase):
         self.assertIn("queries_denied.json: Loomi Connect returned an error: [ACCESS_DENIED]", out["error"])
 
 
+    def test_contract_fixture_matches_the_script(self):
+        """contract/expected.json is what apps that port these rules test against, so it must stay the script's output."""
+        c = FIX / "contract"
+        p = run("--overall", c / "overall.json", "--search", c / "search.json", "--queries", c / "queries.json",
+                "--dead-ends", c / "dead_ends.json", "--categories", c / "categories.json",
+                "--products", c / "products.json", "--brands", c / "brands.json")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(json.loads(p.stdout), json.loads((c / "expected.json").read_text()),
+                         "the rules changed: regenerate tests/fixtures/platform/briefing/contract/expected.json")
+
+    def test_rules_file_is_complete(self):
+        rules = json.loads((SCRIPT.parent.parent / "references/rules.json").read_text())
+        self.assertEqual(set(rules["notes"]), set(rules) - {"about", "notes"})
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,432 @@
+{
+  "now": "2026-10-26T12:00:00Z",
+  "jobs_mixed.json": {
+    "now": "2026-10-26T12:00:00+00:00",
+    "status": "red",
+    "reasons": [
+      "latest index:refresh job failed",
+      "index:refresh product count fell 33%",
+      "1 failed feed:products job(s) in window",
+      "feed:products warnings: Feed data contains null values. Example product IDs: DEMO-101",
+      "1 failed index:update job(s) in window",
+      "index:update product count fell 15%",
+      "latest suggest job failure",
+      "feed:qd warnings: Some rows skipped",
+      "last product feed or index success 30h ago"
+    ],
+    "kinds": {
+      "other": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-14",
+          "status": "running",
+          "status_message": null,
+          "created_at": "2026-10-26T10:30:00Z",
+          "stopped_at": "2026-10-26T11:00:00Z"
+        },
+        "latest_success_at": null,
+        "hours_since_success": null,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "feed:products": {
+        "jobs_in_window": 3,
+        "latest": {
+          "id": "demo-job-1",
+          "status": "success",
+          "status_message": "Feed data contains null values. Example product IDs: DEMO-101",
+          "created_at": "2026-10-25T05:30:00Z",
+          "stopped_at": "2026-10-25T06:00:00Z"
+        },
+        "latest_success_at": "2026-10-25T06:00:00Z",
+        "hours_since_success": 30.0,
+        "failures": [
+          {
+            "id": "demo-job-2",
+            "status": "failure",
+            "status_message": "Timed out",
+            "created_at": "2026-10-24T19:30:00Z"
+          }
+        ],
+        "warnings": [
+          "Feed data contains null values. Example product IDs: DEMO-101"
+        ],
+        "product_doc_counts": []
+      },
+      "index:update": {
+        "jobs_in_window": 3,
+        "latest": {
+          "id": "demo-job-4",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-25T04:30:00",
+          "stopped_at": "2026-10-25T05:00:00"
+        },
+        "latest_success_at": "2026-10-25T05:00:00",
+        "hours_since_success": 31.0,
+        "failures": [
+          {
+            "id": "demo-job-6",
+            "status": "killed",
+            "status_message": null,
+            "created_at": "2026-10-23T13:30:00Z"
+          }
+        ],
+        "warnings": [],
+        "product_doc_counts": [
+          [
+            "2026-10-25T04:30:00",
+            8500
+          ],
+          [
+            "2026-10-24T04:30:00",
+            10000
+          ]
+        ]
+      },
+      "index:refresh": {
+        "jobs_in_window": 3,
+        "latest": {
+          "id": "demo-job-7",
+          "status": "failed",
+          "status_message": "Index build error",
+          "created_at": "2026-10-25T02:30:00Z",
+          "stopped_at": "2026-10-25T03:00:00Z"
+        },
+        "latest_success_at": "2026-10-24T00:00:00Z",
+        "hours_since_success": 60.0,
+        "failures": [
+          {
+            "id": "demo-job-7",
+            "status": "failed",
+            "status_message": "Index build error",
+            "created_at": "2026-10-25T02:30:00Z"
+          }
+        ],
+        "warnings": [],
+        "product_doc_counts": [
+          [
+            "2026-10-23T23:30:00Z",
+            6000
+          ],
+          [
+            "2026-10-22T23:30:00Z",
+            9000
+          ]
+        ]
+      },
+      "suggest": {
+        "jobs_in_window": 2,
+        "latest": {
+          "id": "demo-job-10",
+          "status": "failure",
+          "status_message": null,
+          "created_at": "2026-10-25T00:30:00Z",
+          "stopped_at": "2026-10-25T01:00:00Z"
+        },
+        "latest_success_at": "2026-10-24T01:00:00Z",
+        "hours_since_success": 59.0,
+        "failures": [
+          {
+            "id": "demo-job-10",
+            "status": "failure",
+            "status_message": null,
+            "created_at": "2026-10-25T00:30:00Z"
+          }
+        ],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "feed:ae": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-12",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-24T23:30:00Z",
+          "stopped_at": "2026-10-25T00:00:00Z"
+        },
+        "latest_success_at": "2026-10-25T00:00:00Z",
+        "hours_since_success": 36.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "feed:unknown": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-13",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-24T22:30:00Z",
+          "stopped_at": "2026-10-24T23:00:00Z"
+        },
+        "latest_success_at": "2026-10-24T23:00:00Z",
+        "hours_since_success": 37.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "feed:qd": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-15",
+          "status": "success",
+          "status_message": "Some rows skipped",
+          "created_at": "2026-10-24T21:30:00Z",
+          "stopped_at": "2026-10-24T22:00:00Z"
+        },
+        "latest_success_at": "2026-10-24T22:00:00Z",
+        "hours_since_success": 38.0,
+        "failures": [],
+        "warnings": [
+          "Some rows skipped"
+        ],
+        "product_doc_counts": []
+      }
+    }
+  },
+  "jobs_amber.json": {
+    "now": "2026-10-26T12:00:00+00:00",
+    "status": "amber",
+    "reasons": [
+      "feed:products warnings: Feed data contains null values. Example product IDs: DEMO-202",
+      "last product feed or index success 30h ago"
+    ],
+    "kinds": {
+      "index:update": {
+        "jobs_in_window": 2,
+        "latest": {
+          "id": "demo-job-a2",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-25T06:00:00Z",
+          "stopped_at": "2026-10-25T06:30:00Z"
+        },
+        "latest_success_at": "2026-10-25T06:30:00Z",
+        "hours_since_success": 29.5,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": [
+          [
+            "2026-10-25T06:00:00Z",
+            7000
+          ],
+          [
+            "2026-10-24T06:00:00Z",
+            7100
+          ]
+        ]
+      },
+      "feed:products": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-a1",
+          "status": "success",
+          "status_message": "Feed data contains null values. Example product IDs: DEMO-202",
+          "created_at": "2026-10-25T05:30:00Z",
+          "stopped_at": "2026-10-25T06:00:00Z"
+        },
+        "latest_success_at": "2026-10-25T06:00:00Z",
+        "hours_since_success": 30.0,
+        "failures": [],
+        "warnings": [
+          "Feed data contains null values. Example product IDs: DEMO-202"
+        ],
+        "product_doc_counts": []
+      }
+    }
+  },
+  "jobs_stale.json": {
+    "now": "2026-10-26T12:00:00+00:00",
+    "status": "red",
+    "reasons": [
+      "last product feed or index success 50h ago"
+    ],
+    "kinds": {
+      "suggest": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-19",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-26T08:30:00Z",
+          "stopped_at": "2026-10-26T09:00:00Z"
+        },
+        "latest_success_at": "2026-10-26T09:00:00Z",
+        "hours_since_success": 3.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "feed:products": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-16",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-24T09:30:00Z",
+          "stopped_at": "2026-10-24T10:00:00Z"
+        },
+        "latest_success_at": "2026-10-24T10:00:00Z",
+        "hours_since_success": 50.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "index:update": {
+        "jobs_in_window": 2,
+        "latest": {
+          "id": "demo-job-17",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-23T23:30:00Z",
+          "stopped_at": "2026-10-24T00:00:00Z"
+        },
+        "latest_success_at": "2026-10-24T00:00:00Z",
+        "hours_since_success": 60.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": [
+          [
+            "2026-10-23T23:30:00Z",
+            5000
+          ],
+          [
+            "2026-10-22T23:30:00Z",
+            5100
+          ]
+        ]
+      }
+    }
+  },
+  "jobs_no_core_success.json": {
+    "now": "2026-10-26T12:00:00+00:00",
+    "status": "red",
+    "reasons": [
+      "latest index:update job failed",
+      "no successful product feed or index job in the window"
+    ],
+    "kinds": {
+      "feed:products": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-20",
+          "status": "running",
+          "status_message": null,
+          "created_at": "2026-10-26T10:30:00Z",
+          "stopped_at": "2026-10-26T11:00:00Z"
+        },
+        "latest_success_at": null,
+        "hours_since_success": null,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "suggest": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-21",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-26T09:30:00Z",
+          "stopped_at": "2026-10-26T10:00:00Z"
+        },
+        "latest_success_at": "2026-10-26T10:00:00Z",
+        "hours_since_success": 2.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "index:update": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-22",
+          "status": "failed",
+          "status_message": "Feed missing",
+          "created_at": "2026-10-26T06:30:00Z",
+          "stopped_at": "2026-10-26T07:00:00Z"
+        },
+        "latest_success_at": null,
+        "hours_since_success": null,
+        "failures": [
+          {
+            "id": "demo-job-22",
+            "status": "failed",
+            "status_message": "Feed missing",
+            "created_at": "2026-10-26T06:30:00Z"
+          }
+        ],
+        "warnings": [],
+        "product_doc_counts": []
+      }
+    }
+  },
+  "jobs_green.json": {
+    "now": "2026-10-26T12:00:00+00:00",
+    "status": "green",
+    "reasons": [],
+    "kinds": {
+      "index:update": {
+        "jobs_in_window": 2,
+        "latest": {
+          "id": "demo-job-25",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-26T09:30:00Z",
+          "stopped_at": "2026-10-26T10:00:00Z"
+        },
+        "latest_success_at": "2026-10-26T10:00:00Z",
+        "hours_since_success": 2.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": [
+          [
+            "2026-10-26T09:30:00Z",
+            12000
+          ],
+          [
+            "2026-10-25T09:30:00Z",
+            11950
+          ]
+        ]
+      },
+      "feed:products": {
+        "jobs_in_window": 2,
+        "latest": {
+          "id": "demo-job-23",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-26T08:30:00Z",
+          "stopped_at": "2026-10-26T09:00:00Z"
+        },
+        "latest_success_at": "2026-10-26T09:00:00Z",
+        "hours_since_success": 3.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": []
+      },
+      "index:refresh": {
+        "jobs_in_window": 1,
+        "latest": {
+          "id": "demo-job-27",
+          "status": "success",
+          "status_message": null,
+          "created_at": "2026-10-25T15:30:00Z",
+          "stopped_at": "2026-10-25T16:00:00Z"
+        },
+        "latest_success_at": "2026-10-25T16:00:00Z",
+        "hours_since_success": 20.0,
+        "failures": [],
+        "warnings": [],
+        "product_doc_counts": [
+          [
+            "2026-10-25T15:30:00Z",
+            12000
+          ]
+        ]
+      }
+    }
+  }
+}

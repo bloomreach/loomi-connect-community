@@ -1,0 +1,77 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "t shirt",
+    "browse_sessions": 1000,
+    "prev_browse_sessions": 900,
+    "visits": 1000,
+    "product_page_views": 3000,
+    "revenue": "$3,000.00",
+    "conversion_rate": "3.0%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "jeans",
+    "browse_sessions": 800,
+    "prev_browse_sessions": 820,
+    "visits": 800,
+    "product_page_views": 2400,
+    "revenue": "$2,400.00",
+    "conversion_rate": "2.5%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "swimwear",
+    "browse_sessions": 600,
+    "prev_browse_sessions": 300,
+    "visits": 600,
+    "product_page_views": 1500,
+    "revenue": "$1,200.00",
+    "conversion_rate": "2.0%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "sneakers",
+    "browse_sessions": 500,
+    "prev_browse_sessions": 480,
+    "visits": 500,
+    "product_page_views": 1600,
+    "revenue": "$1,500.00",
+    "conversion_rate": "3.1%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "cropped trousers",
+    "browse_sessions": 400,
+    "prev_browse_sessions": 350,
+    "visits": 400,
+    "product_page_views": 900,
+    "revenue": "$800.00",
+    "conversion_rate": "2.2%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "hats",
+    "browse_sessions": 300,
+    "prev_browse_sessions": 310,
+    "visits": 300,
+    "product_page_views": 500,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "dress",
+    "browse_sessions": 200,
+    "prev_browse_sessions": 260,
+    "visits": 200,
+    "product_page_views": 700,
+    "revenue": "$500.00",
+    "conversion_rate": "2.6%",
+    "bounce_rate": "60%"
+   }
+  ]
+ }
+}

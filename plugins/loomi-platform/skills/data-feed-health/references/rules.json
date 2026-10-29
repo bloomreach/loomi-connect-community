@@ -1,0 +1,33 @@
+{
+  "about": "The data feed health thresholds. scripts/discovery_jobs_summary.py reads this file, and so do apps that rate the same data, so change a rule here and nowhere else. Each key is explained under notes; references/rag-thresholds.md says how they fit together.",
+  "pixel_period_hours": 24,
+  "pixel_amber_issue_pct": 1,
+  "pixel_red_issue_pct": 20,
+  "pixel_amber_volume_ratio": 0.75,
+  "pixel_red_volume_ratio": 0.5,
+  "core_pixel_types": ["product-pageview", "category-pageview", "search-pageview", "conversion-pageview", "atc-event", "search-event"],
+  "jobs_limit": 50,
+  "success_status": "success",
+  "failed_statuses": ["failure", "failed", "killed"],
+  "core_kinds": ["feed:products", "index:update", "index:refresh"],
+  "stale_hours": 48,
+  "aging_share": 0.5,
+  "count_drop_amber_pct": 10,
+  "count_drop_red_pct": 30,
+  "notes": {
+    "pixel_period_hours": "Hours of pixel traffic read for issue rates (get_pixel_health_status period_hours).",
+    "pixel_amber_issue_pct": "A pixel type with at least this percentage of its events flagged is amber.",
+    "pixel_red_issue_pct": "A core pixel type with at least this percentage of its events flagged is red.",
+    "pixel_amber_volume_ratio": "A pixel type whose count over pixel_period_hours is below this share of its 7-day daily average is amber.",
+    "pixel_red_volume_ratio": "A pixel type whose count over pixel_period_hours is below this share of its 7-day daily average is red.",
+    "core_pixel_types": "Pixel types every site should send. Only these go red on issue rate; add suggest-event and the widget-* events if the site uses autosuggest or recommendation widgets.",
+    "jobs_limit": "Catalog jobs read per catalog (search_discovery_catalog_jobs limit): the window the job rules look at.",
+    "success_status": "The job status that counts as a successful run.",
+    "failed_statuses": "Job statuses that count as a failed run.",
+    "core_kinds": "Job kinds that keep the product catalog current. The latest of these failing is red (other kinds amber), and their freshest success sets staleness.",
+    "stale_hours": "No success of any core kind for more than this many hours is red (also --stale-hours).",
+    "aging_share": "No success of any core kind for more than this share of stale_hours is amber.",
+    "count_drop_amber_pct": "A fall of at least this percentage in product_doc_count between a kind's two latest successful jobs is amber.",
+    "count_drop_red_pct": "A fall of at least this percentage in product_doc_count between a kind's two latest successful jobs is red."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "about": "The weekly briefing's thresholds. scripts/briefing_numbers.py reads this file, and so do apps that compute the same numbers, so change a rule here and nowhere else. Each key is explained under notes.",
+  "min_visits": 100,
+  "min_sessions": 30,
+  "movers_top": 3,
+  "list_top": 10,
+  "issue_top": 5,
+  "peers": 20,
+  "low_conversion_ratio": 0.75,
+  "high_bounce_ratio": 1.25,
+  "high_bounce_min_points": 10,
+  "revenue_drop_ratio": 0.75,
+  "revenue_drop_min": 1000,
+  "dead_end_bounce_pct": 90,
+  "notes": {
+    "min_visits": "Categories, products and brands with fewer visits than this in both periods are left out.",
+    "min_sessions": "Searches with fewer sessions than this in both periods are left out.",
+    "movers_top": "Rows in each rising and falling movers list.",
+    "list_top": "Rows in the top searches and top categories lists.",
+    "issue_top": "Rows in the searches and categories with issues lists.",
+    "peers": "A row is judged against the median of this many highest-traffic rows.",
+    "low_conversion_ratio": "Conversion below this share of the typical conversion is an issue.",
+    "high_bounce_ratio": "Bounce above this multiple of the typical bounce is an issue, when it is also high_bounce_min_points or more above it.",
+    "high_bounce_min_points": "See high_bounce_ratio.",
+    "revenue_drop_ratio": "Revenue below this share of last period's is an issue, when the drop is also revenue_drop_min or more.",
+    "revenue_drop_min": "See revenue_drop_ratio, in the account's currency.",
+    "dead_end_bounce_pct": "A row with no product views and at least this bounce rate is a dead end."
+  }
+}

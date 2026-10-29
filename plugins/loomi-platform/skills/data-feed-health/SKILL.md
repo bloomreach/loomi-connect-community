@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery; optionally Data Hub and Engagement).
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.1.4"
   products: discovery,datahub,engagement
   access: read-only
 ---
@@ -64,18 +64,18 @@ Run each script as one plain command from your own working folder, giving the sc
 
 1. Call `get_pixel_health_status` with `period_hours=24`. It returns page-view pixels and event pixels, each with `event_count`, `issue_count`, `issue_rate_pct` and `top_issues`.
 2. Call it again with `period_hours=168` (7 days) to get a baseline. Compare each type's 24-hour count with its 7-day daily average (7-day count ÷ 7). Longer windows can leave `top_issues` empty even at a 100% issue rate, so read the issue keys from the 24-hour call.
-3. Rate each pixel type with the thresholds in [references/rag-thresholds.md](references/rag-thresholds.md). In short:
-   - **Red:** a core type has an issue rate of 20% or more, or no events at all although the site has traffic, or fell by more than 50% against its daily average.
-   - **Amber:** an issue rate from 1% to 20%, or a fall of 25–50%.
-   - **Green:** below 1% and steady.
+3. Rate each pixel type with the thresholds in [references/rules.json](references/rules.json), as [references/rag-thresholds.md](references/rag-thresholds.md) explains. In short:
+   - **Red:** a core type has an issue rate of `pixel_red_issue_pct` or more, or no events at all although the site has traffic, or its count is below `pixel_red_volume_ratio` of its daily average.
+   - **Amber:** an issue rate of `pixel_amber_issue_pct` or more, or a count below `pixel_amber_volume_ratio` of its daily average.
+   - **Green:** below `pixel_amber_issue_pct` and steady.
    Core types are `product-pageview`, `category-pageview`, `search-pageview`, `conversion-pageview`, `atc-event` and `search-event`. Types with zero events, such as `content-pageview`, `thematic-pageview`, `quickview-event` or the `*-impressions-pageview` types, are often simply not implemented: list them as "not in use", not as red, unless the user expects them.
 4. For each red or amber type, call `get_pixel_event_stream` with `display_types=[<type>]`, `status_keys=[<top issue>]`, `max_events=5` and the same period. Note the device spread.
-5. Call `get_pixel_event_details` for **one** sample event (its `pixel_id` and `timestamp`) to see which parameter causes the issue, for example a missing `catalogs` parameter or an invalid `url`. Explain the issue in plain words using [references/rag-thresholds.md](references/rag-thresholds.md).
+5. Call `get_pixel_event_details` for **one** sample event (its `pixel_id` and `timestamp`) to see which parameter causes the issue, for example a missing `catalogs` parameter or an invalid `url`. Explain the issue in plain words, with its fix, from [references/pixel-fixes.json](references/pixel-fixes.json).
 
 ### 3. Discovery catalog
 
 1. Call `search_discovery_catalogs` (no `catalog_name`). For each catalog and environment, note `product_doc_count`, `last_index_refresh_at` and `data_hub_properties`. If `data_hub_properties` is not empty, the catalog is **managed by Data Hub**: check it in step 4 instead, because the Discovery job tool returns an error for Data Hub catalogs.
-2. Call `search_discovery_catalog_jobs` (via `call_tool`) with `catalog_name`, `account_name` and `limit=50`. Jobs have a `type` (`feed`, `index`, `suggest`, `other`), a `status`, timestamps, `properties.feed_data_type` (`products` is the product feed; `ae`, `qd`, `ltr` and `product_vectors` are internal signals) and `stats.product_doc_count` on index jobs.
+2. Call `search_discovery_catalog_jobs` (via `call_tool`) with `catalog_name`, `account_name` and `limit` = `jobs_limit` from [references/rules.json](references/rules.json). Jobs have a `type` (`feed`, `index`, `suggest`, `other`), a `status`, timestamps, `properties.feed_data_type` (`products` is the product feed; `ae`, `qd`, `ltr` and `product_vectors` are internal signals) and `stats.product_doc_count` on index jobs.
    - **The `status` filter may be ignored by the server.** In testing, `status="failure"` returned successful jobs. Always check each job's `status` yourself.
    - **Use the jobs, not `last_index_refresh_at`, for freshness.** That field only tracks full "refresh" indexes; daily "update" indexes can be newer.
 3. Summarise with [scripts/discovery_jobs_summary.py](scripts/discovery_jobs_summary.py) if you can run scripts:
@@ -84,9 +84,9 @@ Run each script as one plain command from your own working folder, giving the sc
    python3 <this skill's folder>/scripts/discovery_jobs_summary.py jobs.json
    ```
 
-   It reports, per job kind, the latest success, hours since it, failures, warnings and product-count changes, and suggests a RAG status. Otherwise work it out by hand:
-   - **Red:** the latest product feed or index job failed; no successful product feed or index for more than 48 hours (or twice the usual cadence); product count fell 30% or more.
-   - **Amber:** a successful job with a warning in `status_message` (for example "Feed data contains null values"); earlier failures that later succeeded; a count drop of 10–30%; last success 24–48 hours ago.
+   It reports, per job kind, the latest success, hours since it, failures, warnings and product-count changes, and suggests a RAG status using [references/rules.json](references/rules.json). Otherwise work it out by hand with those rules ([references/rag-thresholds.md](references/rag-thresholds.md) says how they fit together):
+   - **Red:** the latest product feed or index job failed; no successful product feed or index for more than `stale_hours` (or twice the usual cadence); a product count fell `count_drop_red_pct`% or more.
+   - **Amber:** a successful job with a warning in `status_message` (for example "Feed data contains null values"); earlier failures that later succeeded; a count drop of `count_drop_amber_pct`% or more; last success older than `aging_share` × `stale_hours`.
    - **Green:** recent successes on the usual cadence, no warnings, steady counts.
 4. A staging catalog with no documents is normal if the account only uses production. Mention it only if the user works in staging.
 

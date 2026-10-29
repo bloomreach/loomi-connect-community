@@ -1,11 +1,11 @@
 ---
 name: discovery-rule-audit
-description: Audits Bloomreach Discovery merchandising rules using Loomi Connect and produces a prioritised cleanup list. It covers ranking rules, media rules (banners), facet rules and redirects across site search, category and global scopes, and flags rules that are expired but still on, disabled, never-ending, duplicate or overlapping, attached to queries or categories with no traffic, or stuck in A/B tests. Use when the user asks to audit, review, clean up or tidy merchandising rules, find stale or conflicting rules, or check rule hygiene before a campaign.
+description: Audits Bloomreach Discovery merchandising rules using Loomi Connect and produces a prioritised cleanup list. It covers ranking rules, media rules (banners), facet rules and redirects across site search, category and global scopes, and flags rules that are expired but still on, failing to sync, disabled, never-ending, duplicate or overlapping, attached to queries or categories with no traffic, or stuck in A/B tests. Use when the user asks to audit, review, clean up or tidy merchandising rules, find stale or conflicting rules, or check rule hygiene before a campaign.
 license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.2.0"
   products: discovery
   access: read-only
 ---
@@ -14,7 +14,7 @@ metadata:
 
 ## What this does
 
-Lists every merchandising rule in a Discovery account or site and checks it for problems: expired rules still switched on, old disabled rules, rules with no end date that look temporary, duplicate or conflicting rules for the same query, rules on searches or categories nobody visits, and rules tied to A/B tests. The result is a cleanup list, ordered by priority, with a suggested action for each rule.
+Lists every merchandising rule in a Discovery account or site and checks it for problems: expired rules still switched on, rules whose sync failed, old disabled rules, rules with no end date that look temporary, duplicate or conflicting rules for the same query, rules on searches or categories nobody visits, and rules tied to A/B tests, including rules still marked as in a test when no test is running. The result is a cleanup list, ordered by priority, with a suggested action for each rule.
 
 This skill only audits and recommends. It never changes or deletes anything.
 
@@ -62,6 +62,7 @@ Things to know about these lists:
 
 - **Use `durationTag` to find expired rules**, not `syncStatus`. Some expired rules show `syncStatus: "EXPIRED"`, but others still show `"SUCCESS"`.
 - `syncStatus: null` means the rule was saved but never synced: usually an abandoned draft.
+- Any other `syncStatus` than `SUCCESS` or `EXPIRED` (for example `FAILED`) means the last sync failed, so what shoppers see may not match the rule.
 - **`audienceName` in the lists isn't reliable.** It can be null for a rule that does target an audience. Check audiences with `get_ranking_rule` (or `get_discovery_media_rule` or `get_facet_rule`) before you call two rules duplicates.
 - **Match type isn't in the lists.** `get_ranking_rule` shows `matchType` (`EXACT_MATCH` or `PHRASE_MATCH`) for each query.
 - Facet lists have no `durationTag`. Category rules use category IDs (for example "80200"), not names.
@@ -70,7 +71,7 @@ Things to know about these lists:
 
 1. Call `get_discovery_query_performance` with `days=90`, `page_size=1000` and `sort="visits"`. Check that `total_rows` is no more than the rows returned, and fetch more pages if it is. A rule's query that **isn't in this table** had no tracked searches in the period.
 2. Call `get_discovery_category_performance_table` with `days=90` and `page_size=500`. Rows have `cat_id` (the ID that category rules use) and `category` (the name).
-3. Call `search_discovery_experiments` with `limit=100` (all statuses). Each bucket's `ruleIdentifierInfo.id` links an experiment to a rule.
+3. Call `search_discovery_experiments` with `limit=100` (all statuses). Each bucket's `ruleIdentifierInfo.id` links an experiment to a rule. Don't skip it: without it, a rule marked `isAbTestLive: true` can't be checked against the tests that are really running.
 
 Save each response.
 
@@ -82,7 +83,7 @@ Run:
 python3 <this skill's folder>/scripts/audit_rules.py --rules <file> [--rules <file> ...] --queries <query file> --categories <category file> --experiments <experiments file> --today <YYYY-MM-DD>
 ```
 
-It prints a summary and a cleanup table. If you can't run scripts, apply the checks in [references/audit-checks.md](references/audit-checks.md) by hand.
+It prints a summary and a cleanup table. If you leave out `--experiments`, the summary says the stuck A/B test check didn't run; say so in your output. If you can't run scripts, apply the checks in [references/audit-checks.md](references/audit-checks.md) by hand.
 
 ### 5. Confirm the important findings
 
@@ -101,7 +102,7 @@ The script flags candidates. Confirm the ones that matter before you recommend a
 Group the findings into **Fix now**, **Clean up** and **Review**, using the priorities in [references/audit-checks.md](references/audit-checks.md). For every row, give the rule ID, name, type, query or category, the issue, the evidence and one suggested action.
 
 - Rules named "do not delete" or similar are **protected**. List them, but recommend asking the owner (`lastModifiedBy`) instead of deleting.
-- Rules in a running test (`isAbTestLive: true`) can't be changed until the test ends. Say so.
+- Rules in a running test (`isAbTestLive: true`) can't be changed until the test ends. Say so. If no experiment is RUNNING, the flag is stuck: say that, and still report the rule's other findings.
 - Prefer **disable** over **delete** when unsure. Disabling can be undone; deleting can't.
 
 ## Output

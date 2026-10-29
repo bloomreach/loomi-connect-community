@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.2.0"
+  version: "0.3.0"
   products: engagement
   access: writes
 ---
@@ -52,6 +52,10 @@ If a tool isn't available, find it with the Loomi Connect `search_tools` tool an
 - **One call at a time.** Engagement allows about 3 requests per second per user. Analytics (EQL) queries are limited separately to about one every 3 seconds, shared with other users of the same instance. On HTTP 429, wait 3–5 seconds and retry once.
 - **Large responses.** `get_event_schema` and `search_segmentations` can be tens of kilobytes. If the client saves them to a file, extract only the names and types you need.
 - **Never** call `list_customers`, `list_customers_in_segment`, `get_customer_properties` or `list_customer_events`. This skill describes audiences; it never looks at individual people.
+
+### Running the scripts
+
+Run each script as one plain command from your own working folder, giving the script's full path: `python3 <this skill's folder>/scripts/filter_to_eql.py` and its arguments. Pass saved tool results, and any files a script writes (`--out`, `--jsonl`, `--out-dir`), by paths in your working folder, never inside the skill's folder; a bare file name lands in the folder you run from. Don't `cd` into the skill's folder, and don't add `-I`, shell variables, `;`, redirects (`>`), `$(...)` or line breaks: some apps only allow plain commands, refuse the rest and keep skill folders read-only, and then the sums have to be done by hand. Piping the output to `jq` or `head` is fine. Some apps run no scripts at all, so the steps still work by hand.
 
 ## Steps
 
@@ -113,7 +117,18 @@ Produce three forms:
 4. If it's zero or looks wrong, follow "When the count is zero or surprising" in [references/eql-patterns.md](references/eql-patterns.md). Find out whether it's a definition problem or just no recent data.
 5. Round the number in your answer (for example "about 48,000") and give the time it was computed. Counts change as data arrives.
 
-To size a filter that already exists, such as a condition in a scenario, translate it with "Sizing an existing customer filter" in [references/eql-patterns.md](references/eql-patterns.md). Segments, predictions and aggregates can't be counted in EQL; say so rather than sizing the rest.
+To size a filter that already exists, such as a saved customer filter or a condition in a scenario, save the tool result to a file in your working folder and translate it with the script:
+
+```
+python3 <this skill's folder>/scripts/filter_to_eql.py <saved filter, condition node or scenario>.json --with-total
+```
+
+For a whole `search_scenarios` response, add `--node <condition node id>`. It prints JSON with `eql` (the `customers matching` condition, or `null` when the filter lets everyone through), `unsupported` (what stops it being counted) and `query` (the count query). `--with-total` adds a second column that counts everyone, so you can give the audience as a share of all customers; `--by <property>` changes the breakdown property (default `country`); `--out <file>` writes the JSON to a file instead.
+
+- If `unsupported` isn't empty (segments, predictions, aggregates, expressions, calculations, absolute date windows and other rules EQL can't express here), say which kinds of rule stop it and don't size the rest on its own: that would overstate the audience.
+- Otherwise check `query` with `estimate_eql_cost` and run it only as in steps 2 to 5 above. Add up each column over **all** rows: the first is the audience, the second (with `--with-total`) is everyone.
+
+If you can't run scripts, translate it by hand with "Sizing an existing customer filter" in [references/eql-patterns.md](references/eql-patterns.md), which gives the same rules.
 
 Optional, and only if the user wants it: break the audience down by one more property, with `grouping top 10`. Estimate the cost again first.
 

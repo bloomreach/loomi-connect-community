@@ -227,8 +227,8 @@ def main():
                     warnings.append(f"{node_label(n)}: variant percentages add up to {sum(shares)}%, not 100%")
         if t.startswith("wait-action") and not out_edges.get(nid):
             warnings.append(f"Dangling wait {node_label(n)}: nothing follows it, so customers just wait and leave")
-        if t == "condition" and not out_edges.get(nid):
-            warnings.append(f"{node_label(n)} leads nowhere")
+        if t in ("condition", "limit") and not out_edges.get(nid):
+            warnings.append(f"{node_label(n)} leads nowhere: none of its branches connect to a step")
     if not triggers:
         warnings.append("No trigger node")
     elif all(t.get("type") == "now-trigger" and not t.get("active") for t in triggers):

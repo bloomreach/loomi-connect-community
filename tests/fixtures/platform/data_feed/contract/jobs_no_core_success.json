@@ -1,0 +1,36 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "demo-job-20",
+    "type": "feed",
+    "status": "running",
+    "created_at": "2026-10-26T10:30:00Z",
+    "stopped_at": "2026-10-26T11:00:00Z",
+    "properties": {
+     "feed_data_type": "products"
+    }
+   },
+   {
+    "id": "demo-job-21",
+    "type": "suggest",
+    "status": "success",
+    "created_at": "2026-10-26T09:30:00Z",
+    "stopped_at": "2026-10-26T10:00:00Z",
+    "properties": {}
+   },
+   {
+    "id": "demo-job-22",
+    "type": "index",
+    "status": "failed",
+    "created_at": "2026-10-26T06:30:00Z",
+    "stopped_at": "2026-10-26T07:00:00Z",
+    "properties": {
+     "index_mode": "update"
+    },
+    "status_message": "Feed missing"
+   }
+  ]
+ }
+}

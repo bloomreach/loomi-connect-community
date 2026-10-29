@@ -1,0 +1,443 @@
+[
+  {
+    "name": "string equals",
+    "eql": "(customer.\"country\" = \"US\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"country\" = \"US\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "every string operator",
+    "eql": "(customer.\"city\" = \"York\") and (customer.\"city\" != \"York\") or (customer.\"city\" contains \"York\") and  not (customer.\"city\" does not contain \"York\") or ((customer.\"city\" starts with \"York\") and (customer.\"city\" ends with \"York\"))",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"city\" = \"York\") and (customer.\"city\" != \"York\") or (customer.\"city\" contains \"York\") and  not (customer.\"city\" does not contain \"York\") or ((customer.\"city\" starts with \"York\") and (customer.\"city\" ends with \"York\")), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "string value given as value, not operands",
+    "eql": "(customer.\"tier\" = \"gold\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"tier\" = \"gold\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "string operand with no value is empty",
+    "eql": "(customer.\"tier\" = \"\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"tier\" = \"\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "string null value can't be written",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "string unknown operator",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "string number value",
+    "eql": "(customer.\"zip\" = \"10001\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"zip\" = \"10001\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "every number operator",
+    "eql": "(customer.\"orders\" = 3) or (customer.\"orders\" != 3) or (customer.\"orders\" > 3) or (customer.\"orders\" >= 3) or (customer.\"orders\" < 3) or (customer.\"orders\" <= 3)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"orders\" = 3) or (customer.\"orders\" != 3) or (customer.\"orders\" > 3) or (customer.\"orders\" >= 3) or (customer.\"orders\" < 3) or (customer.\"orders\" <= 3), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "number coercions",
+    "eql": "(customer.\"n\" = 7) and (customer.\"n\" = 1000) and (customer.\"n\" = 16) and (customer.\"n\" = 2.5) and (customer.\"n\" = 3) and (customer.\"n\" = 0) and (customer.\"n\" = 1e-7) and (customer.\"n\" = 1e+21) and (customer.\"n\" = 2) and (customer.\"n\" = 0.5) and (customer.\"n\" = 1234567.125)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"n\" = 7) and (customer.\"n\" = 1000) and (customer.\"n\" = 16) and (customer.\"n\" = 2.5) and (customer.\"n\" = 3) and (customer.\"n\" = 0) and (customer.\"n\" = 1e-7) and (customer.\"n\" = 1e+21) and (customer.\"n\" = 2) and (customer.\"n\" = 0.5) and (customer.\"n\" = 1234567.125), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "number empty value",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "number not a number",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "number with underscores is not a number",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "number infinity",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "number boolean value",
+    "eql": "(customer.\"n\" = 1)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"n\" = 1), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "number string operator",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "boolean true and false",
+    "eql": "(customer.\"vip\" = true) or (customer.\"vip\" = false) or (customer.\"vip\" = false) or (customer.\"vip\" = true)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"vip\" = true) or (customer.\"vip\" = false) or (customer.\"vip\" = false) or (customer.\"vip\" = true), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "boolean other operator",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "date windows",
+    "eql": "(customer.\"last_order_date\" more than 30 days ago) and (customer.\"last_order_date\" less than 2 weeks ahead) and (customer.\"last_order_date\" more than 1.5 months ago) and (customer.\"last_order_date\" less than 6 hours ago)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"last_order_date\" more than 30 days ago) and (customer.\"last_order_date\" less than 2 weeks ahead) and (customer.\"last_order_date\" more than 1.5 months ago) and (customer.\"last_order_date\" less than 6 hours ago), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "date unknown units",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "date bad amount",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "date unknown operator",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "date null amount counts as zero",
+    "eql": "(customer.\"last_order_date\" more than 0 days ago)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"last_order_date\" more than 0 days ago), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "has value and no value on any type",
+    "eql": "(customer.\"email\" has value) and (customer.\"phone\" has value) and  not ((customer.\"fax\" has no value) or (customer.\"pager\" has no value))",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"email\" has value) and (customer.\"phone\" has value) and  not ((customer.\"fax\" has no value) or (customer.\"pager\" has no value)), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "unknown constraint type",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "consent given, refused and missing value",
+    "eql": "(has consent \"newsletter\") and (not has consent \"sms\") and (has consent \"push\") and (not has consent \"post\")",
+    "unsupported": [],
+    "query": "select count customers matching (has consent \"newsletter\") and (not has consent \"sms\") and (has consent \"push\") and (not has consent \"post\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "identifier",
+    "eql": "(id \"registered\" ends with \"@example.com\") or (id \"cookie\" has value)",
+    "unsupported": [],
+    "query": "select count customers matching (id \"registered\" ends with \"@example.com\") or (id \"cookie\" has value), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "identifier with a comparison that can't be written",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "event ever, no window",
+    "eql": "(exists[event \"purchase\"])",
+    "unsupported": [],
+    "query": "select count customers matching (exists[event \"purchase\"]), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "event in a window with where rules",
+    "eql": "(exists[event \"purchase\" where .\"total_price\" > 100 and .\"currency\" = \"USD\" in last 90 days])",
+    "unsupported": [],
+    "query": "select count customers matching (exists[event \"purchase\" where .\"total_price\" > 100 and .\"currency\" = \"USD\" in last 90 days]), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "did not do it in the last 30 days",
+    "eql": "(exists[event \"purchase\" in last 90 days])  and   not (exists[event \"purchase\" in last 30 days])",
+    "unsupported": [],
+    "query": "select count customers matching (exists[event \"purchase\" in last 90 days])  and   not (exists[event \"purchase\" in last 30 days]), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "funnel of several steps",
+    "eql": "(funnel(\"view_item\" followed by \"cart_update\" where .\"action\" = \"add\" followed by \"purchase\" in last 7 days))",
+    "unsupported": [],
+    "query": "select count customers matching (funnel(\"view_item\" followed by \"cart_update\" where .\"action\" = \"add\" followed by \"purchase\" in last 7 days)), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "event with a hyphenated name and property",
+    "eql": "(exists[event \"page-visit\" where .\"user-agent\" contains \"Mobile\" in last 12 hours])",
+    "unsupported": [],
+    "query": "select count customers matching (exists[event \"page-visit\" where .\"user-agent\" contains \"Mobile\" in last 12 hours]), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "absolute window",
+    "eql": null,
+    "unsupported": [
+      "some event rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "window with unknown units",
+    "eql": null,
+    "unsupported": [
+      "some event rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "window with zero count",
+    "eql": null,
+    "unsupported": [
+      "some event rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "window count as text",
+    "eql": "(exists[event \"purchase\" in last 14 days])",
+    "unsupported": [],
+    "query": "select count customers matching (exists[event \"purchase\" in last 14 days]), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "event filter on something other than a property",
+    "eql": null,
+    "unsupported": [
+      "some event rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "event filter with a comparison that can't be written",
+    "eql": null,
+    "unsupported": [
+      "some event rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "event step with no type",
+    "eql": null,
+    "unsupported": [
+      "some event rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "event rule with no steps",
+    "eql": null,
+    "unsupported": [
+      "some event rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "saved definitions, each named once",
+    "eql": null,
+    "unsupported": [
+      "predictions",
+      "segments",
+      "aggregates",
+      "expressions",
+      "calculations"
+    ],
+    "query": null
+  },
+  {
+    "name": "mixed reasons in order",
+    "eql": null,
+    "unsupported": [
+      "some event rules",
+      "some comparisons",
+      "segments",
+      "some rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "unknown attribute kind",
+    "eql": null,
+    "unsupported": [
+      "some rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "attribute kind named like a built-in",
+    "eql": null,
+    "unsupported": [
+      "some rules"
+    ],
+    "query": null
+  },
+  {
+    "name": "operator named like a built-in",
+    "eql": null,
+    "unsupported": [
+      "some comparisons"
+    ],
+    "query": null
+  },
+  {
+    "name": "no rules is everyone",
+    "eql": null,
+    "unsupported": [],
+    "query": "select count customers, count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "formula 1 is everyone",
+    "eql": null,
+    "unsupported": [],
+    "query": "select count customers, count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "empty formula is everyone",
+    "eql": null,
+    "unsupported": [],
+    "query": "select count customers, count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "missing formula is everyone",
+    "eql": null,
+    "unsupported": [],
+    "query": "select count customers, count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "formula given as the number 1",
+    "eql": null,
+    "unsupported": [],
+    "query": "select count customers, count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "formula with spaces, brackets and negation",
+    "eql": " not ((customer.\"a\" = \"1\")  or  (customer.\"b\" = \"2\")) and (customer.\"c\" = \"3\")",
+    "unsupported": [],
+    "query": "select count customers matching  not ((customer.\"a\" = \"1\")  or  (customer.\"b\" = \"2\")) and (customer.\"c\" = \"3\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "formula refers to a rule that isn't there",
+    "eql": "(customer.\"a\" = \"1\") or (false)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"a\" = \"1\") or (false), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "formula with leading zeros and a bare digit",
+    "eql": "(customer.\"b\" = \"2\") and 1",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"b\" = \"2\") and 1, count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "formula with a huge rule number",
+    "eql": "(customer.\"a\" = \"1\") or (false) or (false)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"a\" = \"1\") or (false) or (false), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "formula with words is refused",
+    "eql": null,
+    "unsupported": [
+      "its custom formula"
+    ],
+    "query": null
+  },
+  {
+    "name": "formula with a quote is refused",
+    "eql": null,
+    "unsupported": [
+      "its custom formula"
+    ],
+    "query": null
+  },
+  {
+    "name": "formula with a tab and newline",
+    "eql": "(customer.\"a\" = \"1\")\t and \n(customer.\"b\" = \"2\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"a\" = \"1\")\t and \n(customer.\"b\" = \"2\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "unsupported rule wins over a bad formula",
+    "eql": null,
+    "unsupported": [
+      "predictions"
+    ],
+    "query": null
+  },
+  {
+    "name": "quotes and backslashes can't break out",
+    "eql": "(customer.\"name\" = \"a or customer.x = b\") or (customer.\"path\" contains \"C:temp\") or (customer.\"note\" = \"padded\") or (has consent \"newsletter\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"name\" = \"a or customer.x = b\") or (customer.\"path\" contains \"C:temp\") or (customer.\"note\" = \"padded\") or (has consent \"newsletter\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "formula operators inside values and comparisons stay as written",
+    "eql": "(customer.\"band\" = \"Rock & Roll!\") or  not (customer.\"tag\" != \"a|b\") and (customer.\"my&prop!\" contains \"F1\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"band\" = \"Rock & Roll!\") or  not (customer.\"tag\" != \"a|b\") and (customer.\"my&prop!\" contains \"F1\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "unicode and line breaks in values",
+    "eql": "(customer.\"city\" = \"Zürich\") and (customer.\"note\" contains \"line1\nline2\") and (customer.\"nbsp\" = \"x\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"city\" = \"Zürich\") and (customer.\"note\" contains \"line1\nline2\") and (customer.\"nbsp\" = \"x\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "rules that aren't objects are skipped",
+    "eql": "(customer.\"a\" = \"1\")",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"a\" = \"1\"), count customers by customer.country grouping top 1 with null"
+  },
+  {
+    "name": "property name that is a number",
+    "eql": "(customer.\"42\" has value)",
+    "unsupported": [],
+    "query": "select count customers matching (customer.\"42\" has value), count customers by customer.country grouping top 1 with null"
+  }
+]

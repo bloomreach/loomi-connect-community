@@ -25,9 +25,9 @@ This file matches the evidence for each dead-end query to a class and a fix. Pic
 
 ## Sessions at stake
 
-Use: `sessions × baseline median conversion rate × baseline median average order value`.
+Use: `sessions × typical revenue per search session` (the median of revenue ÷ sessions over the 20 busiest top searches; `scripts/triage_candidates.py` prints it as `revenue_at_stake`).
 
-- It's an **upper bound** for the period. It assumes the query would convert like an average top query once fixed.
+- It's an estimate for the period, not a forecast. It assumes the query would earn like a typical top query once fixed.
 - For a catalog gap, a redirect recovers only part of it. Say "partly recoverable".
 - Show the period-on-period change in sessions too. A dead end that is growing quickly matters more than its current size suggests.
 

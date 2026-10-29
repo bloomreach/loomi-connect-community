@@ -2,10 +2,10 @@
 name: discovery-zero-results-triage
 description: Triages all of a Bloomreach Discovery account's zero-result and no-revenue search queries in one pass using Loomi Connect. It works out whether each dead-end query returns nothing or returns results nobody clicks, classifies it as a synonym or spelling fix, a catalog gap, a redirect candidate or noise, and returns a prioritised action list with the sessions at stake. Use when the user asks about zero-result searches, null or no-results queries, searches with no revenue, dead-end searches, or which failing searches to fix first.
 license: Apache-2.0
-compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
+compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery). Python 3 is optional, for the bundled scripts.
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.2.0"
   products: discovery
   access: read-only
 ---
@@ -47,11 +47,11 @@ You need the account, and optionally a site and a date range. The default is the
 
 - **Make every call one at a time.** Discovery allows 3 requests per second per user, shared with anything else the user is running. Parallel product grid calls can also return HTTP 500 errors. On a 429 or a 500, wait 2–5 seconds and retry once.
 - **Keep product grid responses small.** Always pass `fl="pid,title"`, `rows` of 5–10, and `extra_params={"facet": "false"}`, which drops the facet block. Even then a response can be 70,000+ characters, because the debug block explains every product's score. **Don't** pass `simple_debug=false` to shrink it: in testing, that returned HTTP 500 every time.
-- **If the client saves a response to a file**, run `python3 <this skill's folder>/scripts/grid_summary.py <file>` to print only the fields this skill needs. Otherwise read only the fields listed in step 3.
+- **If the client saves a response to a file**, run `python3 <this skill's folder>/scripts/grid_summary.py <file>` to print only the fields this skill needs. Otherwise read only the fields listed in step 4.
 
 ### Running the scripts
 
-Run each script as one plain command from your own working folder, giving the script's full path: `python3 <this skill's folder>/scripts/grid_summary.py` and its arguments. Pass saved tool results, and any files a script writes (`--out`, `--jsonl`, `--out-dir`), by paths in your working folder, never inside the skill's folder; a bare file name lands in the folder you run from. Don't `cd` into the skill's folder, and don't add `-I`, shell variables, `;`, redirects (`>`), `$(...)` or line breaks: some apps only allow plain commands, refuse the rest and keep skill folders read-only, and then the sums have to be done by hand. Piping the output to `jq` or `head` is fine. Some apps run no scripts at all, so the steps still work by hand.
+Run each script as one plain command from your own working folder, giving the script's full path: `python3 <this skill's folder>/scripts/triage_candidates.py` or `python3 <this skill's folder>/scripts/grid_summary.py` and its arguments. Pass saved tool results, and any files a script writes (`--out`, `--jsonl`, `--out-dir`), by paths in your working folder, never inside the skill's folder; a bare file name lands in the folder you run from. Don't `cd` into the skill's folder, and don't add `-I`, shell variables, `;`, redirects (`>`), `$(...)` or line breaks: some apps only allow plain commands, refuse the rest and keep skill folders read-only, and then the sums have to be done by hand. Piping the output to `jq` or `head` is fine. Some apps run no scripts at all, so the steps still work by hand.
 
 ## Steps
 
@@ -77,11 +77,33 @@ For each remaining query, record sessions, product page views, add-to-cart, boun
 | **Dead end** | product page views = 0 and bounce rate = 100% |
 | **No sale** | some product page views or add-to-cart, but no conversions |
 
-**Set the threshold for "meaningful".** Keep queries with at least 30 sessions in the period, or at least 0.1% of the top query's sessions, whichever is lower. Put the rest straight into **Noise**, but list them by count.
+**Set the threshold for "meaningful".** A query is **Noise** when it has fewer sessions than `min_sessions` in [references/rules.json](references/rules.json) (5), or fewer than 2 letters and digits, or digits only. Put those straight into Noise, but list them by count.
 
-Also call `get_discovery_query_performance` with `filter_preset="top_searched"` and `page_size=20` once. From it, work out the baseline **median conversion rate** and **median average order value**. You need these for the sessions-at-stake estimate.
+Also call `get_discovery_query_performance` with `sort="browse_sessions"` and `page_size=100` once: the top searches. The ones with revenue are the **selling searches** a misspelling is matched against. From the 20 busiest, work out the **typical revenue per search session**: the median of revenue ÷ sessions. You need it for the revenue at stake.
 
-### 3. Look at what shoppers actually get
+### 3. Pre-triage: suggest a likely fix (suggestions only)
+
+Call `search_redirects` with `limit=100` and `list_synonyms_user` with `limit=100`, one at a time (step 6 uses them too). If the client saved the five results to files, run:
+
+`python3 <this skill's folder>/scripts/triage_candidates.py --no-results <no_search_results file> --no-revenue <no_revenue file> --top <top searches file> --synonyms <synonyms file> --redirects <redirects file> --out triage.json`
+
+It prints a summary and writes every dead-end query to `triage.json`, highest revenue at stake first, with its symptom (`no_results` or `no_sales`), sessions, `revenue_at_stake`, and a **suggested** class:
+
+| Suggested class | What the data says | What to check in step 4 |
+|---|---|---|
+| `spelling_twin` | Equal to a selling search once spaces and punctuation are dropped, or 1 edit away (2 for 8+ characters). `twin` names it | The twin's grid returns what this shopper meant |
+| `page_intent` | A no-results search for a page: returns, tracking, store hours, gift cards and the other words in `rules.json` | Which page fits, then treat as a redirect candidate |
+| `covered_by_redirect` | An enabled redirect already lists it | The redirect's page still exists and fits |
+| `noop_synonym` | Its only user synonym points back at itself | What the catalog calls it |
+| `synonym_no_results` | It has a synonym to another word and still finds nothing | Likely a catalog gap; confirm with other wordings |
+| `noise` | As defined in step 2 | Nothing |
+| `none` | No suggestion. For `no_sales`, start with what ranks first | Everything, as below |
+
+A `no_revenue` query with no product views counts as `no_results`: the `no_search_results` preset misses most zero-result queries.
+
+**These are suggestions only.** The script reads names and numbers, never the results shoppers see, so it can't tell a real spelling twin from a different product with a similar name ("sneaker" vs "speaker"). Steps 4 and 5 still decide every class and fix from the product grid. Use the suggestions to order that work and to pick the first wording to try. The script changes nothing, and nor does this step. Without Python, apply the same rules by hand.
+
+### 4. Look at what shoppers actually get
 
 For each meaningful query, highest sessions first, call `search_discovery_product_grid_insights` with the query, `fl="pid,title"`, `rows=10` and `extra_params={"facet": "false"}`. Record:
 
@@ -103,7 +125,7 @@ This tells you **why** the query is a dead end:
 
 **Watch for blocking rules.** If a query-specific `algo` rule sets `query_relaxation` to `"off"` and `query_spellcorrect` to `"off"` while the global rule has them on, the rule can force zero results. Re-run the grid with that rule's ID in `disabled_customization_ids` to see what shoppers would get without it. The rule is still listed in `customizations.explain` when disabled, so compare `numFound` and the titles, not the rule list. If many dead-end queries each have their own near-identical rule, report them as **one pattern**, not separately.
 
-### 4. Test other wordings
+### 5. Test other wordings
 
 For each query that isn't clearly noise, run the product grid for **2–3 other wordings**, one at a time:
 
@@ -120,21 +142,23 @@ Then classify:
 - **Redirect candidate**: the query is about a page or service, or it's a gap where a nearby category would help (for example "cummerbund" → men's suits).
 - **Noise**: decided in step 2.
 
-### 5. Check existing fixes
+Where step 3 suggested a class, say whether the grid confirmed it. Don't report a suggestion the grid contradicts.
 
-One call each:
+### 6. Check existing fixes
+
+Reuse the step 3 results, or make one call each:
 
 - `search_redirects` with `limit=100`: does a redirect already cover any of these queries?
 - `list_synonyms_user` with `limit=100`: is there already a synonym for the query? Flag **no-op synonyms** whose source and target are the same (for example "corset → corset"). They do nothing, and they suggest someone tried to fix the query without success.
 - Optionally, `search_discovery_experiments` with `experiment_statuses="RUNNING"`. Changes are blocked while a test runs.
 
-### 6. Prioritise
+### 7. Prioritise
 
-For each actionable query, estimate the **sessions at stake** and an upper-bound revenue:
+For each actionable query, give the **sessions at stake** and the revenue at stake:
 
-  sessions × baseline median conversion rate × baseline median average order value
+  sessions × typical revenue per search session (from step 2)
 
-Present it as an upper bound for the period, not a forecast. For catalog gaps, a redirect recovers only part of it; say so.
+This is the script's `revenue_at_stake`. Present it as what these searches would earn at the typical rate for the period, not a forecast. For catalog gaps, a redirect recovers only part of it; say so.
 
 Order the list by:
 
@@ -154,7 +178,7 @@ Read [references/triage-playbook.md](references/triage-playbook.md) for the evid
 
 **Pattern found:** <e.g. "8 queries each have their own search-settings rule that turns off relaxation and spell-correct"> (omit if none)
 
-| # | Query | Sessions (change) | What shoppers get | Class | Fix | At stake (upper bound) |
+| # | Query | Sessions (change) | What shoppers get | Class | Fix | At stake |
 |---|---|---|---|---|---|---|
 | 1 | ... | 929 (+77%) | 0 results | Synonym fix | capris → cropped trousers (one-way) | ~$X |
 

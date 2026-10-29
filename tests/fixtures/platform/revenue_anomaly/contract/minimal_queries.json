@@ -1,0 +1,43 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "sofa",
+    "revenue": 900,
+    "prev_revenue": 1200,
+    "visits": 100,
+    "prev_visits": 110,
+    "conversions": 9,
+    "prev_conversions": 11
+   },
+   {
+    "query": "rug",
+    "revenue": 400,
+    "prev_revenue": 450,
+    "visits": 80,
+    "prev_visits": 82,
+    "conversions": 5,
+    "prev_conversions": 6
+   },
+   {
+    "query": "lamp",
+    "revenue": 300,
+    "prev_revenue": 250,
+    "visits": 60,
+    "prev_visits": 50,
+    "conversions": 4,
+    "prev_conversions": 3
+   },
+   {
+    "query": "desk",
+    "revenue": 200,
+    "prev_revenue": 260,
+    "visits": 40,
+    "prev_visits": 45,
+    "conversions": 2,
+    "prev_conversions": 3
+   }
+  ]
+ }
+}

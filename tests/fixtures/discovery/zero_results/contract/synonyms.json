@@ -1,0 +1,25 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "id": 1,
+    "sourceSynonym": "corset",
+    "targetSynonym": "corset",
+    "enabled": true
+   },
+   {
+    "id": 2,
+    "sourceSynonym": "capris",
+    "targetSynonym": "cropped trousers, capri",
+    "enabled": true
+   },
+   {
+    "id": 3,
+    "sourceSynonym": "bikini",
+    "targetSynonym": "swimwear",
+    "enabled": false
+   }
+  ]
+ }
+}

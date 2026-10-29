@@ -1,0 +1,38 @@
+{
+  "about": "Discovery pixel issue keys (the status_key in get_pixel_health_status top_issues) seen in testing, with their likely meaning and the usual fix, written for a merchandiser to pass on. Apps read this file too, so change a fix here and nowhere else. Confirm the cause with get_pixel_event_details on one sample event before reporting it.",
+  "issues": {
+    "catalogs_required": {
+      "meaning": "The pixel doesn't send the catalogs parameter that this account or page type requires.",
+      "fix": "The pixel on these pages doesn't send the catalogs parameter. Ask your site developers to add it."
+    },
+    "cat_id_required": {
+      "meaning": "A category page view without a category ID.",
+      "fix": "Category page views arrive without a category ID. Ask your site developers to send cat_id and cat on every category page."
+    },
+    "cat_required": {
+      "meaning": "A category page view without a category name.",
+      "fix": "Category page views arrive without a category name. Ask your site developers to send cat_id and cat on every category page."
+    },
+    "url_invalid": {
+      "meaning": "The page URL is malformed or missing.",
+      "fix": "The page address sent is missing or malformed. Ask your site developers to send the full, encoded page URL."
+    },
+    "ref_invalid": {
+      "meaning": "The referrer is malformed or missing.",
+      "fix": "The referrer sent is missing or malformed. Ask your site developers to send the full, encoded referrer."
+    },
+    "missing_uid": {
+      "meaning": "No _br_uid_2 cookie value, so the visit can't be tied to a visitor.",
+      "fix": "Visits arrive without the tracking cookie, so they can't be tied to a visitor. Check the cookie is set before the pixel fires, including after consent."
+    },
+    "cdp_segments_invalid": {
+      "meaning": "The segment value in the cookie couldn't be parsed.",
+      "fix": "The segment value in the tracking cookie couldn't be read. This is usually low volume; ask your site developers to look only if it grows."
+    },
+    "cookie2_cdp_segments_invalid": {
+      "meaning": "The segment value in the cookie couldn't be parsed.",
+      "fix": "The segment value in the tracking cookie couldn't be read. This is usually low volume; ask your site developers to look only if it grows."
+    }
+  },
+  "fallback_fix": "Ask your site developers to fix the pixel on these pages; until then, reports that rely on it undercount."
+}

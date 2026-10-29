@@ -68,7 +68,7 @@ Analytics queries have their own rate limit, about **one every 3 seconds**, whic
 
 ## Sizing an existing customer filter
 
-To size a filter that already exists, such as a scenario condition's `customer_filter`, translate each atom into a `customers matching` condition, then join them with its `formula`. Checked against a demo project.
+To size a filter that already exists, such as a scenario condition's `customer_filter`, run `scripts/filter_to_eql.py` (see SKILL.md step 6), which applies exactly these rules. By hand: translate each atom into a `customers matching` condition, then join them with its `formula`. Checked against a demo project.
 
 | Atom | EQL |
 |---|---|
@@ -82,8 +82,10 @@ To size a filter that already exists, such as a scenario condition's `customer_f
 | `funnel_steps` with one step | `exists[event "<type>" where .<p> <cmp> and ... in last <n> <units>]` (drop `in last` when `date_filter.enabled` is false) |
 | `funnel_steps` with several steps | `funnel("<a>" where ... followed by "<b>" ... in last <n> <units>)` |
 
-Then rewrite the formula: each `F<n>` becomes `(<atom n>)`, `&` → `and`, `|` → `or`, `!` → `not`. An empty formula or `1` means everyone.
+Then rewrite the formula: `&` → `and`, `|` → `or`, `!` → `not`, then each `F<n>` becomes `(<atom n>)`. Rewrite the operators **before** putting the atoms in, or an atom's own `!=` and any `&`, `|` or `!` inside a value get rewritten too. An `F<n>` with no atom n becomes `(false)`. An empty formula or `1` means everyone. A formula with anything other than `F<n>`, `&`, `|`, `!`, brackets and spaces isn't one Engagement wrote: don't size it.
+
+To give the audience as a share of everyone, count both in one query and add up each column over all rows: `select count customers matching <condition>, count customers by customer.<low_cardinality_property> grouping top 1 with null`.
 
 Some atoms **can't be sized in EQL**, because they point at saved definitions by ID: `segmentation`, `prediction`, `aggregate`, `expression` and `embedded_aggregate` (an inline calculation). Event steps whose filters compare with another attribute can't either. For those, say the filter can't be counted outside Engagement and name which kinds of rule stop it. Don't size the rest of the filter on its own and present that as the answer: it would overstate the audience.
 
-Quote names with double quotes, and strip any `"` or `\` from values first.
+Quote names and values with double quotes, after removing any `"` or `\` from them and trimming spaces at the ends.

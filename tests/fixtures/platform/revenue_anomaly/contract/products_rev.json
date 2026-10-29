@@ -1,0 +1,51 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "product_title": "Harbor 3-seat sofa",
+    "revenue": "$12,400.00",
+    "prev_revenue": "$16,900.00",
+    "visits": 800,
+    "prev_visits": 900,
+    "conversions": 9,
+    "prev_conversions": 12,
+    "prod_id": "P100",
+    "brand": "Northwind"
+   },
+   {
+    "product_title": "Oak dining table",
+    "revenue": "$6,300.00",
+    "prev_revenue": "$8,100.00",
+    "visits": 520,
+    "prev_visits": 510,
+    "conversions": 7,
+    "prev_conversions": 9,
+    "prod_id": "P200",
+    "brand": "Fieldhouse"
+   },
+   {
+    "product_title": "Arc floor lamp",
+    "revenue": "$3,900.00",
+    "prev_revenue": "$2,800.00",
+    "visits": 610,
+    "prev_visits": 590,
+    "conversions": 26,
+    "prev_conversions": 20,
+    "prod_id": "P300",
+    "brand": "Lumen & Co"
+   },
+   {
+    "product_title": "Jute area rug",
+    "revenue": "$3,100.00",
+    "prev_revenue": "$3,300.00",
+    "visits": 700,
+    "prev_visits": 820,
+    "conversions": 15,
+    "prev_conversions": 16,
+    "prod_id": "P400",
+    "brand": "Fieldhouse"
+   }
+  ]
+ }
+}

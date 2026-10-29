@@ -53,21 +53,23 @@ Each channel, device or row can then be split into traffic, conversion and order
 
 ## Is it more than noise?
 
+The thresholds below are named by their key in [rules.json](rules.json), which `scripts/decompose_change.py` reads; take the values from there.
+
 From the daily trend:
 
 1. Gap for each day = current day − the previous-period day the same number of days earlier as the period length (so the same weekday for 7-day multiples). **Pair by date, not by position:** `get_discovery_trend` leaves out days with no data, so the lists can be different lengths. Treat a missing or $0 day as a data gap, not as a real fall.
 2. Total gap = sum of daily gaps = the card change.
-3. Noise band ≈ standard deviation of the previous period's daily values × √(number of days).
-4. **change ÷ noise band** below 1: within normal variation; 1–2: borderline; above 2: larger than normal.
+3. Noise band ≈ standard deviation of the previous period's daily values × √(number of days). With fewer than `noise_min_days` days of data, the noise is unknown.
+4. **change ÷ noise band** below `noise_normal_ratio`: within normal variation; below `noise_borderline_ratio`: borderline; at or above it: larger than normal.
 
 This is a rough guide, not a significance test. Weekday patterns inflate the standard deviation, which makes the test conservative.
 
 ## Dating the change
 
 - **Data gaps:** any missing or $0 day. Report these first; they make the rest unreliable.
-- **Step:** the split point (with at least two days each side) where the mean daily gap shifts most. Report it only if the shift is at least twice the scatter of the days around their side's mean, and the period has at least 6 days.
-- **Concentrated:** a few days (no more than a third of the period) make up at least 80% of the change. Look at what happened on those dates, and on the matching comparison dates.
-- **One-off days:** days whose gap is far (more than three median absolute deviations) from the typical gap.
+- **Step:** the split point (with at least `step_min_side_days` days each side) where the mean daily gap shifts most. Report it only if the shift is at least `step_shift_sd_multiple` times the scatter of the days around their side's mean, and the period has at least `step_min_days` days.
+- **Concentrated:** the fewest days that make up at least `concentrated_share` of the change, when they are no more than one in `concentrated_max_days_divisor` days of the period (at least one day). Look at what happened on those dates, and on the matching comparison dates.
+- **One-off days:** days whose gap is more than `outlier_spread_multiple` median absolute deviations from the median daily gap.
 - **Spread evenly:** none of the above.
 
 With only 7 days, a step is weak evidence. Look at a 28-day trend before naming a date with confidence.

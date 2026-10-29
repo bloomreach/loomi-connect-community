@@ -61,6 +61,34 @@ class DecomposeChangeTest(unittest.TestCase):
         self.assertIn("Loomi Connect returned an error: [ACCESS_DENIED]", out["error"])
         self.assertIn("don't treat it as 'nothing found'", out["error"])
 
+    def contract(self):
+        """Each run in contract/runs.json, run from the contract folder (its paths are relative to it)."""
+        c = FIX / "contract"
+        out = {}
+        for name, args in json.loads((c / "runs.json").read_text())["runs"].items():
+            p = subprocess.run([sys.executable, str(SCRIPT), *args], cwd=c, capture_output=True, text=True)
+            self.assertEqual(p.returncode, 0, f"{name}: {p.stderr}")
+            out[name] = json.loads(p.stdout)
+        return out
+
+    def test_contract_fixture_matches_the_script(self):
+        """contract/expected.json is what apps that port these rules test against, so it must stay the script's output."""
+        self.assertEqual(self.contract(), json.loads((FIX / "contract/expected.json").read_text()),
+                         "the rules changed: regenerate tests/fixtures/platform/revenue_anomaly/contract/expected.json")
+
+    def test_parts_add_up_to_the_cent(self):
+        for name, out in self.contract().items():
+            segs = [out["overall"], *out.get("channels", {}).values(), *out.get("devices", {}).get("by_device", {}).values()]
+            segs += [i for t in out.get("tables", {}).values() for i in t["falling"] + t["rising"]]
+            for s in segs:
+                if isinstance(s, dict) and "parts" in s:
+                    total = sum(v for v in s["parts"].values() if v is not None)
+                    self.assertAlmostEqual(total, s["delta"], places=6, msg=f"{name}: {s.get('name')}")
+
+    def test_rules_file_is_complete(self):
+        rules = json.loads((SCRIPT.parent.parent / "references/rules.json").read_text())
+        self.assertEqual(set(rules["notes"]), set(rules) - {"about", "notes"})
+
 
 if __name__ == "__main__":
     unittest.main()

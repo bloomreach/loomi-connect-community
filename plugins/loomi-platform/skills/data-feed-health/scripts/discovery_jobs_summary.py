@@ -10,15 +10,20 @@ The tool's `status` filter may be ignored by the server, so this script filters 
 Prints JSON with, for each job kind (feed:products, index:update, suggest, ...):
 the latest job, the latest success, hours since that success, failures in the window,
 warnings in status messages, and product-count changes between index jobs.
-Also prints a suggested red/amber/green status for the catalog. Standard library only;
-no network access.
+Also prints a suggested red/amber/green status for the catalog, using the thresholds in
+references/rules.json. Standard library only; no network access.
 """
 import argparse
 import json
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
-FAILED = {"failure", "failed", "killed"}
+# The thresholds live in references/rules.json, shared with apps that rate the same jobs.
+RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
+FAILED = set(RULES["failed_statuses"])
+SUCCESS = RULES["success_status"]
+CORE = tuple(RULES["core_kinds"])
 
 
 def ts(v):
@@ -50,6 +55,11 @@ def load(paths):
     return sorted(jobs.values(), key=lambda j: j.get("created_at") or "", reverse=True)
 
 
+def message(j):
+    """A job's status message; blank or whitespace is none."""
+    return str(j.get("status_message") or "").strip()
+
+
 def kind(j):
     props = j.get("properties") or {}
     t = j.get("type") or "other"
@@ -64,7 +74,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("jobs", nargs="+")
     ap.add_argument("--now", help="ISO timestamp to measure age against (default: current UTC time)")
-    ap.add_argument("--stale-hours", type=float, default=48, help="age of last product feed or index that counts as red")
+    ap.add_argument("--stale-hours", type=float, default=RULES["stale_hours"],
+                    help="age of last product feed or index that counts as red (default: references/rules.json)")
     a = ap.parse_args()
     try:
         now = ts(a.now) if a.now else datetime.now(timezone.utc)
@@ -78,9 +89,9 @@ def main():
 
     out, reasons = {}, {"red": [], "amber": []}
     for k, js in kinds.items():
-        ok = [j for j in js if j.get("status") == "success"]
+        ok = [j for j in js if j.get("status") == SUCCESS]
         bad = [j for j in js if j.get("status") in FAILED]
-        warn = [j for j in js if j.get("status") == "success" and j.get("status_message")]
+        warn = [j for j in ok if message(j)]
         last_ok = ok[0] if ok else None
         age = None
         if last_ok:
@@ -94,10 +105,10 @@ def main():
             "latest_success_at": last_ok and (last_ok.get("stopped_at") or last_ok.get("created_at")),
             "hours_since_success": age,
             "failures": [{f: j.get(f) for f in ("id", "status", "status_message", "created_at")} for j in bad],
-            "warnings": sorted({j["status_message"] for j in warn}),
+            "warnings": sorted({message(j) for j in warn}),
             "product_doc_counts": counts[:5],
         }
-        core = k in ("feed:products", "index:update", "index:refresh")
+        core = k in CORE
         if js[0].get("status") in FAILED:
             reasons["red" if core else "amber"].append(f"latest {k} job {js[0].get('status')}")
         elif bad:
@@ -106,16 +117,16 @@ def main():
             reasons["amber"].append(f"{k} warnings: {'; '.join(out[k]['warnings'])[:200]}")
         if len(counts) >= 2 and counts[1][1]:
             drop = (counts[1][1] - counts[0][1]) / counts[1][1] * 100
-            if drop >= 10:
-                reasons["red" if drop >= 30 else "amber"].append(f"{k} product count fell {drop:.0f}%")
+            if drop >= RULES["count_drop_amber_pct"]:
+                reasons["red" if drop >= RULES["count_drop_red_pct"] else "amber"].append(f"{k} product count fell {drop:.0f}%")
 
-    fresh = [out[k]["hours_since_success"] for k in ("feed:products", "index:update", "index:refresh")
+    fresh = [out[k]["hours_since_success"] for k in CORE
              if k in out and out[k]["hours_since_success"] is not None]
     if not fresh:
         reasons["red"].append("no successful product feed or index job in the window")
     elif min(fresh) > a.stale_hours:
         reasons["red"].append(f"last product feed or index success {min(fresh):.0f}h ago")
-    elif min(fresh) > a.stale_hours / 2:
+    elif min(fresh) > a.stale_hours * RULES["aging_share"]:
         reasons["amber"].append(f"last product feed or index success {min(fresh):.0f}h ago")
 
     status = "red" if reasons["red"] else "amber" if reasons["amber"] else "green"

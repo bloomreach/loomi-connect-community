@@ -1,0 +1,67 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "tshirt",
+    "browse_sessions": 120,
+    "prev_browse_sessions": 100,
+    "visits": 120,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "linen shirt",
+    "browse_sessions": 150,
+    "prev_browse_sessions": 90,
+    "visits": 150,
+    "product_page_views": 240,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "track my order",
+    "browse_sessions": 110,
+    "prev_browse_sessions": 100,
+    "visits": 110,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   },
+   {
+    "query": "sneaker",
+    "browse_sessions": 60,
+    "prev_browse_sessions": 50,
+    "visits": 60,
+    "product_page_views": 30,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "returns policy",
+    "browse_sessions": 40,
+    "prev_browse_sessions": 35,
+    "visits": 40,
+    "product_page_views": 12,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "60%"
+   },
+   {
+    "query": "old query",
+    "browse_sessions": 0,
+    "prev_browse_sessions": 40,
+    "visits": 0,
+    "product_page_views": 0,
+    "revenue": "$0.00",
+    "conversion_rate": "0%",
+    "bounce_rate": "100%"
+   }
+  ]
+ }
+}
