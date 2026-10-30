@@ -22,6 +22,8 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [engagement-scenario-builder](skills/engagement-scenario-builder/) | Builds or changes a scenario from a plain-English description, saved as a draft after confirmation | **Writes** |
 | [convert-klaviyo-email-to-bloomreach](skills/convert-klaviyo-email-to-bloomreach/) | Migrates Klaviyo email exports into editable Visual Builder emails, saved as draft scenarios after confirmation | **Writes** |
 | [engagement-scenario-performance](skills/engagement-scenario-performance/) | Step-by-step results for one scenario: sends, clicks, purchases after, split assignments | Read-only |
+| [engagement-jinja-writer](skills/engagement-jinja-writer/) | Writes and fixes Bloomreach Jinja for weblayers, emails and scenarios, checked against the rules that break templates, with real asset IDs looked up | Read-only |
+| [engagement-weblayer-builder](skills/engagement-weblayer-builder/) | Builds, edits and fixes weblayer HTML, CSS and JavaScript on the platform skeleton, fully parameterised, reading the existing weblayer first | Read-only |
 | [scenario-qa](skills/scenario-qa/) | Pre-launch QA of one scenario's emails, SMS and push: links, Jinja, compliance and flow, with a go/no-go verdict | Read-only |
 | [onsite-experience-audit](skills/onsite-experience-audit/) | Expired, overlapping, untested or abandoned banners, weblayers and surveys | Read-only |
 | [engagement-experiment-readout](skills/engagement-experiment-readout/) | A/B test results for scenarios and campaigns: call a winner, keep running or stop | Read-only |
