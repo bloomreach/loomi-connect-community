@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Bloomreach Jinja Writer"
+  short_description: "Writes and fixes Bloomreach Engagement Jinja that follows the platform's rules"
+policy:
+  # Read-only: it only returns code and looks up asset definitions.
+  allow_implicit_invocation: true
