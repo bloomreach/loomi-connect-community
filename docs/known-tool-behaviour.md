@@ -183,7 +183,9 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
   - fails with "Email integration is not set" when the project has no default email integration;
   - never renders `event.*` variables.
 - `import_media_file` takes public URLs only, and images up to 2 MB. Its schema doesn't type `variants.original.dimensions`.
-- Banners have only active and inactive statuses. `search_banners` list mode has no schedule fields. Some web layers track a custom event instead of `banner`, and breakdowns of the `banner` event are "very_high" beyond 7 days.
+- Banners have only active and inactive statuses. `search_banners` list mode has no schedule fields, and banner details don't include smart triggering conditions (`trigger` holds page targeting only).
+- `search_banners` list mode returns live banners only, up to 200 per page (`limit`, `offset`). Archived banners need a separate call with `archived=true`. Passing `archived=null` was rejected as a non-boolean in Claude Code. Responses include `archived_items_exists`, but it isn't in the tool's schema, so don't rely on it.
+- In a banner's details, each entry in `variants[]` holds the source code (`html`, `style`, `script`, with `[[ ]]` parameters in place) and a copy with the current values filled in (`parametrized_parts.html`, `.style`, `.script`). Current values are in `params`. Edit the source; the filled-in copy has lost its parameters. Some web layers track a custom event instead of `banner`, and breakdowns of the `banner` event are "very_high" beyond 7 days.
 
 **Scenarios and segments**
 - The top-level `trigger` is `null`; the trigger is a node. List records don't show the trigger type, although the `trigger_types` filter works. Scenario lists have no run history.
