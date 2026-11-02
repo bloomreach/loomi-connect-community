@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server with Bloomreach Engagement, and optionally Bloomreach Discovery. Python 3 is optional, for the bundled date and weekly-peak scripts. Web search is optional, for checking moving holiday dates.
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.1.4"
   products: discovery,engagement
   access: read-only
 ---

@@ -94,6 +94,32 @@ class KlaviyoToBloomreachTest(unittest.TestCase):
         self.assertEqual(result["changes"]["{{ first_name }} shorthand -> customer property"], 2)
         self.assertIn("<title>Hi {{ customer.first_name }}, you left something</title>", html)
 
+    def render(self, html, context):
+        """Run render-check on built HTML with a context; return its JSON result."""
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "email.html").write_text(html, encoding="utf-8")
+            (Path(tmp) / "ctx.json").write_text(json.dumps(context), encoding="utf-8")
+            r = subprocess.run([sys.executable, str(SCRIPT), "render-check", "--html", "email.html", "--context", "ctx.json",
+                                "--venv", VENV], cwd=tmp, capture_output=True, text=True)
+        return json.loads(r.stdout)
+
+    def test_default_replaces_empty_values(self):
+        # Klaviyo's default replaces any empty value; Bloomreach's only does with true.
+        _, html = self.convert("export_cart.html")
+        self.assertIn("customer.first_name | default('there', true)", html)
+        out = self.render(html, {"customer": {"first_name": None}})
+        self.assertTrue(out["ok"], out)
+        # The body line has a default in the export; the subject line doesn't, so it's left as is.
+        self.assertIn("Hi there, your cart", out["visible_text_preview"])
+        self.assertNotIn("Hi None, your cart", out["visible_text_preview"])
+
+    def test_cart_loop_guards_empty_aggregate(self):
+        # An empty aggregate renders as the string 'None'; looping over it would iterate its letters.
+        _, html = self.convert("export_cart.html")
+        self.assertIn("aggregates['aaaaaaaaaaaaaaaaaaaaaaaa'] != 'None'", html)
+        out = self.render(html, {"aggregates": {"aaaaaaaaaaaaaaaaaaaaaaaa": "None"}, "catalogs": {"products": {}}})
+        self.assertTrue(out["ok"], out)
+
 
 if __name__ == "__main__":
     unittest.main()

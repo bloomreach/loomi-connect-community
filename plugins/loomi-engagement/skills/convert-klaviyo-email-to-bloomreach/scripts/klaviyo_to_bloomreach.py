@@ -317,7 +317,8 @@ def analyze(path, out_dir):
              "default_font": rules.get("h1", {}).get("font-family", "Arial, sans-serif")}
     import os
     os.makedirs(out_dir, exist_ok=True)
-    json.dump(model, open(f"{out_dir}/model.json", "w"), indent=1)
+    with open(f"{out_dir}/model.json", "w", encoding="utf-8") as fh:
+        json.dump(model, fh, indent=1)
 
     # ---------------- report
     text_all = raw
@@ -390,8 +391,8 @@ class Translator:
         return f"customer.{p}" if re.fullmatch(r"[A-Za-z_]\w*", p) else f"customer['{p}']"
 
     def django_filters(self, s):
-        s2 = re.sub(r"\|\s*default:\s*(['\"])(.*?)\1", r" | default(\1\2\1)", s)
-        s2 = re.sub(r"\|\s*default:\s*([\w.]+)", r" | default(\1)", s2)
+        s2 = re.sub(r"\|\s*default:\s*(['\"])(.*?)\1", r" | default(\1\2\1, true)", s)
+        s2 = re.sub(r"\|\s*default:\s*([\w.]+)", r" | default(\1, true)", s2)
         s2 = re.sub(r"\|\s*floatformat:\s*0\b", r" | float | round(0) | int", s2)
         s2 = re.sub(r"\|\s*floatformat:\s*(\d+)", r" | float | round(\1)", s2)
         s2 = re.sub(r"\|\s*floatformat\b", r" | float | round(1)", s2)
@@ -503,8 +504,10 @@ class Translator:
                     f"Cart loop reads the triggering event (event.{lists[klist]}), so each run shows only that event's snapshot "
                     "and previews may show a single item. Prefer an aggregate of the last cart event's list "
                     "(mapping.event_list_aggregates) — see references/klaviyo-syntax.md.")
-            return ("{%% for product in %s %%}{%% set item = catalogs.%s.item_by_id(%s) %%}{%% if item %%}%s{%% endif %%}{%% endfor %%}"
-                    % (source, cat, pid, body))
+            # An empty aggregate renders as the string 'None', which is truthy, so guard before looping.
+            return ("{%% if %s and %s != 'None' %%}{%% for product in %s %%}{%% set item = catalogs.%s.item_by_id(%s) %%}"
+                    "{%% if item %%}%s{%% endif %%}{%% endfor %%}{%% endif %%}"
+                    % (source, source, source, cat, pid, body))
         h, n = loop.subn(rw_loop, h); self.note("event loop + {% catalog %} -> catalogs.<catalog>.item_by_id()", n)
         h, n = re.subn(r"\{%\s*currency_format\s+([^%]+?)\s*%\}", lambda mo: cur + "{{ '%.2f' | format(" + mo.group(1) + " | float) }}", h); self.note("{% currency_format x %} -> formatted number", n)
 
@@ -787,7 +790,10 @@ def html_module(b, ctx):
     return ""
 
 def build(args):
-    model = json.load(open(args.model)); mapping = json.load(open(args.mapping)); meta = json.load(open(args.meta))
+    def load(p):
+        with open(p, encoding="utf-8") as fh:
+            return json.load(fh)
+    model, mapping, meta = load(args.model), load(args.mapping), load(args.meta)
     tr = Translator(mapping)
     keep_mobile = bool(mapping.get("keep_mobile_variants"))
     image_map = mapping.get("image_map", {})
@@ -979,8 +985,10 @@ def build(args):
 
     import os
     os.makedirs(args.out_dir, exist_ok=True)
-    json.dump(bee, open(f"{args.out_dir}/bee.json", "w"), ensure_ascii=False)
-    open(f"{args.out_dir}/email.html", "w", encoding="utf-8").write(email_html)
+    with open(f"{args.out_dir}/bee.json", "w", encoding="utf-8") as fh:
+        json.dump(bee, fh, ensure_ascii=False)
+    with open(f"{args.out_dir}/email.html", "w", encoding="utf-8") as fh:
+        fh.write(email_html)
     s = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     open(f"{args.out_dir}/payload.json", "w", encoding="utf-8").write(s)
     result = {"ok": not tr.errors, "rows": len(rows_bee), "payload_chars": len(s),
@@ -994,7 +1002,8 @@ def build(args):
 # ----------------------------------------------------------------------------------------------
 def render_check(args):
     import jinja2, jinja2.sandbox
-    ctxd = json.load(open(args.context))
+    with open(args.context, encoding="utf-8") as fh:
+        ctxd = json.load(fh)
     undefined = []
     class Rec(jinja2.ChainableUndefined):
         def __str__(self):

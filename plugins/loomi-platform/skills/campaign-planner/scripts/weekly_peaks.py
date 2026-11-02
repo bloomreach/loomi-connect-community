@@ -119,7 +119,7 @@ def main():
     p.add_argument("--json", action="store_true")
     a = p.parse_args()
 
-    with open(a.file) as fh:
+    with open(a.file, encoding="utf-8") as fh:
         data = json.load(fh)
     err = tool_error(data)
     if err:
@@ -150,7 +150,7 @@ def main():
 
     moments = []
     if a.moments:
-        with open(a.moments) as fh:
+        with open(a.moments, encoding="utf-8") as fh:
             moments = [m for m in json.load(fh).get("moments", []) if m.get("date")]
 
     # Only the first and last weeks can be cut off by the window. A short week in the middle

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement) and Python 3 with beautifulsoup4 and jinja2 (installed with pip into a virtual environment in step 0; needs a client that can install packages).
 metadata:
   author: jeffbird13-bloomreach
-  version: "1.0.1"
+  version: "1.0.2"
   products: engagement
   access: writes
 ---

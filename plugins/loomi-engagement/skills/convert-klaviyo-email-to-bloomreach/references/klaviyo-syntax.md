@@ -8,16 +8,16 @@ syntax but not yet seen in a real export — verify the first time you meet it a
 ## Template tags
 
 Klaviyo uses Django-style templates. Bloomreach uses Jinja. Filters with a colon argument
-(`|default:'x'`) must become call syntax (`| default('x')`).
+(`|default:'x'`) must become call syntax (`| default('x', true)`). Klaviyo's `default` replaces any empty value; Bloomreach's only does that with `true`.
 
 | Klaviyo | Bloomreach | Status |
 |---|---|---|
-| `{{ person.first_name\|default:'friend' }}` | `{{ customer.first_name \| default('friend') }}` (property name from `get_mapping`) | tested |
+| `{{ person.first_name\|default:'friend' }}` | `{{ customer.first_name \| default('friend', true) }}` (property name from `get_mapping`) | tested |
 | `{{ person.<prop> }}` (last_name, email, phone_number, city, region, country, zip) | `{{ customer.<mapped prop> }}` | handled |
 | `{{ person\|lookup:'Custom Prop' }}` | `{{ customer.<mapped> }}` or `{{ customer['Mapped Prop'] }}` | handled |
 | `{{ first_name }}` (shorthand, older templates) | `{{ customer.first_name }}` | handled |
 | `{% if person.x == 'y' %}…{% endif %}` | same, with `customer.<mapped>` | handled |
-| `\|default:'x'`, `\|lookup:'k'`, `\|floatformat:2`, `\|truncatechars:n`, `\|upper/lower/title` | `\| default('x')`, `['k']`, `\| float \| round(2)`, `\| truncate(n)`, same | handled |
+| `\|default:'x'`, `\|lookup:'k'`, `\|floatformat:2`, `\|truncatechars:n`, `\|upper/lower/title` | `\| default('x', true)`, `['k']`, `\| float \| round(2)`, `\| truncate(n)`, same | handled |
 | `{{ organization.name }}` | `{{ project_variables.<ref> }}` or literal | tested |
 | `{{ organization.full_address }}` | project variable or literal — **required**; build fails if missing | tested |
 | `{{ organization.url }}` | site URL (literal or project variable) | tested |
