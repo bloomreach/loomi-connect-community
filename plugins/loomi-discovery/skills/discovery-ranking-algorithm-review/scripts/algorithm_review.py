@@ -30,7 +30,9 @@ from pathlib import Path
 
 # The thresholds live in references/rules.json, so a rule changes in one place.
 RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
-PRIORITY = ("fix now", "review", "clean up")
+# The same priority words as discovery-rule-audit.
+FIX_NOW, REVIEW, CLEAN_UP = "high", "medium", "low"
+PRIORITY = (FIX_NOW, REVIEW, CLEAN_UP)
 PERF_TYPES = {"PERF", "SEG_PERF"}
 TRAINED_PREFIXES = ("ML_", "ABR_")
 CUSTOM_TYPES = {"MANUAL", "ML_LINEAR_CUSTOM", "ABR_MANUAL", "ABR_CATALOG"}
@@ -45,6 +47,16 @@ def fail(msg):
     sys.exit(1)
 
 
+def tool_error(text):
+    """A Loomi Connect error, safe to show: an unknown account name can make a tool list every account the user
+    can access, so an error that mentions an account and reads like a list isn't repeated."""
+    text = str(text or "no error text")
+    if "account" in text.lower() and text.count(",") >= 3:
+        return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list other "
+                "accounts. Ask the user to check the account name.")
+    return "Loomi Connect returned an error: " + (text if len(text) <= 200 else text[:200] + "…") + "."
+
+
 def load(path):
     try:
         with open(path, encoding="utf-8") as f:
@@ -53,8 +65,7 @@ def load(path):
         fail(f"{path}: can't read JSON ({e})")
     for d in (doc, doc.get("result") if isinstance(doc, dict) else None):
         if isinstance(d, dict) and d.get("success") is False:
-            fail(f"{path}: Loomi Connect returned an error: {d.get('error') or 'no error text'}. "
-                 "This check couldn't run; don't treat it as 'nothing found'.")
+            fail(f"{path}: {tool_error(d.get('error'))} This check couldn't run; don't treat it as 'nothing found'.")
     if isinstance(doc, dict) and isinstance(doc.get("result"), dict):
         doc = doc["result"]
     return doc
@@ -71,25 +82,56 @@ def rows_of(path):
     return d if isinstance(d, list) else []
 
 
+# number() is copied verbatim from discovery-zero-results-triage/scripts/triage_candidates.py.
+MISSING = {"", "na", "n/a", "-", "−", "—", "–", "null", "none", "nan"}
+
+
 def number(v):
-    """A number from 1234, "$1,234.50" or "10.00%"; None when missing or unreadable."""
-    if v in (None, ""):
+    """A number from a tool value ("$1,000.00", "2.50%", "(12.00)"), or None when missing or not a number."""
+    if v is None or isinstance(v, bool):
         return None
-    try:
-        return float(re.sub(r"[^0-9.\-]", "", str(v)))
-    except ValueError:
+    if isinstance(v, (int, float)):
+        return float(v) if math.isfinite(v) else None
+    if not isinstance(v, str):
         return None
+    s = v.strip()
+    if s.lower() in MISSING:
+        return None
+    negative = False
+    if s.startswith("(") and s.endswith(")"):
+        negative, s = True, s[1:-1].strip()
+    if s[:1] in ("−", "–"):
+        s = "-" + s[1:]
+    if s.startswith("-"):
+        negative, s = not negative, s[1:]
+    s = re.sub(r"[$£€,%\s]", "", s)
+    m = re.match(r"[+]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?", s)
+    if not m:
+        return None
+    x = float(m.group(0))
+    if not math.isfinite(x):
+        return None
+    return -x if negative else x
 
 
 def norm(text):
     return re.sub(r"\s+", " ", str(text or "").strip().lower())
 
 
-def pair(arg, flag):
-    if "=" not in arg:
-        fail(f"{flag} takes NAME=FILE, got {arg!r}")
-    name, path = arg.rsplit("=", 1)
+def name_file(arg):
+    """argparse type for NAME=FILE: splits on the first "=", so a file path may contain "="."""
+    name, sep, path = arg.partition("=")
+    if not sep or not name.strip() or not path:
+        raise argparse.ArgumentTypeError(f"takes NAME=FILE, got {arg!r}")
     return norm(name), path
+
+
+def iso_day(text):
+    """argparse type for YYYY-MM-DD, as a UTC midnight."""
+    try:
+        return datetime.strptime(text, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"must be YYYY-MM-DD, got {text!r}")
 
 
 def day(ms):
@@ -99,16 +141,29 @@ def day(ms):
 # ---------------------------------------------------------------------------------------------
 # Inputs
 
+def check_record(a, path):
+    """Stop with the file and field when an algorithm record can't be read."""
+    if not isinstance(a, dict):
+        fail(f"{path}: an algorithm entry isn't an object")
+    for field in ("lastModifiedAt", "createdAt"):
+        v = a.get(field)
+        if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float))):
+            fail(f"{path}: algorithm {a.get('id')!r} has a {field} that isn't epoch milliseconds ({str(v)[:40]!r})")
+    return a
+
+
 def load_algorithms(paths, detail_paths):
     algos = {}
     for p in paths:
         d = data_of(load(p))
         for a in d if isinstance(d, list) else []:
+            check_record(a, p)
             algos[a.get("id")] = dict(a)
     for p in detail_paths:
         d = data_of(load(p))
         if not isinstance(d, dict) or d.get("id") is None:
             fail(f"{p}: not a search_ranking_algorithms detail (fetch one algorithm with algorithm_id and family)")
+        check_record(d, p)
         algos[d["id"]] = dict(algos.get(d["id"], {}), **d, _detail=True)
     if not algos:
         fail("No algorithms in the --algorithms files. Save the search_ranking_algorithms list for KEYWORD and CATEGORY.")
@@ -221,41 +276,37 @@ def effective(seen, scope_kind):
     return max(general, key=lambda s: SPECIFICITY.get(s["query_type"], 0)) if general else None
 
 
-def main():
-    sys.stdout.reconfigure(encoding="utf-8")  # names can hold any character; Windows consoles default to cp1252
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--algorithms", action="append", default=[], required=True,
-                    help="saved search_ranking_algorithms list (repeat for KEYWORD and CATEGORY)")
-    ap.add_argument("--detail", action="append", default=[], help="saved search_ranking_algorithms detail (repeat)")
-    ap.add_argument("--query-grid", action="append", default=[], help="QUERY=saved product grid for that query (repeat)")
-    ap.add_argument("--category-grid", action="append", default=[],
-                    help="CATEGORY_ID=saved product grid with search_by=category (repeat)")
-    ap.add_argument("--queries", help="saved get_discovery_query_performance result")
-    ap.add_argument("--categories", help="saved get_discovery_category_performance_table result")
-    ap.add_argument("--today", help="YYYY-MM-DD to judge ages against (default: today, UTC)")
-    ap.add_argument("--out", help="also write the JSON result to this file")
-    a = ap.parse_args()
-    try:
-        today = datetime.strptime(a.today, "%Y-%m-%d").replace(tzinfo=timezone.utc) if a.today else datetime.now(timezone.utc)
-    except ValueError:
-        fail("--today must be YYYY-MM-DD")
-    now_ms = today.timestamp() * 1000
+def check_assignment(s, kind, scope, eff, by_ref, usage, f):
+    """Record one assignment rule against its algorithm, and flag missing or wrong-type algorithms."""
+    refs = by_ref.get(s["algo_id"])
+    if not refs:
+        f.add(FIX_NOW, "missing algorithm", s["algo_id"],
+              f"Rule {s['rule_id']} on {kind.lower()} '{scope}' applies algorithm {s['algo_id']}, which isn't in "
+              "Ranking Studio's list (deleted, or in another catalog).",
+              "Point the rule at an existing algorithm, or remove it (discovery-change-qa first).")
+        return
+    match = [al for al in refs if al.get("searchType") == kind]
+    target = match[0] if match else refs[0]
+    usage[target["id"]].append(dict(s, effective=bool(eff and eff["rule_id"] == s["rule_id"])))
+    if s["query_type"] == "global":
+        other = "CATEGORY" if target.get("searchType") == "KEYWORD" else "KEYWORD"
+        f.add(REVIEW, "cross-type", label(target),
+              f"Global rule {s['rule_id']} applies this {target.get('searchType')} algorithm to both search and "
+              f"category pages, so {other.lower()} pages get an algorithm built for the other kind of page.",
+              "Use a sitesearch_global and a category_global rule, each with a matching algorithm.")
+    elif not match:
+        f.add(FIX_NOW, "cross-type", label(target),
+              f"Rule {s['rule_id']} applies this {target.get('searchType')} algorithm to {kind.lower()} '{scope}'.",
+              f"Apply a {kind} algorithm instead (discovery-change-qa first).")
 
-    algos = load_algorithms(a.algorithms, a.detail)
-    by_ref = {}
-    for al in algos.values():
-        by_ref.setdefault(al.get("algoId"), []).append(al)
-    qperf = perf_index(a.queries, ("query",))
-    cperf = perf_index(a.categories, ("cat_id", "category"))
-    f = Findings()
-    not_checked = []
 
-    # ---- where each algorithm is used, from the sampled grids
+def resolve_scopes(query_grids, category_grids, algos, by_ref, qperf, cperf, f, not_checked):
+    """Which algorithm ranks each sampled query and category, and every assignment rule seen on them.
+    Returns (usage {algorithm id: [assignments]}, scopes [one per sampled page])."""
     usage = {al_id: [] for al_id in algos}
     scopes = []
-    for kind, args, perf in (("KEYWORD", a.query_grid, qperf), ("CATEGORY", a.category_grid, cperf)):
-        for arg in args:
-            scope, path = pair(arg, "--query-grid" if kind == "KEYWORD" else "--category-grid")
+    for kind, grids, perf in (("KEYWORD", query_grids, qperf), ("CATEGORY", category_grids, cperf)):
+        for scope, path in grids:
             seen, shown_name = assignments(path, kind, scope)
             eff = effective(seen, kind)
             if eff:
@@ -271,26 +322,7 @@ def main():
                            "via": eff, "visits": visits, "revenue": revenue,
                            "conversions": (visits or 0) * conv / 100 if visits is not None and conv is not None else None})
             for s in seen:
-                refs = by_ref.get(s["algo_id"])
-                if not refs:
-                    f.add("fix now", "missing algorithm", s["algo_id"],
-                          f"Rule {s['rule_id']} on {kind.lower()} '{scope}' applies algorithm {s['algo_id']}, which isn't in "
-                          "Ranking Studio's list (deleted, or in another catalog).",
-                          "Point the rule at an existing algorithm, or remove it (discovery-change-qa first).")
-                    continue
-                match = [al for al in refs if al.get("searchType") == kind]
-                target = match[0] if match else refs[0]
-                usage[target["id"]].append(dict(s, effective=bool(eff and eff["rule_id"] == s["rule_id"])))
-                if s["query_type"] == "global":
-                    other = "CATEGORY" if target.get("searchType") == "KEYWORD" else "KEYWORD"
-                    f.add("review", "cross-type", label(target),
-                          f"Global rule {s['rule_id']} applies this {target.get('searchType')} algorithm to both search and "
-                          f"category pages, so {other.lower()} pages get an algorithm built for the other kind of page.",
-                          "Use a sitesearch_global and a category_global rule, each with a matching algorithm.")
-                elif not match:
-                    f.add("fix now", "cross-type", label(target),
-                          f"Rule {s['rule_id']} applies this {target.get('searchType')} algorithm to {kind.lower()} '{scope}'.",
-                          f"Apply a {kind} algorithm instead (discovery-change-qa first).")
+                check_assignment(s, kind, scope, eff, by_ref, usage, f)
             if not candidates and not eff:
                 not_checked.append(f"{kind.lower()} '{scope}': couldn't tell which algorithm applies (no assignment rule and no "
                                    "algorithm marked Default).")
@@ -298,60 +330,75 @@ def main():
                 usage[al_id].append({"scope": scope, "scope_kind": kind, "algo_id": algos[al_id].get("algoId"),
                                      "rule_id": None, "rule_type": "default", "query_type": None, "audiences": [],
                                      "in_test": False, "effective": True})
-    if not a.query_grid and not a.category_grid:
+    if not query_grids and not category_grids:
         not_checked.append("Usage: no product grids were given, so nothing shows which algorithm each query or category uses.")
+    return usage, scopes
 
-    # ---- per-algorithm checks
+
+def check_status(al, lab, used, age_days, has_grids, f):
+    """Error, stuck training or sync, unused and stale checks for one algorithm. Returns whether it's in use."""
+    status = al.get("status") or ""
+    in_use = bool(used) or status == "Default"
+    if status == "Error" or al.get("failureMessage"):
+        f.add(FIX_NOW if in_use else REVIEW, "error", lab,
+              "Status Error" + (f": {al['failureMessage']}" if al.get("failureMessage") else "") +
+              (" and it's in use, so those pages may fall back or rank badly." if in_use else "."),
+              "Retrain or repair it in Ranking Studio; if it's not needed, stop using it and remove it.")
+    if status == "In Training" and age_days is not None and age_days >= RULES["training_stuck_days"]:
+        f.add(REVIEW, "stuck training", lab, f"In Training for about {age_days:.0f} days.",
+              "Check the training in Ranking Studio; trained models usually finish in 24-48 hours.")
+    if status == "Syncing" and age_days is not None and age_days * 24 >= RULES["syncing_stuck_hours"]:
+        f.add(REVIEW, "stuck sync", lab, f"Syncing for about {age_days * 24:.0f} hours.",
+              "Check the weight sync in Ranking Studio; it usually takes about 20 minutes.")
+    if not used and status != "Default" and has_grids:
+        f.add(CLEAN_UP, "not seen in use", lab,
+              "No sampled query or category uses it. It may still serve other queries, categories or audiences.",
+              "Check its rules in Ranking Studio before removing it; Discovery refuses to delete an algorithm a rule still uses.")
+    if in_use and (al.get("type") or "") in CUSTOM_TYPES and age_days is not None and age_days >= RULES["stale_days"]:
+        f.add(REVIEW, "stale", lab, f"In use, and unchanged for about {age_days / 365:.1f} years.",
+              "Check its weights still suit today's catalog, or A/B test it against the default (discovery-experiment-setup).")
+    return in_use
+
+
+def check_weights(ws, lab, in_use, f):
+    """Dominant, missing-shopper, zero-revenue, custom and flat-signal checks on a weight summary."""
+    top = ws["top"][0]
+    if top["share"] >= RULES["dominance_share"]:
+        f.add(REVIEW, "dominant signal", lab, f"{top['signal']} has {top['share']:.0%} of the weight.",
+              "Confirm one signal should drive the ranking; test a more balanced version first.")
+    if in_use and ws["performance_share"] < RULES["min_performance_share"]:
+        f.add(REVIEW, "ignores shoppers", lab,
+              f"Shopper-behaviour signals have only {ws['performance_share']:.0%} of the weight.",
+              "Confirm it's meant to ignore views, add-to-carts and sales (for example a text-only algorithm).")
+    if ws["revenue_share"] is not None and ws["revenue_share"] <= RULES["zero_weight"] and ws["performance_share"] > RULES["min_performance_share"]:
+        f.add(REVIEW, "revenue at zero", lab, "Revenue signals are weighted to zero while other shopper signals count.",
+              "Confirm leaving out revenue is deliberate.")
+    for c in ws["custom"]:
+        if c["share"] >= RULES["custom_signal_share"]:
+            f.add(REVIEW, "custom signal", lab, f"Custom signal {c['signal']} has {c['share']:.0%} of the weight.",
+                  "Confirm a catalog attribute should drive the ranking this much; A/B test it first.")
+    if ws["zero_range_text_signals"]:
+        n = ws["zero_range_text_signals"]
+        f.add(CLEAN_UP, "flat signals", lab,
+              f"{len(n)} text signal(s) never varied in training, e.g. {', '.join(n[:RULES['max_listed']])}.",
+              "The field may be missing or unmapped in the catalog; check the feed (product-data-audit).")
+
+
+def review_algorithms(algos, usage, scopes, now_ms, has_grids, f, not_checked):
+    """Per-algorithm checks. Returns (output entries, weight summaries by algorithm id)."""
     out_algos, summaries = [], {}
     for al_id, al in sorted(algos.items(), key=lambda kv: (kv[1].get("searchType") or "", norm(kv[1].get("name")))):
         lab, status = label(al), al.get("status") or ""
         changed = al.get("lastModifiedAt") or al.get("createdAt")
         age_days = (now_ms - changed) / 86_400_000 if changed else None
         used = usage[al_id]
-        in_use = bool(used) or status == "Default"
-        if status == "Error" or al.get("failureMessage"):
-            f.add("fix now" if in_use else "review", "error", lab,
-                  "Status Error" + (f": {al['failureMessage']}" if al.get("failureMessage") else "") +
-                  (" and it's in use, so those pages may fall back or rank badly." if in_use else "."),
-                  "Retrain or repair it in Ranking Studio; if it's not needed, stop using it and remove it.")
-        if status == "In Training" and age_days is not None and age_days >= RULES["training_stuck_days"]:
-            f.add("review", "stuck training", lab, f"In Training for about {age_days:.0f} days.",
-                  "Check the training in Ranking Studio; trained models usually finish in 24-48 hours.")
-        if status == "Syncing" and age_days is not None and age_days * 24 >= RULES["syncing_stuck_hours"]:
-            f.add("review", "stuck sync", lab, f"Syncing for about {age_days * 24:.0f} hours.",
-                  "Check the weight sync in Ranking Studio; it usually takes about 20 minutes.")
-        if not used and status != "Default" and (a.query_grid or a.category_grid):
-            f.add("clean up", "not seen in use", lab,
-                  "No sampled query or category uses it. It may still serve other queries, categories or audiences.",
-                  "Check its rules in Ranking Studio before removing it; Discovery refuses to delete an algorithm a rule still uses.")
-        if in_use and (al.get("type") or "") in CUSTOM_TYPES and age_days is not None and age_days >= RULES["stale_days"]:
-            f.add("review", "stale", lab, f"In use, and unchanged for about {age_days / 365:.1f} years.",
-                  "Check its weights still suit today's catalog, or A/B test it against the default (discovery-experiment-setup).")
+        in_use = check_status(al, lab, used, age_days, has_grids, f)
         ws = weight_summary(al) if al.get("_detail") else None
         if al.get("_detail") is None and (al.get("type") or "").startswith(TRAINED_PREFIXES + ("MANUAL",)) and in_use:
             not_checked.append(f"Weights of {lab}: no detail fetched.")
         if ws:
             summaries[al_id] = ws
-            top = ws["top"][0]
-            if top["share"] >= RULES["dominance_share"]:
-                f.add("review", "dominant signal", lab, f"{top['signal']} has {top['share']:.0%} of the weight.",
-                      "Confirm one signal should drive the ranking; test a more balanced version first.")
-            if in_use and ws["performance_share"] < RULES["min_performance_share"]:
-                f.add("review", "ignores shoppers", lab,
-                      f"Shopper-behaviour signals have only {ws['performance_share']:.0%} of the weight.",
-                      "Confirm it's meant to ignore views, add-to-carts and sales (for example a text-only algorithm).")
-            if ws["revenue_share"] is not None and ws["revenue_share"] <= RULES["zero_weight"] and ws["performance_share"] > RULES["min_performance_share"]:
-                f.add("review", "revenue at zero", lab, "Revenue signals are weighted to zero while other shopper signals count.",
-                      "Confirm leaving out revenue is deliberate.")
-            for c in ws["custom"]:
-                if c["share"] >= RULES["custom_signal_share"]:
-                    f.add("review", "custom signal", lab, f"Custom signal {c['signal']} has {c['share']:.0%} of the weight.",
-                          "Confirm a catalog attribute should drive the ranking this much; A/B test it first.")
-            if ws["zero_range_text_signals"]:
-                n = ws["zero_range_text_signals"]
-                f.add("clean up", "flat signals", lab,
-                      f"{len(n)} text signal(s) never varied in training, e.g. {', '.join(n[:RULES['max_listed']])}.",
-                      "The field may be missing or unmapped in the catalog; check the feed (product-data-audit).")
+            check_weights(ws, lab, in_use, f)
         served = [s for s in scopes if s["algorithm"] == al_id]
         out_algos.append({
             "id": al_id, "algoId": al.get("algoId"), "name": al.get("name"), "type": al.get("type"),
@@ -363,9 +410,12 @@ def main():
             "visits_served": sum(s["visits"] or 0 for s in served),
             "revenue_served": round(sum(s["revenue"] or 0 for s in served), 2),
             "weights": {k: v for k, v in (ws or {}).items() if not k.startswith("_")} or None})
+    return out_algos, summaries
 
-    # ---- duplicates and performance comparisons
-    ids = [i for i in summaries]
+
+def check_overlap(algos, summaries, f):
+    """Near-duplicate weights and shared names within a search type."""
+    ids = list(summaries)
     for i, x in enumerate(ids):
         for y in ids[i + 1:]:
             ax, ay = algos[x], algos[y]
@@ -373,16 +423,20 @@ def main():
                 continue
             sim = cosine(summaries[x]["_vector"], summaries[y]["_vector"])
             if sim >= RULES["near_duplicate_similarity"]:
-                f.add("clean up", "near-duplicate", f"{label(ax)} and {label(ay)}",
+                f.add(CLEAN_UP, "near-duplicate", f"{label(ax)} and {label(ay)}",
                       f"Their weights are {sim:.1%} similar.", "Keep one, and point the other's rules at it.")
     names = {}
     for al in algos.values():
         names.setdefault((al.get("searchType"), norm(al.get("name"))), []).append(al)
     for (st, n), group in names.items():
         if n and len(group) > 1:
-            f.add("clean up", "same name", f"'{group[0].get('name')}' ({st})",
+            f.add(CLEAN_UP, "same name", f"'{group[0].get('name')}' ({st})",
                   f"{len(group)} algorithms share this name: {', '.join(g.get('algoId') or '?' for g in group)}.",
                   "Rename them so rules point at the one people mean.")
+
+
+def compare_conversion(algos, scopes, f):
+    """Flag an algorithm whose sampled scopes convert well below the other sampled scopes of the same kind."""
     for kind in ("KEYWORD", "CATEGORY"):
         pool = [s for s in scopes if s["kind"] == kind and s["visits"] and s["conversions"] is not None and s["algorithm"]]
         for al_id in {s["algorithm"] for s in pool}:
@@ -393,17 +447,52 @@ def main():
                 continue
             mc, rc = sum(s["conversions"] for s in mine) / mv, sum(s["conversions"] for s in rest) / rv
             if rc and mc < rc * RULES["underperform_ratio"]:
-                f.add("review", "converts less", label(algos[al_id]),
+                f.add(REVIEW, "converts less", label(algos[al_id]),
                       f"Its sampled {kind.lower()} scopes convert at {mc:.1%} against {rc:.1%} for the others "
                       f"({len(mine)} vs {len(rest)} scopes). Queries differ, so this is a lead, not proof.",
                       "A/B test it against the default before changing anything (discovery-experiment-setup).")
 
+
+def defaults_and_gaps(algos, not_checked):
+    """The algorithms marked Default per search type; notes a type with none."""
     defaults = {kind: [label(al) for al in algos.values() if al.get("searchType") == kind and al.get("status") == "Default"]
                 for kind in ("KEYWORD", "CATEGORY")}
     for kind, labs in defaults.items():
         if not labs and any(al.get("searchType") == kind for al in algos.values()):
             not_checked.append(f"No {kind} algorithm is marked Default; pages without an assignment rule use the account's "
                                "built-in ranking, which the list doesn't name.")
+    return defaults
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names can hold any character; Windows consoles default to cp1252
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--algorithms", action="append", default=[], required=True,
+                    help="saved search_ranking_algorithms list (repeat for KEYWORD and CATEGORY)")
+    ap.add_argument("--detail", action="append", default=[], help="saved search_ranking_algorithms detail (repeat)")
+    ap.add_argument("--query-grid", action="append", default=[], type=name_file,
+                    help="QUERY=saved product grid for that query (repeat)")
+    ap.add_argument("--category-grid", action="append", default=[], type=name_file,
+                    help="CATEGORY_ID=saved product grid with search_by=category (repeat)")
+    ap.add_argument("--queries", help="saved get_discovery_query_performance result")
+    ap.add_argument("--categories", help="saved get_discovery_category_performance_table result")
+    ap.add_argument("--today", type=iso_day, help="YYYY-MM-DD to judge ages against (default: today, UTC)")
+    ap.add_argument("--out", help="also write the JSON result to this file")
+    a = ap.parse_args()
+    now_ms = (a.today or datetime.now(timezone.utc)).timestamp() * 1000
+
+    algos = load_algorithms(a.algorithms, a.detail)
+    by_ref = {}
+    for al in algos.values():
+        by_ref.setdefault(al.get("algoId"), []).append(al)
+    f, not_checked = Findings(), []
+    usage, scopes = resolve_scopes(a.query_grid, a.category_grid, algos, by_ref, perf_index(a.queries, ("query",)),
+                                   perf_index(a.categories, ("cat_id", "category")), f, not_checked)
+    out_algos, summaries = review_algorithms(algos, usage, scopes, now_ms, bool(a.query_grid or a.category_grid), f, not_checked)
+    check_overlap(algos, summaries, f)
+    compare_conversion(algos, scopes, f)
+    defaults = defaults_and_gaps(algos, not_checked)
+
     order = {p: i for i, p in enumerate(PRIORITY)}
     findings = sorted(f.items, key=lambda x: order[x["priority"]])
     result = {"ok": True,

@@ -69,14 +69,15 @@ class AlgorithmReviewTest(unittest.TestCase):
     def test_fix_now(self):
         self.assertEqual(len(find(self.out, "missing algorithm", "br-deleted")), 1)
         cross = find(self.out, "cross-type", "br-text")
-        self.assertEqual([f["priority"] for f in cross], ["fix now"])
-        self.assertEqual([f["priority"] for f in self.out["findings"]][:2], ["fix now", "fix now"])
+        self.assertEqual([f["priority"] for f in cross], ["high"])
+        self.assertEqual([f["priority"] for f in self.out["findings"]][:2], ["high", "high"])
+        self.assertEqual(set(self.out["summary"]["findings"]), {"high", "medium", "low"})
 
     def test_global_cross_type_reported_once(self):
         self.assertEqual(len(find(self.out, "cross-type", "br-margin")), 1)
 
     def test_status_checks(self):
-        self.assertEqual(find(self.out, "error", "br-err")[0]["priority"], "review")  # not in use
+        self.assertEqual(find(self.out, "error", "br-err")[0]["priority"], "medium")  # not in use
         self.assertEqual(len(find(self.out, "stuck training", "br-train")), 1)
         self.assertEqual(len(find(self.out, "stuck sync", "br-sync")), 1)
         self.assertEqual(len(find(self.out, "stale", "br-text")), 1)
@@ -127,12 +128,65 @@ class AlgorithmReviewTest(unittest.TestCase):
                              (["--algorithms", FX / "missing.json"], "can't read JSON"),
                              (["--algorithms", FX / "queries_perf.json"], "No algorithms"),
                              (["--algorithms", FX / "algos_keyword.json", "--detail", FX / "queries_perf.json"], "not a search_ranking_algorithms detail"),
-                             (["--algorithms", FX / "algos_keyword.json", "--query-grid", f"x={FX / 'grid_nodebug.json'}"], "no debug output"),
-                             (["--algorithms", FX / "algos_keyword.json", "--query-grid", "nofile"], "NAME=FILE"),
-                             (["--algorithms", FX / "algos_keyword.json", "--today", "03/11/2026"], "YYYY-MM-DD")]:
+                             (["--algorithms", FX / "algos_keyword.json", "--query-grid", f"x={FX / 'grid_nodebug.json'}"], "no debug output")]:
             r = run(*args)
             self.assertEqual(r.returncode, 1, args)
             self.assertIn(needle, json.loads(r.stdout)["error"])
+        # Bad arguments are argparse errors: exit 2, one line on stderr, no traceback.
+        for args, needle in [(["--query-grid", "nofile"], "NAME=FILE"), (["--query-grid", "=x.json"], "NAME=FILE"),
+                             (["--today", "03/11/2026"], "YYYY-MM-DD")]:
+            r = run("--algorithms", FX / "algos_keyword.json", *args)
+            self.assertEqual(r.returncode, 2, args)
+            self.assertIn(needle, r.stderr)
+            self.assertNotIn("Traceback", r.stderr)
+
+    def test_name_file_splits_on_the_first_equals(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            odd = Path(tmp) / "a=b"
+            odd.mkdir()
+            grid = odd / "grid.json"
+            grid.write_text((FX / "grid_q_dress.json").read_text(encoding="utf-8"), encoding="utf-8")
+            r = run("--algorithms", FX / "algos_keyword.json", "--query-grid", f"dress={grid}", "--today", "2026-11-03")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(json.loads(r.stdout)["scopes"][0]["scope"], "dress")
+
+    def test_account_list_errors_are_not_repeated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bad = Path(tmp) / "denied.json"
+            bad.write_text(json.dumps({"success": False, "error": "Unknown account 'acme'. Accounts you can access: "
+                                       "alpha_store, beta_shop, gamma_retail, delta_outlet"}), encoding="utf-8")
+            r = run("--algorithms", bad)
+            long = Path(tmp) / "long.json"
+            long.write_text(json.dumps({"success": False, "error": "x" * 500}), encoding="utf-8")
+            r2 = run("--algorithms", long)
+        self.assertEqual(r.returncode, 1)
+        error = json.loads(r.stdout)["error"]
+        self.assertIn("check the account name", error)
+        self.assertNotIn("beta_shop", error)
+        self.assertLess(len(json.loads(r2.stdout)["error"]), 400)
+
+    def test_malformed_dates_fail_cleanly(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bad = Path(tmp) / "algos.json"
+            bad.write_text(json.dumps({"data": [{"id": 1, "algoId": "br-x", "searchType": "KEYWORD",
+                                                 "lastModifiedAt": "yesterday"}]}), encoding="utf-8")
+            r = run("--algorithms", bad, "--today", "2026-11-03")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("lastModifiedAt", json.loads(r.stdout)["error"])
+        self.assertNotIn("Traceback", r.stderr)
+
+    def test_number_parser(self):
+        import importlib.util
+        sys.dont_write_bytecode = True
+        spec = importlib.util.spec_from_file_location("algorithm_review", SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        self.assertEqual(mod.number("(12.00)"), -12.0)
+        self.assertEqual(mod.number("1.5e3"), 1500.0)
+        self.assertEqual(mod.number("$1,234.50"), 1234.5)
+        self.assertEqual(mod.number("10.00%"), 10.0)
+        self.assertIsNone(mod.number("n/a"))
+        self.assertIsNone(mod.number(True))
 
 
 if __name__ == "__main__":

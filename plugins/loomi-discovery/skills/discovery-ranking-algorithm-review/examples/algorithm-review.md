@@ -6,7 +6,7 @@ Illustrative output for a synthetic account ("Acme Outdoors"). All names, IDs an
 
 ## Ranking algorithm review: Acme Outdoors (2026-11-03; sample: top 20 queries, 15 categories, last 30 days)
 
-**Summary:** 11 algorithms (7 search, 4 category). Defaults: search "Classic search ranking", category built-in (none marked Default; a category-wide rule applies "Classic category ranking"). 2 to fix now, 9 to review, 6 to clean up.
+**Summary:** 11 algorithms (7 search, 4 category). Defaults: search "Classic search ranking", category built-in (none marked Default; a category-wide rule applies "Classic category ranking"). 2 high, 9 medium, 6 low priority.
 
 ### Where each algorithm is used
 
@@ -17,14 +17,14 @@ Illustrative output for a synthetic account ("Acme Outdoors"). All names, IDs an
 | Margin (br-margin) | ML custom | Available | "shirt" and 4 more (global rule); "dress" for VIP shoppers only | 4,000 | $9,000 | 2026-10-04 |
 | Classic category ranking (br-standard) | ML global | Available | 13 categories (category-wide rule) | 41,000 | $388,000 | 2024-08-25 |
 
-### Fix now
+### High priority: fix now
 
 | Algorithm | Issue | Evidence | Action |
 |---|---|---|---|
 | br-deleted | Missing algorithm | Rule 503 on "ghost" applies an algorithm that isn't in Ranking Studio | Point the rule at an existing algorithm or remove it; preview with discovery-change-qa |
 | Text relevance (br-text, search) | Search algorithm on a category page | Rule 951 applies it to category 200 | Apply a category algorithm instead; preview with discovery-change-qa |
 
-### Review
+### Medium priority: review
 
 | Algorithm | Issue | Evidence | Action |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Illustrative output for a synthetic account ("Acme Outdoors"). All names, IDs an
 | New ABR (br-train) | Stuck in training | In Training for 10 days | Check the training in Ranking Studio |
 | Broken model (br-err) | Error | "Training data missing"; not seen in use | Repair or remove |
 
-### Clean up
+### Low priority: clean up
 
 | Algorithm | Issue | Evidence | Action |
 |---|---|---|---|

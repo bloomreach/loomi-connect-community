@@ -14,22 +14,22 @@
 
 | Check | Priority | What it means |
 |---|---|---|
-| missing algorithm | Fix now | A rule assigns a `br-…` ID that isn't in Ranking Studio's list: deleted, or from another catalog. Those pages may fall back to the default |
-| cross-type (one page) | Fix now | A rule applies a search algorithm to a category, or the other way round |
-| cross-type (global) | Review | A `global` rule applies one algorithm to both search and category pages, so one kind gets an algorithm built for the other |
-| error | Fix now if in use, otherwise Review | Status `Error` or a `failureMessage` |
-| stuck training | Review | `In Training` for `training_stuck_days` or more since it was last changed |
-| stuck sync | Review | `Syncing` for `syncing_stuck_hours` or more |
-| stale | Review | A custom or manual algorithm in use, unchanged for `stale_days` or more |
-| dominant signal | Review | One signal has `dominance_share` or more of the total weight |
-| ignores shoppers | Review | An algorithm in use whose views, add-to-cart, conversion and revenue signals have less than `min_performance_share` of the weight |
-| revenue at zero | Review | Revenue signals weighted to zero (≤ `zero_weight`) while other shopper signals count |
-| custom signal | Review | A custom catalog signal (for example margin) has `custom_signal_share` or more of the weight |
-| converts less | Review | The sampled pages it ranks convert below `underperform_ratio` × the others' rate (each side needs `min_visits`). A lead for an A/B test, not proof |
-| not seen in use | Clean up | No sampled page uses it and it isn't the default. It may still rank pages outside the sample |
-| flat signals | Clean up | Text signals whose `min` equals `max` in training but still carry weight: the field may be missing or unmapped in the catalog |
-| near-duplicate | Clean up | Two algorithms of the same page type whose weights have cosine similarity ≥ `near_duplicate_similarity` |
-| same name | Clean up | Two algorithms of the same page type with the same name (ignoring case and spaces) |
+| missing algorithm | High | A rule assigns a `br-…` ID that isn't in Ranking Studio's list: deleted, or from another catalog. Those pages may fall back to the default |
+| cross-type (one page) | High | A rule applies a search algorithm to a category, or the other way round |
+| cross-type (global) | Medium | A `global` rule applies one algorithm to both search and category pages, so one kind gets an algorithm built for the other |
+| error | High if in use, otherwise Medium | Status `Error` or a `failureMessage` |
+| stuck training | Medium | `In Training` for `training_stuck_days` or more since it was last changed |
+| stuck sync | Medium | `Syncing` for `syncing_stuck_hours` or more |
+| stale | Medium | A custom or manual algorithm in use, unchanged for `stale_days` or more |
+| dominant signal | Medium | One signal has `dominance_share` or more of the total weight |
+| ignores shoppers | Medium | An algorithm in use whose views, add-to-cart, conversion and revenue signals have less than `min_performance_share` of the weight |
+| revenue at zero | Medium | Revenue signals weighted to zero (≤ `zero_weight`) while other shopper signals count |
+| custom signal | Medium | A custom catalog signal (for example margin) has `custom_signal_share` or more of the weight |
+| converts less | Medium | The sampled pages it ranks convert below `underperform_ratio` × the others' rate (each side needs `min_visits`). A lead for an A/B test, not proof |
+| not seen in use | Low | No sampled page uses it and it isn't the default. It may still rank pages outside the sample |
+| flat signals | Low | Text signals whose `min` equals `max` in training but still carry weight: the field may be missing or unmapped in the catalog |
+| near-duplicate | Low | Two algorithms of the same page type whose weights have cosine similarity ≥ `near_duplicate_similarity` |
+| same name | Low | Two algorithms of the same page type with the same name (ignoring case and spaces) |
 
 ## Reading the weights
 

@@ -1,6 +1,6 @@
 # Discovery ranking algorithm review
 
-Reviews the ranking algorithms in Bloomreach Discovery Ranking Studio: which search and category pages each one actually ranks, which are broken, stuck in training or syncing, unused, duplicated or stale, which rules point at a deleted algorithm or apply a search algorithm to category pages, and whose weights let one signal decide the order or ignore what shoppers do. Where traffic allows, it compares how the pages each algorithm ranks convert. You get a prioritised list: fix now, review, clean up.
+Reviews the ranking algorithms in Bloomreach Discovery Ranking Studio: which search and category pages each one actually ranks, which are broken, stuck in training or syncing, unused, duplicated or stale, which rules point at a deleted algorithm or apply a search algorithm to category pages, and whose weights let one signal decide the order or ignore what shoppers do. Where traffic allows, it compares how the pages each algorithm ranks convert. You get a prioritised list: high (fix now), medium (review) and low (clean up).
 
 | | |
 |---|---|
@@ -22,7 +22,7 @@ See [examples/algorithm-review.md](examples/algorithm-review.md) for a sample re
 
 ## Notes and limitations
 
-- Algorithm assignments are `ranking_algo` rules, which the ranking rule list tools leave out. The skill reads them from the product grid's debug output for the top queries and categories (20 and 15 by default), so "not seen in use" means not on those pages.
+- Algorithm assignments are `ranking_algo` rules, which the ranking rule list tools leave out. The skill reads them from the product grid's debug output for the top `sample_queries` queries and `sample_categories` categories (in `references/rules.json`), so "not seen in use" means not on those pages.
 - "Converts less" compares different queries and categories, so it's a lead for an A/B test (`discovery-experiment-setup`), never proof.
 - It never retrains, re-weights, renames or deletes an algorithm, and never changes a rule.
 - It never repeats who last changed an algorithm or rule.
