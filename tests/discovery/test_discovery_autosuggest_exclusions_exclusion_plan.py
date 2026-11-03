@@ -278,10 +278,15 @@ class VerifyTest(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stdout)
             self.assertEqual(json.loads(r.stdout)["results"][0]["status"], "gone")
             # An unknown account isn't a deleted rule: it stops, without repeating the error.
-            acct = write(tmp, "acct.json", {"success": False, "error": "Account 'acme' not found: alpha, beta"})
-            r, _ = run("verify", "--plan", self.plan, "--rules", acct, "--applied", "4")
-            self.assertEqual(r.returncode, 1)
-            self.assertNotIn("beta", r.stdout)
+            for text in ("Account 'acme' not found: alpha, beta", "account not found"):
+                acct = write(tmp, "acct.json", {"success": False, "error": text})
+                r, _ = run("verify", "--plan", self.plan, "--rules", acct, "--applied", "4")
+                self.assertEqual(r.returncode, 1, text)
+                out = json.loads(r.stdout)
+                self.assertFalse(out["ok"])
+                self.assertNotIn("results", out)  # never reported as gone or not_in_place
+                self.assertIn("Loomi Connect returned an error about the account name; it isn't repeated", out["error"])
+                self.assertNotIn("beta", r.stdout)
 
     def test_bad_verify_arguments(self):
         for args, text in ((["--applied", "C1"], "comma-separated change numbers"),
