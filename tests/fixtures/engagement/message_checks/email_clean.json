@@ -1,0 +1,39 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "000000000000000000000001",
+   "name": "Autumn sale",
+   "status": "draft",
+   "schedule": {
+    "active": true,
+    "type": "now"
+   },
+   "customer_filter": {
+    "filters": [],
+    "formula": ""
+   },
+   "silent_hours": null,
+   "consent_category": "newsletter",
+   "general_consent": false,
+   "frequency_policy": "Default",
+   "design": {
+    "type": "beefree",
+    "data": {
+     "beefree_template": "{}",
+     "jinja_html": "<html><head><style>@media (max-width:620px){.col{width:100%!important}}</style></head><body><table><tr><td style=\"font-size:0\"><div style=\"font-size:14px\"><a href=\"https://www.acme-outdoors.test/sale\"><img src=\"https://cdn.acme-outdoors.test/hero.png\" alt=\"Autumn sale\"></a><p>Hi {{ customer.first_name | default('there', true) }}, our autumn sale has started. Waterproof jackets, walking boots and tents are reduced for two weeks, while stocks last. Members get early access to new arrivals and free returns on every order.</p>{% set cart = aggregates['aaaaaaaaaaaaaaaaaaaaaaaa'] %}{% if cart and cart != 'None' %}{% for product in cart %}<p>{{ product.title | e }}</p>{% endfor %}{% endif %}<a class=\"button\" style=\"background-color:#0a0\" href=\"https://www.acme-outdoors.test/sale?utm_source=email\">Shop the sale</a><p style=\"font-size:12px\">Acme Outdoors, 1 Harbour Street, Sampletown, CA 94105. <a href=\"{{ email.unsubscribe }}\">Unsubscribe</a> · <a href=\"{{ email.view }}\">View in browser</a> · <a href=\"https://www.acme-outdoors.test/contact\">Contact us</a></p></div></td></tr></table></body></html>",
+     "subject": "Hi {{ customer.first_name | default('there', true) }}, the autumn sale is on",
+     "preheader": "Up to 40% off jackets and boots",
+     "sender_name": "Acme Outdoors",
+     "sender_email": "news@acme-outdoors.test",
+     "reply_to": null,
+     "file_ids": []
+    }
+   },
+   "split": {
+    "type": "off"
+   }
+  },
+  "error": null
+ }
+}

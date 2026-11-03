@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement). Live link checks need a client that can make web requests.
 metadata:
   author: jeffbird13-bloomreach
-  version: "1.2.1"
+  version: "1.3.0"
   products: engagement
   access: read-only
 ---
@@ -60,6 +60,10 @@ Loomi Connect tools this skill uses:
 
 Make Loomi Connect calls one at a time. Organisation and project lookups allow about 1 request per second; other Engagement tools about 3. If a call returns HTTP 429, wait (use Retry-After if given) and retry.
 
+### Running the scripts
+
+Run each script as one plain command from your own working folder, giving the script's full path: `python3 <this skill's folder>/scripts/message_checks.py` and its arguments. Pass saved tool results, and any files a script writes (`--out`, `--jsonl`, `--out-dir`), by paths in your working folder, never inside the skill's folder; a bare file name lands in the folder you run from. Don't `cd` into the skill's folder, and don't add `-I`, shell variables, `;`, redirects (`>`), `$(...)` or line breaks: some apps only allow plain commands, refuse the rest and keep skill folders read-only, and then the sums have to be done by hand. Piping the output to `jq` or `head` is fine. Some apps run no scripts at all, so the steps still work by hand.
+
 ## Steps
 
 Print a short banner before each step, for example `━━━ STEP 1 / DISCOVERY ━━━`.
@@ -84,13 +88,21 @@ Print a short banner before each step, for example `━━━ STEP 1 / DISCOVERY
 4. Collect every event, property, aggregate, catalog and recommendation referenced by the trigger, conditions and sends.
 5. Call `get_event_schema` and `get_customer_property_schema` and check every reference resolves. These responses are large; keep only what you need.
 6. If the scenario has more than about 25 sends, tell the user the run will take longer before continuing.
-7. **Work out where recipients are** if the scenario sends SMS or MMS, or may reach Canada. Follow "Where recipients are" in the "SMS and MMS: North America" section of [references/check-catalog.md](references/check-catalog.md). State the result at the top of the report, for example "Audience: all US states plus Canada (no location filter; assumed)".
+7. **Work out where recipients are** if the scenario sends SMS or MMS, or may reach Canada. Follow "Where recipients are" in the "SMS and MMS: North America" section of [references/message-checks.md](references/message-checks.md). State the result at the top of the report, for example "Audience: all US states plus Canada (no location filter; assumed)".
 
 ### Step 2: Check each send
 
-For each send step, fetch its design only now, one step at a time: `search_scenario_nodes` with `scenario_id`, `node_id` and `include_design: true`, or `search_scenarios` with `include_node_designs=true` for small scenarios. Designs can exceed 70 KB per step. If the client saves a large result to a file, extract the fields you need with a short script instead of reading the whole file.
+For each send step, fetch its design only now, one step at a time: `search_scenario_nodes` with `scenario_id`, `node_id` and `include_design: true`, or `search_scenarios` with `include_node_designs=true` for small scenarios. Designs can exceed 70 KB per step. If the client saves a large result to a file, don't read the whole file: pass it to the script.
 
-Run the channel checks in [references/check-catalog.md](references/check-catalog.md):
+Run the static checks on the saved results, one file per fetch:
+
+```bash
+python3 <this skill's folder>/scripts/message_checks.py <work>/node-12.json <work>/node-15.json --regions <US,US-TX,CA> --brand <brand name> --out <work>/findings.json
+```
+
+It accepts a whole scenario fetched with `include_node_designs=true` too; add `--node-ids 12,15` to limit it to some steps. It checks every email, SMS and push step (each translation) and returns findings with severity, `links_to_load` (unique URLs, primary first), `links_needing_render`, and `not_checked` for channels it doesn't cover (WhatsApp, RCS, web push, app inbox, webhooks). It doesn't know the scenario's trigger, so check `event.*` references against the trigger event yourself. Then do the **By hand** checks in [references/message-checks.md](references/message-checks.md). If scripts can't run here, do every check in that file by hand.
+
+The channel checks in [references/message-checks.md](references/message-checks.md):
 
 | Area | Email | SMS / MMS | Push |
 |---|---|---|---|
@@ -101,9 +113,9 @@ Run the channel checks in [references/check-catalog.md](references/check-catalog
 | Spam / content risk | spam heuristics | prohibited content | — |
 | Configuration | sender, consent, frequency policy | sender, shortener, consent | consent, frequency |
 
-**Links.** Work through every link in two passes. The full rules are in the Links section of [references/check-catalog.md](references/check-catalog.md).
+**Links.** Work through every link in two passes. The full rules are in the Links section of [references/message-checks.md](references/message-checks.md).
 
-1. **Static checks first (no web access needed).** Look for missing schemes, `http://`, placeholder words in the path and near-miss hosts. These catch some broken links even when nothing can be loaded.
+1. **Static checks first (no web access needed).** The script has done these: missing schemes, `http://`, placeholder destinations and words, near-miss hosts and public shorteners. They catch some broken links even when nothing can be loaded.
 2. **Then load each link, trying every method this client offers, in order:**
    1. A web-fetch tool, if there is one.
    2. If that tool is missing, or refuses the URL (for example "not on allowlist" or a blocked domain), a browser tool if the client has one: for example Claude in Chrome, the built-in browser in the Claude desktop app, or another client's browser tool. Open each link in a new tab and read the real HTTP status with a one-line script where the tool allows it. Check other links on the same host from that page. Never click, sign in, solve a CAPTCHA or submit anything.

@@ -73,7 +73,10 @@ Start with the health check, then go deeper where it points you.
 | "How is our abandoned cart flow doing?" | [engagement-scenario-performance](../plugins/loomi-engagement/skills/engagement-scenario-performance/) |
 | "Write the Jinja for a recommendations block" / "Why won't this Jinja save?" | [engagement-jinja-writer](../plugins/loomi-engagement/skills/engagement-jinja-writer/): personalization, recommendations, cart items and social proof for weblayers, emails and scenarios |
 | "Build me a newsletter pop-up" / "Why isn't our weblayer showing?" | [engagement-weblayer-builder](../plugins/loomi-engagement/skills/engagement-weblayer-builder/): pop-ups, banners and inline weblayers, with dynamic data from engagement-jinja-writer |
+| "Is our new pop-up ready to go live?" | [engagement-weblayer-qa](../plugins/loomi-engagement/skills/engagement-weblayer-qa/): skeleton, tracking, triggering code, links and accessibility for one weblayer, with a go/no-go verdict |
 | "Is our welcome journey ready to go live?" | [scenario-qa](../plugins/loomi-engagement/skills/scenario-qa/): links, personalization and compliance in every send, with a go/no-go verdict |
+| "Is the Black Friday email ready to send?" | [campaign-qa](../plugins/loomi-engagement/skills/campaign-qa/): every variant of one email or SMS campaign, with a go/no-go verdict |
+| "What's going out this week, and is it ready?" | [engagement-send-preflight](../plugins/loomi-engagement/skills/engagement-send-preflight/): every send due in the next few days, with a go/no-go for each |
 | "Turn what people search for into a campaign" | [search-demand-to-campaign](../plugins/loomi-platform/skills/search-demand-to-campaign/) (**writes** a draft, after you confirm) |
 | "Are we sending too much to the same people?" | [engagement-send-collision-check](../plugins/loomi-engagement/skills/engagement-send-collision-check/) |
 | "Are we using our predictions?" | [prediction-activation-check](../plugins/loomi-engagement/skills/prediction-activation-check/) |

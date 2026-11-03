@@ -1,0 +1,178 @@
+{
+ "success": true,
+ "campaigns": [
+  {
+   "campaign_id": "000000000000000000000004",
+   "action_id": 3,
+   "campaign_name": "Cart flow",
+   "action_name": "Cart email",
+   "channel": "email",
+   "status": "running",
+   "trigger": "repeat",
+   "times": [
+    {
+     "start": 1793782800
+    },
+    {
+     "start": 1793869200
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000004",
+   "action_id": 4,
+   "campaign_name": "Cart flow",
+   "action_name": "Cart SMS",
+   "channel": "sms",
+   "status": "running",
+   "trigger": "repeat",
+   "times": [
+    {
+     "start": 1793786400
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000004",
+   "action_id": 5,
+   "campaign_name": "Cart flow",
+   "action_name": "Cart push",
+   "channel": "pushmob",
+   "status": "running",
+   "trigger": "repeat",
+   "times": [
+    {
+     "start": 1793790000
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000004",
+   "action_id": 6,
+   "campaign_name": "Cart flow",
+   "action_name": "Cart WhatsApp",
+   "channel": "whatsapp",
+   "status": "running",
+   "trigger": "repeat",
+   "times": [
+    {
+     "start": 1793793600
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000004",
+   "action_id": 7,
+   "campaign_name": "Cart flow",
+   "action_name": "Notify CRM",
+   "channel": "webhook",
+   "status": "running",
+   "trigger": "repeat",
+   "times": [
+    {
+     "start": 1793793600
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000002",
+   "action_id": 1,
+   "campaign_name": "Broken promo",
+   "action_name": "Broken promo",
+   "channel": "email",
+   "status": "running",
+   "trigger": "planned",
+   "times": [
+    {
+     "start": 1793779200
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000003",
+   "action_id": 1,
+   "campaign_name": "Weekend SMS",
+   "action_name": "Weekend SMS",
+   "channel": "sms",
+   "status": "running",
+   "trigger": "planned",
+   "times": [
+    {
+     "start": 1793800800
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000009",
+   "action_id": 1,
+   "campaign_name": "Not fetched yet",
+   "action_name": "Email",
+   "channel": "email",
+   "status": "running",
+   "trigger": "planned",
+   "times": [
+    {
+     "start": 1793804400
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000010",
+   "action_id": 1,
+   "campaign_name": "Old draft",
+   "action_name": "Email",
+   "channel": "email",
+   "status": "draft",
+   "trigger": "planned",
+   "times": [
+    {
+     "start": 1793808000
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  },
+  {
+   "campaign_id": "000000000000000000000011",
+   "action_id": 1,
+   "campaign_name": "Next month",
+   "action_name": "Email",
+   "channel": "email",
+   "status": "running",
+   "trigger": "planned",
+   "times": [
+    {
+     "start": 1797206400
+    }
+   ],
+   "results": {
+    "potential_reach": 1000
+   }
+  }
+ ]
+}

@@ -1,0 +1,77 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "000000000000000000000002",
+   "name": "Broken promo",
+   "status": "draft",
+   "schedule": {
+    "active": true,
+    "type": "now"
+   },
+   "customer_filter": {
+    "filters": [],
+    "formula": ""
+   },
+   "silent_hours": null,
+   "consent_category": null,
+   "general_consent": false,
+   "frequency_policy": "unlimited-policy",
+   "split": {
+    "type": "manual",
+    "variants": [
+     {
+      "id": 0,
+      "name": "Variant A",
+      "percentage": 50,
+      "design": {
+       "type": "beefree",
+       "data": {
+        "beefree_template": "{}",
+        "jinja_html": "<html><body><table><tr><td><a href=\"https://brxcdn.co/hero\"><img src=\"https://brxcdn.co/hero.png\"></a><p>Hi [First Name], {{ customer.first_name | default('friend') }} FREE CASH inside. Last seen {{ event.product_name }}.</p>{% for item in aggregates['bbbbbbbbbbbbbbbbbbbbbbbb'] %}<p>{{ item.title }}</p>{% endfor %}{% if customer.vip %}<p>VIP</p><a class=\"button\" href=\"www.acme-outdoors.test/sale\">Shop now</a><a href=\"http://brxcdn.com/a\">a</a><a href=\"https://brxcdn.com/b\">b</a><a href=\"https://brxcdn.com/c/todo\">c</a><a href=\"https://www.example.com/x\">x</a><a href=\"https://evil.test/login\">www.acme-outdoors.test</a><img src=\"https://brxcdn.com/footer.png\"></td></tr></table></body></html>",
+        "subject": "FREE CASH!!! ACT NOW {{ customer.first_name }}",
+        "preheader": null,
+        "sender_name": "Acme Outdoors",
+        "sender_email": "news@acme-outdoors.test",
+        "reply_to": null,
+        "file_ids": []
+       }
+      }
+     },
+     {
+      "id": 1,
+      "name": "Variant B",
+      "percentage": 50,
+      "design": {
+       "type": "beefree",
+       "data": {
+        "beefree_template": "{}",
+        "jinja_html": "<html><head><style>@media (max-width:620px){.col{width:100%!important}}</style></head><body><table><tr><td style=\"font-size:0\"><div style=\"font-size:14px\"><a href=\"https://www.acme-outdoors.test/sale\"><img src=\"https://cdn.acme-outdoors.test/hero.png\" alt=\"Autumn sale\"></a><p>Hi {{ customer.first_name | default('there', true) }}, our autumn sale has started. Waterproof jackets, walking boots and tents are reduced for two weeks, while stocks last. Members get early access to new arrivals and free returns on every order.</p>{% set cart = aggregates['aaaaaaaaaaaaaaaaaaaaaaaa'] %}{% if cart and cart != 'None' %}{% for product in cart %}<p>{{ product.title | e }}</p>{% endfor %}{% endif %}<a class=\"button\" style=\"background-color:#0a0\" href=\"https://www.acme-outdoors.test/sale?utm_source=email\">Shop the sale</a><p style=\"font-size:12px\">Acme Outdoors, 1 Harbour Street, Sampletown, CA 94105. <a href=\"{{ email.unsubscribe }}\">Unsubscribe</a> · <a href=\"{{ email.view }}\">View in browser</a> · <a href=\"https://www.acme-outdoors.test/contact\">Contact us</a></p></div></td></tr></table></body></html>",
+        "subject": "Autumn sale",
+        "preheader": "Autumn sale",
+        "sender_name": "Acme Outdoors",
+        "sender_email": "news@acme-outdoors.test",
+        "reply_to": null,
+        "file_ids": []
+       }
+      }
+     }
+    ]
+   },
+   "design": {
+    "type": "beefree",
+    "data": {
+     "beefree_template": "{}",
+     "jinja_html": "<html><body><table><tr><td><a href=\"https://brxcdn.co/hero\"><img src=\"https://brxcdn.co/hero.png\"></a><p>Hi [First Name], {{ customer.first_name | default('friend') }} FREE CASH inside. Last seen {{ event.product_name }}.</p>{% for item in aggregates['bbbbbbbbbbbbbbbbbbbbbbbb'] %}<p>{{ item.title }}</p>{% endfor %}{% if customer.vip %}<p>VIP</p><a class=\"button\" href=\"www.acme-outdoors.test/sale\">Shop now</a><a href=\"http://brxcdn.com/a\">a</a><a href=\"https://brxcdn.com/b\">b</a><a href=\"https://brxcdn.com/c/todo\">c</a><a href=\"https://www.example.com/x\">x</a><a href=\"https://evil.test/login\">www.acme-outdoors.test</a><img src=\"https://brxcdn.com/footer.png\"></td></tr></table></body></html>",
+     "subject": "FREE CASH!!! ACT NOW {{ customer.first_name }}",
+     "preheader": null,
+     "sender_name": "Acme Outdoors",
+     "sender_email": "news@acme-outdoors.test",
+     "reply_to": null,
+     "file_ids": []
+    }
+   }
+  },
+  "error": null
+ }
+}

@@ -7,6 +7,7 @@ Pre-launch QA for one Bloomreach Engagement scenario. It checks every email, SMS
 | **Products** | Engagement |
 | **Access** | Read-only |
 | **Loomi Connect tools** | `list_cloud_organizations`, `list_projects`, `search_scenarios`, `search_scenario_nodes`*, `get_event_schema`, `get_customer_property_schema`, `get_mapping`, `search_aggregates`, `search_catalogs`, `search_recommendations`, `get_consent_settings`*, `list_customers`, `get_customer_properties`, `list_customer_events` (* found with `search_tools` and run with `call_tool`) |
+| **Other requirements** | Python 3 for `scripts/message_checks.py` (standard library only). Live link checks need a web-fetch or browser tool. |
 | **Tested with** | claude.ai, against a Bloomreach demo project (staging), 3-email welcome scenario |
 | **Maintainer** | @jeffbird13-bloomreach |
 
@@ -25,6 +26,7 @@ See [examples/example-report.md](examples/example-report.md) for illustrative ou
 
 ## Notes and limitations
 
+- **Shared message checks.** The per-message checks are done by `scripts/message_checks.py` (thresholds in `references/rules.json`, full list in `references/message-checks.md`). `campaign-qa` and `engagement-send-preflight` ship identical copies of all three, so change them together. `references/check-catalog.md` holds the flow-level checks only.
 - **Live link checks need web access.** In clients without it, links are listed as "couldn't verify" and the other checks still run. Links that return 401, 403, 429 or a bot challenge are also reported as "couldn't verify", never as broken.
 - **Jinja rendering is simulated** against 3–5 sample profiles, chosen for varying data completeness unless you name test profiles. Personal values are masked in the report, and profiles are labelled A, B, C. Sandbox projects can still hold real customer data.
 - **Compliance checks are guidance, not legal advice.** SMS carrier approval is outside the skill's control.
