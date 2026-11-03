@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Discovery Experiment Close"
+  short_description: "End a Discovery A/B test, roll out the winner and archive it, after confirmation"
+policy:
+  # Writes skill: ending a test is live and can't be undone, so it only runs when called by name.
+  allow_implicit_invocation: false

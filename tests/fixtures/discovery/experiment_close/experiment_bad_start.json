@@ -1,0 +1,22 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 900007,
+   "experimentStatus": "RUNNING",
+   "startedAt": "yesterday",
+   "buckets": [
+    {
+     "id": 1,
+     "bucketName": "Control",
+     "control": true
+    },
+    {
+     "id": 2,
+     "bucketName": "B",
+     "control": false
+    }
+   ]
+  }
+ }
+}

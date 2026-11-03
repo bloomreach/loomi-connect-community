@@ -1,0 +1,17 @@
+{
+  "about": "When discovery-experiment-close lets an A/B test be closed in favour of a change, and how it reads the result. scripts/close_plan.py reads this file. The thresholds match discovery-experiment-readout's decision table, so a test the readout says to ship passes here. Each key is explained under notes.",
+  "min_confidence": 0.95,
+  "min_days": 14,
+  "guardrail_confidence": 0.95,
+  "max_split_imbalance_pct": 5,
+  "default_metric": "rpv",
+  "metrics": ["cr", "atc_rate", "aov", "rpv"],
+  "notes": {
+    "min_confidence": "Shipping a change (keeping a bucket other than the control) needs that bucket to be at least this likely the best on the success metric (confidenceValues, 0 to 1). Below it, the plan is refused unless the user overrides.",
+    "min_days": "Shipping a change needs the test to have run at least this many days (from startedAt to endedAt, or to today for a running test). Shorter tests are refused unless the user overrides.",
+    "guardrail_confidence": "If another bucket is at least this likely best on a guardrail metric (one of metrics other than the success metric) where the kept bucket's lift is negative, shipping is refused unless the user overrides.",
+    "max_split_imbalance_pct": "A bucket whose share of visits differs from its planned traffic_percentage by more than this many percentage points gets a warning: traffic allocation may be broken.",
+    "default_metric": "The metric used when the experiment has no success metric set (the plan says so).",
+    "metrics": "The report metrics: the success metric plus the guardrails."
+  }
+}

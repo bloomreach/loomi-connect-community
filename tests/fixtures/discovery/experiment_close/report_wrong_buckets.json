@@ -1,0 +1,54 @@
+{
+ "result": {
+  "data": {
+   "currency": "$",
+   "overalldata": {
+    "buckets": {
+     "A": {
+      "visits": 1,
+      "orders": 0,
+      "cr": 0.03,
+      "atc_rate": 0.1,
+      "aov": 100,
+      "rpv": 3.0,
+      "lift": {
+       "cr": 0,
+       "rpv": 0,
+       "aov": 0,
+       "atc_rate": 0
+      },
+      "confidenceValues": {
+       "cr": 0.5,
+       "rpv": 0.5,
+       "aov": 0.5,
+       "atc_rate": 0.5
+      }
+     },
+     "B": {
+      "visits": 1,
+      "orders": 0,
+      "cr": 0.03,
+      "atc_rate": 0.1,
+      "aov": 100,
+      "rpv": 3.0,
+      "lift": {
+       "cr": 0,
+       "rpv": 0,
+       "aov": 0,
+       "atc_rate": 0
+      },
+      "confidenceValues": {
+       "cr": 0.5,
+       "rpv": 0.5,
+       "aov": 0.5,
+       "atc_rate": 0.5
+      }
+     }
+    }
+   },
+   "dayWisedata": {
+    "dailyMetrics": {}
+   }
+  }
+ }
+}
