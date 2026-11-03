@@ -553,7 +553,7 @@ class Translator:
 # BUILD: model -> BEE template + jinja_html
 # ----------------------------------------------------------------------------------------------
 def mce(html):
-    """Mirror every style="X" with data-mce-style="X" (BEE multiparser requirement)."""
+    """Mirror every style="X" with data-mce-style="X" (the Visual Builder rejects a save without it)."""
     soup = BeautifulSoup(html, "html.parser")
     for el in soup.find_all(True):
         if el.has_attr("style"):
@@ -984,7 +984,7 @@ def build(args):
                "connections": [{"source": {"node_id": 0, "connector_index": 0}, "destination": {"node_id": 1, "connector_index": 0}}],
                "last_node_id": 1}
 
-    # ---- BEE structural validation (same rules as the email-to-engagement skills)
+    # ---- BEE structural validation (the rules in references/bee-schema.md)
     ids = []
     for row in bee["page"]["rows"]:
         ids += [row["uuid"], row["metadata"]["_id"]]

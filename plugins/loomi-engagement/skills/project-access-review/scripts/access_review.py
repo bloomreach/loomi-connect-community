@@ -21,7 +21,6 @@ import argparse
 import json
 import re
 import sys
-from datetime import datetime, timezone
 
 GENERIC_LOCAL = re.compile(
     r"^(admin|administrator|api|app|automation|bot|crm|data|demo|dev|developer|"
@@ -59,21 +58,6 @@ def unwrap(obj, path):
     return [u for u in obj if isinstance(u, dict)] if isinstance(obj, list) else []
 
 
-def id_created(user_id):
-    """Approximate account creation date, inferred from a 24-hex-char object ID.
-
-    This is an inference, not a field the tool returns. Returns None if the ID
-    doesn't look like an object ID.
-    """
-    if not isinstance(user_id, str) or not re.fullmatch(r"[0-9a-fA-F]{24}", user_id):
-        return None
-    ts = int(user_id[:8], 16)
-    try:
-        return datetime.fromtimestamp(ts, tz=timezone.utc).date()
-    except (OverflowError, OSError, ValueError):
-        return None
-
-
 def classify_domain(domain, company, vendor):
     def match(d, roots):
         return any(d == r or d.endswith("." + r) for r in roots)
@@ -94,7 +78,6 @@ def main():
     p.add_argument("--vendor-domain", action="append", default=[], help="known vendor or agency domain (repeatable)")
     p.add_argument("--many-projects", type=int, default=3,
                    help="flag users in at least this many projects (default 3, or every project when fewer are reviewed)")
-    p.add_argument("--show-created", action="store_true", help="add the inferred account-creation date column")
     args = p.parse_args()
 
     company = [d.lower().lstrip("@") for d in args.company_domain]
@@ -145,14 +128,13 @@ def main():
             flags["many"].append(email)
             notes.append(f"{n} projects")
         roles = sorted(set(u["projects"].values()))
-        created = id_created(u["id"]) if args.show_created else None
-        rows.append((email, dclass, ", ".join(roles), n, created, "; ".join(notes)))
+        rows.append((email, dclass, ", ".join(roles), n, "; ".join(notes)))
 
-    header = ["Email", "Domain", "Role(s)", "Projects"] + (["Account created (inferred)"] if args.show_created else []) + ["Flags"]
+    header = ["Email", "Domain", "Role(s)", "Projects", "Flags"]
     print("| " + " | ".join(header) + " |")
     print("|" + "---|" * len(header))
-    for email, dclass, roles, n, created, notes in rows:
-        cells = [email, dclass, roles, str(n)] + ([str(created or "?")] if args.show_created else []) + [notes or "-"]
+    for email, dclass, roles, n, notes in rows:
+        cells = [email, dclass, roles, str(n), notes or "-"]
         print("| " + " | ".join(cells) + " |")
 
     print()

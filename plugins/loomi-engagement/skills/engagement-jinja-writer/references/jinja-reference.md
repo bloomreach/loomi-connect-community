@@ -2,7 +2,7 @@
 
 Read this before writing or fixing any Bloomreach Engagement Jinja. It covers the data objects you can use, the hard limits that break a template, the filters and syntax that are safe, and patterns that work.
 
-Checked against the Bloomreach documentation on 2026-04-17 (pages: jinja, filters, jinjablocks, datastructures, personalization-using-jinja, useful-jinja-snippets, integration-of-recommendations, aggregates-and-running-aggregates, predictions, using-template-parameters, weblayer-design, jinja-syntax). The block and snippet sections were checked on 2026-10-30 against html-blocks, snippets and filters. Reports, `default`, escaping and the filter list were checked on 2026-11-02 against filters and personalization-using-jinja. `expressions` and direct `predictions(...)` calls aren't in the docs, but they work in practice.
+Checked against the Bloomreach documentation on 2026-04-17 (pages: jinja, filters, jinjablocks, datastructures, personalization-using-jinja, useful-jinja-snippets, integration-of-recommendations, aggregates-and-running-aggregates, predictions, using-template-parameters, weblayer-design, jinja-syntax). The block and snippet sections were checked on 2026-10-30 against html-blocks, snippets and filters. Reports, `default`, escaping and the filter list were checked on 2026-11-02 against filters and personalization-using-jinja. Only documented objects are listed (see CHARTER.md): use `customer['prediction_name']` for predictions.
 
 All IDs and names in the examples below are placeholders. Replace them with real ones from the project.
 
@@ -27,8 +27,7 @@ All IDs and names in the examples below are placeholders. Replace them with real
 | `project_variables` | Project variables by their Jinja reference name: `project_variables.JinjaReferenceName` (plural) |
 | `block('block_id', {'paramName': value})` | Renders an HTML block from the Asset Manager. Returns rendered **text**, not Jinja objects (see "Passing data back from a block or snippet") |
 | `snippet('snippet_id', {'paramName': value})` | Renders a snippet from the Asset Manager. Also returns rendered text |
-| `expressions` | Analytics expression results (not in the docs, but works) |
-| `predictions(prediction_id)` | Prediction lookup (not in the docs). The documented way is `customer['prediction_name']`, because predictions are stored as customer attributes |
+| `customer['prediction_name']` | A prediction's score. Predictions are stored as customer attributes, so read them like any other attribute |
 
 ### Only in some places
 

@@ -31,7 +31,7 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - **Errors can come back as data.** A denied call can return `{"result":{"success":false,"data":[],"error":"[ACCESS_DENIED] …"}}` instead of failing. Check `success`, not just whether the call errored.
 - **The `loomi://guides/*` resources can't be read in every client.** Don't make a skill depend on reading them.
 - **`search_tools` returns internal and write tools** for unrelated or read-sounding queries:
-  - **Internal tools:** `whoami`, `get_tool_usage_report`, `get_tool_usage_history` and `get_loomi_connect_activity`. These expose tokens and other callers' email addresses. **Skills must never call them.**
+  - **Internal tools:** `list_all_tools` tags them `internal`: `whoami`, `get_tool_usage_report`, `get_tool_usage_history`, `get_loomi_connect_activity`, `get_llm_feedback_report`, `get_beta_test_status`, `get_pipeline_tests`, `get_discovery_bruid_coverage` and `retry_abr_training` (as of 2026-11-03). Some expose tokens and other callers' email addresses. **Skills must never call a tool tagged `internal`.**
   - **Write tools:** for example `update_scenario`, `clone_scenario` and `create_segmentation`. Read-only skills must say to use read tools only.
 - **Some responses contain personal data**, even from tools you'd expect not to. Examples:
   - **Editor names or email addresses:**

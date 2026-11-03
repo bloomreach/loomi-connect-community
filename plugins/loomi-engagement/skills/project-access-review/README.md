@@ -30,7 +30,7 @@ See [examples/illustrative-review.md](examples/illustrative-review.md) for an ex
 
 - **No permission levels.** `list_project_users` returns a `role` field, but it's a job-role label (Developer, Marketing Manager, Other...), usually empty, not an access level. The skill can't count administrators; it tells you to check permission levels in the UI.
 - **No last-login data.** Loomi Connect returns no login or activity dates, so the skill can't find stale accounts by itself. Paste a leavers list or a last-login export from the UI and it will cross-check them.
-- The script can show an "account created (inferred)" date decoded from each user's ID. It's undocumented and approximate, and refers to the user account, not the project membership.
+- There's no account creation or last-login date in the data, so stale accounts are found from a leavers list or a last-login export, not from the tool.
 - Shared-account detection is a name pattern, so it can miss shared accounts with personal-looking names and occasionally flag a real person.
 - The output lists names and email addresses. Treat it as internal and confidential.
 - The organisation and project tools have a stricter rate limit (about 1 request per second) than other Engagement tools.

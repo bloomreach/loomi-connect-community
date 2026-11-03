@@ -25,6 +25,7 @@ See [examples/qa-newsletter-popup.md](examples/qa-newsletter-popup.md).
 ## Notes and limitations
 
 - Read-only. It reports fixes; `engagement-weblayer-builder` can make them.
+- The skeleton checks rely on the `utils` library and `self.inPreview` from Bloomreach's built-in weblayer templates. Bloomreach ships them in the product, but they aren't in the public docs.
 - Loomi Connect doesn't return a weblayer's Smart triggering conditions, and the banner details may not include its schedule. The skill asks for the conditions and checks the schedule with `search_banners` `serving_status`.
 - It can't render or run the weblayer. The report ends with how to preview and test it.
 - Weblayers built from older templates aren't failed for being old: they're checked against the runtime rules.

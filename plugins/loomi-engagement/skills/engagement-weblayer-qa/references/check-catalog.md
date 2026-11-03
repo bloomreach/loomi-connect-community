@@ -2,7 +2,7 @@
 
 What each check means, its severity and the fix. `scripts/weblayer_checks.py` runs the static checks; the word lists and thresholds are in [rules.json](rules.json). If the script can't run, apply the same rules by hand. Report a finding only when the evidence supports it, and list anything you couldn't check under "couldn't verify".
 
-The rules come from the platform skeleton that `engagement-weblayer-builder` writes to. Weblayers built from older templates (their own `attachBannerToDom()` function, no `utils`) are still valid: check them against the runtime rules only, and note once (nitpick) that they predate the current skeleton.
+The rules come from the platform skeleton that `engagement-weblayer-builder` writes to. That skeleton's `utils` library, `self.inPreview` and phone-input setup come from Bloomreach's built-in weblayer templates, shipped to customers in the product but not in the public docs (allowed by CHARTER.md as shipped code). Weblayers built from older templates (their own `attachBannerToDom()` function, no `utils`) are still valid: check them against the runtime rules only, and note once (nitpick) that they predate the current skeleton.
 
 ## Whole weblayer
 

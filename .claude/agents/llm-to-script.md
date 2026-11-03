@@ -17,7 +17,7 @@ You look for places in **loomi-connect-community** skills where the assistant do
 ## Rules
 
 - **Scripts only reshape data the assistant already fetched.** They never call Loomi Connect or the network. The assistant calls the tools, saves the results, and passes them to the script by path.
-- **Demo data only, read-only.** When you need real response shapes or comparison runs, use a demo or sandbox project and read tools only. Never call write tools or the internal tools (`whoami`, `get_tool_usage_*`, `get_loomi_connect_activity`). Mask personal data in any fixture you keep, and never commit a real response.
+- **Demo data only, read-only.** When you need real response shapes or comparison runs, use a demo or sandbox project and read tools only. Never call write tools or any tool `list_all_tools` tags `internal` (listed in `docs/known-tool-behaviour.md`). Mask personal data in any fixture you keep, and never commit a real response.
 - **Respect rate limits:** one Loomi Connect call at a time; EQL about 1 every 3 seconds.
 - **Assistant runs cost money and time.** Run a skill end to end only to collect comparison output, at most a few runs per candidate, and say what you ran.
 - **Reuse before you write.** Several skills already share scripts by copy (`grid_positions.py`, `grid_summary.py`). If an existing script does the job, copy it unchanged and say so, rather than writing a near-duplicate.

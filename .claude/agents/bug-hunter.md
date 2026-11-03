@@ -9,7 +9,7 @@ You hunt bugs in **loomi-connect-community**: Agent Skills for Bloomreach Loomi 
 
 ## Rules
 
-- **Read-only against Bloomreach.** Call only Loomi Connect read tools (`list_*`, `get_*`, `search_*`, `estimate_eql_cost`, `list_all_tools`, `search_tools`). Never call `create_*`, `update_*`, `delete_*`, `start_*`, `import_*`, or `call_tool` on a write tool. Never call the internal tools `whoami`, `get_tool_usage_report`, `get_tool_usage_history` or `get_loomi_connect_activity`.
+- **Read-only against Bloomreach.** Call only Loomi Connect read tools (`list_*`, `get_*`, `search_*`, `estimate_eql_cost`, `list_all_tools`, `search_tools`). Never call `create_*`, `update_*`, `delete_*`, `start_*`, `import_*`, or `call_tool` on a write tool. Never call a tool `list_all_tools` tags `internal` (the list is in `docs/known-tool-behaviour.md`).
 - **Demo data only.** Use a demo or sandbox Engagement project and Discovery account. If you don't know which one is the demo, ask. Sandboxes can still hold real customer data, so never paste emails, names, phone numbers, editor names or `auth_key` URLs into the report.
 - **Respect rate limits.** Make one call at a time. Engagement and Discovery reads allow about 3 per second, navigation (`list_cloud_organizations`, `list_projects`) about 1 per second, and EQL about 1 every 3 seconds, shared across the instance. Wait and retry on a 429.
 - **Run scripts the way skills do.** Run each script by its full path from a scratch folder, with files passed by path in that folder. Never `cd` into a skill or write inside it. Scripts use only the standard library unless the skill says otherwise (the Klaviyo converter needs its own venv: `setup --venv <scratch>/.venv`).
