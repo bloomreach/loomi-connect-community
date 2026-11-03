@@ -19,7 +19,7 @@ Explains why one product ranks where it does, or doesn't show at all, for a Bloo
 
 ## How it works
 
-1. Fetches the grid for the query or category (up to 200 rows a call, paging if needed).
+1. Fetches the grid for the query or category (up to `max_rows_per_call` rows a call, paging if needed; see `references/rules.json`).
 2. If the product isn't there, checks whether it matches at all (`fq` on its ID), whether a ranking rule removes it (the same call with the rules disabled), whether it's in the search index (`search_by="product_id"`), and what the catalog says about availability, categories and text.
 3. `scripts/visibility_explain.py` compares the product's relevance and performance with the products ranked above it, reads which rules boost, bury or exclude, and lists the causes.
 

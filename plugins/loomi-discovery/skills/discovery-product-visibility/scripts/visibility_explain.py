@@ -34,6 +34,16 @@ def fail(msg):
     sys.exit(1)
 
 
+def tool_error(err):
+    """A Loomi Connect error, safe to repeat: an error about the account can list every account the user can
+    access, so it's never echoed; anything else is cut to 200 characters."""
+    text = str(err or "no error text")
+    if "account" in text.lower() and text.count(",") >= 3:
+        return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list "
+                "other accounts. Ask the user to check the account name.")
+    return text[:200]
+
+
 def load(path):
     """The data object of a saved grid or catalog result, after checking for errors returned as data."""
     try:
@@ -43,7 +53,7 @@ def load(path):
         fail(f"{path}: can't read it as JSON ({e}).")
     for d in (doc, doc.get("result") if isinstance(doc, dict) else None):
         if isinstance(d, dict) and d.get("success") is False:
-            fail(f"{path}: Loomi Connect returned an error: {d.get('error') or 'no error text'}. "
+            fail(f"{path}: Loomi Connect returned an error: {tool_error(d.get('error'))}. "
                  "This check couldn't run; don't treat it as 'nothing found'.")
     if isinstance(doc, dict) and isinstance(doc.get("result"), dict):
         doc = doc["result"]
@@ -56,7 +66,9 @@ def load(path):
 def products(grid):
     """Product rows only: banner rows (docType content, no pid) aren't products."""
     docs = (grid.get("response") or {}).get("docs") or []
-    return [d for d in docs if d.get("docType") != "content" and d.get("pid") not in (None, "")]
+    if not isinstance(docs, list):
+        return []
+    return [d for d in docs if isinstance(d, dict) and d.get("docType") != "content" and d.get("pid") not in (None, "")]
 
 
 def num_found(grid):
@@ -115,8 +127,18 @@ def rewrites(grid):
     return found
 
 
+def score(value):
+    """A number from a score field, or None when it's missing or not a number."""
+    if value in (None, "") or isinstance(value, bool):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def median(values):
-    values = [v for v in values if isinstance(v, (int, float))]
+    values = [v for v in (score(x) for x in values) if v is not None]
     return statistics.median(values) if values else None
 
 
@@ -174,7 +196,7 @@ def main():
             cause("merchandising", f"{len(boosted_above)} product(s) above it are boosted or pinned by a rule.",
                   {"pids": boosted_above[:10], "rules": [r["id"] for r in rules if set(r["boosted_pids"]) & set(boosted_above)]},
                   "If this product should be above them, add it to the rule's boosted products (discovery-change-qa first).")
-        rel, perf = target.get("relevance"), target.get("performance")
+        rel, perf = score(target.get("relevance")), score(target.get("performance"))
         med_rel = median([s.get("relevance") for s in above_summ])
         med_perf = median([s.get("performance") for s in above_summ])
         if rel is not None and med_rel and rel < RULES["relevance_gap_ratio"] * med_rel:
@@ -196,7 +218,8 @@ def main():
         if any(d["pid"] == pid for d in products(mc)):
             status = "matched_not_fetched"
             not_checked.append(f"It matches, but it's deeper than the {len(ranked)} products fetched; fetch more pages "
-                               f"(rows up to {RULES['max_rows_per_call']}, then start=200, 400, ...) to find its position.")
+                               f"(rows up to {RULES['max_rows_per_call']}, then start in steps of {RULES['max_rows_per_call']}, up to "
+                               f"{RULES['max_results_paged']} results) to find its position.")
         elif a.rules_off:
             ro = load(a.rules_off)
             if any(d["pid"] == pid for d in products(ro)):

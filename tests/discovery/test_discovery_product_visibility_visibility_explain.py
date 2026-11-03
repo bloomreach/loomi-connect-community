@@ -1,5 +1,5 @@
-"""Tests for discovery-product-visibility's visibility_explain.py. The fixtures are synthetic
-(tests/fixtures/discovery/product_visibility/make_fixtures.py regenerates them)."""
+"""Tests for discovery-product-visibility's visibility_explain.py. The fixtures in
+tests/fixtures/discovery/product_visibility/ are synthetic."""
 import json
 import subprocess
 import sys
@@ -131,6 +131,35 @@ class VisibilityExplainTest(unittest.TestCase):
         code, _, err = run("--grid", FX / "grid_page1.json")
         self.assertEqual(code, 2)
         self.assertIn("--pid", err)
+
+    def test_account_list_errors_are_not_repeated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "err.json"
+            path.write_text(json.dumps({"result": {"success": False, "error": "Unknown account_name. Available accounts: "
+                                                   "acme_one, acme_two, acme_three, acme_four"}}), encoding="utf-8")
+            code, out, _ = run("--pid", "P10", "--grid", path)
+            long_err = Path(tmp) / "long.json"
+            long_err.write_text(json.dumps({"success": False, "error": "x" * 500}), encoding="utf-8")
+            _, out_long, _ = run("--pid", "P10", "--grid", long_err)
+        self.assertEqual(code, 1)
+        self.assertNotIn("acme_", out["error"])
+        self.assertIn("check the account name", out["error"])
+        self.assertNotIn("x" * 201, out_long["error"])
+
+    def test_malformed_rows_and_scores_do_not_crash(self):
+        grid = json.loads((FX / "grid_page1.json").read_text(encoding="utf-8"))
+        data = grid.get("data", grid)
+        data["response"]["docs"].insert(0, "not a row")
+        for entries in (data.get("debug") or {}).get("explain.structured", {}).values():
+            for e in entries:
+                if isinstance(e, dict) and "totalNormalizedScore" in e:
+                    e["relevance"] = "n/a"
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "grid.json"
+            path.write_text(json.dumps(grid), encoding="utf-8")
+            code, out, err = run("--pid", "P10", "--grid", path)
+        self.assertEqual(code, 0, err)
+        self.assertTrue(out["ok"])
 
 
 class RulesTest(unittest.TestCase):
