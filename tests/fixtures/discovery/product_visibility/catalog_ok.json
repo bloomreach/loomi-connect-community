@@ -1,0 +1,22 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": "P10",
+   "attributes": {
+    "availability": true,
+    "title": "Wool coat",
+    "description": "Warm and waterproof.",
+    "category_paths": [
+     [
+      {
+       "id": "cat-out",
+       "name": "outerwear"
+      }
+     ]
+    ]
+   }
+  },
+  "error": null
+ }
+}

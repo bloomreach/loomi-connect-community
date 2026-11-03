@@ -1,0 +1,997 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 30,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "Q01",
+     "title": "Rain jacket Q01",
+     "docType": "product"
+    },
+    {
+     "pid": "Q02",
+     "title": "Rain jacket Q02",
+     "docType": "product"
+    },
+    {
+     "pid": "Q03",
+     "title": "Rain jacket Q03",
+     "docType": "product"
+    },
+    {
+     "pid": "Q04",
+     "title": "Rain jacket Q04",
+     "docType": "product"
+    },
+    {
+     "pid": "Q05",
+     "title": "Rain jacket Q05",
+     "docType": "product"
+    },
+    {
+     "pid": "Q06",
+     "title": "Rain jacket Q06",
+     "docType": "product"
+    },
+    {
+     "pid": "Q07",
+     "title": "Rain jacket Q07",
+     "docType": "product"
+    },
+    {
+     "pid": "Q08",
+     "title": "Rain jacket Q08",
+     "docType": "product"
+    },
+    {
+     "pid": "Q09",
+     "title": "Rain jacket Q09",
+     "docType": "product"
+    },
+    {
+     "pid": "Q10",
+     "title": "Rain jacket Q10",
+     "docType": "product"
+    },
+    {
+     "pid": "Q11",
+     "title": "Rain jacket Q11",
+     "docType": "product"
+    },
+    {
+     "pid": "Q12",
+     "title": "Rain jacket Q12",
+     "docType": "product"
+    },
+    {
+     "pid": "Q13",
+     "title": "Rain jacket Q13",
+     "docType": "product"
+    },
+    {
+     "pid": "Q14",
+     "title": "Rain jacket Q14",
+     "docType": "product"
+    },
+    {
+     "pid": "Q15",
+     "title": "Rain jacket Q15",
+     "docType": "product"
+    },
+    {
+     "pid": "Q16",
+     "title": "Rain jacket Q16",
+     "docType": "product"
+    },
+    {
+     "pid": "Q17",
+     "title": "Rain jacket Q17",
+     "docType": "product"
+    },
+    {
+     "pid": "Q18",
+     "title": "Rain jacket Q18",
+     "docType": "product"
+    },
+    {
+     "pid": "Q19",
+     "title": "Rain jacket Q19",
+     "docType": "product"
+    },
+    {
+     "pid": "Q20",
+     "title": "Rain jacket Q20",
+     "docType": "product"
+    },
+    {
+     "pid": "Q21",
+     "title": "Rain jacket Q21",
+     "docType": "product"
+    },
+    {
+     "pid": "Q22",
+     "title": "Rain jacket Q22",
+     "docType": "product"
+    },
+    {
+     "pid": "Q23",
+     "title": "Rain jacket Q23",
+     "docType": "product"
+    },
+    {
+     "pid": "Q24",
+     "title": "Rain jacket Q24",
+     "docType": "product"
+    },
+    {
+     "pid": "Q25",
+     "title": "Rain jacket Q25",
+     "docType": "product"
+    },
+    {
+     "pid": "Q26",
+     "title": "Rain jacket Q26",
+     "docType": "product"
+    },
+    {
+     "pid": "Q27",
+     "title": "Rain jacket Q27",
+     "docType": "product"
+    },
+    {
+     "pid": "Q28",
+     "title": "Rain jacket Q28",
+     "docType": "product"
+    },
+    {
+     "pid": "Q29",
+     "title": "Rain jacket Q29",
+     "docType": "product"
+    },
+    {
+     "pid": "Q30",
+     "title": "Rain jacket Q30",
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "explain.structured": {
+    "Q01": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 399,
+      "relevance": 88.0,
+      "performance": 499.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q02": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 398,
+      "relevance": 88.0,
+      "performance": 498.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q03": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 397,
+      "relevance": 88.0,
+      "performance": 497.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q04": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 396,
+      "relevance": 88.0,
+      "performance": 496.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q05": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 395,
+      "relevance": 88.0,
+      "performance": 495.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q06": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 394,
+      "relevance": 88.0,
+      "performance": 494.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q07": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 393,
+      "relevance": 88.0,
+      "performance": 493.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q08": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 392,
+      "relevance": 88.0,
+      "performance": 492.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q09": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 391,
+      "relevance": 88.0,
+      "performance": 491.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q10": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 390,
+      "relevance": 88.0,
+      "performance": 490.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q11": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 389,
+      "relevance": 88.0,
+      "performance": 489.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q12": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 388,
+      "relevance": 88.0,
+      "performance": 488.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q13": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 387,
+      "relevance": 88.0,
+      "performance": 487.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q14": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 386,
+      "relevance": 88.0,
+      "performance": 486.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q15": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 385,
+      "relevance": 88.0,
+      "performance": 485.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q16": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 384,
+      "relevance": 88.0,
+      "performance": 484.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q17": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 383,
+      "relevance": 88.0,
+      "performance": 483.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q18": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 382,
+      "relevance": 88.0,
+      "performance": 482.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q19": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 381,
+      "relevance": 88.0,
+      "performance": 481.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q20": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 380,
+      "relevance": 88.0,
+      "performance": 480.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q21": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 379,
+      "relevance": 88.0,
+      "performance": 479.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q22": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 378,
+      "relevance": 88.0,
+      "performance": 478.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q23": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 377,
+      "relevance": 88.0,
+      "performance": 477.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q24": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 376,
+      "relevance": 88.0,
+      "performance": 476.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q25": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 375,
+      "relevance": 88.0,
+      "performance": 475.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q26": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 374,
+      "relevance": 88.0,
+      "performance": 474.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q27": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 373,
+      "relevance": 88.0,
+      "performance": 473.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q28": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 372,
+      "relevance": 88.0,
+      "performance": 472.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q29": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 371,
+      "relevance": 88.0,
+      "performance": 471.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q30": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 370,
+      "relevance": 88.0,
+      "performance": 470.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ]
+   },
+   "customizations.explain": [
+    {
+     "id": 900002,
+     "ruleType": "ranking_algo",
+     "queries": [
+      {
+       "query": "*"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "ranking_algo",
+       "value": "{\"id\": \"br-fake\"}"
+      }
+     ]
+    }
+   ],
+   "feUrl": "http://frontend.example.invalid/api?auth_key=FAKEKEY",
+   "sqApiUrl": "http://sq.example.invalid/?x=FAKE"
+  },
+  "did_you_mean": []
+ },
+ "error": null,
+ "environment_used": "production"
+}

@@ -1,0 +1,1040 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 60,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "A1",
+     "title": "Boosted rain jacket A1",
+     "docType": "product"
+    },
+    {
+     "pid": "A2",
+     "title": "Boosted rain jacket A2",
+     "docType": "product"
+    },
+    {
+     "docType": "content",
+     "contentType": "banner_url",
+     "content": "https://cdn.example.test/b.jpg",
+     "slots": [
+      3
+     ]
+    },
+    {
+     "pid": "A3",
+     "title": "Boosted rain jacket A3",
+     "docType": "product"
+    },
+    {
+     "pid": "P01",
+     "title": "Rain jacket P01",
+     "docType": "product"
+    },
+    {
+     "pid": "P02",
+     "title": "Rain jacket P02",
+     "docType": "product"
+    },
+    {
+     "pid": "P03",
+     "title": "Rain jacket P03",
+     "docType": "product"
+    },
+    {
+     "pid": "P04",
+     "title": "Rain jacket P04",
+     "docType": "product"
+    },
+    {
+     "pid": "P05",
+     "title": "Rain jacket P05",
+     "docType": "product"
+    },
+    {
+     "pid": "P06",
+     "title": "Rain jacket P06",
+     "docType": "product"
+    },
+    {
+     "pid": "P07",
+     "title": "Rain jacket P07",
+     "docType": "product"
+    },
+    {
+     "pid": "P08",
+     "title": "Rain jacket P08",
+     "docType": "product"
+    },
+    {
+     "pid": "P09",
+     "title": "Rain jacket P09",
+     "docType": "product"
+    },
+    {
+     "pid": "P10",
+     "title": "Wool coat P10",
+     "docType": "product"
+    },
+    {
+     "pid": "P11",
+     "title": "Rain jacket P11",
+     "docType": "product"
+    },
+    {
+     "pid": "P12",
+     "title": "Rain jacket P12",
+     "docType": "product"
+    },
+    {
+     "pid": "P13",
+     "title": "Rain jacket P13",
+     "docType": "product"
+    },
+    {
+     "pid": "P14",
+     "title": "Rain jacket P14",
+     "docType": "product"
+    },
+    {
+     "pid": "P15",
+     "title": "Rain jacket P15",
+     "docType": "product"
+    },
+    {
+     "pid": "P16",
+     "title": "Rain jacket P16",
+     "docType": "product"
+    },
+    {
+     "pid": "P17",
+     "title": "Rain jacket P17",
+     "docType": "product"
+    },
+    {
+     "pid": "P18",
+     "title": "Rain jacket P18",
+     "docType": "product"
+    },
+    {
+     "pid": "P19",
+     "title": "Rain jacket P19",
+     "docType": "product"
+    },
+    {
+     "pid": "P20",
+     "title": "Rain jacket P20",
+     "docType": "product"
+    },
+    {
+     "pid": "P21",
+     "title": "Rain jacket P21",
+     "docType": "product"
+    },
+    {
+     "pid": "P22",
+     "title": "Rain jacket P22",
+     "docType": "product"
+    },
+    {
+     "pid": "P23",
+     "title": "Rain jacket P23",
+     "docType": "product"
+    },
+    {
+     "pid": "P24",
+     "title": "Rain jacket P24",
+     "docType": "product"
+    },
+    {
+     "pid": "P25",
+     "title": "Rain jacket P25",
+     "docType": "product"
+    },
+    {
+     "pid": "P26",
+     "title": "Rain jacket P26",
+     "docType": "product"
+    },
+    {
+     "pid": "P27",
+     "title": "Rain jacket P27",
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "explain.structured": {
+    "A1": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 600,
+      "relevance": 90,
+      "performance": 900,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0,
+      "merchandisingRulesApplied": {
+       "hardBoost": [
+        "parent_product_id:A1"
+       ]
+      }
+     }
+    ],
+    "A2": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 600,
+      "relevance": 90,
+      "performance": 900,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0,
+      "merchandisingRulesApplied": {
+       "hardBoost": [
+        "parent_product_id:A2"
+       ]
+      }
+     }
+    ],
+    "A3": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 600,
+      "relevance": 90,
+      "performance": 900,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0,
+      "merchandisingRulesApplied": {
+       "hardBoost": [
+        "parent_product_id:A3"
+       ]
+      }
+     }
+    ],
+    "P01": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 399,
+      "relevance": 87.9,
+      "performance": 499.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P02": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 398,
+      "relevance": 87.8,
+      "performance": 498.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P03": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 397,
+      "relevance": 87.7,
+      "performance": 497.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P04": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 396,
+      "relevance": 87.6,
+      "performance": 496.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P05": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 395,
+      "relevance": 87.5,
+      "performance": 495.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0,
+      "merchandisingRulesApplied": {
+       "hardBury": [
+        "parent_product_id:P05"
+       ]
+      }
+     }
+    ],
+    "P06": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 394,
+      "relevance": 87.4,
+      "performance": 494.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P07": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 393,
+      "relevance": 87.3,
+      "performance": 493.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P08": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 392,
+      "relevance": 87.2,
+      "performance": 492.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P09": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 391,
+      "relevance": 87.1,
+      "performance": 491.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P10": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 390,
+      "relevance": 30.0,
+      "performance": 490.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P11": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 389,
+      "relevance": 86.9,
+      "performance": 489.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P12": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 388,
+      "relevance": 86.8,
+      "performance": 50.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P13": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 387,
+      "relevance": 86.7,
+      "performance": 487.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P14": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 386,
+      "relevance": 86.6,
+      "performance": 486.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P15": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 385,
+      "relevance": 86.5,
+      "performance": 485.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P16": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 384,
+      "relevance": 86.4,
+      "performance": 484.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P17": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 383,
+      "relevance": 86.3,
+      "performance": 483.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P18": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 382,
+      "relevance": 86.2,
+      "performance": 482.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P19": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 381,
+      "relevance": 86.1,
+      "performance": 481.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P20": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 380,
+      "relevance": 86.0,
+      "performance": 480.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P21": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 379,
+      "relevance": 85.9,
+      "performance": 479.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P22": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 378,
+      "relevance": 85.8,
+      "performance": 478.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P23": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 377,
+      "relevance": 85.7,
+      "performance": 477.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P24": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 376,
+      "relevance": 85.6,
+      "performance": 476.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P25": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 375,
+      "relevance": 85.5,
+      "performance": 475.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P26": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 374,
+      "relevance": 85.4,
+      "performance": 474.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P27": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 373,
+      "relevance": 85.3,
+      "performance": 473.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ]
+   },
+   "customizations.explain": [
+    {
+     "id": 900001,
+     "ruleType": "ranking",
+     "queries": [
+      {
+       "query": "rain jacket",
+       "type": "sitesearch",
+       "matchType": "EXACT_MATCH"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "boost_top_products",
+       "value": "[{\"product_id\": \"A1\", \"product_name\": \"Boosted A1\"}, {\"product_id\": \"A2\", \"product_name\": \"Boosted A2\"}, {\"product_id\": \"A3\", \"product_name\": \"Boosted A3\"}]"
+      },
+      {
+       "type": "explicit_filters",
+       "value": "[{\"rule\": {\"type\": \"clause\", \"operator\": \"AND\", \"operands\": [{\"type\": \"attribute\", \"operator\": \"OR\", \"name\": \"category\", \"operands\": [\"cat-x\"]}], \"strength\": 0}, \"filter_type\": \"exclude\"}]"
+      }
+     ],
+     "liveInTest": false
+    },
+    {
+     "id": 900002,
+     "ruleType": "ranking_algo",
+     "queries": [
+      {
+       "query": "*"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "ranking_algo",
+       "value": "{\"id\": \"br-fake\"}"
+      }
+     ]
+    }
+   ],
+   "feUrl": "http://frontend.example.invalid/api?auth_key=FAKEKEY",
+   "sqApiUrl": "http://sq.example.invalid/?x=FAKE"
+  },
+  "did_you_mean": []
+ },
+ "error": null,
+ "environment_used": "production"
+}
