@@ -1,0 +1,33 @@
+{
+  "about": "The catalog configuration audit rules. scripts/config_audit.py reads this file, so change a threshold or word list here and nowhere else. Each key is explained under notes; references/checks.md says what each check means.",
+  "internal_words": ["margin", "cost", "profit", "wholesale", "markup", "supplier", "vendor", "commission", "landed"],
+  "must_be_searchable": {"title": "high", "brand": "high", "description": "medium", "keywords": "medium", "category_names": "medium"},
+  "numeric_reserved": ["price", "sale_price", "reviews", "width", "height", "depth", "capacity"],
+  "id_words": ["id", "ids", "sku", "code", "ean", "upc", "gtin", "isbn"],
+  "reserved_prefixes": ["product_", "sku_", "br_", "custom_"],
+  "key_reserved": {"title": "high", "url": "high", "thumb_image": "high", "price": "high", "availability": "medium", "brand": "medium", "description": "medium", "category_paths": "medium"},
+  "key_min_fill": 0.95,
+  "custom_min_fill": 0.2,
+  "min_sample": 20,
+  "max_suggest_min_chars": 3,
+  "max_drop_threshold": 50,
+  "stale_index_days": 2,
+  "core_fields": ["pid", "id", "variants", "category_paths", "category_ids", "category"],
+  "list_limit": 10,
+  "notes": {
+    "internal_words": "Words in an attribute name that mark internal commercial data. An internal attribute that is displayable (returned in API responses, so visible in the page source) or facetable is high; searchable is medium.",
+    "must_be_searchable": "Reserved or core attributes that should be searchable, with the priority when they aren't (reserved_attribute_searchability and core_attribute_searchability in the config).",
+    "numeric_reserved": "Reserved numeric attributes. Searchable means a query like '70' matches every product with that value: low, review.",
+    "id_words": "Words in a custom attribute name that mark an identifier. A searchable identifier is low: fine if shoppers search by code, noise otherwise.",
+    "reserved_prefixes": "Prefixes stripped from a custom attribute name before comparing it with reserved names, so product_brand is seen to duplicate brand.",
+    "key_reserved": "Reserved attributes every product needs, with the priority when the sample's fill rate is below key_min_fill.",
+    "key_min_fill": "Share of sampled products that must have a key reserved attribute (non-empty).",
+    "custom_min_fill": "A configured custom attribute filled on fewer than this share of sampled products is reported (medium if it is facetable or searchable, low otherwise; 0 means configured but never filled).",
+    "min_sample": "Fewer sampled products than this and fill rates are reported as rough, with a not_checked note.",
+    "max_suggest_min_chars": "Autosuggest that waits for more characters than this before suggesting is low.",
+    "max_drop_threshold": "An index search_docs_drop_threshold above this is medium: if it is the percentage of products a feed may remove before indexing stops, a broken feed could empty search.",
+    "stale_index_days": "A production catalog whose last index refresh is older than this many days (against --today) is medium; hand off to data-feed-health.",
+    "core_fields": "Feed fields that are neither custom nor reserved configuration, so they're never reported as unconfigured.",
+    "list_limit": "At most this many attribute names are quoted in one finding."
+  }
+}

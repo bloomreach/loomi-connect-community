@@ -1,0 +1,13 @@
+{"success": true, "data": {
+  "feed": {"enable_feed_jobs": true},
+  "index": {"enable_index_jobs": true, "enable_auto_indexing": false, "search_docs_drop_threshold": 20, "search_unavailable_docs": false},
+  "variants": {"sku_select": "on", "enable_filtering": true, "use_unavailable_variant_as_hero": false},
+  "custom_attributes_defaults": {"facetable": "off", "searchable": false},
+  "custom_attributes": {
+    "fabric": {"level": "product", "displayable": true, "facetable": "auto", "searchable": true, "multi_valued": false, "data_type": "text"},
+    "fit": {"level": "variant", "displayable": true, "facetable": "auto", "searchable": true, "multi_valued": false, "data_type": "text"}
+  },
+  "autosuggest": {"minimum_character_count": 2, "product_autosuggest": true},
+  "core_attribute_searchability": {"category_ids": true, "category_names": true, "product_ids": true, "variant_ids": true},
+  "reserved_attribute_searchability": {"brand": true, "title": true, "description": true, "keywords": true, "price": false, "sale_price": false}
+}, "error": null}
