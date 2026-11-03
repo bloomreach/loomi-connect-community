@@ -134,6 +134,7 @@ def compare(a, b, audiences):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     p = argparse.ArgumentParser(description="Find busy days and possible send collisions in a campaign calendar.")
     p.add_argument("calendar", nargs="+", help="saved get_campaign_calendar response(s), one per week if needed")
     p.add_argument("--audiences")

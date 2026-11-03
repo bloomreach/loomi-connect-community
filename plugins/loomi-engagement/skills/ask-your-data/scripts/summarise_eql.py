@@ -125,6 +125,7 @@ def summarise_funnel(data):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("path", help="JSON file with the execute_analytics_eql response, or - for stdin")
     ap.add_argument("--top", type=int, default=20, help="rows to show (default 20)")

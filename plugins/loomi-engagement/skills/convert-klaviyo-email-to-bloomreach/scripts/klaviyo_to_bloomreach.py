@@ -1040,6 +1040,7 @@ def render_check(args):
 
 # ----------------------------------------------------------------------------------------------
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("setup"); s.add_argument("--venv", required=True)

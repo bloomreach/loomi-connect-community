@@ -160,6 +160,7 @@ def pretty_path(entry, static):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--definitions", nargs="+", required=True)
     ap.add_argument("--grids", nargs="*", default=[])

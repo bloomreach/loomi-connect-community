@@ -16,6 +16,7 @@ get_discovery_query_performance), for example 14,790 visits over 90 days.
 """
 import argparse
 import math
+import sys
 
 
 def per_bucket(p, rel_lift, z_alpha=1.96, z_beta=0.84):
@@ -28,6 +29,7 @@ def per_bucket(p, rel_lift, z_alpha=1.96, z_beta=0.84):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--baseline-rate", type=float, required=True, help="e.g. 0.105 for a 10.5%% conversion rate")
     ap.add_argument("--visits", type=float, required=True, help="visits to the query in the period")

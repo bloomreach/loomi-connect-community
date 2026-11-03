@@ -116,6 +116,7 @@ def summarise(data):
 
 
 def main(paths):
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     if paths and paths[0] in ("-h", "--help"):
         print(__doc__)
         return 0

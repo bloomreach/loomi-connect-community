@@ -173,6 +173,7 @@ def norm_url(url):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser()
     ap.add_argument("--redirects", action="append", default=[])
     ap.add_argument("--synonyms", action="append", default=[])

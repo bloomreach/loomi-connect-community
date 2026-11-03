@@ -119,6 +119,7 @@ def metrics(row):
 
 
 def main(argv):
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     if not argv or argv[0] in ("-h", "--help"):
         print(__doc__)
         return 0 if argv else 1

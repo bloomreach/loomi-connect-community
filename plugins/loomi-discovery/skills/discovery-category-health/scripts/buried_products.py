@@ -65,6 +65,7 @@ def unwrap(data):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--grid", required=True)
     ap.add_argument("--fold", type=int, default=48, help="positions above this count as visible (default 48)")

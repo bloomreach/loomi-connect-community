@@ -21,7 +21,8 @@ Usage:
         --boost-brand Pacific --bury-duplicates [--top 24]
 
 GRID.json is either the saved grid response or a JSON list of
-{"pid", "title", "brand"} objects in ranked order.
+{"pid", "title", "brand"} objects in ranked order. Banner rows (docType
+"content", no pid) are left out: they aren't products and rules don't move them.
 """
 import argparse
 import collections
@@ -39,17 +40,24 @@ def check(doc, path):
     return doc
 
 
+def is_product(d):
+    """Grids also hold banner rows (docType "content", no pid, a slots list); they aren't products."""
+    return d.get("docType") != "content" and d.get("pid") not in (None, "")
+
+
 def load_docs(path):
+    """Return (product rows in ranked order, number of banner rows left out)."""
     with open(path, encoding="utf-8") as f:
         doc = check(json.load(f), path)
-    if isinstance(doc, list):
-        return doc
-    if "result" in doc and "data" not in doc:
-        doc = doc["result"]
-    try:
-        return doc["data"]["response"]["docs"]
-    except (KeyError, TypeError):
-        sys.exit("Couldn't find data.response.docs in the file")
+    if not isinstance(doc, list):
+        if "result" in doc and "data" not in doc:
+            doc = doc["result"]
+        try:
+            doc = doc["data"]["response"]["docs"]
+        except (KeyError, TypeError):
+            sys.exit("Couldn't find data.response.docs in the file")
+    products = [d for d in doc if is_product(d)]
+    return products, len(doc) - len(products)
 
 
 def norm(text):
@@ -62,6 +70,7 @@ def brand_mix(docs, n):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # titles can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("grid")
     ap.add_argument("--boost-brand", action="append", default=[], help="brand to boost (repeatable, exact facet value)")
@@ -69,7 +78,7 @@ def main():
     ap.add_argument("--top", type=int, default=24)
     args = ap.parse_args()
 
-    docs = load_docs(args.grid)
+    docs, banners = load_docs(args.grid)
     boost = {norm(b) for b in args.boost_brand}
     seen, dup_pids = set(), []
     keyed = []
@@ -85,7 +94,9 @@ def main():
     old_rank = {str(d.get("pid")): i for i, d in enumerate(docs, 1)}
 
     n = args.top
-    print(f"Results: {len(docs)}. Showing the top {n}.\n")
+    print(f"Results: {len(docs)} products. Showing the top {n}.\n")
+    if banners:
+        print(f"Left out {banners} banner row(s): they aren't products, and the rule doesn't move them.\n")
     print(f"Brand mix before: {brand_mix(docs, n)}")
     print(f"Brand mix after:  {brand_mix(new, n)}\n")
     if boost:

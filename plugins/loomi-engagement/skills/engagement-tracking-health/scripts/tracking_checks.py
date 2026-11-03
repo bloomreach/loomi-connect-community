@@ -158,6 +158,7 @@ def check_volumes(schema, cur, prev, base, drop_pct, min_volume):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("schema")
