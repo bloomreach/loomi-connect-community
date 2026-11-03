@@ -208,9 +208,14 @@ class ChangePreviewTest(unittest.TestCase):
             q = Path(tmp) / "queries.json"
             q.write_text(json.dumps(data), encoding="utf-8")
             r = preview("change_ranking_raw.json", *grid("dress", "grid_dress.json"), "--queries", q, "--page-size", 5)
+            # A redirect and a ranking rule with no grid both read revenue; neither may crash on a missing figure.
+            red = preview("change_redirect_raw.json", "--queries", q)
+            rank = preview("change_ranking_raw.json", "--queries", q)
         self.assertEqual(r["affected"]["revenue_missing"], 1)
         self.assertIsNone(r["affected"]["rows"][0]["revenue"])
         self.assertEqual(r["affected"]["revenue"], 0)
+        self.assertNotIn("revenue", [x["check"] for x in red["findings"] if x["query"] == "dress"])
+        self.assertTrue(any("revenue unknown" in n for n in rank["not_checked"]))
 
     def test_out_file(self):
         with tempfile.TemporaryDirectory() as tmp:

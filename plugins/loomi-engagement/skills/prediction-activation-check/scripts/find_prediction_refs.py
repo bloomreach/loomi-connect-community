@@ -68,6 +68,7 @@ def matches(values, needle, substring):
 
 
 def main(argv):
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     if len(argv) == 2 and argv[1] in ("-h", "--help"):
         print(__doc__)
         return 0

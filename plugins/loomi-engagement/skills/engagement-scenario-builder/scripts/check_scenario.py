@@ -183,6 +183,7 @@ def check(payload, stored):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("payload")
     ap.add_argument("--stored")

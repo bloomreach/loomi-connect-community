@@ -261,6 +261,7 @@ def n_per_arm_mean(mean, var, rel_lift, alpha, power):
 # ---------- main ----------
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(
         description="Significance maths for an Engagement A/B test readout (prints Markdown).",
         epilog="Run with --example to see the input format.")

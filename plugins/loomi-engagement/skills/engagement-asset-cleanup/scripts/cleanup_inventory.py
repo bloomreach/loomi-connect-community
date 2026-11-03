@@ -70,6 +70,7 @@ def base(name):
 
 
 def main(argv):
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     now, draft_d, inactive_d, active_d = time.time(), 90, 180, 365
     args, files = argv[1:], []
     if "-h" in args or "--help" in args:

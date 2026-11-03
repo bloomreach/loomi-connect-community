@@ -249,6 +249,7 @@ def triage(no_results, no_revenue, top, synonym_rows, redirect_rows, rules):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--no-results", required=True, help="saved no_search_results query performance (comma-separated pages)")
     ap.add_argument("--no-revenue", required=True, help="saved no_revenue query performance (comma-separated pages)")

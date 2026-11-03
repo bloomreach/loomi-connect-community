@@ -107,6 +107,7 @@ def count(n):
 
 
 def main(argv):
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description="Turn win-back EQL counts into a revenue-at-stake table (Markdown).",
                                  epilog="Run with --example to see the input format.")
     ap.add_argument("grid", nargs="?", help="JSON file of counts per recency band")

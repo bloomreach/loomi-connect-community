@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery; optionally Engagement catalogs) and a client whose model can view images (vision); falls back to text-only when images can't be viewed. Python 3 is optional, for the bundled script.
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.1.4"
   products: discovery,engagement
   access: read-only
 ---

@@ -278,6 +278,7 @@ def build(markets, years, start, end):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--market", default="US,UK,EU", help="comma-separated market codes (default US,UK,EU)")
     p.add_argument("--year", type=int, action="append", help="year(s); repeatable. Default: years covered by the window, or this year")

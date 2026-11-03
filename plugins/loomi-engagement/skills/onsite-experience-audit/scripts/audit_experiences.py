@@ -134,6 +134,7 @@ def days(ts, now):
 
 
 def main(argv):
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     now = time.time()
     stale = 90
     files = []
