@@ -3,7 +3,7 @@
 
 Usage:
   python3 hidden_config_audit.py --audiences audiences.json [--audience-rules 12753=rules_12753.json ...]
-         [--api-params api_params.json ...] [--rules ranking_rules.json ...] --today 2026-11-03 [--out audit.json]
+         [--api-params api_params.json ...] [--rules ranking_rules.json ...] [--today 2026-11-03] [--out audit.json]
 
 --audiences      saved list_discovery_audiences result.
 --audience-rules <audience id>=<file>: a rule list fetched with audience_ids=<that id> (site search, category
@@ -11,9 +11,10 @@ Usage:
                  name the audience (audienceName is null), so the id is given here.
 --api-params     saved list_api_params result (repeat per site).
 --rules          saved unfiltered rule lists (ranking or facet), used to say what a global override can affect.
---today          the audit date, so results don't depend on when the script runs.
+--today          the audit date (default: today in UTC); pass it to make results repeatable.
 
-Prints JSON: findings sorted into fix_now, clean_up and review; protected items; the personalised-rule map
+Prints JSON: findings sorted by priority (high: broken and live; medium: needs a decision; low: clean-up of
+unused items), with secret-looking URL parameters (email, token, key, sig, auth, session) redacted; protected items; the personalised-rule map
 (rule -> audience) that discovery-rule-audit needs to tell personalisation from duplicates; audiences whose
 rulesAffected the given lists don't account for, and used audiences whose rule lists weren't given; and the
 Engagement segments audiences depend on.
@@ -30,13 +31,30 @@ from pathlib import Path
 
 # The thresholds live in references/rules.json, next to this script's folder.
 RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
-PRIORITIES = ("fix_now", "clean_up", "review")
+PRIORITIES = ("high", "medium", "low")
+# URL parameters whose values never go into a report: an audience or override value can carry a shopper's email
+# or a token.
+SECRET_PARAM = re.compile(r"((?:^|[?&;\s'\"(])[^=&;?#\s'\"]*(?:email|token|key|sig|auth|session|password|secret)[^=&;?#\s'\"]*=)[^&;#\s'\"]*", re.I)
 NEGATIVE = {"IS_NOT", "NOT_CONTAIN", "DOES_NOT_CONTAIN", "NOT_CONTAINS"}
 
 
 def fail(msg):
     print(json.dumps({"ok": False, "error": msg}))
     sys.exit(1)
+
+
+def tool_error(err):
+    """A Loomi Connect error safe to repeat. An unknown account_name makes some Discovery tools list every
+    account the user can access, so an account error that looks like a list is replaced, never echoed."""
+    text = str(err or "no error text")
+    if "account" in text.lower() and text.count(",") >= 3:
+        return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list "
+                "other accounts. Ask the user to check the account name.")
+    return text[:200]
+
+
+def redact(text):
+    return SECRET_PARAM.sub(r"\1[redacted]", str(text))
 
 
 def read(path):
@@ -47,7 +65,7 @@ def read(path):
         fail(f"{path}: can't read it as JSON ({e}).")
     for d in (data, data.get("result") if isinstance(data, dict) else None):
         if isinstance(d, dict) and d.get("success") is False:
-            fail(f"{path}: Loomi Connect returned an error: {d.get('error') or 'no error text'}. "
+            fail(f"{path}: Loomi Connect returned an error: {tool_error(d.get('error'))} "
                  "This check couldn't run; don't treat it as 'nothing found'.")
     while isinstance(data, dict) and isinstance(data.get("result"), (dict, list)):
         data = data["result"]
@@ -83,7 +101,7 @@ class Report:
     def add(self, priority, area, item, issue, evidence, action):
         self.findings.append({"priority": priority, "area": area, "id": item.get("id"),
                               "name": (item.get("audienceName") or item.get("name") or "").strip() or None,
-                              "issue": issue, "evidence": evidence, "action": action})
+                              "issue": redact(issue), "evidence": redact(evidence), "action": action})
 
 
 # ----------------------------------------------------------------------------------------------
@@ -160,36 +178,36 @@ def check_audiences(rep, audiences, audience_rules, today):
         live = [r for r in rules if r.get("enabled") and r.get("durationTag") != "expired"]
         if broken:
             if live:
-                rep.add("fix_now", "audience", a, "Audience can't match as written, so its rules never fire",
+                rep.add("high", "audience", a, "Audience can't match as written, so its rules never fire",
                         "; ".join(broken) + f". Enabled rules: {', '.join(str(r.get('id')) for r in live)}",
                         "Fix the condition (copy the value from a real URL), then check the rules with discovery-change-qa")
             elif n_rules:
-                rep.add("fix_now", "audience", a, "Audience can't match as written, but rules use it",
+                rep.add("high", "audience", a, "Audience can't match as written, but rules use it",
                         "; ".join(broken) + f". rulesAffected: {n_rules}",
                         "Fix the condition, or move its rules to a working audience")
             elif not protected:
-                rep.add("clean_up", "audience", a, "Unused audience that can't match anyway", "; ".join(broken),
+                rep.add("low", "audience", a, "Unused audience that can't match anyway", "; ".join(broken),
                         "Delete it in the Discovery dashboard")
             continue
         notes = risky_values(a)
         if notes and n_rules:
-            rep.add("review", "audience", a, "Condition probably matches more or less than intended",
+            rep.add("medium", "audience", a, "Condition probably matches more or less than intended",
                     "; ".join(notes) + f". rulesAffected: {n_rules}",
                     "Rewrite the value to match exactly the URLs you mean (e.g. a whole parameter such as "
-                    "segment=vic), then re-test its rules with discovery-change-qa")
+                    "segment=top-tier), then re-test its rules with discovery-change-qa")
         if n_rules == 0 and not protected:
             created = day(a.get("createdAt"))
             age = (today - created).days if created else None
             test = has_word(name, RULES["test_name_words"])
             if age is not None and age < RULES["unused_min_age_days"]:
-                rep.add("review", "audience", a, "New audience not used by any rule yet",
+                rep.add("medium", "audience", a, "New audience not used by any rule yet",
                         f"created {created}, {age} days ago", "Check with its owner that it's about to be used")
             else:
-                rep.add("clean_up", "audience", a, "Unused " + ("test " if test else "") + "audience",
+                rep.add("low", "audience", a, "Unused " + ("test " if test else "") + "audience",
                         f"rulesAffected 0; created {created or 'unknown'}"
                         + ("; " + "; ".join(notes) if notes else ""), "Delete it in the Discovery dashboard")
         elif rules and not live:
-            rep.add("clean_up", "audience", a, "Audience only drives disabled or expired rules",
+            rep.add("low", "audience", a, "Audience only drives disabled or expired rules",
                     f"{len(rules)} rule(s) found, none enabled and in date: "
                     + ", ".join(str(r.get("id")) for r in rules),
                     "Delete the old rules and the audience, or re-enable what's still wanted")
@@ -206,7 +224,7 @@ def check_audience_pairs(rep, audiences):
         if len(group) > 1:
             names = ", ".join(f"{g.get('id')} ({(g.get('audienceName') or '').strip()})" for g in group)
             in_use = [g for g in group if g.get("rulesAffected")]
-            rep.add("fix_now" if len(in_use) > 1 else "clean_up", "audience", group[0],
+            rep.add("high" if len(in_use) > 1 else "low", "audience", group[0],
                     "Audiences with identical conditions", names,
                     "Keep one, move its rules over and delete the others" if len(in_use) > 1
                     else "Delete the unused copies")
@@ -221,7 +239,7 @@ def check_audience_pairs(rep, audiences):
                     x, y = norm(va), norm(vb)
                     if (da == db and ma == "CONTAIN_MATCH" and mb not in NEGATIVE and x and y and x != y
                             and x in y):
-                        rep.add("review", "audience", a, "Overlaps another audience",
+                        rep.add("medium", "audience", a, "Overlaps another audience",
                                 f"{ext} CONTAINS {x!r} also matches every visitor of audience {b.get('id')} "
                                 f"({(b.get('audienceName') or '').strip()}), whose value is {y!r}",
                                 "Make the values distinct so each visitor gets the intended rules")
@@ -301,51 +319,69 @@ def check_overrides(rep, overrides, rules, today):
         age = (today - modified).days if modified else None
         params = override_params(o)
         if enabled and expired:
-            rep.add("fix_now", "api_param", o, "Expired override still enabled", f"durationTag expired; applies to {scope}",
+            rep.add("high", "api_param", o, "Expired override still enabled", f"durationTag expired; applies to {scope}",
                     "Disable it in the Discovery dashboard")
             continue
         if not enabled:
             if age is not None and age >= RULES["stale_days"]:
-                rep.add("clean_up", "api_param", o, "Old disabled override", f"disabled; last changed {modified}",
+                rep.add("low", "api_param", o, "Old disabled override", f"disabled; last changed {modified}",
                         "Delete it in the Discovery dashboard")
             continue
         if params is None:
-            rep.add("review", "api_param", o, "Couldn't read which parameters this override sets",
+            rep.add("medium", "api_param", o, "Couldn't read which parameters this override sets",
                     f"applies to {scope}", "Open it in the Discovery dashboard and note the parameter and value")
             continue
         for p, v in params:
             key = str(p).strip().lower()
             seen.setdefault(key, []).append(o)
-            if key in RULES["override_fix_now_params"]:
-                rep.add("fix_now", "api_param", o, f"Overrides {p} = {v!r}",
-                        f"{RULES['override_fix_now_params'][key]}; applies to {scope}",
+            if key in RULES["override_high_params"]:
+                rep.add("high", "api_param", o, f"Overrides {p} = {v!r}",
+                        f"{RULES['override_high_params'][key]}; applies to {scope}",
                         "Remove the override unless it was put there on purpose, and test with discovery-change-qa")
-            elif key in RULES["override_review_params"]:
+            elif key in RULES["override_medium_params"]:
                 extra = ""
                 if key == "sort" and ranking:
                     extra = f"; {ranking} enabled ranking rule(s) in the lists given may have no effect under it"
                 if key in ("fq", "efq") and facets:
                     extra = f"; {facets} enabled facet rule(s) in the lists given work on the filtered set only"
-                rep.add("review", "api_param", o, f"Overrides {p} = {v!r}",
-                        f"{RULES['override_review_params'][key]}; applies to {scope}{extra}",
+                rep.add("medium", "api_param", o, f"Overrides {p} = {v!r}",
+                        f"{RULES['override_medium_params'][key]}; applies to {scope}{extra}",
                         "Confirm it's still wanted; document why in its name")
             elif not name and age is not None and age >= RULES["stale_days"]:
-                rep.add("review", "api_param", o, f"Unnamed old override of {p} = {v!r}",
+                rep.add("medium", "api_param", o, f"Unnamed old override of {p} = {v!r}",
                         f"last changed {modified}; applies to {scope}", "Name it, or remove it if nobody knows why it's there")
     for key, items in seen.items():
         if len({id(i) for i in items}) > 1:
-            rep.add("fix_now", "api_param", items[0], f"{key} is overridden by more than one enabled override",
+            rep.add("high", "api_param", items[0], f"{key} is overridden by more than one enabled override",
                     "overrides " + ", ".join(str(i.get("id")) for i in items), "Keep one")
 
 
-def pair(spec):
-    if "=" not in spec:
-        fail(f"--audience-rules needs <audience id>=<file>, got {spec!r}.")
-    aid, path = spec.split("=", 1)
+def audience_file(spec):
+    """argparse type for <audience id>=<file>: splits on the first "="."""
+    aid, sep, path = spec.partition("=")
+    if not sep or not path:
+        raise argparse.ArgumentTypeError(f"needs <audience id>=<file>, got {spec!r}")
     try:
         return int(aid.strip()), path
     except ValueError:
-        fail(f"--audience-rules: {aid!r} isn't a numeric audience id.")
+        raise argparse.ArgumentTypeError(f"{aid!r} isn't a numeric audience id")
+
+
+def check_shape(path, records, kind):
+    """Stop with the file and field when a record doesn't have the shape the checks read."""
+    for r in records:
+        if kind == "audiences":
+            dims = r.get("dimensionList")
+            if dims is not None and not isinstance(dims, list):
+                fail(f"{path}: audience {r.get('id')}: dimensionList isn't a list.")
+            for d in dims or []:
+                if not isinstance(d, dict) or not isinstance(d.get("dimensionValueList") or [], list):
+                    fail(f"{path}: audience {r.get('id')}: a dimension's dimensionValueList isn't a list.")
+            if not isinstance(r.get("rulesAffected") or 0, int):
+                fail(f"{path}: audience {r.get('id')}: rulesAffected isn't a number.")
+        elif not isinstance(r.get("queries") or [], list):
+            fail(f"{path}: record {r.get('id')}: queries isn't a list.")
+    return records
 
 
 def when(text):
@@ -359,28 +395,29 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")  # names can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--audiences", help="saved list_discovery_audiences result")
-    ap.add_argument("--audience-rules", action="append", default=[], help="<audience id>=<rule list filtered by it>")
+    ap.add_argument("--audience-rules", action="append", default=[], type=audience_file,
+                    help="<audience id>=<rule list filtered by it>")
     ap.add_argument("--api-params", action="append", default=[], help="saved list_api_params result (repeat per site)")
     ap.add_argument("--rules", action="append", default=[], help="saved unfiltered rule list (ranking or facet)")
-    ap.add_argument("--today", type=when, required=True, help="audit date, YYYY-MM-DD")
+    ap.add_argument("--today", type=when, help="audit date, YYYY-MM-DD (default: today in UTC)")
     ap.add_argument("--out", help="also write the JSON result to this file")
     a = ap.parse_args()
+    today = a.today or datetime.now(timezone.utc).date()
     if not a.audiences and not a.api_params:
         fail("Give --audiences, --api-params or both.")
     rep = Report()
-    audiences = read(a.audiences) if a.audiences else []
+    audiences = check_shape(a.audiences, read(a.audiences), "audiences") if a.audiences else []
     audience_rules = {}
-    for spec in a.audience_rules:
-        aid, path = pair(spec)
-        audience_rules.setdefault(aid, []).extend(read(path))
-    check_audiences(rep, audiences, audience_rules, a.today)
-    overrides = [o for p in a.api_params for o in read(p)]
-    rules = [r for p in a.rules for r in read(p)]
-    check_overrides(rep, overrides, rules, a.today)
+    for aid, path in a.audience_rules:
+        audience_rules.setdefault(aid, []).extend(check_shape(path, read(path), "rules"))
+    check_audiences(rep, audiences, audience_rules, today)
+    overrides = [o for p in a.api_params for o in check_shape(p, read(p), "overrides")]
+    rules = [r for p in a.rules for r in check_shape(p, read(p), "rules")]
+    check_overrides(rep, overrides, rules, today)
     personalised, unaccounted, not_fetched = personalised_map(audiences, audience_rules)
     order = {p: i for i, p in enumerate(PRIORITIES)}
     findings = sorted(rep.findings, key=lambda f: (order[f["priority"]], f["area"], str(f["id"])))
-    out = {"ok": True, "today": a.today.isoformat(),
+    out = {"ok": True, "today": today.isoformat(),
            "summary": {"audiences": len(audiences), "audiences_unused": sum(1 for x in audiences if not x.get("rulesAffected")),
                        "api_param_overrides": len(overrides),
                        "api_param_overrides_enabled": sum(1 for o in overrides if o.get("enabled") is not False),

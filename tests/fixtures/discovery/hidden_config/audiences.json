@@ -3,7 +3,7 @@
  "data": [
   {
    "id": 100,
-   "audienceName": "High value",
+   "audienceName": "Top tier",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -18,8 +18,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "sgmt=high-value",
-       "externalValue": "sgmt=high-value",
+       "internalValue": "seg=top-tier",
+       "externalValue": "seg=top-tier",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
@@ -33,7 +33,7 @@
   },
   {
    "id": 101,
-   "audienceName": "High value copy",
+   "audienceName": "Top tier copy",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -48,8 +48,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "sgmt=high-value",
-       "externalValue": "sgmt=high-value",
+       "internalValue": "seg=top-tier",
+       "externalValue": "seg=top-tier",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
@@ -63,7 +63,7 @@
   },
   {
    "id": 102,
-   "audienceName": "Spring email",
+   "audienceName": "Promo mail",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -78,8 +78,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "SpringEmail ",
-       "externalValue": "SpringEmail ",
+       "internalValue": "PromoMail ",
+       "externalValue": "PromoMail ",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
@@ -93,7 +93,7 @@
   },
   {
    "id": 103,
-   "audienceName": "Old Skool",
+   "audienceName": "Retro Line",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -108,8 +108,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "Old Skool",
-       "externalValue": "Old Skool",
+       "internalValue": "Retro Line",
+       "externalValue": "Retro Line",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
@@ -123,7 +123,7 @@
   },
   {
    "id": 104,
-   "audienceName": "VIC",
+   "audienceName": "Short code",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -138,8 +138,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "VIC",
-       "externalValue": "VIC",
+       "internalValue": "ZZ",
+       "externalValue": "ZZ",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
@@ -153,7 +153,7 @@
   },
   {
    "id": 105,
-   "audienceName": "Gifting - do not delete",
+   "audienceName": "Gift wrap - do not delete",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -168,8 +168,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "&gifting=true",
-       "externalValue": "&gifting=true",
+       "internalValue": "&giftwrap=true",
+       "externalValue": "&giftwrap=true",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
@@ -243,7 +243,7 @@
   },
   {
    "id": 108,
-   "audienceName": "Diamond",
+   "audienceName": "Gold",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -258,8 +258,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "diamond",
-       "externalValue": "diamond",
+       "internalValue": "gold",
+       "externalValue": "gold",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
@@ -273,7 +273,7 @@
   },
   {
    "id": 109,
-   "audienceName": "Diamond club",
+   "audienceName": "Gold tier",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -288,8 +288,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "diamond_club",
-       "externalValue": "diamond_club",
+       "internalValue": "gold_tier",
+       "externalValue": "gold_tier",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
@@ -433,7 +433,7 @@
   },
   {
    "id": 114,
-   "audienceName": "Décoration fans",
+   "audienceName": "Écrin fans",
    "user": "editor@example.test",
    "createdAt": 1717071566578,
    "modifiedAt": 1717071566578,
@@ -448,8 +448,8 @@
      "dimensionValueList": [
       {
        "id": 0,
-       "internalValue": "Décoration",
-       "externalValue": "Décoration",
+       "internalValue": "Écrin",
+       "externalValue": "Écrin",
        "matchtype": {
         "id": 1,
         "internalName": "CONTAIN_MATCH",
