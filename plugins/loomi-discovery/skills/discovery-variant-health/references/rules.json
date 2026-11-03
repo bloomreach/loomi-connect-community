@@ -1,5 +1,6 @@
 {
   "about": "The variant and stock health rules. scripts/variant_health.py reads this file, so change a threshold or word list here and nowhere else. Each key is explained under notes.",
+  "top_queries": 5,
   "page_size": 24,
   "top_sellers": 50,
   "stock_fields": ["availability", "in_stock", "inStock", "stock_status", "stock_level", "inventory"],
@@ -13,6 +14,7 @@
   "min_variants_per_colour": 2,
   "max_findings_listed": 30,
   "notes": {
+    "top_queries": "How many of the highest-revenue queries (last 30 days) to check page one for, unless the user asks for more. Read by the SKILL.md call plan, not the script.",
     "page_size": "Products at or above this position in a saved grid are on page one. Fetch grids with rows set to this.",
     "top_sellers": "Rows of the product performance table, sorted by revenue, that count as top sellers and are checked even when they aren't on a saved page one.",
     "stock_fields": "Catalog or variant attributes that may carry stock status. The first one present on a record is used; if none is present anywhere, stock isn't checked and the report says so.",

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery
   access: read-only
 ---
@@ -46,7 +46,7 @@ You need the Discovery account and the catalog. Ask the user for the account nam
 
 You don't need `list_facet_attributes`: the catalog config is the authoritative source, and that tool marks internal fields as facetable whatever their configuration (see `docs/known-tool-behaviour.md`).
 
-Make Loomi Connect calls one at a time. Discovery allows about 3 requests per second; if a call returns HTTP 429, wait a few seconds and retry. If a call returns `success: false` or HTTP 403, say which check couldn't run; don't report "nothing found".
+Make Loomi Connect calls one at a time. Discovery allows about 3 requests per second; if a call returns HTTP 429, wait for `Retry-After` (a few seconds if it isn't set), then retry. If a call returns `success: false` or HTTP 403, say which check couldn't run; don't report "nothing found".
 
 ### Running the scripts
 

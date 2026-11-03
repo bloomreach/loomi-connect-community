@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery
   access: read-only
 ---
@@ -56,7 +56,7 @@ You need:
 | Which pages | no | By default the top searches and categories by revenue; the user can name their own. |
 | Environment | no | `production` by default. |
 
-Make Loomi Connect calls **one at a time**: Discovery allows 3 requests a second, and parallel grid calls can return HTTP 500. On a 429 or 500, wait and retry once.
+Make Loomi Connect calls **one at a time**: Discovery allows 3 requests a second, and parallel grid calls can return HTTP 500. On a 429, wait for `Retry-After` (a few seconds if it isn't set), then retry; on a 500, wait a few seconds and retry once.
 
 `search_discovery_catalog_product_variants` may not be listed directly. Find it with the Loomi Connect `search_tools` tool and run it with `call_tool`.
 
@@ -70,7 +70,7 @@ The numbers below (page size, how many top sellers) are keys in [references/rule
 
 ### 1. Pick the pages and the top sellers
 
-1. `get_discovery_query_performance` sorted by revenue for the last 30 days: take the top 5 queries (ask the user if they want more). Save it: the script shows each query's revenue next to its findings.
+1. `get_discovery_query_performance` sorted by revenue for the last 30 days: take the top `top_queries` queries from `references/rules.json` (ask the user if they want more). Save it: the script shows each query's revenue next to its findings.
 2. Optionally `get_discovery_category_performance_table` for the top categories, if the user cares about category pages.
 3. `get_discovery_product_performance_table` sorted by revenue, with `top_sellers` rows. Save it.
 

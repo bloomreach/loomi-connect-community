@@ -75,7 +75,7 @@ def number(v):
 def tool_error(err):
     """A Loomi Connect error, safe to show: never a list of account names."""
     text = str(err or "no error text")
-    if re.search(r"account", text, re.I) and text.count(",") >= 3:
+    if re.search(r"account", text, re.I):  # these errors can list every account the user can access
         return ACCOUNT_LIST
     return text[:200]
 
@@ -443,8 +443,11 @@ def main():
            "findings": findings[:cap], "findings_not_listed": max(0, len(findings) - cap), "not_checked": not_checked}
     text = json.dumps(out, indent=2, ensure_ascii=False)
     if a.out:
-        with open(a.out, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text + "\n")
+        try:
+            with open(a.out, "w", encoding="utf-8", newline="\n") as f:
+                f.write(text + "\n")
+        except OSError as e:
+            fail(f"Can't write {a.out}: {e.strerror or e}")
     print(text)
 
 

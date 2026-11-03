@@ -75,7 +75,7 @@ def number(v):
 
 def tool_error(err):
     text = str(err or "no error text")
-    if re.search(r"account", text, re.I) and text.count(",") >= 3:
+    if re.search(r"account", text, re.I):  # these errors can list every account the user can access
         return ACCOUNT_ERROR
     return text[:200]
 
@@ -394,8 +394,11 @@ def main():
            "not_checked": not_checked}
     text = json.dumps(out, indent=2, ensure_ascii=False)
     if a.out:
-        with open(a.out, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text + "\n")
+        try:
+            with open(a.out, "w", encoding="utf-8", newline="\n") as f:
+                f.write(text + "\n")
+        except OSError as e:
+            fail(f"Can't write {a.out}: {e.strerror or e}")
     print(text)
 
 

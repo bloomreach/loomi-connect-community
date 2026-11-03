@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery
   access: read-only
 ---
@@ -48,7 +48,7 @@ You need:
 | Site | no | From `list_discovery_sites` (`domain_key`, `view_id`). Accounts with no sites use the account name as the `domain_key`. |
 | Environment | no | `production` by default. |
 
-Make Loomi Connect calls **one at a time**: Discovery allows 3 requests a second, and parallel grid calls can return HTTP 500. On a 429 or 500, wait and retry once.
+Make Loomi Connect calls **one at a time**: Discovery allows 3 requests a second, and parallel grid calls can return HTTP 500. On a 429, wait for `Retry-After` (a few seconds if it isn't set), then retry; on a 500, wait a few seconds and retry once.
 
 **Keep grid responses small.** Every grid call returns per-product score breakdowns, about 65 KB even for 5 rows. Always pass `fl="pid,title"` and `extra_params={"facet": "false"}`. If the client saves a large response to a file, don't read it: pass the file to the script.
 

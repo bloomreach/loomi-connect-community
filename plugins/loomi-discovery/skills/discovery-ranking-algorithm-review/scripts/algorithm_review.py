@@ -51,7 +51,7 @@ def tool_error(text):
     """A Loomi Connect error, safe to show: an unknown account name can make a tool list every account the user
     can access, so an error that mentions an account and reads like a list isn't repeated."""
     text = str(text or "no error text")
-    if "account" in text.lower() and text.count(",") >= 3:
+    if "account" in text.lower():  # these errors can list every account the user can access
         return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list other "
                 "accounts. Ask the user to check the account name.")
     return "Loomi Connect returned an error: " + (text if len(text) <= 200 else text[:200] + "…") + "."
