@@ -25,7 +25,7 @@ See [examples/cart-recommendations-weblayer.md](examples/cart-recommendations-we
 
 ## Notes and limitations
 
-- The reference was checked against the Bloomreach documentation on 2026-04-17. `expressions` and direct `predictions(...)` calls aren't documented, but work in practice.
+- The reference was checked against the Bloomreach documentation on 2026-04-17. It lists only documented objects; predictions are read as customer attributes.
 - Bloomreach Jinja doesn't autoescape, so the skill escapes catalog and customer values with `| e`, only allows `https://` or relative URLs in links and images, and escapes `<` in JSON written into scripts.
 - The skill only returns code. It never saves anything to Bloomreach.
 - Preview the code in Bloomreach against a test customer before it goes live. The skill can't render Bloomreach Jinja itself.

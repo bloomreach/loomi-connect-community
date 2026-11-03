@@ -16,7 +16,7 @@ Skills here are built **only on Bloomreach's publicly available interfaces**: th
 | **REST** | Bloomreach's publicly documented REST APIs, such as the Engagement API and the Discovery search APIs |
 | **Documented product formats** | Bloomreach Jinja personalization, the weblayer and JavaScript SDK conventions, and the documented import and export formats |
 
-"Publicly available" means documented by Bloomreach for customer or partner use, through a product's documentation or a tool's own published description. If an interface isn't documented that way, a skill can't depend on it.
+"Publicly available" means documented by Bloomreach for customer or partner use, through a product's documentation or a tool's own published description. Code and conventions that Bloomreach ships to customers inside the product also count, such as the weblayer templates' built-in `utils` library. A skill that relies on one says so. If an interface isn't documented or shipped that way, a skill can't depend on it.
 
 Every skill in the repository today uses the Loomi Connect MCP server. Skills built on a public REST API are equally welcome, and the same rules apply to them.
 

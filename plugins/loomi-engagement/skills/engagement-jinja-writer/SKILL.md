@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Works without Loomi Connect. With the Loomi Connect MCP server (Bloomreach Engagement) it can look up the project's real asset IDs and attribute names.
 metadata:
   author: CWildeBloomreach
-  version: "0.2.0"
+  version: "0.2.1"
   products: engagement
   access: read-only
 ---

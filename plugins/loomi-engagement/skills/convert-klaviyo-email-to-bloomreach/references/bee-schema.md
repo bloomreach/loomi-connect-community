@@ -1,18 +1,19 @@
 # BEE template schema (reference)
 
 `scripts/klaviyo_to_bloomreach.py build` generates all of this. Use this file only to debug a push error
-or a Visual Builder error. It is extracted from the production-validated `email-to-engagement` schema,
-with the corrections below.
+or a Visual Builder error. It records the structure the Visual Builder accepts, as observed by pushing emails
+through the public `create_scenario` tool and opening, saving and previewing them in the editor (Oct 2026).
+The format is the Visual Builder's own template JSON, which the public scenario tools return and accept; it isn't
+published as a schema, so treat these rules as observed behaviour.
 
-## Corrections vs. the original email-to-engagement schema
+## Rules that are easy to get wrong
 
 - **Vouchers:** `{{ vouchers['pool'].assign_available() }}`. `{{ voucher('pool') }}` is invalid.
 - **Jinja in BEE:** `href`/`src` stay static in `beefree_template`; live tokens go only in `jinja_html`.
   Visible text tokens (greeting, names) go in both. Control flow (`{% for %}`, `{% if %}`) goes in a
   **custom HTML module** in both.
-- **API push shape** (not clipboard): `design.data` carries `beefree_template` (string), `jinja_html`, `subject`,
-  `preheader`, `sender_name`, `sender_email`, `reply_to`, `file_ids`, `translations`, `provider`. There is no
-  `appVersion` wrapper.
+- **API push shape:** `design.data` carries `beefree_template` (string), `jinja_html`, `subject`,
+  `preheader`, `sender_name`, `sender_email`, `reply_to`, `file_ids`, `translations`, `provider`.
 
 ## Custom HTML module (used for Jinja loops/conditionals)
 
@@ -235,7 +236,7 @@ When source rows are flush (no visible gap between them):
 
 1. **`"align": "left"` at the module root level**: ONLY on `image`, `text`, `paragraph`, `button`, `social` modules. NEVER on `spacer`, `divider`, or `heading` modules.
 2. **Text module HTML**: MUST be wrapped in `<div class="txtTinyMce-wrapper" style="..." data-mce-style="...">`. Without this wrapper, BEE's TinyMCE editor refuses to load and throws a 400 error.
-3. **`data-mce-style` mirroring**: Every `style="X"` attribute inside text/paragraph HTML must have a matching `data-mce-style="X"` attribute on the SAME element. The BEE multiparser uses `data-mce-style` to generate Outlook-compatible HTML and throws 422 without it.
+3. **`data-mce-style` mirroring**: Every `style="X"` attribute inside text/paragraph HTML must have a matching `data-mce-style="X"` attribute on the SAME element. The Visual Builder uses `data-mce-style` to generate Outlook-compatible HTML and rejects the save (HTTP 422) without it.
 
 ---
 
@@ -412,8 +413,8 @@ Key rules for `dynamicSrc`:
 - `computedStyle` must have shape `{width: N, widthType: "px", height: N}` — height = font-size × 1.2 + vertical padding (see corrections at the top), width ≈ label width + horizontal padding. Do NOT use `{height, hideContentOnMobile, width}` format.
 - Button label HTML MUST use the `txtTinyMce-wrapper` div with matching `data-mce-style` — same rule as text modules.
 - `"target": "_self"` lives inside the `button` object; `"target": "_blank"` lives inside `href`.
-- Missing or wrong `computedStyle` shape on button → `bee-multiparser 422`.
-- `href` nested inside `button` instead of as a sibling → `bee-multiparser 422`.
+- Missing or wrong `computedStyle` shape on button → Editor error on save (HTTP 422).
+- `href` nested inside `button` instead of as a sibling → Editor error on save (HTTP 422).
 
 ---
 
@@ -560,34 +561,33 @@ Key rules for `dynamicSrc`:
 ```
 
 ## Failure modes
-All 12 failure modes confirmed against a live Bloomreach Engagement instance:
+Each was seen when a pushed email was opened, saved or previewed in the Visual Builder:
 
 | Symptom | Root Cause | Fix |
 |---|---|---|
 | Email body is **completely blank** when opened | `design.type: "beefree"` missing | Add `"type": "beefree"` as direct child of `design` object |
-| Email node **pastes but is not savable** | `design` object has extra keys beyond `type` and `data` | Remove `file_ids`, `jinja_html`, `preheader`, `provider`, `reply_to`, `sender_email`, `sender_name`, `subject`, `translations` from `design` — working JSONs have ONLY `type` and `data` |
-| `bee-bumper 400` on open | Text module HTML missing `txtTinyMce-wrapper` div | Wrap ALL text HTML in `<div class="txtTinyMce-wrapper" style="..." data-mce-style="...">` |
-| `bee-bumper 400` on open | `"align": "left"` on Heading, Spacer, or Divider module | Remove `align` from root of Heading, Spacer, Divider modules — only Image, Text, Paragraph, Button, Social get `"align": "left"` |
-| `bee-multiparser 422` on save | `data-mce-style` missing from inline styles in text HTML | Every `style="X"` in text HTML needs matching `data-mce-style="X"` on same element |
-| `bee-multiparser 422` on save | Button `href` nested inside `button` object | Move `href` to be a sibling of `button` inside `descriptor` |
-| `bee-multiparser 422` on save | Button `computedStyle` has wrong shape | Must be `{width: N, widthType: "px", height: N}` — see the button formula at the top. Not `{hideContentOnMobile, align}` |
-| `bee-multiparser 422` on save | `"align": "left"` on Spacer module | Remove `align` from Spacer modules entirely |
-| `bee-multiparser 422` on save | `beefree_template` is a raw object, not a string | JSON.stringify the template object — all internal quotes must be `\"` |
-| Node pastes but **disappears on save** | Missing required node-level fields | Verify all 25 fields from Part 2 are present |
+| Email node **is pushed but won't save** | `design` object has extra keys beyond `type` and `data` | Remove `file_ids`, `jinja_html`, `preheader`, `provider`, `reply_to`, `sender_email`, `sender_name`, `subject`, `translations` from `design` — working JSONs have ONLY `type` and `data` |
+| Editor error on open (HTTP 400) on open | Text module HTML missing `txtTinyMce-wrapper` div | Wrap ALL text HTML in `<div class="txtTinyMce-wrapper" style="..." data-mce-style="...">` |
+| Editor error on open (HTTP 400) on open | `"align": "left"` on Heading, Spacer, or Divider module | Remove `align` from root of Heading, Spacer, Divider modules — only Image, Text, Paragraph, Button, Social get `"align": "left"` |
+| Editor error on save (HTTP 422) on save | `data-mce-style` missing from inline styles in text HTML | Every `style="X"` in text HTML needs matching `data-mce-style="X"` on same element |
+| Editor error on save (HTTP 422) on save | Button `href` nested inside `button` object | Move `href` to be a sibling of `button` inside `descriptor` |
+| Editor error on save (HTTP 422) on save | Button `computedStyle` has wrong shape | Must be `{width: N, widthType: "px", height: N}` — see the button formula at the top. Not `{hideContentOnMobile, align}` |
+| Editor error on save (HTTP 422) on save | `"align": "left"` on Spacer module | Remove `align` from Spacer modules entirely |
+| Editor error on save (HTTP 422) on save | `beefree_template` is a raw object, not a string | JSON.stringify the template object — all internal quotes must be `\"` |
+| Node **disappears on save** | Missing required node-level fields | Verify all 25 fields from Part 2 are present |
 | **Sections missing** from output | Image-only rows skipped during HTML parsing | Every `<img>` that is full-width or standalone MUST become an image module row |
 | **Wrong sections** shown | Gmail proxy URLs used instead of real image URLs | Extract real URL from after `#` in `ci3.googleusercontent.com/meips/...#https://realurl.com/image.jpg` |
 | `Canvas2D: willReadFrequently` warning | BEE canvas performance warning | Ignore — this is a browser-level warning unrelated to your JSON |
-| **"incompatible app version"** error on paste | `appVersion` in JSON does not match the Bloomreach instance version | Error message format: "nodes have incompatible app version [JSON] and [INSTANCE]". Use the **second** version string (the instance version) as the new `appVersion` value and regenerate |
-| `bee-multiparser 422` | `descriptor.text` is a plain string or missing `style`/`computedStyle` keys | `descriptor.text` must be an object: `{html, style, computedStyle}` — never a plain string |
-| `bee-bumper 400` + "0Row" canvas label | `empty`/`locked`/`synced` set as integers (`0`/`1`) instead of booleans | Use `false` (boolean) not `0` (integer) for these row fields |
-| `bee-bumper 400` | Row `type` set to `"row-1-columns-12"` format | Use `"one-column-empty"` / `"three-columns-empty"` / `"two-columns-6-6-empty"` |
-| Email body **completely blank** after paste | `beefree_template` populated with BeeFree Simple Schema instead of full BEE editor JSON | `beefree_template` must always be full BEE JSON (with `page.body`, `page.rows[]`, full module `descriptor` objects) — never use BeeFree Simple Schema |
-| `bee-multiparser 400` (text block worker error 4211) | `mobileStyle: {}` added to module descriptors | Remove `mobileStyle` from all module descriptors — not supported in Bloomreach's BEE integration |
-| **Email preview spins indefinitely** | `bee-multiparser 422` firing on preview render (same root causes as save-time 422, but triggered earlier) | Fix all 422 causes: `data-mce-style` pairing on every `style=`, correct `descriptor.text` object shape, correct button `computedStyle`, `href` as sibling not nested. Preview uses the same multiparser endpoint as save. |
-| `bee-multiparser 422` on preview or save | `href` nested inside `button` object instead of as sibling in `descriptor` | Move `href` out of `button` to be a direct sibling: `descriptor: { button: {...}, href: {...}, computedStyle: {...}, style: {...} }` |
-| `bee-multiparser 422` on preview or save | Button `computedStyle` wrong shape | Must be `{"width": N, "widthType": "px", "height": N}` — see the button formula at the top. Not `{height, hideContentOnMobile, width}` |
-| `bee-multiparser 422` on preview or save | `data-mce-style` missing on ANY styled element inside text/button HTML | Every single `style="X"` attribute — including on `<td>`, `<span>`, `<p>`, `<a>`, wrapper divs, button label divs — needs a matching `data-mce-style="X"` on the same element. This is the most common cause of the spinning preview. |
-| `bee-multiparser 422` on preview or save | Jinja inside BEE `href`/`src` fields, or control flow inside a text module | Keep `href`/`src` static in `beefree_template` (tokens only in `jinja_html`). Visible text tokens such as the greeting may appear in BEE text modules. Put `{% for %}`/`{% if %}` blocks in a custom HTML module. |
+| Editor error on save (HTTP 422) | `descriptor.text` is a plain string or missing `style`/`computedStyle` keys | `descriptor.text` must be an object: `{html, style, computedStyle}` — never a plain string |
+| Editor error on open (HTTP 400) + "0Row" canvas label | `empty`/`locked`/`synced` set as integers (`0`/`1`) instead of booleans | Use `false` (boolean) not `0` (integer) for these row fields |
+| Editor error on open (HTTP 400) | Row `type` set to `"row-1-columns-12"` format | Use `"one-column-empty"` / `"three-columns-empty"` / `"two-columns-6-6-empty"` |
+| Email body **completely blank** after push | `beefree_template` populated with BeeFree Simple Schema instead of full BEE editor JSON | `beefree_template` must always be full BEE JSON (with `page.body`, `page.rows[]`, full module `descriptor` objects) — never use BeeFree Simple Schema |
+| Editor error (HTTP 400) (text block worker error 4211) | `mobileStyle: {}` added to module descriptors | Remove `mobileStyle` from all module descriptors — not supported in Bloomreach's BEE integration |
+| **Email preview spins indefinitely** | Editor error on save (HTTP 422) firing on preview render (same causes as the save-time 422, but triggered earlier) | Fix all 422 causes: `data-mce-style` pairing on every `style=`, correct `descriptor.text` object shape, correct button `computedStyle`, `href` as sibling not nested. Preview runs the same checks as save. |
+| Editor error on save (HTTP 422) on preview or save | `href` nested inside `button` object instead of as sibling in `descriptor` | Move `href` out of `button` to be a direct sibling: `descriptor: { button: {...}, href: {...}, computedStyle: {...}, style: {...} }` |
+| Editor error on save (HTTP 422) on preview or save | Button `computedStyle` wrong shape | Must be `{"width": N, "widthType": "px", "height": N}` — see the button formula at the top. Not `{height, hideContentOnMobile, width}` |
+| Editor error on save (HTTP 422) on preview or save | `data-mce-style` missing on ANY styled element inside text/button HTML | Every single `style="X"` attribute — including on `<td>`, `<span>`, `<p>`, `<a>`, wrapper divs, button label divs — needs a matching `data-mce-style="X"` on the same element. This is the most common cause of the spinning preview. |
+| Editor error on save (HTTP 422) on preview or save | Jinja inside BEE `href`/`src` fields, or control flow inside a text module | Keep `href`/`src` static in `beefree_template` (tokens only in `jinja_html`). Visible text tokens such as the greeting may appear in BEE text modules. Put `{% for %}`/`{% if %}` blocks in a custom HTML module. |
 | **Images in multi-column grid touching each other (no gutter)** | Column `padding-left`/`padding-right` both `0px` — no inter-column gutter set | Extract horizontal `<td>` padding from source. Split across inner edges: left column gets `padding-right`, right column gets `padding-left`. Outer edges stay `0px`. |
 | **Too much vertical space between rows vs. source** | Column padding defaulted to `5px` top/bottom AND module padding defaulted to `10px`, stacking to 30px+ per row boundary | Set column `padding-top`/`padding-bottom` to `0px` for flush rows. Set image module `descriptor.style` padding to `0px`. Only use non-zero values when source has explicit vertical spacing. |
 | **`[First Name]` or bracket placeholder in sent email** | Placeholder detected in Step 1 but never replaced in `jinja_html` — detection without injection | Every bracket placeholder and ESP merge tag found in the source MUST be replaced in `jinja_html`. Run pre-output scan: search for `[`, `%%`, `*|`, `@WORD@` before generating final JSON. `[First Name]` is valid ONLY in `beefree_template` as a preview stand-in — never in `jinja_html`. |
