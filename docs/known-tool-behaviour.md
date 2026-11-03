@@ -88,6 +88,10 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - Demo accounts have messy data: raw HTML and boilerplate in descriptions, inconsistent colour values ("grey" vs "gray"), and some AI-generated images (`gen_gptimage` in the path).
 - **Viewing an image in Claude Code:** download it with `curl` to a temporary folder and open it with Read. WebFetch can't describe an image, but it saves the file, which Read then displays. Skill scripts must still never use the network.
 
+- Grid responses are about 65 KB even with `rows=5`, a short `fl` and `facet=false`; about 57 KB of that is `debug["explain.structured"]`.
+- Banner (media rule) rows appear in `response.docs` with `docType: "content"`, no `pid` and a `slots` list. Skip them when ranking products.
+- `customizations.explain` lists every rule that applies to the query (ranking algorithm, facet, banner, personalisation), each with `liveInTest`. A rule passed in `disabled_customization_ids` is still listed there, but its effect is gone from the results, so a grid fetched that way shows the page without the rule.
+
 **Query, product and brand performance**
 - The `no_search_results` preset misses many dead-end queries (0 product views, 100% bounce) that only appear under `no_revenue`. Both presets include rows with 0 current sessions. Use both.
 - Sorting by `change_*` puts tiny queries first. The product table accepts `sort="prev_revenue"`, which catches products that fell out of the top list.
@@ -119,10 +123,11 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 
 **Rules**
 - Rule lists show `audienceName: null` even for rules that target an audience, so personalised rules look like duplicates. **(bug?)**
-- `syncStatus` doesn't reliably show expiry; use `durationTag`. The `duration` filter on rule lists returns HTTP 400. **(bug?)**
+- `syncStatus` doesn't reliably show expiry; use `durationTag`. A site-search ranking rule was seen still `enabled: true` with `durationTag: "expired"`. The `duration` filter on rule lists returns HTTP 400. **(bug?)**
 - `q` on rule lists matches rule names as well as queries.
 - Scheduled rules can start or expire without `lastModifiedAt` changing.
 - `isLive` is false on enabled facet rules.
+- A ranking rule that pins a product not in the query's results also needs it in `add_to_recall`.
 - **`create_ranking_rule` defaults to `enabled=true`.** Always pass `enabled=false` when you create a rule to test.
 - Facet ranges, value merges and renames can't be set through the API; the `create_facet_rule` description says so.
 

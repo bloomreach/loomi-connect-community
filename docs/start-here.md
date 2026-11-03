@@ -48,6 +48,7 @@ Start with the health check, then go deeper where it points you.
 | "What new collections should we create?" | [collection-suggester](../plugins/loomi-platform/skills/collection-suggester/) |
 | "Build a pickleball collection" or "Which products belong with this search?" | [topic-collection-builder](../plugins/loomi-discovery/skills/topic-collection-builder/) |
 | "Clean up our merchandising rules" | [discovery-rule-audit](../plugins/loomi-discovery/skills/discovery-rule-audit/) |
+| "Is this ranking rule / synonym / redirect safe to switch on?" | [discovery-change-qa](../plugins/loomi-discovery/skills/discovery-change-qa/): before/after preview, revenue at stake and clashes, with a go/no-go verdict |
 | "Are our dynamic categories working?" | [discovery-dynamic-category-review](../plugins/loomi-discovery/skills/discovery-dynamic-category-review/) |
 | "Are our product recommendations set up well?" | [recommendation-model-audit](../plugins/loomi-engagement/skills/recommendation-model-audit/) |
 | "Which products have weak data for Google and AI search?" | [product-data-audit](../plugins/loomi-product-data/skills/product-data-audit/) |

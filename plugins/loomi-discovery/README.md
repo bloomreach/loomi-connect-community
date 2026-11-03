@@ -33,6 +33,7 @@ Skills for **Bloomreach Discovery** that use Loomi Connect.
 | Skill | What it does | Access |
 |---|---|---|
 | [discovery-rule-audit](skills/discovery-rule-audit/) | Cleanup list of expired, duplicate, unused or conflicting merchandising rules | Read-only |
+| [discovery-change-qa](skills/discovery-change-qa/) | Pre-launch QA of one ranking rule, synonym, redirect or banner rule: before/after preview, revenue at stake, clashes, with a go/no-go verdict | Read-only |
 | [discovery-experiment-readout](skills/discovery-experiment-readout/) | A/B test results in plain English: ship it, keep running or stop | Read-only |
 | [discovery-experiment-setup](skills/discovery-experiment-setup/) | Guided A/B test for a ranking rule: preview, draft, then start | **Writes** |
 
