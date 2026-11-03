@@ -1,0 +1,14 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 0,
+   "start": 0,
+   "docs": []
+  },
+  "debug": {
+   "customizations.explain": []
+  }
+ },
+ "error": null
+}

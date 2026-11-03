@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Discovery Change QA"
+  short_description: "Preview and QA a Bloomreach Discovery rule, synonym or redirect before it goes live"
+policy:
+  # Read-only: it previews and rates a change and never makes it.
+  allow_implicit_invocation: true

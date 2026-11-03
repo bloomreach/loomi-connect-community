@@ -1,0 +1,19 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "cat_id": "cat-dresses",
+    "category": "dresses",
+    "visits": 5000,
+    "revenue": "$40000.00"
+   },
+   {
+    "cat_id": "cat-shoes",
+    "category": "shoes",
+    "visits": 3000,
+    "revenue": "$20000.00"
+   }
+  ]
+ }
+}

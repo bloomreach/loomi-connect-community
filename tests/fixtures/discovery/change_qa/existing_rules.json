@@ -1,0 +1,77 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 800001,
+   "ruleType": "ranking",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "startedAt": null,
+   "endedAt": null,
+   "queries": [
+    {
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null
+  },
+  {
+   "id": 800002,
+   "ruleType": "ranking",
+   "enabled": true,
+   "durationTag": "expired",
+   "startedAt": 1700000000000,
+   "endedAt": 1700100000000,
+   "queries": [
+    {
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false
+  },
+  {
+   "id": 800003,
+   "ruleType": "ranking",
+   "enabled": false,
+   "durationTag": "unscheduled",
+   "queries": [
+    {
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false
+  },
+  {
+   "id": 800004,
+   "ruleType": "ranking",
+   "enabled": true,
+   "durationTag": "scheduled",
+   "startedAt": 1900000000000,
+   "endedAt": 1900100000000,
+   "queries": [
+    {
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false
+  },
+  {
+   "id": 900001,
+   "ruleType": "ranking",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "queries": [
+    {
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false
+  }
+ ]
+}

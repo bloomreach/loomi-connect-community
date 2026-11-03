@@ -1,0 +1,31 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "data": {
+    "id": 900002,
+    "ruleType": "redirect",
+    "name": "Sale page",
+    "enabled": false,
+    "startedAt": null,
+    "endedAt": null,
+    "queries": [
+     {
+      "id": 2,
+      "query": "sale",
+      "queryType": "sitesearch",
+      "matchType": "PHRASE_MATCH"
+     }
+    ],
+    "customizationItems": {
+     "redirect": {
+      "ruleName": "Sale page",
+      "matchType": "PHRASE_MATCH",
+      "url": "http://shop.example.test/sale page"
+     }
+    }
+   }
+  },
+  "error": null
+ }
+}

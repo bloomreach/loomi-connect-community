@@ -1,0 +1,12 @@
+{
+ "type": "redirect",
+ "name": "Nowhere",
+ "url": "",
+ "queries": [
+  {
+   "query": "dress",
+   "queryType": "sitesearch",
+   "matchType": "EXACT_MATCH"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "type": "redirect",
+ "name": "Help",
+ "url": "javascript:alert(1)",
+ "queries": [
+  {
+   "query": "help",
+   "queryType": "sitesearch",
+   "matchType": "EXACT_MATCH"
+  }
+ ]
+}

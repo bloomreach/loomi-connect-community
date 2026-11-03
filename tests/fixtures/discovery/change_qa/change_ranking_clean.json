@@ -1,0 +1,23 @@
+{
+ "type": "ranking",
+ "name": "Lift Contoso dresses",
+ "enabled": false,
+ "queries": [
+  {
+   "query": "dress",
+   "queryType": "sitesearch",
+   "matchType": "EXACT_MATCH"
+  }
+ ],
+ "attribute_boost_bury": [
+  {
+   "type": "boost",
+   "name": "brand",
+   "values": [
+    "Contoso"
+   ],
+   "strength": 30
+  }
+ ],
+ "endedAt": "2026-12-01T00:00:00Z"
+}
