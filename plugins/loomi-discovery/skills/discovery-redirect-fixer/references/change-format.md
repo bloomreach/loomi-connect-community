@@ -1,6 +1,6 @@
 # Change file format
 
-`scripts/redirect_plan.py --changes <file>` reads a JSON list of the redirect changes to plan. Write it from the user's request, or from a `discovery-redirect-audit` or `discovery-search-category-match` finding. One object per change:
+`scripts/redirect_plan.py plan --changes <file>` reads a JSON list of the redirect changes to plan. Write it from the user's request, or from a `discovery-redirect-audit` or `discovery-search-category-match` finding. One object per change:
 
 | Field | For | Meaning |
 |---|---|---|
@@ -27,7 +27,7 @@ Example:
 ]
 ```
 
-New redirects are always planned **disabled** (`enabled: false`), because `create_redirect` makes a rule live by default. Switching it on is a separate step in the plan, with its own "yes".
+New redirects are always planned **switched off** (`enabled: false`), because `create_redirect` makes a rule live by default. Switching one on is a separate `enable` change in the plan, in a batch of its own with its own "yes". So is any update that switches an existing redirect on.
 
 The plan gives an undo for every change:
 
@@ -35,6 +35,8 @@ The plan gives an undo for every change:
 |---|---|
 | update | `update_redirect` with the fields' values before the change |
 | create | `delete_redirect` on the new rule's ID (known only after the create) |
-| delete | `create_redirect` from the saved before state. The rule comes back with a new ID and no edit history |
+| delete | `create_redirect` from the saved before state, **switched off**, then (if it was on) `update_redirect` to switch it on, with its own yes. The rule comes back with a new ID and no edit history |
 
-`update_redirect` treats an omitted field as "keep", so a schedule that was added can't be removed by an update. The plan says so, and that undo is done in the Discovery dashboard.
+`update_redirect` treats an omitted field as "keep", so a schedule or audience that was added can't be removed by an update. The plan says so in `undo_note`, and that undo is done in the Discovery dashboard.
+
+If the user picks an alternative (switching off instead of deleting, another URL), change this file and build the plan again: only changes in the saved plan are written.

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery
   access: writes
 ---
@@ -22,16 +22,17 @@ This skill **writes** to Bloomreach Discovery. Redirect changes go **live for sh
 | 2. Switch a new redirect on | `update_redirect` with `enabled: true` | **Live** for every shopper who searches its keywords |
 | 3. Change a redirect: URL, match type, keywords, name, schedule, audience, or switch it off | `update_redirect` | **Live at once** if the redirect is on. Switching off is the safest fix |
 | 4. Delete a redirect | `delete_redirect` | **Permanent.** It stops redirecting at once and can't be restored, only recreated |
-| 5. Undo, if a write goes wrong or the user asks | the plan's undo: `update_redirect`, `delete_redirect` (of a redirect this skill created) or `create_redirect` (to recreate a deleted one) | Puts back the state saved before the write |
+| 5. Undo, if a write goes wrong or the user asks | the plan's undo: `update_redirect`, `delete_redirect` (of a redirect this skill created), or `create_redirect` switched off and then `update_redirect` to switch it on (to recreate a deleted one) | Puts back the state saved before the write. Switching a recreated redirect back on needs its own yes |
 
 Rules for every write:
 
-- **Show the plan, then wait for an explicit "yes" that names what will change.** A yes covers one batch, not the whole session. **Each delete needs its own yes**, naming the redirect and its keywords. Switching a new redirect on needs its own yes too.
+- **Show the plan, then wait for an explicit "yes" that names what will change.** A yes covers one batch of the plan's `batches`, not the whole session. **Each delete needs its own yes**, naming the redirect and its keywords. **Any change that switches a redirect on**, a new one or an existing one, is a batch of its own and needs its own yes too.
 - **Never create a redirect switched on.** `create_redirect` defaults to `enabled: true`; always pass `enabled: false`, then switch it on as write 2.
 - **Staging first.** If the account has a staging environment, offer to make the batch there first, check it, then repeat it for production with a separate yes. Rule IDs differ between environments, so production gets its own plan.
 - **Stop on a running A/B test** that covers the redirect or its keywords: Discovery blocks the change, and it would muddy the test. The plan marks these as blocked.
 - **Save the undo before writing** (the plan file holds it). After each write, read the redirect back to check it. If a write fails, stop at once: say what was and wasn't changed, and give the undo.
 - **Prefer switching off to deleting.** Offer it every time a delete is planned.
+- **Only write what's in the saved plan.** If the user picks an alternative (switch off instead of delete, a different URL), add it to the change file and build the plan again before writing it.
 - Use only the write tools in the table. `search_tools` also returns other write tools (ranking rules, synonyms, facets, experiments, and more); never call them, or anything tagged `internal`. If the user asks for a change of another kind, hand it to the skill that does it.
 - **Never repeat** editor names or emails (`lastModifiedBy` in redirect lists, `user` in details) or `auth_key` URLs from product grid debug output (`feUrl`, `sqApiUrl`).
 - If a call errors with a list of account names, don't repeat or summarise it; ask the user to check the account name.
@@ -55,7 +56,7 @@ You need the account (ask the user for its name rather than listing accounts; `l
 | Purpose | Tools |
 |---|---|
 | Account, site and environment | `list_discovery_sites` (and `list_discovery_accounts` only to confirm one name) |
-| Current redirects | `search_redirects` (list, then `rule_id` for each redirect the plan touches) |
+| Current redirects | `search_redirects` (list, then `rule_id` for each redirect the plan touches); `list_discovery_audiences` for an `audience_id` |
 | Revenue at stake | `get_discovery_query_performance` |
 | Running tests | `search_discovery_experiments` |
 | Checks before writing | `search_discovery_product_grid_insights` (via the `discovery-change-qa` method) |
@@ -65,7 +66,7 @@ The write tools may not be listed directly. Find them with the Loomi Connect `se
 
 ### Rules for calling the tools
 
-- **One call at a time.** Discovery allows about 3 requests per second per user. On HTTP 429, wait 2–5 seconds and retry once.
+- **One call at a time.** Discovery allows about 3 requests per second per user. On HTTP 429, wait for `Retry-After` (a few seconds if it isn't set), then retry.
 - Pass `environment` on every call, reads included, so the plan and the writes use the same environment.
 - **Errors can come back as data** (`success: false`): check `success` on every write, not just whether the call errored.
 - `search_redirects` detail is wrapped twice (`result.data.data`). Take the match type from `queries[].matchType` (`EXACT_MATCH`, `PHRASE_MATCH`), and the URL from `customizationItems.redirect.url`. Ignore `isLive`.
@@ -95,42 +96,47 @@ Turn the user's request or the audit findings into a change file in your working
 ### 4. Build the plan
 
 ```bash
-python3 <this skill's folder>/scripts/redirect_plan.py --changes <work>/changes.json --redirects <work>/redirects-list.json --redirects <work>/redirect-9001.json --queries <work>/queries.json --experiments <work>/experiments.json --account <account name> --environment staging --out <work>/plan-staging.json
+python3 <this skill's folder>/scripts/redirect_plan.py plan --changes <work>/changes.json --redirects <work>/redirects-list.json --redirects <work>/redirect-9001.json --queries <work>/queries.json --experiments <work>/experiments.json --account <account name> --environment staging --out <work>/plan-staging.json
 ```
 
-Add `--site-group-id <id>` for a site. Repeat `--redirects` for every list page and detail. The plan file holds every change's undo: keep it until the batch is done.
+Add `--site-group-id <id>` for a site: it goes into every payload and undo. Repeat `--redirects` for every list page and detail. `--account` and `--environment` are required. The plan file holds every change's undo: keep it until the batch is done.
 
-For each change the plan gives a `status`:
+The plan has the shape in the authoring guide's "Plan files for write skills". Each change has a `status`:
 
-- `ready`: the before and after, the exact tool call (`payload`), the `undo`, the `live_impact`, and any `warning` or `nitpick` checks;
-- `blocked`: a `blocker` check says why (a running test, a keyword already on another redirect, a broken or placeholder URL, an end date in the past, a missing detail). Fix the change, or drop it;
+- `ready`: its `kind` (`create`, `update`, `enable`, `disable`, `delete`), the `before` and `after`, the exact `tool` and `payload`, the `undo` steps, the `live_impact`, and any `warnings`;
+- `blocked`: `problems` say why (a running test, a keyword already on another redirect, a broken or placeholder URL, an end date in the past, a missing detail). Fix the change and plan again, or drop it;
 - `no_change`: the redirect already has those values.
 
-At most `max_changes_per_batch` changes (in `references/rules.json`) go into one plan; the rest are in `deferred`, for the next batch. Without scripts, work through the same checks by hand from [references/change-format.md](references/change-format.md) and the rules file.
+A new redirect is two changes: the `create` (switched off) and an `enable` with `after_change` pointing at it. `batches` lists what to confirm, in order: one batch of ordinary changes, then each switch-on and each delete on its own. At most `max_changes_per_batch` ready changes go into one plan; the rest are in `deferred`, for the next plan. An undo that `update_redirect` can't do (clearing a schedule or audience) is in `undo_note`. Without scripts, work through the same checks by hand from [references/change-format.md](references/change-format.md) and the rules file.
 
 ### 5. Check each change
 
 For each `ready` create or update, run the `discovery-change-qa` checks on it (use that skill's method, or hand off to it with the change written in its format): for a redirect, that's the destination URL, the searches it takes away from products and the clashes with ranking and banner rules on the same keywords. Stop on **NO-GO**. On **GO WITH CAUTION**, show the warnings in the plan. Deletes and switching a redirect off don't need it.
 
-### 6. Show the plan and confirm
+### 6. Show the plan and confirm, one batch at a time
 
-Show one table for the batch, and one row per delete after it:
+Show one table per batch:
 
-| # | Change | Redirect | Before | After | Live impact | Checks |
+| # | Change | Redirect | Before | After | Live impact | Warnings |
 |---|---|---|---|---|---|---|
 
-Then ask: "Make changes 1, 2 and 3 in <environment>? (yes / no)". Ask about each delete on its own: "Delete redirect 9003 ('return policy' → /returns)? It can't be undone, only recreated. Switch it off instead? (delete / switch off / skip)".
+Ask for the first batch: "Make changes 1, 2 and 3 in <environment>? (yes / no)". Ask about each switch-on on its own: "Switch on the new redirect for 'track order' and 'order status'? Shoppers who search them will go to /orders. (yes / no)". Ask about each delete on its own: "Delete redirect 9003 ('return policy' → /returns)? It can't be undone, only recreated. Switch it off instead? (delete / switch off / skip)". If the answer is an alternative, re-plan it first (step 4).
 
-### 7. Write, one change at a time
+### 7. Write, one change at a time, then verify
 
 For each confirmed change, in plan order:
 
 1. Make the call in `payload` exactly, with `call_tool` if needed. Check `success`.
-2. For a create, note the new rule ID from the response, and put it in that change's `undo` and `then_enable`.
-3. Read it back with `search_redirects` and `rule_id`, up to `sync_checks` times a few seconds apart, until `syncStatus` is `SUCCESS`. Check the URL, match type, keywords and `enabled` match the plan's `after`.
-4. On any failure or mismatch: **stop**. Report which changes were made and which weren't, and offer the undo for the ones made.
+2. For a create, note the new rule ID from the response; it replaces `<id returned by change N>` in the later `enable` change and in the undo.
+3. Read it back with `search_redirects` and `rule_id` (the new ID for a create, the deleted rule's ID for a delete), up to `sync_checks` times a few seconds apart, until `syncStatus` is `SUCCESS`, and save each read-back.
+4. Check the batch:
 
-Switching new redirects on (`then_enable`) comes after all creates are checked, with its own yes, naming the keywords that will start redirecting.
+   ```bash
+   python3 <this skill's folder>/scripts/redirect_plan.py verify --plan <work>/plan-staging.json --readback 1=<work>/readback-1.json --readback 3=<work>/readback-3.json --out <work>/verify-staging.json
+   ```
+
+   Each change is `in_place`, `not_in_place` (with the mismatched fields) or `gone` (a delete). A delete counts as gone only with a read-back. If a read-back errors about the account, verify stops: check the account name and read back again.
+5. On any failure or `not_in_place`: **stop**. Report which changes were made and which weren't, and offer the undo for the ones made.
 
 ### 8. Production
 

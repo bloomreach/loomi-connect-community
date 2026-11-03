@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
-"""Turn requested Discovery redirect fixes into a change plan, with before, after, payload and undo for each.
+"""Plan Discovery redirect fixes before writing them, and check the writes afterwards.
 
 Usage:
-  python3 redirect_plan.py --changes changes.json --redirects list.json [--redirects detail.json ...]
+  python3 redirect_plan.py plan --changes changes.json --redirects list.json [--redirects detail.json ...]
          --account NAME --environment staging|production [--site-group-id ID]
-         [--queries query_perf.json ...] [--experiments running.json] [--today YYYY-MM-DD] [--out plan.json]
+         [--queries query_perf.json ...] [--experiments experiments.json] [--today YYYY-MM-DD] [--out plan.json]
+  python3 redirect_plan.py verify --plan plan.json --readback N=readback.json [--readback N=file ...] [--out result.json]
 
---changes is the list of changes to make (references/change-format.md). --redirects are saved search_redirects
+plan: --changes is the list of changes to make (references/change-format.md). --redirects are saved search_redirects
 results: list pages (every redirect, for keyword conflicts) and details (rule_id lookups, for the URL and match
 type of each rule the plan touches). --queries are saved get_discovery_query_performance tables (revenue at
-stake). --experiments is a saved search_discovery_experiments result for running tests.
+stake). --experiments is a saved search_discovery_experiments result. Prints the plan in the shape in
+docs/skill-authoring.md ("Plan files for write skills"): each change with its status (ready, blocked or no_change),
+kind, before and after, the exact tool and payload, the undo, live impact, problems and warnings, and the batches
+to confirm. A new redirect is created switched off and switched on as a separate change; any switch-on and any
+delete is a batch of its own. Ready changes over the batch cap are deferred.
 
-Prints JSON: each change with its status (ready, blocked or no_change), checks (blocker, warning, nitpick),
-before and after state, the exact tool call, the undo, and for new redirects a separate step to switch them on.
-Deletes are listed apart, because each needs its own "yes". Changes over the batch cap are deferred.
+verify: --readback N=FILE is the search_redirects rule_id detail read back after writing change N (for a delete,
+the read-back of the deleted rule). Reports each change as in_place, not_in_place or gone.
+
 It never calls Loomi Connect: the assistant makes each write, after confirmation. Standard library only.
 """
 import argparse
@@ -40,7 +45,7 @@ def fail(msg):
 
 def tool_error(text):
     text = str(text or "no error text")
-    if re.search(r"account", text, re.I) and text.count(",") >= 3:
+    if re.search(r"account", text, re.I):
         return ACCOUNT_LIST_ERROR
     return text[:200]
 
@@ -156,6 +161,7 @@ def index_redirects(paths):
             rule["started_at"] = r.get("startedAt", rule.get("started_at"))
             rule["ended_at"] = r.get("endedAt", rule.get("ended_at"))
             rule["ab_test_live"] = bool(r.get("isAbTestLive")) or rule.get("ab_test_live", False)
+            rule["sync_status"] = r.get("syncStatus", rule.get("sync_status"))
             item = (r.get("customizationItems") or {}).get("redirect")
             if isinstance(item, dict) or r.get("audiences") is not None:
                 item = item or {}
@@ -181,20 +187,26 @@ def revenue_by_query(paths):
 def running_experiments(path):
     if not path:
         return []
+    running = {norm(x) for x in RULES["running_statuses"]}
     exps = []
     for e in records(path):
-        status = norm(e.get("status") or e.get("experimentStatus") or "running")
-        if status == "running":
+        status = norm(e.get("status") or e.get("experimentStatus"))
+        if not status or status in running:  # a test with no status counts as running
             exps.append({"name": e.get("name"), "text": norm(json.dumps(e))})
     return exps
 
 
 class Change:
+    """Problems (blockers) and warnings for one requested change."""
+
     def __init__(self, n, raw):
-        self.n, self.raw, self.checks = n, raw, []
+        self.n, self.raw, self.problems, self.warnings = n, raw, [], []
 
     def add(self, severity, check, message):
-        self.checks.append({"severity": severity, "check": check, "message": message})
+        if severity == "blocker":
+            self.problems.append({"check": check, "message": message})
+        else:
+            self.warnings.append({"check": check, "level": severity, "message": message})
 
 
 def check_url(c, url, rtype):
@@ -233,7 +245,7 @@ def check_queries(c, queries, rid, rtype, rules, revenue):
         if len(q) > RULES["max_query_chars"]:
             c.add("blocker", "queries", f"Keyword {q[:40]!r}… is over {RULES['max_query_chars']} characters.")
     for q in queries:
-        for other in rules.values():
+        for other in sorted(rules.values(), key=lambda r: r["id"]):
             if other["id"] != rid and other.get("enabled") and norm(q) in {norm(x) for x in other.get("queries", [])}:
                 c.add("blocker", "conflict", f"'{q}' is already on enabled redirect {other['id']}. Discovery silently "
                       "ignores a keyword that another redirect has: fix or remove that one first.")
@@ -246,7 +258,7 @@ def check_queries(c, queries, rid, rtype, rules, revenue):
             c.add("warning", "scope", f"Phrase match on the short keyword '{q}' also catches every longer search containing it.")
         caught = [(k, v) for k, v in revenue.items()
                   if (k == nq or (rtype == "redirect_phrases" and re.search(r"(^| )" + re.escape(nq) + r"( |$)", k)))]
-        for k, v in sorted(caught, key=lambda kv: -(kv[1]["revenue"] or 0)):
+        for k, v in sorted(caught, key=lambda kv: (-(kv[1]["revenue"] or 0), kv[0])):
             if v["revenue"] is not None and v["revenue"] >= floor:
                 what = "earns" if k == nq else "is caught by the phrase match and earns"
                 c.add("warning", "revenue", f"'{k}' {what} {v['revenue']:.2f} from product results; the redirect takes "
@@ -278,10 +290,38 @@ def base_args(a):
     return args
 
 
-def state(rule):
-    """The parts of a redirect the plan shows and can restore. No editor names or emails."""
-    return {k: rule.get(k) for k in ("id", "name", "enabled", "queries", "redirect_type", "url", "audience_id")} | {
-        "started_at": iso(rule.get("started_at")), "ended_at": iso(rule.get("ended_at"))}
+def shown(fields):
+    """Fields for before and after: dates as ISO text."""
+    return {k: (iso(v) if k in ("started_at", "ended_at") else v) for k, v in fields.items()}
+
+
+def describe(rid, rule, queries=None):
+    if rid is None:
+        return "new redirect " + ", ".join(f"'{q}'" for q in queries or [])
+    keys = ", ".join(f"'{q}'" for q in (rule or {}).get("queries") or [])
+    return f"redirect {rid}" + (f" ({keys})" if keys else "")
+
+
+def change(c, kind, target, tool, payload, before, after, undo, live, note, **extra):
+    return dict({"request": c.n, "reason": c.raw.get("reason"), "kind": kind, "target": target, "tool": tool,
+                 "payload": payload, "before": before, "after": after, "undo": undo, "live_impact": live,
+                 "impact_note": note, "problems": c.problems, "warnings": c.warnings}, **extra)
+
+
+def recreate_steps(a, rule):
+    """Undo of a delete: recreate switched off, then switch on (its own yes) only if it was on before."""
+    args = dict(base_args(a), queries=rule.get("queries") or [], redirect_type=rule.get("redirect_type"), enabled=False)
+    for k, v in (("destination_url", rule.get("url")), ("name", rule.get("name")), ("audience_id", rule.get("audience_id")),
+                 ("started_at", rule.get("started_at")), ("ended_at", rule.get("ended_at"))):
+        if v not in (None, ""):
+            args[k] = v
+    steps = [{"tool": "create_redirect", "payload": args,
+              "note": "Recreated switched off, with a new ID and no edit history."}]
+    if rule.get("enabled"):
+        steps.append({"tool": "update_redirect",
+                      "payload": dict(base_args(a), rule_id="<id returned by the recreate>", enabled=True),
+                      "note": "Switches it back on: confirm it separately, as for any switch-on."})
+    return steps
 
 
 def plan_create(c, raw, a, rules, revenue, exps, today_ms):
@@ -300,19 +340,21 @@ def plan_create(c, raw, a, rules, revenue, exps, today_ms):
                  ("name", raw.get("name")), ("audience_id", raw.get("audience_id")), ("started_at", start), ("ended_at", end)):
         if v not in (None, ""):
             args[k] = v
-    shown = {k: (iso(v) if k in ("started_at", "ended_at") else v) for k, v in args.items() if k not in base_args(a)}
-    out = {"action": "create", "before": None, "after": shown,
-           "payload": {"tool": "create_redirect", "arguments": args},
-           "undo": {"tool": "delete_redirect", "arguments": dict(base_args(a), rule_id="<id returned by the create>"),
-                    "note": "Deleting the new rule removes it completely."},
-           "live_impact": "None: created disabled."}
+    target = describe(None, None, queries)
+    out = [change(c, "create", target, "create_redirect", args, None,
+                  shown({k: v for k, v in args.items() if k not in base_args(a)}),
+                  [{"tool": "delete_redirect", "payload": dict(base_args(a), rule_id="<id returned by the create>"),
+                    "note": "Deleting the new rule removes it completely."}],
+                  "none", "None: created switched off.")]
     if raw.get("enabled") is not False:
-        out["then_enable"] = {"tool": "update_redirect", "arguments": dict(base_args(a), rule_id="<id returned by the create>",
-                                                                          enabled=True),
-                              "live_impact": "Live for every shopper who searches " + ", ".join(f"'{q}'" for q in queries)
-                                             + " once Discovery syncs (seconds to minutes).",
-                              "undo": {"tool": "update_redirect", "arguments": dict(
-                                  base_args(a), rule_id="<id returned by the create>", enabled=False)}}
+        enable = Change(c.n, c.raw)  # its own change, confirmed on its own; the create holds the checks
+        out.append(change(enable, "enable", target, "update_redirect",
+                          dict(base_args(a), rule_id="<id returned by the create>", enabled=True),
+                          {"enabled": False}, {"enabled": True},
+                          [{"tool": "update_redirect",
+                            "payload": dict(base_args(a), rule_id="<id returned by the create>", enabled=False)}],
+                          "live", "Live for every shopper who searches " + ", ".join(f"'{q}'" for q in queries)
+                          + " once Discovery syncs (seconds to minutes).", needs="create"))
     return out
 
 
@@ -325,15 +367,16 @@ def plan_update(c, raw, a, rules, revenue, exps, today_ms):
         rid = int(rid)
     except (TypeError, ValueError):
         c.add("blocker", "rule", "An update needs the redirect's numeric rule_id.")
-        return {"action": "update", "rule_id": rid}
+        return [change(c, "update", f"redirect {rid}", "update_redirect", None, None, None, [], "none", None)]
     rule = rules.get(rid)
+    target = describe(rid, rule)
     if not rule:
         c.add("blocker", "rule", f"Redirect {rid} isn't in the saved search_redirects results: fetch it first.")
-        return {"action": "update", "rule_id": rid}
+        return [change(c, "update", target, "update_redirect", None, None, None, [], "none", None)]
     if not rule.get("detail"):
         c.add("blocker", "rule", f"Fetch redirect {rid} with search_redirects rule_id={rid} first: the list has no URL "
               "or match type, so the change and its undo can't be planned.")
-        return {"action": "update", "rule_id": rid, "before": state(rule)}
+        return [change(c, "update", target, "update_redirect", None, None, None, [], "none", None)]
     before = {"queries": rule.get("queries"), "redirect_type": rule.get("redirect_type"), "destination_url": rule.get("url"),
               "name": rule.get("name"), "enabled": rule.get("enabled"), "audience_id": rule.get("audience_id"),
               "started_at": rule.get("started_at"), "ended_at": rule.get("ended_at")}
@@ -354,7 +397,7 @@ def plan_update(c, raw, a, rules, revenue, exps, today_ms):
         changed.pop("queries")
     if not changed:
         c.add("nitpick", "no change", "The redirect already has these values.")
-        return {"action": "update", "rule_id": rid, "before": state(rule), "no_change": True}
+        return [change(c, "update", target, "update_redirect", None, None, None, [], "none", None, no_change=True)]
     after = dict(before, **changed)
     queries = after["queries"] or []
     check_experiments(c, queries, rid, rule, exps)
@@ -371,18 +414,23 @@ def plan_update(c, raw, a, rules, revenue, exps, today_ms):
             manual.append(k)
         else:
             undo_args[k] = before[k] if k != "destination_url" else (before[k] or "")
-    impact = ("Off for all shoppers once Discovery syncs." if changed.get("enabled") is False else
-              "Live for every shopper who searches these keywords once Discovery syncs." if after.get("enabled") else
-              "None while the redirect is disabled.")
-    out = {"action": "update", "rule_id": rid,
-           "before": {k: (iso(v) if k in ("started_at", "ended_at") else v) for k, v in before.items() if k in changed},
-           "after": {k: (iso(v) if k in ("started_at", "ended_at") else v) for k, v in changed.items()},
-           "payload": {"tool": "update_redirect", "arguments": dict(base_args(a), rule_id=rid, **changed)},
-           "undo": {"tool": "update_redirect", "arguments": undo_args}, "live_impact": impact}
+    undo = [{"tool": "update_redirect", "payload": undo_args}] if set(undo_args) - set(base_args(a)) - {"rule_id"} else []
+    extra = {}
     if manual:
-        out["undo"]["note"] = (f"update_redirect can't clear {', '.join(manual)} (an omitted field keeps its value); "
-                               "undo that part in the Discovery dashboard.")
-    return out
+        extra["undo_note"] = (f"update_redirect can't clear {', '.join(manual)} (an omitted field keeps its value); "
+                              "undo that part in the Discovery dashboard.")
+    switches_on = changed.get("enabled") is True and before.get("enabled") is not True
+    kind = ("enable" if switches_on and set(changed) == {"enabled"} else
+            "disable" if changed.get("enabled") is False and set(changed) == {"enabled"} else "update")
+    if changed.get("enabled") is False:
+        live, note = "live", "Off for all shoppers once Discovery syncs."
+    elif after.get("enabled"):
+        live, note = "live", "Live for every shopper who searches these keywords once Discovery syncs."
+    else:
+        live, note = "none", "None while the redirect is switched off."
+    return [change(c, kind, target, "update_redirect", dict(base_args(a), rule_id=rid, **changed),
+                   shown({k: before[k] for k in changed}), shown(changed), undo, live, note, switches_on=switches_on,
+                   **extra)]
 
 
 def plan_delete(c, raw, a, rules, exps):
@@ -390,29 +438,26 @@ def plan_delete(c, raw, a, rules, exps):
         rid = int(raw.get("rule_id"))
     except (TypeError, ValueError):
         c.add("blocker", "rule", "A delete needs the redirect's numeric rule_id.")
-        return {"action": "delete", "rule_id": raw.get("rule_id"), "separate_yes": True}
+        return [change(c, "delete", f"redirect {raw.get('rule_id')}", "delete_redirect", None, None, None, [], "none", None)]
     rule = rules.get(rid)
+    target = describe(rid, rule)
     if not rule or not rule.get("detail"):
         c.add("blocker", "rule", f"Fetch redirect {rid} with search_redirects rule_id={rid} first: its full state is "
               "the only way to undo a delete.")
-        return {"action": "delete", "rule_id": rid, "separate_yes": True}
+        return [change(c, "delete", target, "delete_redirect", None, None, None, [], "none", None)]
     check_experiments(c, rule.get("queries") or [], rid, rule, exps)
-    recreate = dict(base_args(a), queries=rule.get("queries") or [], redirect_type=rule.get("redirect_type"),
-                    enabled=bool(rule.get("enabled")))
-    for k, v in (("destination_url", rule.get("url")), ("name", rule.get("name")), ("audience_id", rule.get("audience_id")),
-                 ("started_at", rule.get("started_at")), ("ended_at", rule.get("ended_at"))):
-        if v not in (None, ""):
-            recreate[k] = v
     if not rule.get("redirect_type"):
         c.add("blocker", "rule", f"Redirect {rid}'s match type is unknown, so it couldn't be recreated: don't delete it; "
-              "disable it instead.")
-    c.add("warning", "permanent", "Deletes can't be undone in Discovery. The undo recreates the redirect with a new ID "
-          "and no edit history. Disabling it is the reversible alternative.")
-    return {"action": "delete", "rule_id": rid, "before": state(rule), "after": None, "separate_yes": True,
-            "payload": {"tool": "delete_redirect", "arguments": dict(base_args(a), rule_id=rid)},
-            "undo": {"tool": "create_redirect", "arguments": recreate},
-            "live_impact": "Off for all shoppers once Discovery syncs, permanently." if rule.get("enabled") else
-                           "None: the redirect is disabled."}
+              "switch it off instead.")
+    c.add("warning", "permanent", "Deletes can't be undone in Discovery. The undo recreates the redirect switched off, "
+          "with a new ID and no edit history. Switching it off is the reversible alternative.")
+    before = {k: rule.get(k) for k in ("id", "name", "enabled", "queries", "redirect_type", "url", "audience_id")}
+    before.update({"started_at": iso(rule.get("started_at")), "ended_at": iso(rule.get("ended_at"))})
+    live = "live" if rule.get("enabled") else "none"
+    note = ("Off for all shoppers once Discovery syncs, permanently." if rule.get("enabled") else
+            "None: the redirect is switched off.")
+    return [change(c, "delete", target, "delete_redirect", dict(base_args(a), rule_id=rid), before, None,
+                   recreate_steps(a, rule), live, note)]
 
 
 def day(text):
@@ -422,22 +467,43 @@ def day(text):
         raise argparse.ArgumentTypeError("use YYYY-MM-DD")
 
 
-def main():
-    sys.stdout.reconfigure(encoding="utf-8")  # keywords can hold any character; Windows consoles default to cp1252
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--changes", required=True, help="JSON list of changes (references/change-format.md)")
-    ap.add_argument("--redirects", action="append", required=True, help="saved search_redirects list page or detail (repeat)")
-    ap.add_argument("--queries", action="append", default=[], help="saved get_discovery_query_performance table (repeat)")
-    ap.add_argument("--experiments", help="saved search_discovery_experiments result with running tests")
-    ap.add_argument("--account", required=True, help="the Discovery account name the user confirmed")
-    ap.add_argument("--environment", required=True, choices=["staging", "production"])
-    ap.add_argument("--site-group-id", help="site group ID or site name, if the account has sites")
-    ap.add_argument("--today", type=day, help="YYYY-MM-DD to judge schedules against (default: today, UTC)")
-    ap.add_argument("--out", help="also write the plan (with every undo) to this file")
-    a = ap.parse_args()
-    today = a.today or datetime.now(timezone.utc)
-    today_ms = int(today.timestamp() * 1000)
+def numbered_file(text):
+    """N=FILE, split on the first "=": a plan change number and its read-back file."""
+    n, sep, path = text.partition("=")
+    if not sep or not path:
+        raise argparse.ArgumentTypeError("use N=FILE, e.g. 3=readback-3.json")
+    try:
+        return int(n), path
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{n!r} isn't a change number")
 
+
+def write_out(path, text):
+    if path:
+        try:
+            with open(path, "w", encoding="utf-8", newline="\n") as f:
+                f.write(text + "\n")
+        except OSError as e:
+            fail(f"{path}: can't write it ({e}).")
+
+
+def build_batches(changes):
+    """One batch for the ordinary ready changes; each switch-on and each delete in a batch of its own."""
+    ready = [ch for ch in changes if ch["status"] == "ready"]
+    alone = [ch for ch in ready if ch["kind"] in ("delete", "enable") or ch.get("switches_on")]
+    main = [ch["n"] for ch in ready if ch not in alone]
+    ordered = sorted(alone, key=lambda ch: (ch["kind"] == "delete", ch["n"]))
+    return ([main] if main else []) + [[ch["n"]] for ch in ordered]
+
+
+ORDER = ("n", "request", "status", "kind", "target", "tool", "payload", "before", "after", "undo", "live_impact",
+         "impact_note", "problems", "warnings")
+
+
+def cmd_plan(a):
+    # Schedules are judged against midnight UTC of --today, or of today: the same reference either way.
+    today = (a.today or datetime.now(timezone.utc)).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_ms = int(today.timestamp() * 1000)
     raw_changes = load(a.changes)
     if isinstance(raw_changes, dict) and isinstance(raw_changes.get("changes"), list):
         raw_changes = raw_changes["changes"]
@@ -448,40 +514,146 @@ def main():
     exps = running_experiments(a.experiments)
     cap = RULES["max_changes_per_batch"]
 
-    planned, deferred = [], []
-    for n, raw in enumerate(raw_changes, 1):
-        if len(planned) >= cap:
-            deferred.append({"n": n, "action": raw.get("action"), "rule_id": raw.get("rule_id"),
-                             "queries": raw.get("queries"), "reason": raw.get("reason")})
-            continue
-        c = Change(n, raw)
+    changes, deferred, ready_count = [], [], 0
+    for req, raw in enumerate(raw_changes, 1):
+        c = Change(req, raw)
         action = raw.get("action")
         if action == "create":
-            body = plan_create(c, raw, a, rules, revenue, exps, today_ms)
+            outs = plan_create(c, raw, a, rules, revenue, exps, today_ms)
         elif action == "update":
-            body = plan_update(c, raw, a, rules, revenue, exps, today_ms)
+            outs = plan_update(c, raw, a, rules, revenue, exps, today_ms)
         elif action == "delete":
-            body = plan_delete(c, raw, a, rules, exps)
+            outs = plan_delete(c, raw, a, rules, exps)
         else:
             c.add("blocker", "action", "action must be create, update or delete.")
-            body = {"action": action}
-        status = ("blocked" if any(x["severity"] == "blocker" for x in c.checks)
-                  else "no_change" if body.get("no_change") else "ready")
-        body.pop("no_change", None)
-        order = {"blocker": 0, "warning": 1, "nitpick": 2}
-        planned.append(dict({"n": n, "status": status, "reason": raw.get("reason")}, **body,
-                            checks=sorted(c.checks, key=lambda x: order[x["severity"]])))
+            outs = [change(c, None, None, None, None, None, None, [], "none", None)]
+        if c.problems:  # a blocked create has nothing to switch on
+            outs = [o for o in outs if not o.get("needs")]
+        for o in outs:
+            o["status"] = "blocked" if c.problems else "no_change" if o.pop("no_change", False) else "ready"
+        ready = [o for o in outs if o["status"] == "ready"]
+        if ready and ready_count + len(ready) > cap:  # only ready changes count towards the cap
+            deferred.append({"request": req, "action": action, "rule_id": raw.get("rule_id"),
+                             "queries": raw.get("queries"), "reason": raw.get("reason")})
+            continue
+        ready_count += len(ready)
+        changes.extend(outs)
+    for n, ch in enumerate(changes, 1):
+        ch["n"] = n
+    for ch in changes:
+        if ch["kind"] == "create":
+            for u in ch["undo"]:
+                u["payload"]["rule_id"] = f"<id returned by change {ch['n']}>"
+        if ch.pop("needs", None) == "create":
+            create_n = next(x["n"] for x in changes if x["request"] == ch["request"] and x["kind"] == "create")
+            ch["after_change"] = create_n
+            for payload in [ch["payload"]] + [u["payload"] for u in ch["undo"]]:
+                payload["rule_id"] = f"<id returned by change {create_n}>"
+    changes = [dict({k: ch.get(k) for k in ORDER}, **{k: v for k, v in ch.items() if k not in ORDER}) for ch in changes]
+    return {"ok": True, "account": a.account, "environment": a.environment, "site_group_id": a.site_group_id,
+            "today": today.strftime("%Y-%m-%d"), "batch_cap": cap, "changes": changes,
+            "batches": build_batches(changes), "deferred": deferred,
+            "counts": {s: sum(1 for ch in changes if ch["status"] == s) for s in ("ready", "blocked", "no_change")}}
 
-    ready = [p for p in planned if p["status"] == "ready"]
-    out = {"ok": True, "account": a.account, "environment": a.environment, "site_group_id": a.site_group_id,
-           "today": today.strftime("%Y-%m-%d"), "batch_cap": cap, "changes": planned, "deferred": deferred,
-           "counts": {s: sum(1 for p in planned if p["status"] == s) for s in ("ready", "blocked", "no_change")},
-           "confirm": {"batch": [p["n"] for p in ready if p["action"] != "delete"],
-                       "deletes_each_separately": [p["n"] for p in ready if p["action"] == "delete"]}}
+
+def readback(path):
+    """(redirects by ID, error text). A success:false read-back is returned as an error, not a failure."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError) as e:
+        fail(f"{path}: can't read it as JSON ({e}).")
+    for d in (data, data.get("result") if isinstance(data, dict) else None):
+        if isinstance(d, dict) and d.get("success") is False:
+            if re.search(r"account", str(d.get("error") or ""), re.I):
+                # Never read an account error as "not found": the read-back went to the wrong account, so stop.
+                fail(f"{path}: {ACCOUNT_LIST_ERROR} The read-back didn't reach the redirect, so nothing was checked.")
+            return {}, tool_error(d.get("error"))
+    return index_redirects([path]), None
+
+
+def same(key, want, got):
+    if key == "queries":
+        return sorted(norm(q) for q in want or []) == sorted(norm(q) for q in got or [])
+    if key in ("started_at", "ended_at"):
+        return want == iso(got)
+    return want == got
+
+
+def cmd_verify(a):
+    try:
+        with open(a.plan, encoding="utf-8") as f:
+            plan = json.load(f)
+    except (OSError, ValueError) as e:
+        fail(f"{a.plan}: can't read it as JSON ({e}).")
+    if not isinstance(plan, dict) or not isinstance(plan.get("changes"), list):
+        fail(f"{a.plan}: not a plan file (no changes list). Use the file that redirect_plan.py plan wrote.")
+    by_n = {ch.get("n"): ch for ch in plan["changes"] if isinstance(ch, dict) and isinstance(ch.get("n"), int)}
+    files = dict(a.readback)
+    results = []
+    for n in sorted(files):
+        ch = by_n.get(n)
+        if ch is None or ch.get("status") != "ready" or not isinstance(ch.get("payload"), dict):
+            fail(f"--readback {n}: the plan has no ready change {n}.")
+        rules, err = readback(files[n])
+        rid = ch["payload"].get("rule_id")
+        if isinstance(rid, int):
+            rule = rules.get(rid)
+        else:  # a new redirect: the read-back is its detail, by the ID the create returned
+            rule = next(iter(rules.values())) if len(rules) == 1 else None
+        res = {"n": n, "kind": ch.get("kind"), "target": ch.get("target")}
+        if ch.get("kind") == "delete":
+            res["state"] = "gone" if err or rule is None else "not_in_place"
+            if err:
+                res["note"] = f"The read-back returned an error, counted as gone: {err}"
+        elif err or rule is None:
+            res["state"] = "not_in_place"
+            res["note"] = f"The read-back failed: {err}" if err else "The read-back doesn't hold this redirect."
+        else:
+            have = {"queries": rule.get("queries"), "redirect_type": rule.get("redirect_type"),
+                    "destination_url": rule.get("url"), "name": rule.get("name"), "enabled": rule.get("enabled"),
+                    "audience_id": rule.get("audience_id"), "started_at": rule.get("started_at"),
+                    "ended_at": rule.get("ended_at")}
+            want = ch.get("after") or {}
+            if not rule.get("detail"):  # a list record has no URL, match type or audience
+                want = {k: v for k, v in want.items() if k in ("queries", "enabled", "name")}
+            bad = sorted(k for k in want if k in have and not same(k, want[k], have[k]))
+            res["state"] = "not_in_place" if bad else "in_place"
+            if bad:
+                res["mismatches"] = [{"field": k, "planned": want[k],
+                                      "found": iso(have[k]) if k in ("started_at", "ended_at") else have[k]} for k in bad]
+            res["sync_status"] = rule.get("sync_status")
+            if not isinstance(rid, int):
+                res["rule_id"] = rule.get("id")
+        results.append(res)
+    unchecked = sorted(n for n, ch in by_n.items() if ch.get("status") == "ready" and n not in files)
+    return {"ok": True, "results": results, "not_checked": unchecked,
+            "note": "A delete counts as gone only with a read-back; the changes in not_checked have none."}
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # keywords can hold any character; Windows consoles default to cp1252
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    p = sub.add_parser("plan", help="turn the requested changes into a plan")
+    p.add_argument("--changes", required=True, help="JSON list of changes (references/change-format.md)")
+    p.add_argument("--redirects", action="append", required=True, help="saved search_redirects list page or detail (repeat)")
+    p.add_argument("--queries", action="append", default=[], help="saved get_discovery_query_performance table (repeat)")
+    p.add_argument("--experiments", help="saved search_discovery_experiments result")
+    p.add_argument("--account", required=True, help="the Discovery account name the user confirmed")
+    p.add_argument("--environment", required=True, choices=["staging", "production"])
+    p.add_argument("--site-group-id", help="site group ID or site name, if the account has sites")
+    p.add_argument("--today", type=day, help="YYYY-MM-DD to judge schedules against (default: today, UTC)")
+    p.add_argument("--out", help="also write the plan (with every undo) to this file")
+    v = sub.add_parser("verify", help="check the read-backs after writing")
+    v.add_argument("--plan", required=True, help="the plan file from the plan step")
+    v.add_argument("--readback", action="append", type=numbered_file, required=True,
+                   help="N=FILE: the search_redirects rule_id result read back after writing change N (repeat)")
+    v.add_argument("--out", help="also write the result to this file")
+    a = ap.parse_args()
+    out = cmd_plan(a) if a.cmd == "plan" else cmd_verify(a)
     text = json.dumps(out, indent=2, ensure_ascii=False)
-    if a.out:
-        with open(a.out, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text + "\n")
+    write_out(a.out, text)
     print(text)
 
 

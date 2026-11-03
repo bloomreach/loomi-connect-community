@@ -1,0 +1,35 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "data": {
+    "id": 9104,
+    "startedAt": null,
+    "endedAt": null,
+    "isLive": false,
+    "ruleType": "redirect",
+    "audiences": [],
+    "queries": [
+     {"id": 91040, "query": "order status", "queryType": "sitesearch", "matchType": "EXACT_MATCH"},
+     {"id": 91041, "query": "track order", "queryType": "sitesearch", "matchType": "EXACT_MATCH"}
+    ],
+    "customizationItems": {
+     "redirect": {
+      "ruleName": "Track order",
+      "isKeyword": true,
+      "id": 9104,
+      "isEnabled": false,
+      "matchType": "EXACT_MATCH",
+      "audienceId": -1,
+      "url": "https://www.example-shop.test/orders"
+     }
+    },
+    "name": "Track order",
+    "enabled": false,
+    "user": "editor@example.test",
+    "syncStatus": "SUCCESS"
+   }
+  },
+  "error": null
+ }
+}
