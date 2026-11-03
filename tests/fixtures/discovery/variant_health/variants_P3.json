@@ -1,0 +1,42 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "P3_0",
+    "attributes": {
+     "skuid": "P3_0",
+     "color": "green",
+     "price": 100,
+     "sale_price": 100,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P3_0_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P3_0.webp"
+    }
+   },
+   {
+    "id": "P3_1",
+    "attributes": {
+     "skuid": "P3_1",
+     "color": "green",
+     "price": 110,
+     "sale_price": 120,
+     "availability": true,
+     "thumb_image": "https://cdn.acme.test/img/P3_1.webp"
+    }
+   },
+   {
+    "id": "SHARED-1",
+    "attributes": {
+     "skuid": "SHARED-1",
+     "color": "red",
+     "price": 0,
+     "sale_price": 0,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P3_2_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P3_2.webp"
+    }
+   }
+  ]
+ }
+}

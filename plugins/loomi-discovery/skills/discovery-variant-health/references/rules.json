@@ -1,0 +1,29 @@
+{
+  "about": "The variant and stock health rules. scripts/variant_health.py reads this file, so change a threshold or word list here and nowhere else. Each key is explained under notes.",
+  "page_size": 24,
+  "top_sellers": 50,
+  "stock_fields": ["availability", "in_stock", "inStock", "stock_status", "stock_level", "inventory"],
+  "out_of_stock_values": ["false", "0", "out of stock", "outofstock", "out_of_stock", "unavailable", "no", "none", "sold out", "soldout"],
+  "unknown_stock_values": ["unknown", ""],
+  "swatch_fields": ["swatch_image", "sku_swatch_images"],
+  "thumb_fields": ["thumb_image", "sku_thumb_images"],
+  "colour_fields": ["color", "colour", "sku_color_group", "color_group"],
+  "placeholder_hosts": ["example.com", "example.org", "example.net", "test.com", "domain.com", "yourdomain.com", "yoursite.com", "localhost"],
+  "placeholder_words": ["test", "placeholder", "todo", "tbd", "example", "dummy", "lorem", "changeme", "xxx", "broken", "wontwork", "fixme", "noimage", "missing"],
+  "min_variants_per_colour": 2,
+  "max_findings_listed": 30,
+  "notes": {
+    "page_size": "Products at or above this position in a saved grid are on page one. Fetch grids with rows set to this.",
+    "top_sellers": "Rows of the product performance table, sorted by revenue, that count as top sellers and are checked even when they aren't on a saved page one.",
+    "stock_fields": "Catalog or variant attributes that may carry stock status. The first one present on a record is used; if none is present anywhere, stock isn't checked and the report says so.",
+    "out_of_stock_values": "Values of a stock field that mean out of stock, compared lower-case. A boolean false counts too.",
+    "unknown_stock_values": "Values of a stock field that mean the status isn't known. They count as neither in nor out of stock.",
+    "swatch_fields": "Variant attributes (catalog variant records, then grid variants) that hold the swatch image. A variant with none of them set has no swatch.",
+    "thumb_fields": "Variant attributes that hold the variant's thumbnail image. A variant with none of them set has no thumbnail.",
+    "colour_fields": "Variant attributes that hold the colour, used for the one-variant-colour check.",
+    "placeholder_hosts": "Image hosts that are never a real image (medium on page one, low elsewhere).",
+    "placeholder_words": "Words in an image URL's path or query that suggest a placeholder or missing image (medium on page one, low elsewhere).",
+    "min_variants_per_colour": "When most colours of a product have at least this many variants (sizes), a colour with just one variant is reported (low): a size range may be missing from the feed.",
+    "max_findings_listed": "At most this many findings are listed in full, highest priority and revenue first; the rest are counted by check."
+  }
+}

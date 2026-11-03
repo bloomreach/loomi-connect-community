@@ -1,0 +1,33 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "response": {
+    "numFound": 1,
+    "docs": [
+     {
+      "pid": "P6",
+      "title": "Insulated parka",
+      "price": 200,
+      "sale_price": 180,
+      "docType": "product",
+      "thumb_image": "https://cdn.acme.test/img/P6.webp",
+      "variants": [
+       {
+        "skuid": "P6_0",
+        "sku_price": 200,
+        "sku_sale_price": 180,
+        "sku_swatch_images": [
+         "https://cdn.acme.test/img/P6_0.webp"
+        ],
+        "sku_thumb_images": [
+         "https://cdn.acme.test/img/P6_0.webp"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

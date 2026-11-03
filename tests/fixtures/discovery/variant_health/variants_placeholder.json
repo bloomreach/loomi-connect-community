@@ -1,0 +1,18 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "P7_9",
+    "attributes": {
+     "skuid": "P7_9",
+     "color": "olive",
+     "price": 80,
+     "sale_price": 70,
+     "swatch_image": "https://cdn.acme.test/img/placeholder.png",
+     "thumb_image": "https://www.example.com/x.webp"
+    }
+   }
+  ]
+ }
+}

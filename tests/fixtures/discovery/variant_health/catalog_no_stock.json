@@ -1,0 +1,17 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "P7",
+    "attributes": {
+     "pid": "P7",
+     "title": "Clean rain jacket",
+     "price": 80,
+     "sale_price": 70,
+     "thumb_image": "https://cdn.acme.test/img/P7.webp"
+    }
+   }
+  ]
+ }
+}

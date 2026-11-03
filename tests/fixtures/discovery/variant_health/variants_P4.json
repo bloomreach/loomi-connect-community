@@ -1,0 +1,78 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "P4_0",
+    "attributes": {
+     "skuid": "P4_0",
+     "color": "red",
+     "price": 40,
+     "sale_price": 40,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P4_0_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P4_0.webp"
+    }
+   },
+   {
+    "id": "P4_1",
+    "attributes": {
+     "skuid": "P4_1",
+     "color": "red",
+     "price": 40,
+     "sale_price": 40,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P4_1_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P4_1.webp"
+    }
+   },
+   {
+    "id": "P4_2",
+    "attributes": {
+     "skuid": "P4_2",
+     "color": "red",
+     "price": 40,
+     "sale_price": 40,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P4_2_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P4_2.webp"
+    }
+   },
+   {
+    "id": "P4_3",
+    "attributes": {
+     "skuid": "P4_3",
+     "color": "blue",
+     "price": 40,
+     "sale_price": 40,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P4_3_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P4_3.webp"
+    }
+   },
+   {
+    "id": "P4_3",
+    "attributes": {
+     "skuid": "P4_3",
+     "color": "blue",
+     "price": 40,
+     "sale_price": 40,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P4_4_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P4_4.webp"
+    }
+   },
+   {
+    "id": "P4_5",
+    "attributes": {
+     "skuid": "P4_5",
+     "color": "green",
+     "price": 40,
+     "sale_price": 40,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P4_5_sw.webp"
+    }
+   }
+  ]
+ }
+}

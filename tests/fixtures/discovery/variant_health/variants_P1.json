@@ -1,0 +1,31 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "P1_0",
+    "attributes": {
+     "skuid": "P1_0",
+     "color": "black",
+     "price": 120,
+     "sale_price": 120,
+     "availability": false,
+     "swatch_image": "https://cdn.acme.test/img/P1_0_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P1_0.webp"
+    }
+   },
+   {
+    "id": "P1_1",
+    "attributes": {
+     "skuid": "P1_1",
+     "color": "navy",
+     "price": 120,
+     "sale_price": 120,
+     "availability": false,
+     "swatch_image": "https://cdn.acme.test/img/P1_1_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P1_1.webp"
+    }
+   }
+  ]
+ }
+}
