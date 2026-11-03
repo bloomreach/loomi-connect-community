@@ -1,0 +1,29 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 101,
+   "ruleType": "ranking",
+   "name": "Old denim push",
+   "enabled": false,
+   "durationTag": "expired",
+   "startedAt": 1790294400000,
+   "endedAt": 1792886400000,
+   "modifiedAt": 1785110400000,
+   "isLive": false,
+   "isEditable": true,
+   "user": "editor@example.test",
+   "audiences": [],
+   "queries": [
+    {
+     "query": "jeans",
+     "queryType": "sitesearch",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "freeze_products": false
+   }
+  }
+ }
+}

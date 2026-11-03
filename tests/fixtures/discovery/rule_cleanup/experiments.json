@@ -1,0 +1,32 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "e1",
+    "experimentName": "Coat layout",
+    "experimentStatus": "RUNNING",
+    "buckets": [
+     {
+      "ruleIdentifierInfo": {
+       "id": "111"
+      }
+     },
+     {}
+    ]
+   },
+   {
+    "id": "e2",
+    "experimentName": "Old test",
+    "experimentStatus": "COMPLETED",
+    "buckets": [
+     {
+      "ruleIdentifierInfo": {
+       "id": "109"
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

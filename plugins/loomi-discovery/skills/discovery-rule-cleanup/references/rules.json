@@ -1,0 +1,15 @@
+{
+  "about": "Limits and patterns for discovery-rule-cleanup. scripts/cleanup_plan.py reads this file; change a limit here and nowhere else. Each key is explained under notes.",
+  "max_changes_per_batch": 10,
+  "max_deletes_per_batch": 5,
+  "delete_min_disabled_days": 30,
+  "protected_name_pattern": "do not (delete|change|remove|update|touch)|don'?t (delete|change|remove|touch)",
+  "running_experiment_statuses": ["RUNNING"],
+  "notes": {
+    "max_changes_per_batch": "At most this many disable, date or scope changes go in one batch, with one 'yes'. The rest are listed as the next batch.",
+    "max_deletes_per_batch": "At most this many deletes go in one batch. Deletes always need their own 'yes' naming each rule, after the other changes.",
+    "delete_min_disabled_days": "A disabled rule that hasn't expired can only be deleted when it was last changed at least this many days ago, so a recent disable can still be undone. Expired disabled rules can be deleted straight away.",
+    "protected_name_pattern": "Regular expression (case-insensitive) for rule names that say not to touch them. Such rules are refused unless the change request says the owner agreed (owner_confirmed: true).",
+    "running_experiment_statuses": "Experiment statuses that block a change: a rule in a bucket of an experiment with one of these statuses is refused."
+  }
+}

@@ -1,0 +1,29 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 102,
+   "ruleType": "ranking",
+   "name": "Summer sale boost",
+   "enabled": false,
+   "durationTag": "expired",
+   "startedAt": null,
+   "endedAt": 1788566400000,
+   "modifiedAt": 1785110400000,
+   "isLive": false,
+   "isEditable": true,
+   "user": "editor@example.test",
+   "audiences": [],
+   "queries": [
+    {
+     "query": "jeans",
+     "queryType": "sitesearch",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "freeze_products": false
+   }
+  }
+ }
+}

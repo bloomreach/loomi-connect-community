@@ -1,0 +1,29 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 111,
+   "ruleType": "ranking",
+   "name": "Coat layout variant",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "startedAt": null,
+   "endedAt": null,
+   "modifiedAt": 1785110400000,
+   "isLive": false,
+   "isEditable": true,
+   "user": "editor@example.test",
+   "audiences": [],
+   "queries": [
+    {
+     "query": "jeans",
+     "queryType": "sitesearch",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "freeze_products": false
+   }
+  }
+ }
+}
