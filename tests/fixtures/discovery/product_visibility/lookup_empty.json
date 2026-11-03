@@ -1,0 +1,57 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 0,
+   "start": 0,
+   "docs": []
+  },
+  "debug": {
+   "explain.structured": {},
+   "customizations.explain": [
+    {
+     "id": 900001,
+     "ruleType": "ranking",
+     "queries": [
+      {
+       "query": "rain jacket",
+       "type": "sitesearch",
+       "matchType": "EXACT_MATCH"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "boost_top_products",
+       "value": "[{\"product_id\": \"A1\", \"product_name\": \"Boosted A1\"}, {\"product_id\": \"A2\", \"product_name\": \"Boosted A2\"}, {\"product_id\": \"A3\", \"product_name\": \"Boosted A3\"}]"
+      },
+      {
+       "type": "explicit_filters",
+       "value": "[{\"rule\": {\"type\": \"clause\", \"operator\": \"AND\", \"operands\": [{\"type\": \"attribute\", \"operator\": \"OR\", \"name\": \"category\", \"operands\": [\"cat-x\"]}], \"strength\": 0}, \"filter_type\": \"exclude\"}]"
+      }
+     ],
+     "liveInTest": false
+    },
+    {
+     "id": 900002,
+     "ruleType": "ranking_algo",
+     "queries": [
+      {
+       "query": "*"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "ranking_algo",
+       "value": "{\"id\": \"br-fake\"}"
+      }
+     ]
+    }
+   ],
+   "feUrl": "http://frontend.example.invalid/api?auth_key=FAKEKEY",
+   "sqApiUrl": "http://sq.example.invalid/?x=FAKE"
+  },
+  "did_you_mean": []
+ },
+ "error": null,
+ "environment_used": "production"
+}

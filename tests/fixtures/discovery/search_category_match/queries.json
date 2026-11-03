@@ -1,0 +1,104 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "mens pants",
+    "browse_sessions": 9000,
+    "visits": 9000,
+    "conversion_rate": "20.00%",
+    "rpv": "$20.00",
+    "revenue": "$180000.00"
+   },
+   {
+    "query": "skirt",
+    "browse_sessions": 8000,
+    "visits": 8000,
+    "conversion_rate": "12.00%",
+    "rpv": "$10.00",
+    "revenue": "$80000.00"
+   },
+   {
+    "query": "pants",
+    "browse_sessions": 7000,
+    "visits": 7000,
+    "conversion_rate": "18.00%",
+    "rpv": "$18.00",
+    "revenue": "$126000.00"
+   },
+   {
+    "query": "dress",
+    "browse_sessions": 6500,
+    "visits": 6500,
+    "conversion_rate": "20.00%",
+    "rpv": "$30.00",
+    "revenue": "$195000.00"
+   },
+   {
+    "query": "tops",
+    "browse_sessions": 6000,
+    "visits": 6000,
+    "conversion_rate": "22.00%",
+    "rpv": "$15.00",
+    "revenue": "$90000.00"
+   },
+   {
+    "query": "trouser",
+    "browse_sessions": 5000,
+    "visits": 5000,
+    "conversion_rate": "19.00%",
+    "rpv": "$17.00",
+    "revenue": "$85000.00"
+   },
+   {
+    "query": "black dress",
+    "browse_sessions": 4000,
+    "visits": 4000,
+    "conversion_rate": "21.00%",
+    "rpv": "$25.00",
+    "revenue": "$100000.00"
+   },
+   {
+    "query": "rain jacket",
+    "browse_sessions": 3000,
+    "visits": 3000,
+    "conversion_rate": "15.00%",
+    "rpv": "$12.00",
+    "revenue": "$36000.00"
+   },
+   {
+    "query": "jackets",
+    "browse_sessions": 2500,
+    "visits": 2500,
+    "conversion_rate": "10.00%",
+    "rpv": "$9.00",
+    "revenue": "$22500.00"
+   },
+   {
+    "query": "summer sale",
+    "browse_sessions": 1500,
+    "visits": 1500,
+    "conversion_rate": "14.00%",
+    "rpv": "$11.00",
+    "revenue": "$16500.00"
+   },
+   {
+    "query": "womens shoes",
+    "browse_sessions": 1200,
+    "visits": 1200,
+    "conversion_rate": "18.00%",
+    "rpv": "$16.00",
+    "revenue": "$19200.00"
+   },
+   {
+    "query": "quiet thing",
+    "browse_sessions": 50,
+    "visits": 50,
+    "conversion_rate": "5.00%",
+    "rpv": "$2.00",
+    "revenue": "$100.00"
+   }
+  ],
+  "total_rows": 12
+ }
+}

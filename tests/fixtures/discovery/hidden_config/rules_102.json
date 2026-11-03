@@ -1,0 +1,32 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 9003,
+   "name": null,
+   "ruleType": "ranking",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "durationTag": "unscheduled",
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "id": 9003,
+     "query": "spring dresses",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "variantCount": 1
+  }
+ ],
+ "meta": {
+  "pagination": {
+   "total": 1,
+   "limit": 100,
+   "page": 0
+  }
+ },
+ "error": null
+}

@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Search vs Category Match"
+  short_description: "Compare Bloomreach Discovery search results with the matching category page"
+policy:
+  allow_implicit_invocation: true

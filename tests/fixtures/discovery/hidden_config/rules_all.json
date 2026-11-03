@@ -1,0 +1,89 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 9001,
+   "name": null,
+   "ruleType": "ranking",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "durationTag": "unscheduled",
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "id": 9001,
+     "query": "shirt",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "variantCount": 1
+  },
+  {
+   "id": 9002,
+   "name": null,
+   "ruleType": "ranking",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "durationTag": "unscheduled",
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "id": 9002,
+     "query": "jeans",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "variantCount": 1
+  },
+  {
+   "id": 9006,
+   "name": null,
+   "ruleType": "facet",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "durationTag": "unscheduled",
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "id": 9006,
+     "query": "dresses",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "variantCount": 1
+  },
+  {
+   "id": 9007,
+   "name": null,
+   "ruleType": "ranking",
+   "enabled": false,
+   "syncStatus": "SUCCESS",
+   "durationTag": "unscheduled",
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "id": 9007,
+     "query": "coats",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "variantCount": 1
+  }
+ ],
+ "meta": {
+  "pagination": {
+   "total": 4,
+   "limit": 100,
+   "page": 0
+  }
+ },
+ "error": null
+}

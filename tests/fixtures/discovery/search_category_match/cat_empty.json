@@ -1,0 +1,13 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 0,
+   "start": 0,
+   "docs": []
+  },
+  "debug": {
+   "feUrl": "http://internal.invalid/?auth_key=FAKE"
+  }
+ }
+}

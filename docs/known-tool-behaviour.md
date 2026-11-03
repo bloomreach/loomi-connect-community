@@ -92,6 +92,11 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - Banner (media rule) rows appear in `response.docs` with `docType: "content"`, no `pid` and a `slots` list. Skip them when ranking products.
 - `customizations.explain` lists every rule that applies to the query (ranking algorithm, facet, banner, personalisation), each with `liveInTest`. A rule passed in `disabled_customization_ids` is still listed there, but its effect is gone from the results, so a grid fetched that way shows the page without the rule.
 
+- Each product's `debug["explain.structured"]` entry ends with a score breakdown: `totalNormalizedScore`, `relevance`, `performance`, `keyword_score`, `vector_score` (search only) and `merchandisingRulesApplied` (for example `{"hardBoost": ["parent_product_id:…"]}`). Earlier entries show which fields matched the query.
+- A rule's exclusion filter removes products from the grid entirely: filtering on the product ID returns nothing. Fetching the grid with that rule in `disabled_customization_ids` brings it back, which isolates rule exclusions. A 60-row response is about 290 KB.
+- `search_by="product_id"` silently ignores requested fields that don't exist on the index (`category`, `availability`); read those with `search_discovery_catalog_products`.
+- With no redirect, the response has no `keywordRedirect` key at all (not `null`). Category grids put the category ID in `synonym.explain.queryIntents`, and their `rankingAlgorithmName` is empty.
+
 **Query, product and brand performance**
 - The `no_search_results` preset misses many dead-end queries (0 product views, 100% bounce) that only appear under `no_revenue`. Both presets include rows with 0 current sessions. Use both.
 - Sorting by `change_*` puts tiny queries first. The product table accepts `sort="prev_revenue"`, which catches products that fell out of the top list.
@@ -104,6 +109,11 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - `get_discovery_category_performance_table` with `filter_preset="lowest_converting"` returns 0 rows. **(bug?)**
 - `get_discovery_brand_performance` with `days=30` returned a wrong previous period: $11.07M against $19.94M from the product table and the overview. That inflates brand trends (one brand showed +345% where the true figure was +133%). With `days=7` the figures matched. Work out brand trends from the product table. **(bug?)**
 - Some brand names have trailing spaces ("Pacific "). Trim them before grouping.
+
+**Categories and API usage**
+- `list_categories` repeats category names across departments (`/men/tops`, `/women/tops`), so match categories by path, not name.
+- `get_discovery_api_requests` returns one total per day or month for the filter given; `groups` is always empty, so there's no breakdown. Combined filters fail silently: comma-joined applies only the first, space-joined returns all zeros. An unknown value (`request_type:widget`) returns zeros, not an error, so request types can't be listed. `-dimension:value` excludes correctly. `time_period_end` is inclusive, and today is partial.
+- `get_discovery_unique_visitors` reads 0 for a month until the 2nd of the next month, and `contracted_muv` is `"0"` on accounts not on MUV pricing.
 
 **Dynamic categories**
 - `search_dynamic_categories` returns empty `conditionConfig` in list mode, and `productIds` stays empty even when fetched by ID. Fetch each category by ID for its conditions, and preview it with the product grid.
@@ -130,6 +140,11 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - A ranking rule that pins a product not in the query's results also needs it in `add_to_recall`.
 - **`create_ranking_rule` defaults to `enabled=true`.** Always pass `enabled=false` when you create a rule to test.
 - Facet ranges, value merges and renames can't be set through the API; the `create_facet_rule` description says so.
+
+- **Ranking algorithms:** an algorithm is assigned to a page by a rule of type `ranking_algo`, which the three ranking-rule list tools leave out. The grid's `customizations.explain` lists them, and `get_ranking_rule` reads one by ID (`customizationItems.ranking_algo.id`). `br-standard` is the `algoId` of both the search and the category classic ranking. Algorithm records include `createdBy` and `lastModifiedBy` email addresses.
+- **Audiences:** ranking and media rule lists accept `audience_ids`, which is how to map rules to audiences while `audienceName` is null; facet rule lists and `search_redirects` have no such filter. An audience's `rulesAffected` counts every rule type. `get_ranking_rule` detail is wrapped twice (`data.data`) and carries `audiences: [{id, audienceName}]`. Audience records carry the creator's email (`user`); Engagement-segment audiences use the segmentation ID as the dimension's `internalName`, with `type: "engagement"`.
+- **Media rules and assets:** media rule lists don't say which assets a rule uses; only `get_discovery_media_rule` does, through `customizationItems.campaign.bannerId` and `content_in_grid[].bannerId`, with each placement's `slots`, `slotType`, `dimension` and `pcs` (`sharedId` is only the top banner). `search_discovery_assets` list pages already include each asset's `sharedData` as a JSON string, plus `user` (an editor's email). For `html` and `banner_url` banners, `image_url.imageUrl` holds HTML or text, not a URL. `get_discovery_multi_slot_customizations` returns only each rule's `id`, `name` and `queries`. `matchType` comes back as `EXACT_MATCH` or `exact_match` depending on the call. Uploaded image URLs can contain unencoded spaces.
+- **Account names leak in errors:** `list_api_params` (and likely other Discovery tools) called with an unknown `account_name` returns an error listing every account the user can access, many of them real customers. Never repeat it; ask the user for the account name instead.
 
 **Facets and autosuggest**
 - `list_facet_attributes` can only be reached through `search_tools` / `call_tool`, and it marks internal fields (e.g. `margin`) as facetable. `only_facetable=false` still returns only facetable attributes.

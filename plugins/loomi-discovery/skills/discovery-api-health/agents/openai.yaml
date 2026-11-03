@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Discovery API Health"
+  short_description: "Red/amber/green check of Bloomreach Discovery API volume, errors and unique visitors against contract"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true

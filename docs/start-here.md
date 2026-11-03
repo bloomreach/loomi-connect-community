@@ -23,6 +23,9 @@ Before you start, [connect Loomi Connect](connecting-loomi-connect.md) and insta
 | "Why did revenue drop yesterday or last week?" | [revenue-anomaly-explainer](../plugins/loomi-platform/skills/revenue-anomaly-explainer/): a breakdown that adds up, with causes ranked by evidence |
 | "Is our data and tracking OK?" | [data-feed-health](../plugins/loomi-platform/skills/data-feed-health/) (pixel, feeds, Data Hub) and [engagement-tracking-health](../plugins/loomi-engagement/skills/engagement-tracking-health/) (events and properties) |
 | "Why is this search performing badly?" | [discovery-query-diagnosis](../plugins/loomi-discovery/skills/discovery-query-diagnosis/) |
+| "Why isn't this product showing for 'dress'?" | [discovery-product-visibility](../plugins/loomi-discovery/skills/discovery-product-visibility/): where it ranks or why it's missing, and the smallest fix |
+| "Why does searching 'dresses' show different products from the dresses page?" | [discovery-search-category-match](../plugins/loomi-discovery/skills/discovery-search-category-match/): search vs category page one, with a redirect or ranking recommendation |
+| "Is search down?" / "Are we within our MUV contract?" | [discovery-api-health](../plugins/loomi-discovery/skills/discovery-api-health/): API volume, errors and unique visitors against contract |
 | "Where are shoppers dropping out?" | [funnel-leak-finder](../plugins/loomi-engagement/skills/funnel-leak-finder/) |
 | "A customer has a problem. What do we know about them?" | [customer-360-lookup](../plugins/loomi-engagement/skills/customer-360-lookup/): one customer's profile, recent activity and support flags, with personal data kept to a minimum |
 
@@ -49,6 +52,9 @@ Start with the health check, then go deeper where it points you.
 | "Build a pickleball collection" or "Which products belong with this search?" | [topic-collection-builder](../plugins/loomi-discovery/skills/topic-collection-builder/) |
 | "Clean up our merchandising rules" | [discovery-rule-audit](../plugins/loomi-discovery/skills/discovery-rule-audit/) |
 | "Is this ranking rule / synonym / redirect safe to switch on?" | [discovery-change-qa](../plugins/loomi-discovery/skills/discovery-change-qa/): before/after preview, revenue at stake and clashes, with a go/no-go verdict |
+| "Which ranking algorithms are we using, and are any broken?" | [discovery-ranking-algorithm-review](../plugins/loomi-discovery/skills/discovery-ranking-algorithm-review/): where each algorithm is used, status, weights and clean-up, prioritised |
+| "Why do some shoppers see different results?" / "Clean up our audiences" | [discovery-hidden-config-audit](../plugins/loomi-discovery/skills/discovery-hidden-config-audit/): broken or unused audiences, personalised rules, forgotten API parameter overrides |
+| "Which of our banners are unused or broken?" | [discovery-media-asset-cleanup](../plugins/loomi-discovery/skills/discovery-media-asset-cleanup/): asset library against the media rules that use it, with a cleanup list |
 | "Are our dynamic categories working?" | [discovery-dynamic-category-review](../plugins/loomi-discovery/skills/discovery-dynamic-category-review/) |
 | "Are our product recommendations set up well?" | [recommendation-model-audit](../plugins/loomi-engagement/skills/recommendation-model-audit/) |
 | "Which products have weak data for Google and AI search?" | [product-data-audit](../plugins/loomi-product-data/skills/product-data-audit/) |

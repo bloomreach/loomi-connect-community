@@ -1,0 +1,127 @@
+[
+ {
+  "success": true,
+  "data": {
+   "id": 2001,
+   "name": "Dress hero",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "deleted": false,
+   "user": "editor@acme.test",
+   "sharedId": 1001,
+   "queries": [
+    {
+     "id": 1,
+     "query": "dress",
+     "queryType": "sitesearch",
+     "matchType": "exact_match"
+    }
+   ],
+   "customizationItems": {
+    "campaign": {
+     "bannerId": 1001,
+     "bannerName": "t"
+    },
+    "content_in_grid": [
+     {
+      "bannerId": 1002,
+      "bannerName": "Partner tile",
+      "slots": [
+       2,
+       3,
+       6,
+       7
+      ],
+      "slotType": "multi",
+      "dimension": "2x2",
+      "pcs": 4
+     },
+     {
+      "bannerId": 1006,
+      "bannerName": "Hero copy",
+      "slots": [
+       7
+      ],
+      "slotType": "single"
+     },
+     {
+      "bannerId": 9999,
+      "bannerName": "Deleted tile",
+      "slots": [
+       80
+      ],
+      "slotType": "single"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "success": true,
+  "data": {
+   "id": 2002,
+   "name": "Old promo",
+   "enabled": false,
+   "durationTag": "unscheduled",
+   "deleted": false,
+   "user": "editor@acme.test",
+   "sharedId": 1004,
+   "queries": [
+    {
+     "id": 1,
+     "query": "dress",
+     "queryType": "sitesearch",
+     "matchType": "exact_match"
+    }
+   ],
+   "customizationItems": {
+    "campaign": {
+     "bannerId": 1004,
+     "bannerName": "t"
+    },
+    "content_in_grid": [
+     {
+      "bannerId": null,
+      "slots": []
+     }
+    ]
+   }
+  }
+ },
+ {
+  "success": true,
+  "data": {
+   "id": 2003,
+   "name": "Summer",
+   "enabled": true,
+   "durationTag": "expired",
+   "deleted": false,
+   "user": "editor@acme.test",
+   "sharedId": null,
+   "queries": [
+    {
+     "id": 1,
+     "query": "dress",
+     "queryType": "sitesearch",
+     "matchType": "exact_match"
+    }
+   ],
+   "customizationItems": {
+    "campaign": null,
+    "content_in_grid": [
+     {
+      "bannerId": 1004,
+      "bannerName": "HTML promo",
+      "slots": [
+       1,
+       2,
+       3
+      ],
+      "slotType": "multi",
+      "dimension": "2x2"
+     }
+    ]
+   }
+  }
+ }
+]

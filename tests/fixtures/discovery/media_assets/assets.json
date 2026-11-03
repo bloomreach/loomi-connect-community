@@ -1,0 +1,94 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "sharedDataId": 1001,
+    "name": "Autumn hero",
+    "dataType": "banners",
+    "user": "editor@acme.test",
+    "createdAt": 1793664000000,
+    "modifiedAt": 1793664000000,
+    "deleted": false,
+    "sharedData": "{\"banner\": {\"bannerType\": \"image_upload\", \"name\": \"x\", \"enabled\": true}, \"image_url\": {\"imageUrl\": \"https://sitesearch-static-cdn.bloomreach.com/prod/acme/hero.png\"}, \"banner_hotspot\": [{\"id\": 1, \"url\": \"https://shop.acme.test/sale\", \"altText\": null, \"coords\": \"0,0,10,10\"}], \"banner_hotspot_type\": \"single\"}"
+   },
+   {
+    "sharedDataId": 1002,
+    "name": "Partner tile",
+    "dataType": "banners",
+    "user": "editor@acme.test",
+    "createdAt": 1793750400000,
+    "modifiedAt": 1793750400000,
+    "deleted": false,
+    "sharedData": "{\"banner\": {\"bannerType\": \"image_url\", \"name\": \"x\", \"enabled\": true}, \"image_url\": {\"imageUrl\": \"http://images.partner.test/tile.jpg\"}, \"banner_hotspot\": null, \"banner_hotspot_type\": \"none\"}"
+   },
+   {
+    "sharedDataId": 1003,
+    "name": "Note text",
+    "dataType": "banners",
+    "user": "editor@acme.test",
+    "createdAt": 1700000000000,
+    "modifiedAt": 1700000000000,
+    "deleted": false,
+    "sharedData": "{\"banner\": {\"bannerType\": \"banner_url\", \"name\": \"x\", \"enabled\": true}, \"image_url\": {\"imageUrl\": \"Go to a category page\"}, \"banner_hotspot\": null, \"banner_hotspot_type\": \"none\"}"
+   },
+   {
+    "sharedDataId": 1004,
+    "name": "HTML promo",
+    "dataType": "banners",
+    "user": "editor@acme.test",
+    "createdAt": 1793750400000,
+    "modifiedAt": 1793750400000,
+    "deleted": false,
+    "sharedData": "{\"banner\": {\"bannerType\": \"html\", \"name\": \"x\", \"enabled\": true}, \"image_url\": {\"imageUrl\": \"<p><a href=\\\"www.acme.test/x\\\">Shop</a><img src=\\\"https://example.com/a.png\\\"></p>\"}, \"banner_hotspot\": null, \"banner_hotspot_type\": \"none\"}"
+   },
+   {
+    "sharedDataId": 1005,
+    "name": "Countdown",
+    "dataType": "weblayer",
+    "user": "system",
+    "createdAt": 1793750400000,
+    "modifiedAt": 1793750400000,
+    "deleted": false,
+    "sharedData": "{\"name\": \"Countdown\", \"trigger\": {\"include_pages\": [{\"type\": \"exact\", \"url\": \"https://www.yourdomain.com\"}]}}"
+   },
+   {
+    "sharedDataId": 1006,
+    "name": "Hero copy",
+    "dataType": "banners",
+    "user": "editor@acme.test",
+    "createdAt": 1793750400000,
+    "modifiedAt": 1793750400000,
+    "deleted": false,
+    "sharedData": "{\"banner\": {\"bannerType\": \"image_upload\", \"name\": \"x\", \"enabled\": false}, \"image_url\": {\"imageUrl\": \"https://sitesearch-static-cdn.bloomreach.com/prod/acme/hero.png\"}, \"banner_hotspot\": null, \"banner_hotspot_type\": \"none\"}"
+   },
+   {
+    "sharedDataId": 1007,
+    "name": "Broken",
+    "dataType": "banners",
+    "user": "editor@acme.test",
+    "createdAt": 1793750400000,
+    "modifiedAt": 1793750400000,
+    "deleted": false,
+    "sharedData": "not json"
+   },
+   {
+    "sharedDataId": 1008,
+    "name": "Gone",
+    "dataType": "banners",
+    "user": "editor@acme.test",
+    "createdAt": 1793750400000,
+    "modifiedAt": 1793750400000,
+    "deleted": true,
+    "sharedData": "{\"banner\": {\"bannerType\": \"image_upload\", \"name\": \"x\", \"enabled\": true}, \"image_url\": {\"imageUrl\": \"https://sitesearch-static-cdn.bloomreach.com/prod/acme/hero.png\"}, \"banner_hotspot\": null, \"banner_hotspot_type\": \"none\"}"
+   }
+  ],
+  "meta": {
+   "pagination": {
+    "total": 8,
+    "limit": 100,
+    "page": 0
+   }
+  }
+ }
+}

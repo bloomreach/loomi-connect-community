@@ -1,0 +1,51 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 9004,
+   "name": null,
+   "ruleType": "ranking",
+   "enabled": false,
+   "syncStatus": "SUCCESS",
+   "durationTag": "unscheduled",
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "id": 9004,
+     "query": "suits",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "variantCount": 1
+  },
+  {
+   "id": 9005,
+   "name": null,
+   "ruleType": "ranking",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "durationTag": "expired",
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "id": 9005,
+     "query": "blazers",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "variantCount": 1
+  }
+ ],
+ "meta": {
+  "pagination": {
+   "total": 2,
+   "limit": 100,
+   "page": 0
+  }
+ },
+ "error": null
+}

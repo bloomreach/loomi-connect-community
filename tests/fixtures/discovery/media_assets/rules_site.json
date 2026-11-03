@@ -1,0 +1,77 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 2001,
+   "name": "Dress hero",
+   "ruleType": "campaign",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "durationTag": "unscheduled",
+   "lastModifiedBy": "editor@acme.test",
+   "queries": [
+    {
+     "id": 1,
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "variantCount": 2
+  },
+  {
+   "id": 2002,
+   "name": "Old promo",
+   "ruleType": "campaign",
+   "enabled": false,
+   "syncStatus": "SUCCESS",
+   "durationTag": "unscheduled",
+   "lastModifiedBy": "editor@acme.test",
+   "queries": [
+    {
+     "id": 1,
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "variantCount": 1
+  },
+  {
+   "id": 2003,
+   "name": "Summer",
+   "ruleType": "campaign",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "durationTag": "expired",
+   "lastModifiedBy": "editor@acme.test",
+   "queries": [
+    {
+     "id": 1,
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "variantCount": 1
+  },
+  {
+   "id": 2004,
+   "name": "Not fetched",
+   "ruleType": "campaign",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "durationTag": "active",
+   "lastModifiedBy": "editor@acme.test",
+   "queries": [
+    {
+     "id": 1,
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "variantCount": 1
+  }
+ ]
+}

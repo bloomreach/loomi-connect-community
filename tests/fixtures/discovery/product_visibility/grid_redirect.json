@@ -1,0 +1,107 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 2,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "Q01",
+     "title": "Rain jacket Q01",
+     "docType": "product"
+    },
+    {
+     "pid": "Q02",
+     "title": "Rain jacket Q02",
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "explain.structured": {
+    "Q01": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 399,
+      "relevance": 88.0,
+      "performance": 499.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "Q02": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 398,
+      "relevance": 88.0,
+      "performance": 498.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ]
+   },
+   "customizations.explain": [
+    {
+     "id": 900002,
+     "ruleType": "ranking_algo",
+     "queries": [
+      {
+       "query": "*"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "ranking_algo",
+       "value": "{\"id\": \"br-fake\"}"
+      }
+     ]
+    }
+   ],
+   "feUrl": "http://frontend.example.invalid/api?auth_key=FAKEKEY",
+   "sqApiUrl": "http://sq.example.invalid/?x=FAKE"
+  },
+  "did_you_mean": [],
+  "autoCorrectQuery": "rain jacket",
+  "keywordRedirect": {
+   "original query": "rain jaket",
+   "redirected query": "rain jacket",
+   "redirected url": "https://shop.example.test/rainwear"
+  }
+ },
+ "error": null,
+ "environment_used": "production"
+}

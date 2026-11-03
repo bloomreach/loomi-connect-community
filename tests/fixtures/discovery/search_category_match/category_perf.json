@@ -1,0 +1,55 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "category": "dresses",
+    "cat_id": "21200",
+    "browse_sessions": 5000,
+    "conversion_rate": "21.00%",
+    "rpv": "$31.00",
+    "revenue": "$1000.00"
+   },
+   {
+    "category": "skirts",
+    "cat_id": "21000",
+    "browse_sessions": 4000,
+    "conversion_rate": "18.00%",
+    "rpv": "$15.00",
+    "revenue": "$1000.00"
+   },
+   {
+    "category": "jackets",
+    "cat_id": "40100",
+    "browse_sessions": 2000,
+    "conversion_rate": "16.00%",
+    "rpv": "$13.00",
+    "revenue": "$1000.00"
+   },
+   {
+    "category": "tops",
+    "cat_id": "10100",
+    "browse_sessions": 3000,
+    "conversion_rate": "15.00%",
+    "rpv": "$11.00",
+    "revenue": "$1000.00"
+   },
+   {
+    "category": "summer sale",
+    "cat_id": "brg_dyn_summer01",
+    "browse_sessions": 900,
+    "conversion_rate": "20.00%",
+    "rpv": "$15.00",
+    "revenue": "$1000.00"
+   },
+   {
+    "category": "shoes",
+    "cat_id": "20800",
+    "browse_sessions": 800,
+    "conversion_rate": "18.00%",
+    "rpv": "$16.00",
+    "revenue": "$1000.00"
+   }
+  ]
+ }
+}

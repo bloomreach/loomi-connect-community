@@ -1,0 +1,67 @@
+{
+ "success": true,
+ "organization": "EXAMPLE",
+ "data": {
+  "isSuccessful": true,
+  "body": {
+   "group_definitions": [],
+   "results": [
+    {
+     "groups": [],
+     "total": {
+      "contracted_muv": {
+       "value": "1000000"
+      },
+      "muv": {
+       "value": "500000"
+      }
+     },
+     "time_period_start": "2026-08",
+     "time_period_end": "2026-09"
+    },
+    {
+     "groups": [],
+     "total": {
+      "contracted_muv": {
+       "value": "1000000"
+      },
+      "muv": {
+       "value": "520000"
+      }
+     },
+     "time_period_start": "2026-09",
+     "time_period_end": "2026-10"
+    },
+    {
+     "groups": [],
+     "total": {
+      "contracted_muv": {
+       "value": "1000000"
+      },
+      "muv": {
+       "value": "510000"
+      }
+     },
+     "time_period_start": "2026-10",
+     "time_period_end": "2026-11"
+    },
+    {
+     "groups": [],
+     "total": {
+      "contracted_muv": {
+       "value": "1000000"
+      },
+      "muv": {
+       "value": "0"
+      }
+     },
+     "time_period_start": "2026-11",
+     "time_period_end": "2026-12"
+    }
+   ],
+   "sql_queries": []
+  }
+ },
+ "error": null,
+ "environment_used": null
+}

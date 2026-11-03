@@ -1,0 +1,72 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 12,
+   "algoId": "br-cat",
+   "name": "Category optimised",
+   "type": "ML_LINEAR_GLOBAL",
+   "status": "Available",
+   "searchType": "CATEGORY",
+   "domainKey": "acme",
+   "signals": null,
+   "modelTrainingStatus": "TRAINING_COMPLETED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1791072000000,
+   "createdBy": "editor.one@example.test",
+   "lastModifiedAt": 1791072000000,
+   "lastModifiedBy": "editor.two@example.test",
+   "modelMetaData": {
+    "text": {
+     "unigram_gender_tf": {
+      "weight": 0.1,
+      "min": 0,
+      "max": 0,
+      "featureType": "TEXT"
+     },
+     "unigram_color_tf": {
+      "weight": 0.1,
+      "min": 0,
+      "max": 0,
+      "featureType": "TEXT"
+     },
+     "name_tf": {
+      "weight": 0.2,
+      "min": 0,
+      "max": 2,
+      "featureType": "TEXT"
+     }
+    },
+    "combined": {
+     "text_score_category": {
+      "weight": 30.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "TEXT_SCORE"
+     },
+     "raw_qd_revenue_category": {
+      "weight": 25.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     },
+     "raw_qd_views_category": {
+      "weight": 25.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     },
+     "raw_qd_conversions_category": {
+      "weight": 20.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     }
+    }
+   },
+   "weights": null
+  },
+  "error": null
+ }
+}

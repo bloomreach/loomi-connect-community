@@ -1,0 +1,65 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 6,
+   "algoId": "br-copy",
+   "name": "Text Relevance ",
+   "type": "MANUAL",
+   "status": "Available",
+   "searchType": "KEYWORD",
+   "domainKey": "acme",
+   "signals": null,
+   "modelTrainingStatus": "TRAINING_COMPLETED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1759104000000,
+   "createdBy": "editor.one@example.test",
+   "lastModifiedAt": 1759104000000,
+   "lastModifiedBy": "editor.two@example.test",
+   "modelMetaData": {
+    "text": {},
+    "combined": {
+     "text_score_keyword": {
+      "weight": 52.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "TEXT_SCORE"
+     },
+     "raw_qd_views_keyword": {
+      "weight": 3.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     },
+     "raw_qd_revenue_keyword": {
+      "weight": 2.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     },
+     "raw_qd_conversions_keyword": {
+      "weight": 5.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     },
+     "segmented_raw_qd_revenue_keyword": {
+      "weight": 13.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "SEG_PERF"
+     },
+     "product_atcs_keyword": {
+      "weight": 25.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     }
+    }
+   },
+   "weights": null
+  },
+  "error": null
+ }
+}

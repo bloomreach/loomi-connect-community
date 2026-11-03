@@ -1,0 +1,17 @@
+{
+  "about": "Thresholds for explaining one product's position. scripts/visibility_explain.py reads this file. Each key is explained under notes.",
+  "page_size": 24,
+  "compare_window": 24,
+  "relevance_gap_ratio": 0.75,
+  "performance_gap_ratio": 0.75,
+  "max_rows_per_call": 200,
+  "max_results_paged": 1000,
+  "notes": {
+    "page_size": "Products on the first page. A product ranked deeper than this is 'not on page one' (also --page-size).",
+    "compare_window": "How many products ranked directly above the target are compared with it (their median relevance and performance).",
+    "relevance_gap_ratio": "The target's relevance below this share of the median of the products above it is a relevance gap (the text match is weaker).",
+    "performance_gap_ratio": "The target's performance score below this share of the median of the products above it is a performance gap (fewer views, add-to-carts, orders or revenue).",
+    "max_rows_per_call": "Largest rows value to request from search_discovery_product_grid_insights; rows=500 and above return HTTP 500, so page through for more.",
+    "max_results_paged": "How deep to page through a grid looking for the product (start rises by max_rows_per_call each page). Deeper than this, its position is reported as unknown."
+  }
+}

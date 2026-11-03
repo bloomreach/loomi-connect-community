@@ -1,0 +1,26 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": "P77",
+   "attributes": {
+    "availability": false,
+    "title": "Linen shirt",
+    "description": "A light linen shirt for summer.",
+    "category_paths": [
+     [
+      {
+       "id": "cat-top",
+       "name": "tops"
+      },
+      {
+       "id": "cat-x",
+       "name": "shirts"
+      }
+     ]
+    ]
+   }
+  },
+  "error": null
+ }
+}

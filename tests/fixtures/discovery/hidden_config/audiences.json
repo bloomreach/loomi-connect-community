@@ -1,0 +1,467 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 100,
+   "audienceName": "Top tier",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 2,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "url",
+     "externalName": "URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "seg=top-tier",
+       "externalValue": "seg=top-tier",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 101,
+   "audienceName": "Top tier copy",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "url",
+     "externalName": "URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "seg=top-tier",
+       "externalValue": "seg=top-tier",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 102,
+   "audienceName": "Promo mail",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "PromoMail ",
+       "externalValue": "PromoMail ",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 103,
+   "audienceName": "Retro Line",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "Retro Line",
+       "externalValue": "Retro Line",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 104,
+   "audienceName": "Short code",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "ZZ",
+       "externalValue": "ZZ",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 105,
+   "audienceName": "Gift wrap - do not delete",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "url",
+     "externalName": "URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "&giftwrap=true",
+       "externalValue": "&giftwrap=true",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 106,
+   "audienceName": "Test audience",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "testref",
+       "externalValue": "testref",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 107,
+   "audienceName": "Brand new",
+   "user": "editor@example.test",
+   "createdAt": 1793404800000,
+   "modifiedAt": 1793404800000,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "brandnew",
+       "externalValue": "brandnew",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 108,
+   "audienceName": "Gold",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "gold",
+       "externalValue": "gold",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 109,
+   "audienceName": "Gold tier",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "gold_tier",
+       "externalValue": "gold_tier",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 110,
+   "audienceName": "Paris",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "geo",
+     "externalName": "Location",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "paris|ile-de-france|france",
+       "externalValue": "paris|ile-de-france|france",
+       "matchtype": {
+        "id": 1,
+        "internalName": "EXACT_MATCH",
+        "externalName": "EXACT_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 111,
+   "audienceName": "Not Paris",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "geo",
+     "externalName": "Location",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "paris|ile-de-france|france",
+       "externalValue": "paris|ile-de-france|france",
+       "matchtype": {
+        "id": 1,
+        "internalName": "IS_NOT",
+        "externalName": "IS_NOT"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 112,
+   "audienceName": "Contradiction",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "geo",
+     "externalName": "Location",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "lyon",
+       "externalValue": "lyon",
+       "matchtype": {
+        "id": 1,
+        "internalName": "EXACT_MATCH",
+        "externalName": "EXACT_MATCH"
+       }
+      },
+      {
+       "id": 1,
+       "internalValue": "lyon",
+       "externalValue": "lyon",
+       "matchtype": {
+        "id": 1,
+        "internalName": "IS_NOT",
+        "externalName": "IS_NOT"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 113,
+   "audienceName": "Style formal",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 3,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "seg-0001",
+     "externalName": "Style Preference",
+     "type": "engagement",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "seg-value-0001",
+       "externalValue": "seg-value-0001",
+       "matchtype": {
+        "id": 1,
+        "internalName": "EXACT_MATCH",
+        "externalName": "EXACT_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 114,
+   "audienceName": "Écrin fans",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "Écrin",
+       "externalValue": "Écrin",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  }
+ ],
+ "size": 15,
+ "error": null
+}

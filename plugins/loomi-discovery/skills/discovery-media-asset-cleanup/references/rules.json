@@ -1,0 +1,27 @@
+{
+  "about": "Thresholds and word lists for the media asset cleanup. scripts/asset_audit.py reads this file; change a rule here and nowhere else. Each key is explained under notes; references/checks.md says what each finding means.",
+  "stale_days": 365,
+  "max_grid_slot": 72,
+  "max_slots_per_placement": 25,
+  "bloomreach_hosts": ["bloomreach.com", "bloomreach.io", "brxcdn.com", "exponea.com"],
+  "placeholder_hosts": ["example.com", "example.org", "example.net", "test.com", "domain.com", "yourdomain.com", "yoursite.com", "localhost"],
+  "placeholder_words": ["test", "placeholder", "todo", "tbd", "example", "dummy", "lorem", "changeme", "xxx", "broken", "wontwork", "fixme"],
+  "max_links_to_load": 150,
+  "max_rule_details_before_asking": 150,
+  "app_hosts": ["app.exponea.com", "eu.exponea.com", "demoapp.bloomreach.com", "dashboard.bloomreach.com", "tools.bloomreach.com"],
+  "token_param_words": ["token", "sig", "key", "auth", "session", "unsubscribe", "password"],
+  "redact_param_words": ["email", "token", "key", "sig", "auth", "session", "password"],
+  "notes": {
+    "stale_days": "An asset not modified for more than this many days, and not used by a live rule, is listed as stale.",
+    "max_grid_slot": "The highest grid slot a media rule can use (Discovery's first 72 slots). A slot above this is a finding.",
+    "max_slots_per_placement": "The most slots one multi-slot placement can span (5x5). More is a finding.",
+    "bloomreach_hosts": "Image hosts that count as Bloomreach-hosted. An image anywhere else is hot-linked from a third-party site, which can change or remove it (a low finding).",
+    "placeholder_hosts": "Link and image hosts that are never a real destination.",
+    "placeholder_words": "Words in a URL's path or query that suggest a placeholder (a medium finding: confirm the real URL).",
+    "max_links_to_load": "At most this many unique URLs go in links_to_load (images and links from live assets first); the rest are listed in links_over_cap.",
+    "max_rule_details_before_asking": "If there are more media rules than this to fetch in detail, tell the user how many calls that is and offer to fetch the enabled ones first.",
+    "app_hosts": "Bloomreach app and dashboard hosts. Links to them (and to any page under /p/<project> on a Bloomreach host) are never loaded: they're reported as not checked. Public CDN images are still checked. Add your instance's app host if it's elsewhere.",
+    "token_param_words": "A link whose query has a parameter name containing one of these may carry a token or trigger an action, so it's loaded with HEAD only (head_only), never GET or a browser.",
+    "redact_param_words": "Values of URL parameters whose names contain one of these are replaced with [redacted] in evidence and in the shown form of links."
+  }
+}

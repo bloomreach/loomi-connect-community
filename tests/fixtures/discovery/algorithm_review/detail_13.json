@@ -1,0 +1,47 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 13,
+   "algoId": "br-noperf",
+   "name": "Text only category",
+   "type": "MANUAL",
+   "status": "Available",
+   "searchType": "CATEGORY",
+   "domainKey": "acme",
+   "signals": null,
+   "modelTrainingStatus": "TRAINING_COMPLETED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1791072000000,
+   "createdBy": "editor.one@example.test",
+   "lastModifiedAt": 1791072000000,
+   "lastModifiedBy": "editor.two@example.test",
+   "modelMetaData": {
+    "text": {},
+    "combined": {
+     "text_score_category": {
+      "weight": 98.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "TEXT_SCORE"
+     },
+     "raw_qd_views_category": {
+      "weight": 1.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     },
+     "raw_qd_conversions_category": {
+      "weight": 1.0,
+      "min": 0,
+      "max": 1,
+      "featureType": "PERF"
+     }
+    }
+   },
+   "weights": null
+  },
+  "error": null
+ }
+}

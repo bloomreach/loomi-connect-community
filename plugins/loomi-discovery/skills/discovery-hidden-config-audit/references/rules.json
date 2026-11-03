@@ -1,0 +1,43 @@
+{
+  "about": "Thresholds and word lists for the hidden configuration audit. scripts/hidden_config_audit.py reads this file; change a rule here and nowhere else. Each key is explained under notes; references/audit-checks.md says what each finding means.",
+  "url_dimensions": ["url", "ref_url"],
+  "max_audiences_traced": 20,
+  "max_confirm_calls": 15,
+  "min_contains_chars": 4,
+  "unused_min_age_days": 30,
+  "stale_days": 365,
+  "test_name_words": ["test", "testing", "tmp", "temp", "demo", "sandbox", "hackathon", "poc", "copy", "draft"],
+  "protected_phrases": ["do not delete", "don't delete", "dont delete", "do not remove", "don't remove"],
+  "override_high_params": {
+    "q": "replaces every shopper's search terms",
+    "request_type": "changes what kind of request every call makes",
+    "search_type": "turns keyword searches into category browses, or the reverse",
+    "br_diagnostics": "debug output on every live response: slower and larger, and exposes internals",
+    "debug": "debug output on every live response: slower and larger, and exposes internals",
+    "simple_debug": "debug output on every live response: slower and larger, and exposes internals"
+  },
+  "override_medium_params": {
+    "sort": "forces one sort order on every matching search, so ranking rules and relevance can't act",
+    "fq": "filters products out of every matching search, so shoppers can't find them",
+    "efq": "filters products out of every matching search, so shoppers can't find them",
+    "rows": "changes the page size the storefront asked for",
+    "start": "changes which page of results is returned",
+    "fl": "changes which product fields come back, which can blank prices or images on the page",
+    "facet.version": "changes the shape of the facet response the front end parses",
+    "facet.limit": "changes how many facet values come back",
+    "view_id": "switches every matching search to another catalog view",
+    "widget_id": "switches every matching search to a curated widget"
+  },
+  "notes": {
+    "max_audiences_traced": "How many in-use audiences (most rules first) step 3 traces to their rules. Used by the steps, not the script; tracing takes six list calls per audience.",
+    "max_confirm_calls": "At most this many detail calls (get_ranking_rule, get_discovery_media_rule) in step 6 to confirm findings. Used by the steps, not the script.",
+    "url_dimensions": "Audience dimensions matched against a page URL or referral URL. Values in them are checked for spaces, accents, a leading & and short CONTAINS values.",
+    "min_contains_chars": "A CONTAINS value on a URL dimension shorter than this matches unrelated URLs (\"ZZ\" also matches \"/buzz\"): review.",
+    "unused_min_age_days": "An audience no rule uses is a clean-up candidate once it's this many days old; younger ones are listed for review (they may be about to be used).",
+    "stale_days": "A disabled API parameter override untouched for this many days is a clean-up candidate, and an enabled one with no name is flagged for review.",
+    "test_name_words": "Words in an audience name that suggest a test or one-off; with no rules using it, that audience is cleaned up first.",
+    "protected_phrases": "Phrases in a name that mean someone asked for it to be kept. Protected items are listed separately, never recommended for deletion.",
+    "override_high_params": "API parameters that, overridden globally, break or distort every matching request: an enabled override of one is high priority. Values are the reason shown.",
+    "override_medium_params": "API parameters whose override changes what shoppers see on every matching request and is easy to forget: an enabled override is medium priority. Values are the reason shown."
+  }
+}

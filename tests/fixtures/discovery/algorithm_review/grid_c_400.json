@@ -1,0 +1,39 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 5,
+   "docs": [
+    {
+     "pid": "p1",
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "customizations.explain": [
+    {
+     "id": 77,
+     "ruleType": "facet",
+     "audienceNames": [],
+     "liveInTest": false,
+     "queries": [
+      {
+       "query": "*",
+       "type": "global"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "always_included_facets",
+       "value": "[\"brand\"]"
+      }
+     ]
+    }
+   ],
+   "rankingAlgorithmName": "",
+   "feUrl": "http://frontend.example.test/api?auth_key=FAKEKEY123"
+  }
+ },
+ "error": null
+}

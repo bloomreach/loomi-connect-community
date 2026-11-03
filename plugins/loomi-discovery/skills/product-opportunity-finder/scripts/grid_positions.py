@@ -8,7 +8,8 @@ grid.json is the raw JSON from search_discovery_product_grid_insights (any searc
 ideally with fl=pid,title,brand,price and rows up to about 200.
 
 Prints JSON with:
-  - num_found and how many ranked rows the file holds;
+  - num_found, how many ranked product rows the file holds, and how many banner rows were left out
+    (in-grid banners, docType "content" with no pid, aren't products and don't take a product position);
   - positions: the 1-based rank of each --pids product (null if not in the rows fetched);
   - brand: for each --brand, its product count in the brand facet, how many of its products
     are in the first --top positions, and its best and median positions;
@@ -58,7 +59,8 @@ def main():
 
     with open(a.grid, encoding="utf-8") as f:
         grid = unwrap(check(json.load(f), a.grid))
-    docs = grid.get("response", {}).get("docs", [])
+    rows = grid.get("response", {}).get("docs", [])
+    docs = [d for d in rows if d.get("docType") != "content" and d.get("pid") not in (None, "")]
     pos = {}
     for i, d in enumerate(docs):
         pos.setdefault(str(d.get("pid")), i + 1)
@@ -84,6 +86,7 @@ def main():
     json.dump({
         "num_found": grid.get("response", {}).get("numFound"),
         "rows_fetched": len(docs),
+        "banner_rows_skipped": len(rows) - len(docs),
         "positions": {p: {"position": pos.get(p), "title": (by_pid.get(p) or {}).get("title")} for p in pids},
         "brand": brands,
         "top_brands": Counter(str(d.get("brand") or "(none)").strip() for d in docs[: a.top]).most_common(),

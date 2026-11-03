@@ -1,0 +1,219 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 60,
+   "start": 30,
+   "docs": [
+    {
+     "pid": "P40",
+     "title": "Rain jacket P40",
+     "docType": "product"
+    },
+    {
+     "pid": "P41",
+     "title": "Rain jacket P41",
+     "docType": "product"
+    },
+    {
+     "pid": "P42",
+     "title": "Rain jacket P42",
+     "docType": "product"
+    },
+    {
+     "pid": "P43",
+     "title": "Rain jacket P43",
+     "docType": "product"
+    },
+    {
+     "pid": "P44",
+     "title": "Rain jacket P44",
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "explain.structured": {
+    "P40": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 160,
+      "relevance": 87.0,
+      "performance": 300.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P41": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 159,
+      "relevance": 87.0,
+      "performance": 300.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P42": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 158,
+      "relevance": 87.0,
+      "performance": 300.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P43": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 157,
+      "relevance": 87.0,
+      "performance": 300.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ],
+    "P44": [
+     {
+      "match": true,
+      "value": 2,
+      "field": "BR_MV_ALL_text_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "jacket",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 156,
+      "relevance": 87.0,
+      "performance": 300.0,
+      "keyword_score": 8.0,
+      "vector_score": 0.3,
+      "relevance_aware": {
+       "relevance_aware_global": 0
+      },
+      "semantic_weight": 0
+     }
+    ]
+   },
+   "customizations.explain": [
+    {
+     "id": 900001,
+     "ruleType": "ranking",
+     "queries": [
+      {
+       "query": "rain jacket",
+       "type": "sitesearch",
+       "matchType": "EXACT_MATCH"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "boost_top_products",
+       "value": "[{\"product_id\": \"A1\", \"product_name\": \"Boosted A1\"}, {\"product_id\": \"A2\", \"product_name\": \"Boosted A2\"}, {\"product_id\": \"A3\", \"product_name\": \"Boosted A3\"}]"
+      },
+      {
+       "type": "explicit_filters",
+       "value": "[{\"rule\": {\"type\": \"clause\", \"operator\": \"AND\", \"operands\": [{\"type\": \"attribute\", \"operator\": \"OR\", \"name\": \"category\", \"operands\": [\"cat-x\"]}], \"strength\": 0}, \"filter_type\": \"exclude\"}]"
+      }
+     ],
+     "liveInTest": false
+    },
+    {
+     "id": 900002,
+     "ruleType": "ranking_algo",
+     "queries": [
+      {
+       "query": "*"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "ranking_algo",
+       "value": "{\"id\": \"br-fake\"}"
+      }
+     ]
+    }
+   ],
+   "feUrl": "http://frontend.example.invalid/api?auth_key=FAKEKEY",
+   "sqApiUrl": "http://sq.example.invalid/?x=FAKE"
+  },
+  "did_you_mean": []
+ },
+ "error": null,
+ "environment_used": "production"
+}

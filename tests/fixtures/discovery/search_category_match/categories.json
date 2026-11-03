@@ -1,0 +1,117 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": "1000-10000",
+   "categoryId": "10000",
+   "categoryPaths": "/men",
+   "displayName": "men",
+   "domainKey": "acme_store",
+   "originalCategoryId": "10000"
+  },
+  {
+   "id": "1000-10200",
+   "categoryId": "10200",
+   "categoryPaths": "/men/pants",
+   "displayName": "pants",
+   "domainKey": "acme_store",
+   "originalCategoryId": "10200"
+  },
+  {
+   "id": "1000-10100",
+   "categoryId": "10100",
+   "categoryPaths": "/men/tops",
+   "displayName": "tops",
+   "domainKey": "acme_store",
+   "originalCategoryId": "10100"
+  },
+  {
+   "id": "1000-20000",
+   "categoryId": "20000",
+   "categoryPaths": "/women",
+   "displayName": "women",
+   "domainKey": "acme_store",
+   "originalCategoryId": "20000"
+  },
+  {
+   "id": "1000-20200",
+   "categoryId": "20200",
+   "categoryPaths": "/women/pants",
+   "displayName": "pants",
+   "domainKey": "acme_store",
+   "originalCategoryId": "20200"
+  },
+  {
+   "id": "1000-20100",
+   "categoryId": "20100",
+   "categoryPaths": "/women/tops",
+   "displayName": "tops",
+   "domainKey": "acme_store",
+   "originalCategoryId": "20100"
+  },
+  {
+   "id": "1000-21200",
+   "categoryId": "21200",
+   "categoryPaths": "/women/dresses",
+   "displayName": "dresses",
+   "domainKey": "acme_store",
+   "originalCategoryId": "21200"
+  },
+  {
+   "id": "1000-21000",
+   "categoryId": "21000",
+   "categoryPaths": "/women/skirts",
+   "displayName": "skirts",
+   "domainKey": "acme_store",
+   "originalCategoryId": "21000"
+  },
+  {
+   "id": "1000-20800",
+   "categoryId": "20800",
+   "categoryPaths": "/women/shoes",
+   "displayName": "shoes",
+   "domainKey": "acme_store",
+   "originalCategoryId": "20800"
+  },
+  {
+   "id": "1000-30100",
+   "categoryId": "30100",
+   "categoryPaths": "/kids/tops",
+   "displayName": "tops",
+   "domainKey": "acme_store",
+   "originalCategoryId": "30100"
+  },
+  {
+   "id": "1000-40000",
+   "categoryId": "40000",
+   "categoryPaths": "/outerwear",
+   "displayName": "outerwear",
+   "domainKey": "acme_store",
+   "originalCategoryId": "40000"
+  },
+  {
+   "id": "1000-40100",
+   "categoryId": "40100",
+   "categoryPaths": "/outerwear/jackets",
+   "displayName": "jackets",
+   "domainKey": "acme_store",
+   "originalCategoryId": "40100"
+  },
+  {
+   "id": "1000-1002a0",
+   "categoryId": "1002a0",
+   "categoryPaths": "/beauty/lip liner",
+   "displayName": "lip liner",
+   "domainKey": "acme_store",
+   "originalCategoryId": "1002A0"
+  },
+  {
+   "id": "1000-brg_dyn_summer01",
+   "categoryId": "brg_dyn_summer01",
+   "categoryPaths": "/summer sale",
+   "displayName": "summer sale",
+   "domainKey": "acme_store",
+   "originalCategoryId": "brg_dyn_summer01"
+  }
+ ]
+}

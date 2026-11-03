@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Discovery Hidden Config Audit"
+  short_description: "Audit Discovery audiences and API parameter overrides that silently change results"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true
