@@ -31,6 +31,8 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
+NOT_FOUND = re.compile(r"not.?found|404|does not exist|doesn't exist|no such", re.I)
+CONTEXT_ERROR = re.compile(r"account|site|catalog|domain|environment|workspace", re.I)  # a "not found" about these isn't the item
 MISSING = {"", "na", "n/a", "-", "−", "—", "–", "null", "none", "nan"}
 TYPES = ("redirect_terms", "redirect_phrases", "do_not_redirect_terms", "do_not_redirect_phrases")
 GOES_TO_URL = ("redirect_terms", "redirect_phrases")
@@ -514,10 +516,16 @@ def cmd_plan(a):
     exps = running_experiments(a.experiments)
     cap = RULES["max_changes_per_batch"]
 
-    changes, deferred, ready_count = [], [], 0
+    changes, deferred, ready_count, seen_ids = [], [], 0, set()
     for req, raw in enumerate(raw_changes, 1):
         c = Change(req, raw)
         action = raw.get("action")
+        rid = raw.get("rule_id")
+        if rid is not None:
+            if rid in seen_ids:  # two changes to one redirect: the second's before and undo would be wrong
+                c.add("blocker", "duplicate", f"Redirect {rid} already has a change in this plan. Plan one change "
+                      "per redirect; to switch it off instead of deleting it, replace the delete, don't add to it.")
+            seen_ids.add(rid)
         if action == "create":
             outs = plan_create(c, raw, a, rules, revenue, exps, today_ms)
         elif action == "update":
@@ -603,9 +611,10 @@ def cmd_verify(a):
             rule = next(iter(rules.values())) if len(rules) == 1 else None
         res = {"n": n, "kind": ch.get("kind"), "target": ch.get("target")}
         if ch.get("kind") == "delete":
+            if err and not (NOT_FOUND.search(err) and not CONTEXT_ERROR.search(err)):
+                # A rate limit, denied call or wrong site says nothing about the redirect: stop.
+                fail(f"{files[n]}: {err} The read-back failed, so the delete can't be checked. Read it again.")
             res["state"] = "gone" if err or rule is None else "not_in_place"
-            if err:
-                res["note"] = f"The read-back returned an error, counted as gone: {err}"
         elif err or rule is None:
             res["state"] = "not_in_place"
             res["note"] = f"The read-back failed: {err}" if err else "The read-back doesn't hold this redirect."

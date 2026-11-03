@@ -317,20 +317,24 @@ def cmd_plan(a):
 
 
 NOT_FOUND = re.compile(r"not found|404|doesn'?t exist|does not exist|no such", re.I)
+CONTEXT_ERROR = re.compile(r"account|site|catalog|domain|environment|workspace", re.I)  # a "not found" about these isn't the item
 
 
-def read_back(path):
-    """A rule read back after writing: its state, or None when Loomi Connect says it isn't there (deleted)."""
+def read_back(path, rid):
+    """A rule read back after writing: its state, or None when Loomi Connect says the rule isn't there (deleted).
+    A "not found" about the account, site or catalog, an empty read-back, or a read-back of another rule stops."""
     data = read_json(path)
     err = error_of(data)
     if err is not None:
-        # Only a rule that isn't found counts as gone; an account problem means the read didn't work.
-        if NOT_FOUND.search(err) and not re.search(r"account", err, re.I):
+        if NOT_FOUND.search(err) and not CONTEXT_ERROR.search(err):
             return None
         fail(f"{path}: Loomi Connect returned an error: {tool_error(err)}. Read the rule again.")
     rec = unwrap(data)
     if rec in (None, {}, []):
-        return None
+        fail(f"{path}: the read-back is empty, so it doesn't show whether rule {rid} exists. Read the rule again.")
+    got = rec.get("id") if isinstance(rec, dict) else None
+    if got is not None and str(got) != str(rid):
+        fail(f"{path}: the read-back is rule {got}, not rule {rid}.")
     return state(rec, path)
 
 
@@ -338,7 +342,7 @@ def cmd_verify(a):
     plan = read_json(a.plan)
     if not isinstance(plan, dict) or plan.get("ok") is not True or not isinstance(plan.get("changes"), list):
         fail(f"{a.plan}: not a plan from cleanup_plan.py plan (no ok or changes).")
-    after = {rid: read_back(path) for rid, path in a.rule}
+    after = {rid: read_back(path, rid) for rid, path in a.rule}
     results = []
     for i, e in enumerate(plan["changes"]):
         if not isinstance(e, dict) or not {"n", "status", "kind", "rule_id"} <= set(e):

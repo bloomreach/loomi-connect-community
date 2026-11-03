@@ -226,6 +226,18 @@ class VerifyTest(unittest.TestCase):
         self.assertIn("isn't repeated", out["error"])
         self.assertNotIn("acct_b", out["error"])
 
+    def test_wrong_context_empty_or_other_rule_read_backs_stop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cases = {"site.json": {"result": {"success": False, "error": "Site group 77 not found"}},
+                     "empty.json": {"result": {"success": True, "data": {}}},
+                     "other.json": {"result": {"success": True, "data": {"data": {"id": 999, "enabled": False}}}}}
+            for name, body in cases.items():
+                p = Path(tmp) / name
+                p.write_text(json.dumps(body), encoding="utf-8")
+                r = self.verify(("102", p))
+                self.assertEqual(r.returncode, 1, name)
+                self.assertNotIn('"gone"', r.stdout, name)
+
     def test_malformed_plan(self):
         for text in ("[]", json.dumps({"ok": True}), json.dumps({"ok": True, "changes": [{"n": 1}]}),
                      json.dumps({"ok": True, "changes": ["x"]})):

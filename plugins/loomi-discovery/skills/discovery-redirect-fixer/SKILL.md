@@ -120,7 +120,7 @@ Show one table per batch:
 | # | Change | Redirect | Before | After | Live impact | Warnings |
 |---|---|---|---|---|---|---|
 
-Ask for the first batch: "Make changes 1, 2 and 3 in <environment>? (yes / no)". Ask about each switch-on on its own: "Switch on the new redirect for 'track order' and 'order status'? Shoppers who search them will go to /orders. (yes / no)". Ask about each delete on its own: "Delete redirect 9003 ('return policy' → /returns)? It can't be undone, only recreated. Switch it off instead? (delete / switch off / skip)". If the answer is an alternative, re-plan it first (step 4).
+Ask for the first batch: "Make changes 1, 2 and 3 in <environment>? (yes / no)". Ask about each switch-on on its own: "Switch on the new redirect for 'track order' and 'order status'? Shoppers who search them will go to /orders. (yes / no)". Ask about each delete on its own: "Delete redirect 9003 ('return policy' → /returns)? It can't be undone, only recreated. Switch it off instead? (delete / switch off / skip)". If the answer is an alternative, re-plan it first (step 4): **replace** the original change in the request (for example, swap the delete for an update that switches the redirect off), never add to it. The script blocks a second change to the same redirect.
 
 ### 7. Write, one change at a time, then verify
 

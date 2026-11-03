@@ -45,6 +45,7 @@ MISSING = {"", "na", "n/a", "-", "−", "—", "–", "null", "none", "nan"}
 TOOLS = {"create": "create_autosuggest_exclusion_rule", "update": "update_autosuggest_exclusion_rule",
          "delete": "delete_autosuggest_exclusion_rule"}
 NOT_FOUND = re.compile(r"not.?found|404|does not exist|doesn't exist|no such", re.I)
+CONTEXT_ERROR = re.compile(r"account|site|catalog|domain|environment|workspace", re.I)  # a "not found" about these isn't the item
 SYNCED = ("", "synced", "success", "completed", "none")
 
 
@@ -176,13 +177,32 @@ def load_readback(paths):
         err = error_of(data)
         if err:
             text = str(err.get("error") or "")
-            if NOT_FOUND.search(text) and "account" not in text.lower():  # an unknown account isn't a deleted rule
+            if NOT_FOUND.search(text) and not CONTEXT_ERROR.search(text):  # an unknown account or site isn't a deleted rule
                 not_found = True
                 continue
             fail(f"{p}: Loomi Connect returned an error: {tool_error(err.get('error'))} "
                  "This check couldn't run; don't treat it as 'nothing found'.")
-        listed = rules_from(unwrap(data), p, rules) or listed
+        body = unwrap(data)
+        is_list = rules_from(body, p, rules)
+        # A list only proves a rule is gone when it's the whole list: one page of several proves nothing.
+        if is_list and not complete_list(body):
+            fail(f"{p}: this is one page of the exclusion rule list. Read every page (or the deleted rule's own "
+                 "detail) so a delete can be checked.")
+        listed = is_list or listed
     return rules, listed, not_found
+
+
+def complete_list(body):
+    """True unless the list response says there are more pages or more rules than it holds."""
+    if not isinstance(body, dict):
+        return True
+    items = body.get("data") if isinstance(body.get("data"), list) else []
+    if body.get("has_more") or body.get("next_offset") not in (None, "", 0) and body.get("has_more") is not False:
+        return False
+    for key in ("total", "count", "total_count"):
+        if isinstance(body.get(key), int) and body[key] > len(items):
+            return False
+    return True
 
 
 def load_suggestions(path):

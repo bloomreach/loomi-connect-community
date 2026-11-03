@@ -282,6 +282,13 @@ class VerifyTest(unittest.TestCase):
         r, out, _ = run("verify", "--plan", self.plan, "--readback", readback, *extra)
         return r, out
 
+    def test_a_site_not_found_error_stops_verify(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            site = temp_json(tmp, "site.json", {"success": False, "error": "Site group 77 not found"})
+            r, out = self.verify(readback=site)
+        self.assertEqual(r.returncode, 1)
+        self.assertNotIn("gone", json.dumps(out))
+
     def test_reports_in_place_not_in_place_and_gone(self):
         r, out = self.verify()
         self.assertEqual(r.returncode, 0, r.stderr)

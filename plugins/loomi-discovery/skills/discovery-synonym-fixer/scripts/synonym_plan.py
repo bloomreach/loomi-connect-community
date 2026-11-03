@@ -44,6 +44,7 @@ ENVIRONMENTS = ("staging", "production")
 ACCOUNT_LIST_MESSAGE = ("Loomi Connect returned an error about the account name; it isn't repeated because it can "
                         "list other accounts. Ask the user to check the account name.")
 NOT_FOUND = re.compile(r"not found|404|does not exist|doesn't exist|no such", re.I)
+CONTEXT_ERROR = re.compile(r"account|site|catalog|domain|environment|workspace", re.I)  # a "not found" about these isn't the item
 
 
 def fail(msg):
@@ -430,7 +431,7 @@ def readback(paths):
         if err is not None:
             if re.search(r"account", err, re.I):
                 fail(f"{path}: {ACCOUNT_LIST_MESSAGE} The read-back failed, so the writes can't be checked.")
-            if NOT_FOUND.search(err):
+            if NOT_FOUND.search(err) and not CONTEXT_ERROR.search(err):
                 continue
             fail(f"{path}: {tool_error(err)} The read-back failed, so the writes can't be checked.")
         for rec in records(data, path):

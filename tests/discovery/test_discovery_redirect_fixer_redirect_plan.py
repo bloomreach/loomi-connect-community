@@ -73,7 +73,8 @@ class PlanShapeTest(unittest.TestCase):
                 self.assertEqual(c["payload"]["account_name"], "acme_demo")
                 for u in c["undo"]:
                     self.assertEqual(set(u) - {"note"}, {"tool", "payload"})
-        self.assertEqual(out["counts"], {"ready": 6, "blocked": 6, "no_change": 1})
+        # requests 9 and 11 are second changes to redirects 9001 and 9003, so they're blocked
+        self.assertEqual(out["counts"], {"ready": 5, "blocked": 8, "no_change": 0})
 
     def test_only_ready_changes_are_batched_and_switch_ons_and_deletes_go_alone(self):
         out = plan()
@@ -163,17 +164,19 @@ class PlanChangesTest(unittest.TestCase):
             redirects = json.loads((FX / "detail_9002.json").read_text(encoding="utf-8"))
             redirects["result"]["data"]["data"]["enabled"] = False
             off = write_json(tmp, "off.json", redirects)
-            r = run("plan", "--changes", write_json(tmp, "c2.json", [
-                        {"action": "update", "rule_id": 9001, "name": "Returns page"},
-                        {"action": "update", "rule_id": 9002, "enabled": True},
-                        {"action": "update", "rule_id": 9002, "enabled": True, "name": "Sale page"}]),
-                    "--redirects", FX / "redirects_list.json", "--redirects", FX / "detail_9001.json",
-                    "--redirects", off, "--account", "a", "--environment", "staging", "--today", "2026-11-03")
-        out = json.loads(r.stdout)
-        self.assertEqual(req(out, 2)["kind"], "enable")
-        self.assertTrue(req(out, 3)["switches_on"])
-        self.assertEqual(req(out, 3)["kind"], "update")
-        self.assertEqual(out["batches"], [[1], [2], [3]])
+            def run_with(changes):
+                r = run("plan", "--changes", write_json(tmp, "c2.json", changes),
+                        "--redirects", FX / "redirects_list.json", "--redirects", FX / "detail_9001.json",
+                        "--redirects", off, "--account", "a", "--environment", "staging", "--today", "2026-11-03")
+                return json.loads(r.stdout)
+            out = run_with([{"action": "update", "rule_id": 9001, "name": "Returns page"},
+                            {"action": "update", "rule_id": 9002, "enabled": True}])
+            self.assertEqual(req(out, 2)["kind"], "enable")
+            self.assertEqual(out["batches"], [[1], [2]])
+            out = run_with([{"action": "update", "rule_id": 9002, "enabled": True, "name": "Sale page"}])
+        self.assertTrue(req(out, 1)["switches_on"])
+        self.assertEqual(req(out, 1)["kind"], "update")
+        self.assertEqual(out["batches"], [[1]])
 
     def test_running_tests_block_changes(self):
         out = plan()
@@ -211,7 +214,16 @@ class PlanChangesTest(unittest.TestCase):
     def test_needs_detail_and_detects_no_change(self):
         out = plan()
         self.assertIn("Fetch redirect 9005", req(out, 8)["problems"][0]["message"])
-        self.assertEqual(req(out, 9)["status"], "no_change")
+        current = json.loads((FX / "detail_9001.json").read_text(encoding="utf-8"))["result"]["data"]["data"]
+        with tempfile.TemporaryDirectory() as tmp:
+            out = plan(write_json(tmp, "c.json", [{"action": "update", "rule_id": 9001, "name": current["name"]}]))
+        self.assertEqual(req(out, 1)["status"], "no_change")
+
+    def test_one_change_per_redirect(self):
+        out = plan()
+        for request in (9, 11):  # second changes to 9001 and 9003
+            self.assertEqual(req(out, request)["status"], "blocked")
+            self.assertIn("duplicate", checks(req(out, request)["problems"]))
 
     def test_today_and_the_default_use_the_same_midnight(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -283,14 +295,25 @@ class VerifyTest(unittest.TestCase):
         out = plan()
         create = req(out, 3, "create")["n"]
         delete = req(out, 4, "delete")["n"]
-        r = self.verify(f"1={FX / 'detail_9001.json'}", f"{create}={FX / 'readback_new.json'}",
-                        f"{delete}={FX / 'denied.json'}")
+        with tempfile.TemporaryDirectory() as tmp:
+            not_found = write_json(tmp, "nf.json", {"success": False, "error": "Redirect 9003 not found"})
+            r = self.verify(f"1={FX / 'detail_9001.json'}", f"{create}={FX / 'readback_new.json'}",
+                            f"{delete}={not_found}")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         res = {x["n"]: x for x in json.loads(r.stdout)["results"]}
         self.assertEqual(res[1]["state"], "not_in_place")  # the read-back still has the old URL
         self.assertEqual(res[1]["mismatches"][0]["field"], "destination_url")
         self.assertEqual((res[create]["state"], res[create]["rule_id"]), ("in_place", 9104))
         self.assertEqual(res[delete]["state"], "gone")  # a not-found / success:false read-back
+
+    def test_other_errors_on_a_delete_read_back_stop_verify(self):
+        delete = req(plan(), 4, "delete")["n"]
+        with tempfile.TemporaryDirectory() as tmp:
+            for err in ("Too many requests", "[ACCESS_DENIED] not allowed", "Site group 77 not found"):
+                bad = write_json(tmp, "bad.json", {"success": False, "error": err})
+                r = self.verify(f"{delete}={bad}")
+                self.assertEqual(r.returncode, 1, err)
+                self.assertNotIn('"gone"', r.stdout, err)
 
     def test_a_delete_still_present_is_not_gone(self):
         delete = req(plan(), 4, "delete")["n"]

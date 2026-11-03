@@ -34,6 +34,7 @@ Thresholds are in references/rules.json. Standard library only; no network acces
 """
 import argparse
 import json
+import re
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -44,6 +45,7 @@ METRIC_WORDS = {"cr": ("cr", "conversion"), "atc_rate": ("atc", "add-to-cart", "
                 "aov": ("aov", "average order"), "rpv": ("rpv", "revenue per visit")}
 ENVIRONMENTS = ("production", "staging")
 NOT_FOUND = ("not found", "not_found", "404", "does not exist", "doesn't exist", "no such")
+CONTEXT_ERROR = re.compile(r"account|site|catalog|domain|environment|workspace", re.I)  # a "not found" about these isn't the item
 IRREVERSIBLE = {"end": "Ending can't be undone and a COMPLETED test can't be restarted.",
                 "archive": "Loomi Connect has no tool to unarchive; the dashboard may allow it."}
 
@@ -443,7 +445,7 @@ def readback(path):
     err = errors_in(doc)
     if err is not None:
         # "Account not found" is an account error, not a missing item: stop rather than report "gone".
-        if "account" not in err.lower() and any(w in err.lower() for w in NOT_FOUND):
+        if not CONTEXT_ERROR.search(err) and any(w in err.lower() for w in NOT_FOUND):
             return None, "gone"
         fail(f"{path}: {tool_error(err)} The read-back couldn't run; don't treat it as checked.")
     data, _ = unwrap(doc, path)

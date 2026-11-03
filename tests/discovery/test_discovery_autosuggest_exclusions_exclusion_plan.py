@@ -253,6 +253,19 @@ class VerifyTest(unittest.TestCase):
         self.assertEqual([x["n"] for x in out["results"]], [1, 2])
         self.assertTrue(out["all_in_place"])
 
+    def test_partial_list_or_site_error_never_proves_a_delete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            page = write(tmp, "page.json", {"success": True, "data": [{"id": 101, "name": "Competitors",
+                                                                       "keywords": ["x"], "enabled": False}],
+                                            "has_more": True, "total": 40})
+            r, _ = run("verify", "--plan", self.plan, "--rules", page, "--applied", "4")
+            self.assertEqual(r.returncode, 1)
+            self.assertIn("one page", json.loads(r.stdout)["error"])
+            site = write(tmp, "site.json", {"success": False, "error": "Site group 77 not found"})
+            r, _ = run("verify", "--plan", self.plan, "--rules", site, "--applied", "4")
+            self.assertEqual(r.returncode, 1)
+            self.assertNotIn('"gone"', r.stdout)
+
     def test_new_rules_are_matched_by_id_never_by_name(self):
         # Without the create's returned ID, a rule with the same name doesn't count.
         r, _ = run("verify", "--plan", self.plan, "--rules", FX / "rules_after.json", "--applied", "11,12")
