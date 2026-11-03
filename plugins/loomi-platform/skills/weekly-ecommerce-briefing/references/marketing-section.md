@@ -31,11 +31,11 @@ Use whichever send count exists: `sent`, otherwise `enqueued`, otherwise `delive
 |---|---|---|
 | Delivery rate | delivered ÷ sends | below 97% |
 | Click rate | clicked ÷ delivered | changes by more than 25% week on week |
-| Bounce rate | (hard_bounce + soft_bounce) ÷ sends | over 2% |
-| Unsubscribe rate | unsubscribe ÷ delivered | over 0.5% |
+| Bounce rate | (hard_bounced + soft_bounced) ÷ sends | over 2% |
+| Unsubscribe rate | unsubscribed ÷ delivered | over 0.5% |
 | Failed sends | failed ÷ sends, or any `failed` reach in the calendar | over 1% |
 
-Counts are events, not unique customers. Opens are inflated by mail privacy features; prefer clicks.
+Projects spell statuses differently (`hard_bounced` or `hard_bounce`, `unsubscribed` or `unsubscribe`); count both. Counts are events, not unique customers. Opens are inflated by mail privacy features; prefer clicks.
 
 ## Revenue
 

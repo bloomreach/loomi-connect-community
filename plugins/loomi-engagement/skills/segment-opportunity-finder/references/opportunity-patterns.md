@@ -27,7 +27,7 @@ select count customers by customer.<low_cardinality_property> grouping top 3 wit
 - **Counting events with a filter and a window** works as one expression: `count event view_item where .category_level_1 = "x" in last 30 days >= 3`. The window really applies: in testing, the same condition without `in last 30 days` matched several times as many customers.
 - `count event purchase where .voucher_value > 0 >= 1` works and matched exactly the `exists[...]` form.
 - `has value` works inside `where`: `exists[event purchase_item where .category_level_1 has value]`.
-- `is in [...]` works inside `where`: `.action_type is in ["email", "sms", "mobile_push"]`.
+- `is in [...]` works inside `where`: `.action_type is in ["email", "sms", "mobile notification", "browser notification"]`.
 - `has consent <category_id>` and `not has consent <category_id>` work in `customers matching`.
 - **`execution_time` caps every event, not just windows.** An unwindowed `count event purchase >= 1` with `execution_time` before the first purchase returned 1 instead of the lifetime total. So "lifetime" conditions in an as-of test mean "lifetime up to that date". That's what you want for a back-test.
 - `customer.email_address has value` works as a reachability check.
@@ -136,7 +136,7 @@ Plain English: added to cart in the last 7 days, didn't buy, and got no email, S
 ```
 customers matching exists[event cart_update where .action = "add" in last 7 days]
   and not exists[event purchase in last 7 days]
-  and not exists[event campaign where .action_type is in ["email", "sms", "mobile_push"] in last 7 days]
+  and not exists[event campaign where .action_type is in ["email", "sms", "mobile notification", "browser notification"] in last 7 days]
 ```
 
 - **Filter the `campaign` event by message type.** In a production test, almost all `campaign` events in a week were A/B split assignments (`action_type = "split"`), so `not exists[event campaign ...]` without a type filter would call almost everyone "contacted". Check the values first (Ran, rated `high`, 7-day window): `select count event campaign by event campaign.action_type grouping top 5 with null in last 7 days`.
