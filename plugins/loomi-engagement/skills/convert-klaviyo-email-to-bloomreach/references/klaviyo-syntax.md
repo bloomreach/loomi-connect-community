@@ -9,6 +9,9 @@ syntax but not yet seen in a real export — verify the first time you meet it a
 
 Klaviyo uses Django-style templates. Bloomreach uses Jinja. Filters with a colon argument
 (`|default:'x'`) must become call syntax (`| default('x', true)`). Klaviyo's `default` replaces any empty value; Bloomreach's only does that with `true`.
+A Klaviyo merge tag with no default prints nothing for an empty property, but in Bloomreach it prints `None`.
+The build warns about each customer property with no fallback (subject, preheader or body). Where the copy reads
+badly without one, add it, e.g. `{{ customer.first_name | default('friend', true) }}`.
 
 | Klaviyo | Bloomreach | Status |
 |---|---|---|

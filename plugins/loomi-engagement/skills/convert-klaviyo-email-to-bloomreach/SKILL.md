@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement) and Python 3 with beautifulsoup4 and jinja2 (installed with pip into a virtual environment in step 0; needs a client that can install packages).
 metadata:
   author: jeffbird13-bloomreach
-  version: "1.0.2"
+  version: "1.0.3"
   products: engagement
   access: writes
 ---
@@ -238,7 +238,9 @@ python3 <skill>/scripts/klaviyo_to_bloomreach.py build --model <work>/<slug>/mod
 Writes `bee.json`, `email.html` (compact jinja_html, ~10–15KB instead of Klaviyo's ~80KB) and
 `payload.json`, and prints the change log, `errors` and `warnings`. **Fix every error and rebuild until
 `"ok": true`** — errors mean the email would send broken (untranslated tags, missing unsubscribe/address,
-no voucher pool, event data with a `now` trigger).
+no voucher pool, event data with a `now` trigger). For each warning that a customer property has no fallback,
+ask the user whether to add one, e.g. `{{ customer.first_name | default('friend', true) }}` (otherwise an empty
+property prints `None`).
 
 Then render it locally against real project data:
 

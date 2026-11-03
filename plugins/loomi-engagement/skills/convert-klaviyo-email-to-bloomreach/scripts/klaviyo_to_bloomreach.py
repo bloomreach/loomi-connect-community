@@ -938,6 +938,12 @@ def build(args):
         tr.note(f"dropped {dropped_mobile} mobile-only duplicate block(s) (desktop version kept for all screens)")
     if "#TODO" in email_html or 'href="#"' in email_html:
         tr.warnings.append("Some links are empty ('#') because the Klaviyo source had none — add URLs before sending")
+    # Klaviyo prints an empty property as nothing; Bloomreach prints None, so flag merge tags with no fallback.
+    for where, text in (("subject", subject), ("preheader", pre), ("body", "".join(rows_html))):
+        for expr in sorted(set(re.findall(r"\{\{\s*customer[.\[][^}]*\}\}", text))):
+            if "default(" not in expr:
+                tr.warnings.append(f"{expr} in the {where} has no fallback, so a customer without it sees 'None' — "
+                                   "add one if the copy needs it, e.g. {{ customer.first_name | default('friend', true) }}")
 
     # ---- scenario payload
     data = {"beefree_template": json.dumps(bee, separators=(",", ":"), ensure_ascii=False), "jinja_html": email_html,

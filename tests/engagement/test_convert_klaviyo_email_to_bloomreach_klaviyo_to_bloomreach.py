@@ -113,6 +113,13 @@ class KlaviyoToBloomreachTest(unittest.TestCase):
         self.assertIn("Hi there, your cart", out["visible_text_preview"])
         self.assertNotIn("Hi None, your cart", out["visible_text_preview"])
 
+    def test_warns_on_customer_property_without_default(self):
+        result, _ = self.convert("export_cart.html")
+        warnings = [w for w in result["warnings"] if "has no fallback" in w]
+        self.assertTrue(any(w.startswith("{{ customer.first_name }} in the subject") for w in warnings), warnings)
+        # The body line already has a default, so it isn't flagged.
+        self.assertFalse(any("default('there', true)" in w for w in warnings), warnings)
+
     def test_cart_loop_guards_empty_aggregate(self):
         # An empty aggregate renders as the string 'None'; looping over it would iterate its letters.
         _, html = self.convert("export_cart.html")
