@@ -1,0 +1,15 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 2001,
+   "name": "Dress hero",
+   "queries": []
+  },
+  {
+   "id": 2005,
+   "name": "Other",
+   "queries": []
+  }
+ ]
+}

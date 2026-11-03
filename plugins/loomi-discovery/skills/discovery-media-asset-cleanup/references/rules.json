@@ -1,0 +1,19 @@
+{
+  "about": "Thresholds and word lists for the media asset cleanup. scripts/asset_audit.py reads this file; change a rule here and nowhere else. Each key is explained under notes; references/checks.md says what each finding means.",
+  "stale_days": 365,
+  "max_grid_slot": 72,
+  "max_slots_per_placement": 25,
+  "bloomreach_hosts": ["bloomreach.com", "bloomreach.io", "brxcdn.com", "exponea.com"],
+  "placeholder_hosts": ["example.com", "example.org", "example.net", "test.com", "domain.com", "yourdomain.com", "yoursite.com", "localhost"],
+  "placeholder_words": ["test", "placeholder", "todo", "tbd", "example", "dummy", "lorem", "changeme", "xxx", "broken", "wontwork", "fixme"],
+  "max_links_to_load": 150,
+  "notes": {
+    "stale_days": "An asset not modified for more than this many days, and not used by a live rule, is listed as stale.",
+    "max_grid_slot": "The highest grid slot a media rule can use (Discovery's first 72 slots). A slot above this is a finding.",
+    "max_slots_per_placement": "The most slots one multi-slot placement can span (5x5). More is a finding.",
+    "bloomreach_hosts": "Image hosts that count as Bloomreach-hosted. An image anywhere else is hot-linked from a third-party site, which can change or remove it (a low finding).",
+    "placeholder_hosts": "Link and image hosts that are never a real destination.",
+    "placeholder_words": "Words in a URL's path or query that suggest a placeholder (a medium finding: confirm the real URL).",
+    "max_links_to_load": "At most this many unique URLs go in links_to_load (images and links from live assets first); the rest are listed in links_over_cap."
+  }
+}
