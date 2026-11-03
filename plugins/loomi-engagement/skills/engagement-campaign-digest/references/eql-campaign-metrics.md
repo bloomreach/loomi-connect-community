@@ -4,8 +4,8 @@ Bloomreach Engagement records every campaign message outcome as a `campaign` eve
 
 | Property | Meaning |
 |---|---|
-| `status` | What happened, e.g. `enqueued`, `sent`, `delivered`, `opened`, `clicked`, `hard_bounce`, `soft_bounce`, `unsubscribe`, `complained`, `failed`. Values vary by channel and project: run pattern A first to see which ones exist. |
-| `action_type` | Channel: `email`, `sms`, `mms`, `webhook`, `mobile_push`, `browser_notification` and others. |
+| `status` | What happened, e.g. `enqueued`, `sent`, `delivered`, `opened`, `clicked`, `hard_bounced`, `soft_bounced`, `unsubscribed`, `complained`, `failed`. Some projects spell them `hard_bounce`, `soft_bounce` and `unsubscribe`; the script treats both spellings as one. Email usually has `delivered` and no `sent`; SMS and push usually have `sent` and no `delivered`. Values vary by channel and project: run pattern A first to see which ones exist. |
+| `action_type` | Channel: `email`, `sms`, `mms`, `webhook`, `mobile notification`, `browser notification` (with spaces) and others. |
 | `campaign_name`, `campaign_id` | The campaign or scenario. |
 | `action_name`, `action_id` | The send step inside a scenario. One scenario can have several. |
 | `variant` | A/B variant name. |
@@ -46,7 +46,7 @@ select count event campaign where .action_type = "email" by row event campaign.c
 select count event campaign where .action_type = "email" and .status = "delivered" by event campaign.campaign_name grouping top 25 since <start>Z until <end>Z
 ```
 
-Run it for `delivered`, `clicked` and, if they appeared in pattern A, `hard_bounce` and `unsubscribe`. Skip `opened` if you're short on budget: opens are inflated by mail privacy features and are the least reliable signal.
+Run it for `delivered`, `clicked` and, if they appeared in pattern A, the bounce and unsubscribe statuses, spelled as pattern A returned them. Skip `opened` if you're short on budget: opens are inflated by mail privacy features and are the least reliable signal.
 
 **D. Revenue by campaign (only if the purchase event has a campaign or UTM property)**
 
@@ -65,11 +65,11 @@ Use whichever send count exists: `sent` if present, otherwise `enqueued`, otherw
 | Rate | Formula |
 |---|---|
 | Delivery rate | delivered ÷ sends |
-| Bounce rate | (hard_bounce + soft_bounce) ÷ sends |
+| Bounce rate | (hard_bounced + soft_bounced) ÷ sends |
 | Open rate | opened ÷ delivered (event-based) |
 | Click rate | clicked ÷ delivered (event-based) |
 | Click-to-open | clicked ÷ opened |
-| Unsubscribe rate | unsubscribe ÷ delivered |
+| Unsubscribe rate | unsubscribed ÷ delivered |
 | Complaint rate | complained ÷ delivered |
 | Failure rate | failed ÷ sends |
 

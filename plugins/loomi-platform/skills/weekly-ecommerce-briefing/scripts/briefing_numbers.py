@@ -148,10 +148,11 @@ def query_movers(rows, baseline_pct, min_sessions, top):
         })
     rising = sorted([i for i in items if i["trend_score"] > 0], key=lambda i: -i["trend_score"])[:top]
     falling = sorted([i for i in items if i["trend_score"] < 0], key=lambda i: i["trend_score"])[:top]
-    by_money = sorted(items, key=lambda i: i["revenue_delta"])
+    drops = sorted([i for i in items if i["revenue_delta"] < 0], key=lambda i: i["revenue_delta"])
+    gains = sorted([i for i in items if i["revenue_delta"] > 0], key=lambda i: -i["revenue_delta"])
     return {"considered": len(items), "baseline_sessions_change_pct": baseline_pct,
             "rising": rising, "falling": falling,
-            "biggest_revenue_drop": by_money[:top], "biggest_revenue_gain": by_money[::-1][:top]}
+            "biggest_revenue_drop": drops[:top], "biggest_revenue_gain": gains[:top]}
 
 
 def median(values):
@@ -168,6 +169,7 @@ def top_and_issues(rows, label, vol_key, min_vol, top, issue_top, dead_end_names
     volume x baseline revenue per visit for dead ends. It is an upper bound for the week, not a forecast.
     """
     items = []
+    no_views = set()  # positions of rows with exactly zero product views (views_per_visit is rounded for display)
     for r in rows:
         vol, vol0 = num(r.get(vol_key)), num(r.get("prev_" + vol_key))
         if max(vol, vol0) < min_vol:
@@ -181,6 +183,8 @@ def top_and_issues(rows, label, vol_key, min_vol, top, issue_top, dead_end_names
             "views_per_visit": round(num(r.get("product_page_views")) / visits, 2) if visits else 0.0,
             "aov": num(r.get("aov")), "rpv": num(r.get("rpv")),
         })
+        if num(r.get("product_page_views")) == 0:
+            no_views.add(len(items) - 1)
     if not items:
         return {"considered": 0, "top": [], "issues": []}
     peers = sorted(items, key=lambda i: -i["volume"])[:RULES["peers"]]
@@ -190,13 +194,13 @@ def top_and_issues(rows, label, vol_key, min_vol, top, issue_top, dead_end_names
     dead = {str(n).lower() for n in dead_end_names}
 
     issues = []
-    for i in items:
+    for n, i in enumerate(items):
         if i["volume"] < min_vol:
             continue  # only the previous period had volume
         reasons = []
         at_stake = 0.0
         conv, bounce = i["conversion_pct"], i["bounce_pct"]
-        if str(i["name"]).lower() in dead or (i["views_per_visit"] == 0 and bounce is not None and bounce >= RULES["dead_end_bounce_pct"]):
+        if str(i["name"]).lower() in dead or (n in no_views and bounce is not None and bounce >= RULES["dead_end_bounce_pct"]):
             reasons.append("dead end: no product views" + (", no results" if str(i["name"]).lower() in dead else ""))
             at_stake = i["volume"] * base["rpv"]
         else:

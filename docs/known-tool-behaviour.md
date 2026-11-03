@@ -223,7 +223,7 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 
 **Campaigns and on-site**
 - There's no tool for campaign stats. Calculate metrics from the `campaign` event.
-- `campaign` event `status` values seen live for email: `enqueued`, `delivered`, `opened`, `clicked`, `hard_bounced`, `soft_bounced`, `unsubscribed`, `complained` (no `sent`). SMS, push and WhatsApp have `sent` and no `delivered`. `action_type` for push is `mobile notification` / `browser notification`, with spaces. Older references in this repo use `hard_bounce`, `unsubscribe` and `mobile_push`; accept both spellings.
+- `campaign` event `status` values seen live for email: `enqueued`, `delivered`, `opened`, `clicked`, `hard_bounced`, `soft_bounced`, `unsubscribed`, `complained` (no `sent`). SMS, push and WhatsApp have `sent` and no `delivered`. `action_type` for push is `mobile notification` / `browser notification`, with spaces. Some projects spell statuses `hard_bounce`, `soft_bounce` and `unsubscribe`; accept both spellings.
 - `campaign_trigger` and `sender` were null on every email `campaign` event on a demo project. To split scenario sends from one-off campaigns, match `campaign_id` against `search_scenarios`.
 - Customers who unsubscribed in a window may have no delivered email in it (opt-outs from other sources), so "received and unsubscribed" can be 0.
 - `get_event_schema` can be very large (about 155,000 characters on a demo project).

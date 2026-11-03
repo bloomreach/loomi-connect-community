@@ -13,7 +13,8 @@ the EQL patterns in references/eql-campaign-metrics.md):
 }
 
 "previous" is optional. Status keys that are missing count as zero.
-"unsubscribed" and "unsubscribe" are the same status. Counts may be strings
+"unsubscribed" and "unsubscribe" are the same status, as are "hard_bounced" and
+"hard_bounce", and "soft_bounced" and "soft_bounce" (projects spell them differently). Counts may be strings
 ("1,000"); a value that isn't a number counts as zero and is listed.
 
 Usage:
@@ -35,7 +36,7 @@ THRESHOLDS = {
     "failure_rate": (0.01, "Failed sends"),
 }
 SWING = 0.25
-ALIASES = {"unsubscribed": "unsubscribe"}
+ALIASES = {"unsubscribed": "unsubscribe", "hard_bounced": "hard_bounce", "soft_bounced": "soft_bounce"}
 
 NA = {"", "na", "n/a", "-", "—", "null"}
 

@@ -27,6 +27,17 @@ class SummariseCampaignCountsTest(unittest.TestCase):
         self.assertIn("High unsubscribe: Weekly newsletter", r.stdout)
         self.assertIn("Missing value: Flash sale SMS: clicked", r.stdout)
 
+    def test_bounced_spellings_count_as_bounces(self):
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / "counts.json"
+            f.write_text(json.dumps({"current": {"Promo": {
+                "enqueued": 1000, "delivered": 950, "hard_bounced": 30, "soft_bounced": 20}}}), encoding="utf-8")
+            r = run(f)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("High bounce: Promo", r.stdout)  # 50 / 1,000 = 5%
+        self.assertIn("| 5.00% |", r.stdout)
+
     def test_error_response(self):
         r = run(FX / "denied.json")
         self.assertEqual(r.returncode, 1)

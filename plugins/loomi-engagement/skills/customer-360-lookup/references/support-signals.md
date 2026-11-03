@@ -23,8 +23,8 @@ Bloomreach records message activity as `campaign` events. Useful properties: `ac
 |---|---|---|
 | `enqueued`, `delivered` | sent and accepted | — |
 | `opened`, `clicked` | engagement | — (useful context) |
-| `hard_bounce` | the address doesn't exist | always |
-| `soft_bounce` | temporary failure | 3 or more in a row |
+| `hard_bounced` (or `hard_bounce`) | the address doesn't exist | always |
+| `soft_bounced` (or `soft_bounce`) | temporary failure | 3 or more in a row |
 | `complained`, `spam` | marked as spam | always |
 | `unsubscribed` | unsubscribed via the message | always |
 | `failed`, `dropped`, `suppressed` | not sent (often consent, frequency cap or invalid address) | always, with the reason if given |
