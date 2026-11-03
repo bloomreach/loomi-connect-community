@@ -1,0 +1,27 @@
+{
+  "about": "The weblayer QA rules. scripts/weblayer_checks.py reads this file, so change a word list or threshold here and nowhere else. Each key is explained under notes; references/check-catalog.md says what each check means and its severity.",
+  "placeholder_hosts": ["example.com", "example.org", "example.net", "test.com", "domain.com", "yourdomain.com", "yoursite.com", "localhost"],
+  "placeholder_words": ["test", "placeholder", "todo", "tbd", "example", "dummy", "lorem", "changeme", "xxx", "fixme"],
+  "allowed_loads": ["/brstatic/", "https://api.exponea.com", "cdn.jsdelivr.net/npm/intl-tel-input@"],
+  "timing_param_patterns": ["^trigger$", "showafter", "exitintent", "scrolldistance", "scrollspeed", "inactivitydelay"],
+  "timing_listener_events": ["scroll", "mouseout", "mouseleave", "visibilitychange"],
+  "param_types": ["string", "text", "number", "color", "image", "boolean", "enum", "date", "time", "datetime", "metric", "recommendation"],
+  "copy_min_chars": 3,
+  "max_data_uri_kb": 50,
+  "max_source_kb": 150,
+  "list_limit": 5,
+  "excerpt_chars": 80,
+  "notes": {
+    "placeholder_hosts": "A link or image on one of these hosts is a placeholder (warning).",
+    "placeholder_words": "A link whose path or query contains one of these words as a whole word looks like a placeholder (warning).",
+    "allowed_loads": "Script, stylesheet and network targets the platform skeleton needs: the utils.js and intl-tel-input files under /brstatic/, the API base the skeleton uses in the editor preview, and the intl-tel-input utilities on jsDelivr. Any load whose URL contains none of these is an unexplained external load (warning) for the owner to confirm.",
+    "timing_param_patterns": "Regular expressions (case-insensitive) for parameter names that hold old triggering code. Timing belongs in Smart triggering, so these are a warning. Auto-close (removeAfter, AutoHideDelay) isn't triggering and isn't listed.",
+    "timing_listener_events": "Event listeners that usually mean triggering code (exit intent, scroll, tab switch). A warning to review: timing belongs in Smart triggering.",
+    "param_types": "The template parameter types Bloomreach accepts. Any other type is a warning.",
+    "copy_min_chars": "Visible HTML text with at least this many letters that isn't a parameter or Jinja is hard-coded copy (nitpick).",
+    "max_data_uri_kb": "An inline data: URI larger than this many kilobytes slows every page the weblayer runs on (warning).",
+    "max_source_kb": "HTML, CSS and JavaScript together larger than this many kilobytes (nitpick).",
+    "list_limit": "How many examples to list in one finding, such as hard-coded colours.",
+    "excerpt_chars": "The longest code excerpt quoted in a finding. Email addresses in excerpts are always masked."
+  }
+}
