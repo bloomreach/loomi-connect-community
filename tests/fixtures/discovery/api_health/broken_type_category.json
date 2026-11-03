@@ -1,0 +1,375 @@
+{
+ "success": true,
+ "organization": "EXAMPLE",
+ "data": {
+  "isSuccessful": true,
+  "body": {
+   "group_definitions": [],
+   "results": [
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-09-29",
+     "time_period_end": "2026-09-30"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-09-30",
+     "time_period_end": "2026-10-01"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40000"
+      }
+     },
+     "time_period_start": "2026-10-01",
+     "time_period_end": "2026-10-02"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-10-02",
+     "time_period_end": "2026-10-03"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "31360"
+      }
+     },
+     "time_period_start": "2026-10-03",
+     "time_period_end": "2026-10-04"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "32000"
+      }
+     },
+     "time_period_start": "2026-10-04",
+     "time_period_end": "2026-10-05"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-10-05",
+     "time_period_end": "2026-10-06"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-10-06",
+     "time_period_end": "2026-10-07"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40000"
+      }
+     },
+     "time_period_start": "2026-10-07",
+     "time_period_end": "2026-10-08"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-10-08",
+     "time_period_end": "2026-10-09"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-10-09",
+     "time_period_end": "2026-10-10"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "32000"
+      }
+     },
+     "time_period_start": "2026-10-10",
+     "time_period_end": "2026-10-11"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "32640"
+      }
+     },
+     "time_period_start": "2026-10-11",
+     "time_period_end": "2026-10-12"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-10-12",
+     "time_period_end": "2026-10-13"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40000"
+      }
+     },
+     "time_period_start": "2026-10-13",
+     "time_period_end": "2026-10-14"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-10-14",
+     "time_period_end": "2026-10-15"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-10-15",
+     "time_period_end": "2026-10-16"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40000"
+      }
+     },
+     "time_period_start": "2026-10-16",
+     "time_period_end": "2026-10-17"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "32640"
+      }
+     },
+     "time_period_start": "2026-10-17",
+     "time_period_end": "2026-10-18"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "31360"
+      }
+     },
+     "time_period_start": "2026-10-18",
+     "time_period_end": "2026-10-19"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40000"
+      }
+     },
+     "time_period_start": "2026-10-19",
+     "time_period_end": "2026-10-20"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-10-20",
+     "time_period_end": "2026-10-21"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-10-21",
+     "time_period_end": "2026-10-22"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40000"
+      }
+     },
+     "time_period_start": "2026-10-22",
+     "time_period_end": "2026-10-23"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-10-23",
+     "time_period_end": "2026-10-24"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "31360"
+      }
+     },
+     "time_period_start": "2026-10-24",
+     "time_period_end": "2026-10-25"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "32000"
+      }
+     },
+     "time_period_start": "2026-10-25",
+     "time_period_end": "2026-10-26"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-10-26",
+     "time_period_end": "2026-10-27"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-10-27",
+     "time_period_end": "2026-10-28"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40000"
+      }
+     },
+     "time_period_start": "2026-10-28",
+     "time_period_end": "2026-10-29"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-10-29",
+     "time_period_end": "2026-10-30"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-10-30",
+     "time_period_end": "2026-10-31"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "22400"
+      }
+     },
+     "time_period_start": "2026-10-31",
+     "time_period_end": "2026-11-01"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "32000"
+      }
+     },
+     "time_period_start": "2026-11-01",
+     "time_period_end": "2026-11-02"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "40800"
+      }
+     },
+     "time_period_start": "2026-11-02",
+     "time_period_end": "2026-11-03"
+    },
+    {
+     "groups": [],
+     "total": {
+      "request_count": {
+       "value": "39200"
+      }
+     },
+     "time_period_start": "2026-11-03",
+     "time_period_end": "2026-11-04"
+    }
+   ],
+   "sql_queries": []
+  }
+ },
+ "error": null,
+ "environment_used": null
+}
