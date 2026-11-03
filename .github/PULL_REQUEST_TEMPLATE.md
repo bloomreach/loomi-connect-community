@@ -19,7 +19,7 @@
 
 - [ ] `python3 scripts/validate_skills.py` passes
 - [ ] No credentials, tokens, real project or workspace IDs, or customer data, including in examples and screenshots
-- [ ] Uses only Bloomreach's publicly available interfaces (see [CHARTER.md](../CHARTER.md)): no internal or undocumented tools or endpoints, and no scraping the app
+- [ ] Uses only Loomi Connect's published tools (see [CHARTER.md](../CHARTER.md)): no direct Bloomreach API calls, no internal tools, and no scraping the app
 - [ ] Tools are referred to by plain name, with no `mcp__` prefixes
 - [ ] If more than one project or workspace exists, the skill asks the user which to use
 - [ ] Writes (if any) show exactly what will change and wait for confirmation

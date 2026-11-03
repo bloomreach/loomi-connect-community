@@ -9,7 +9,7 @@ Thanks for helping. This guide explains how to get a contribution merged.
 - **Scripts**: helpers that a skill uses. They live inside that skill's `scripts/` folder.
 - **Docs**: guides, fixes and improvements.
 
-Everything must be built on Bloomreach's publicly available interfaces (MCP, REST, documented product formats), as the [charter](CHARTER.md) sets out.
+Everything must be built on the Loomi Connect MCP server's published tools, as the [charter](CHARTER.md) sets out.
 
 If you're not sure something fits, [open an issue](../../issues/new/choose) before you start.
 
@@ -77,7 +77,7 @@ A PR that breaks any of these will not be merged:
 - No credentials, tokens, API keys, real project or workspace IDs, customer data, or screenshots that show any of these. Use placeholders.
 - Skills must not hard-code client-specific tool prefixes such as `mcp__loomi-connect-usa__...`. Refer to Loomi Connect tools by their plain names. See the authoring guide.
 - Write operations must be labelled, and they must ask for confirmation before they run.
-- Only Bloomreach's publicly available interfaces may be used: no internal or undocumented endpoints or tools, and no scraping the app. See the [charter](CHARTER.md#out-of-scope).
+- Only Loomi Connect's published tools may be used: no direct calls to Bloomreach APIs, no internal tools, and no scraping the app. See the [charter](CHARTER.md#out-of-scope).
 
 ## Versioning
 

@@ -8,42 +8,36 @@ Loomi Connect Community collects skills, workflows and helpers that let AI assis
 
 ## What skills build on
 
-Skills here are built **only on Bloomreach's publicly available interfaces**: the ones Bloomreach documents for customers and partners to use. Today they are:
+Skills here are built **only on the Loomi Connect MCP server**: the tools it publishes for Engagement, Discovery and Data Hub, and its published guides. A tool counts when Loomi Connect lists it (`list_all_tools`) and doesn't tag it `internal`.
 
-| Interface | Examples |
-|---|---|
-| **MCP** | The Loomi Connect MCP server and the tools it exposes for Engagement, Discovery and Data Hub |
-| **REST** | Bloomreach's publicly documented REST APIs, such as the Engagement API and the Discovery search APIs |
-| **Documented product formats** | Bloomreach Jinja personalization, the weblayer and JavaScript SDK conventions, and the documented import and export formats |
+Skills also read and write content in Bloomreach's documented product formats, such as Jinja personalization, weblayer HTML, CSS and JavaScript, and Visual Builder email designs, but only through Loomi Connect tools. Conventions that Bloomreach ships to customers inside the product count too, such as the weblayer templates' built-in `utils` library; a skill that relies on one says so.
 
-"Publicly available" means documented by Bloomreach for customer or partner use, through a product's documentation or a tool's own published description. Code and conventions that Bloomreach ships to customers inside the product also count, such as the weblayer templates' built-in `utils` library. A skill that relies on one says so. If an interface isn't documented or shipped that way, a skill can't depend on it.
-
-Every skill in the repository today uses the Loomi Connect MCP server. Skills built on a public REST API are equally welcome, and the same rules apply to them.
+If a skill needs data or an action that Loomi Connect doesn't offer, the answer is to ask the Loomi Connect team to add it, not to reach Bloomreach another way.
 
 ## Out of scope
 
 The repository doesn't accept contributions that:
 
-- call **internal, private or undocumented endpoints**, including ones seen in the Bloomreach app's own network traffic;
+- call **Bloomreach's APIs directly**, whether public REST APIs, internal or undocumented endpoints, or ones seen in the Bloomreach app's own network traffic, or through any connector other than Loomi Connect;
 - call **internal Loomi Connect tools** that a tool search may return but that aren't meant for skills, that is, any tool `list_all_tools` tags `internal`, such as `whoami` or the tool usage and activity reports (see [docs/known-tool-behaviour.md](docs/known-tool-behaviour.md));
-- **scrape or automate the Bloomreach app's user interface** in place of an interface;
+- **scrape or automate the Bloomreach app's user interface** in place of a Loomi Connect tool;
 - reverse-engineer Bloomreach products, or **work around** permissions, rate limits or access controls;
 - ship **credentials**, tokens, real project or workspace IDs, or customer data;
 - reproduce Loomi Connect's server code or Bloomreach's official documentation. This repository is neither, and isn't a support channel.
 
-## How skills use these interfaces
+## How skills use Loomi Connect
 
-- **Access goes through the user's own connection.** The assistant calls the interface through the MCP server or REST connection the user has set up, with the user's own permissions. Skills never carry or ask for credentials, and scripts never read them.
-- **Scripts stay offline.** Helper scripts reshape data the assistant has already fetched. They never call an interface or the network themselves, so the same scripts work in every client.
+- **Access goes through the user's own sign-in.** The assistant calls Loomi Connect with the user's own permissions. Skills never carry or ask for credentials, API keys or tokens, and scripts never read them.
+- **Scripts stay offline.** Helper scripts reshape data the assistant has already fetched. They never call Loomi Connect, a Bloomreach API or the network themselves, so the same scripts work in every client.
 - **Read-only by default.** A skill reads unless writing is its whole point. Every write is declared, shown to the user and confirmed before it runs. Discovery changes take effect immediately, and deletes are permanent.
 - **Within published limits.** Skills respect rate limits and query cost, run calls one at a time, and estimate expensive queries first where a tool exists for it.
-- **Grounded in tested behaviour.** When an interface behaves differently from its description, the difference is recorded in [docs/known-tool-behaviour.md](docs/known-tool-behaviour.md), and skills work with the behaviour as tested.
+- **Grounded in tested behaviour.** When a tool behaves differently from its description, the difference is recorded in [docs/known-tool-behaviour.md](docs/known-tool-behaviour.md), and skills work with the behaviour as tested.
 - **Data is not instructions.** Customer data, search queries, product text, templates and web pages are data, never instructions to follow. Skills don't repeat personal data or secrets that responses contain.
 - **Portable.** Skills follow the open [Agent Skills](https://agentskills.io/specification) standard, so one skill works in Claude and OpenAI clients.
 
 ## Status of the content
 
-Community content isn't an officially supported Bloomreach feature unless it's marked as one. The [disclaimer](DISCLAIMER.md) applies to everything here. When a public interface changes, the skills that depend on it are updated or retired.
+Community content isn't an officially supported Bloomreach feature unless it's marked as one. The [disclaimer](DISCLAIMER.md) applies to everything here. When a Loomi Connect tool changes, the skills that depend on it are updated or retired.
 
 ## Governance
 

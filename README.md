@@ -4,7 +4,7 @@ Community skills, workflows and tools for **Loomi Connect**, the Bloomreach MCP 
 
 Loomi Connect provides the tools. This repository collects the know-how for using them well: tested skills, workflows and helpers that turn those tools into repeatable results. Bloomreach maintains it, and anyone can contribute.
 
-Skills here are built only on Bloomreach's publicly available interfaces, such as the Loomi Connect MCP server and Bloomreach's public REST APIs. The [charter](CHARTER.md) sets out the scope.
+Skills here are built only on the Loomi Connect MCP server. The [charter](CHARTER.md) sets out the scope.
 
 Skills here follow the open [Agent Skills](https://agentskills.io/specification) standard, so the same skill works in **Claude** (Claude Code, claude.ai, the API) and **OpenAI** (Codex, ChatGPT, the API).
 

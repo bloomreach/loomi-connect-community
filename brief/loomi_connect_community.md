@@ -8,7 +8,7 @@ Loomi Connect provides the raw capability: tools to query customers, events, cam
 
 Bloomreach maintains the repository, and anyone can contribute: customers, partners, and Bloomreach staff.
 
-The scope has since been set out in the [charter](../CHARTER.md): skills build on Bloomreach's publicly available interfaces, which include public REST APIs as well as Loomi Connect.
+The scope has since been set out in the [charter](../CHARTER.md): skills build only on the Loomi Connect MCP server.
 
 ## Problem
 
