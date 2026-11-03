@@ -442,7 +442,8 @@ def readback(path):
     doc = read_json(path)
     err = errors_in(doc)
     if err is not None:
-        if any(w in err.lower() for w in NOT_FOUND):
+        # "Account not found" is an account error, not a missing item: stop rather than report "gone".
+        if "account" not in err.lower() and any(w in err.lower() for w in NOT_FOUND):
             return None, "gone"
         fail(f"{path}: {tool_error(err)} The read-back couldn't run; don't treat it as checked.")
     data, _ = unwrap(doc, path)

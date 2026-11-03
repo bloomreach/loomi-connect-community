@@ -246,6 +246,17 @@ class VerifyTest(unittest.TestCase):
             _, out, _ = run("verify", "--plan", p, "--rule", f"7001={FX / 'rule_not_found.json'}")
             self.assertEqual(self.results(out)["enable"], "gone")
 
+    def test_account_error_stops_verify_instead_of_counting_as_gone(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = self.write_plan(tmp)
+            bad = Path(tmp) / "account_error.json"
+            bad.write_text(json.dumps({"success": False, "error": "Account 'acme' not found. Accessible: alpha, beta"}),
+                           encoding="utf-8")
+            code, out, _ = run("verify", "--plan", p, "--rule", f"7001={bad}")
+        self.assertEqual(code, 1)
+        self.assertIn("error about the account name", out["error"])
+        self.assertNotIn("alpha", json.dumps(out))
+
     def test_bad_plan_and_denied_readback(self):
         code, out, _ = run("verify", "--plan", FX / "rule_7001.json")
         self.assertEqual(code, 1)
