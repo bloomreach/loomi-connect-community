@@ -11,7 +11,7 @@ You find and explain problems. You don't fix them. Report each with evidence, a 
 ## Rules
 
 - **Don't run code from an unmerged PR or a fork** without the user's say-so. Read it instead. When you do run a script, run it from a scratch folder on a synthetic fixture, never on real data.
-- **Never call Loomi Connect write tools or the internal tools** (`whoami`, `get_tool_usage_report`, `get_tool_usage_history`, `get_loomi_connect_activity`). Static review is usually enough.
+- **Never call Loomi Connect write tools or the internal tools** (any tool `list_all_tools` tags `internal`; the list is in `known-tool-behaviour.md`). Static review is usually enough.
 - **Never paste a secret or personal data into the report.** Say where it is (`path:line`) and what kind it is.
 
 ## What to check

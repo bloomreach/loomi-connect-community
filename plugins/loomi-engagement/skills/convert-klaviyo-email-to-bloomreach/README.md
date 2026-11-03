@@ -30,7 +30,7 @@ See [examples/example-migration.md](examples/example-migration.md) for illustrat
 
 ## Notes and limitations
 
-- **Visual Builder format.** The `beefree_template` JSON is the Visual Builder's own template format. The public scenario tools return it (`search_scenarios` with `include_node_designs`) and accept it (`create_scenario` with `design.type: "beefree"`). The rules in `references/bee-schema.md` were observed by pushing emails through those tools and opening them in the editor; they aren't published as a schema.
+- **Visual Builder format.** The `beefree_template` JSON is the Visual Builder's own template format. Loomi Connect's published `scenario-write-best-practices` guide documents it: `design.type: "beefree"`, with the Visual Builder JSON in `design.data.beefree_template`. The module-level rules in `references/bee-schema.md` aren't published; they were observed by pushing emails through `create_scenario` and opening them in the editor.
 - **Drafts only.** Flow emails (abandoned cart, browse, post-purchase) get an event trigger, but usually still need a wait node and a "didn't purchase" condition added before launch. The report says so.
 - **Cart loops** read a "last `cart_update.product_list`" aggregate, because the trigger event only holds that one add-to-cart. Loomi Connect can't create aggregates; if none exists, the skill asks you to create one or flags the fallback.
 - **Desktop and mobile variants:** Klaviyo can show different content per device. The converter keeps the desktop version for all screens and lists what was dropped.

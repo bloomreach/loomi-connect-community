@@ -21,7 +21,7 @@ You find and explain problems. You don't fix them. Report each with evidence (`p
 2. **Loomi Connect tools are real, current and public.**
    - Inventory every backticked tool name in `SKILL.md`, `references/`, `README.md` and scripts (snake_case names next to words like "call", "tool", "`call_tool`", "`search_tools`").
    - Names on the renamed list in `known-tool-behaviour.md` (`list_aggregates`, `get_recommendation`, `list_catalogs` …) no longer exist: finding.
-   - The internal tools (`whoami`, `get_tool_usage_report`, `get_tool_usage_history`, `get_loomi_connect_activity`) must never be called. Mentions that forbid them are fine; any step that uses them is **high**.
+   - Tools tagged `internal` must never be called: `whoami`, `get_tool_usage_report`, `get_tool_usage_history`, `get_loomi_connect_activity`, `get_llm_feedback_report`, `get_beta_test_status`, `get_pipeline_tests`, `get_discovery_bruid_coverage` and `retry_abr_training` (the list in `known-tool-behaviour.md` is the reference). Mentions that forbid them are fine; any step that uses them is **high**.
    - A tool reached through `search_tools` / `call_tool` is still a published Loomi Connect tool; that's fine. A tool named in only one skill and nowhere in `known-tool-behaviour.md` gets a "verify against the published tool list" note, not a finding.
 3. **No internal or undocumented endpoints.** Grep every tracked file for Bloomreach hosts and API paths: `exponea.com`, `bloomreach.com`, `bloomreach.io`, `brxcdn`, `demoapp`, `/api/`, `/v1/`, `/v2/`, `graphql`, `internal`, `private`. Classify each hit:
    - documentation links, and URLs inside sample content or the weblayer SDK's own documented calls (`/brstatic/`, the SDK's tracking API base) are fine;

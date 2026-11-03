@@ -25,7 +25,7 @@ Every skill in the repository today uses the Loomi Connect MCP server. Skills bu
 The repository doesn't accept contributions that:
 
 - call **internal, private or undocumented endpoints**, including ones seen in the Bloomreach app's own network traffic;
-- call **internal Loomi Connect tools** that a tool search may return but that aren't meant for skills, such as `whoami` or the tool usage and activity reports (see [docs/known-tool-behaviour.md](docs/known-tool-behaviour.md));
+- call **internal Loomi Connect tools** that a tool search may return but that aren't meant for skills, that is, any tool `list_all_tools` tags `internal`, such as `whoami` or the tool usage and activity reports (see [docs/known-tool-behaviour.md](docs/known-tool-behaviour.md));
 - **scrape or automate the Bloomreach app's user interface** in place of an interface;
 - reverse-engineer Bloomreach products, or **work around** permissions, rate limits or access controls;
 - ship **credentials**, tokens, real project or workspace IDs, or customer data;

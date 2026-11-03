@@ -3,8 +3,9 @@
 `scripts/klaviyo_to_bloomreach.py build` generates all of this. Use this file only to debug a push error
 or a Visual Builder error. It records the structure the Visual Builder accepts, as observed by pushing emails
 through the public `create_scenario` tool and opening, saving and previewing them in the editor (Oct 2026).
-The format is the Visual Builder's own template JSON, which the public scenario tools return and accept; it isn't
-published as a schema, so treat these rules as observed behaviour.
+The format itself is documented in Loomi Connect's published `scenario-write-best-practices` guide
+(`design.type: "beefree"`, JSON in `design.data.beefree_template`). The module-level rules below aren't
+published, so treat them as observed behaviour.
 
 ## Rules that are easy to get wrong
 
