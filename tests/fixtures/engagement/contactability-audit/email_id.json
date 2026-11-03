@@ -1,0 +1,33 @@
+{
+ "success": true,
+ "data": {
+  "columns": [
+   []
+  ],
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": null
+     }
+    ],
+    "values": [
+     7000
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "en"
+     }
+    ],
+    "values": [
+     1000
+    ]
+   }
+  ],
+  "success": true
+ }
+}

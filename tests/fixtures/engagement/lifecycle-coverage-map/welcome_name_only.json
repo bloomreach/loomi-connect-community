@@ -1,0 +1,32 @@
+{
+ "_id": "sc-hello",
+ "name": "Welcome back banner",
+ "status": "active",
+ "nodes": [
+  {
+   "id": 1,
+   "type": "on-event-trigger",
+   "event": {
+    "type": "session_start",
+    "filter": []
+   }
+  },
+  {
+   "id": 2,
+   "type": "send-email-action",
+   "name": "Hi"
+  }
+ ],
+ "connections": [
+  {
+   "source": {
+    "node_id": 1,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 2,
+    "connector_index": 0
+   }
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": null
+     }
+    ],
+    "values": [
+     12000
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,50 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "5c0000000000000000000001",
+      "name": "Order sync",
+      "status": "active",
+      "trigger": null,
+      "nodes": [
+        {
+          "id": 1,
+          "type": "on-event-trigger",
+          "event": {
+            "type": "purchase",
+            "filter": []
+          }
+        },
+        {
+          "id": 2,
+          "type": "per-customer-webhook-action",
+          "name": "Send order",
+          "method": "POST",
+          "url": "https://hooks.partner.example/orders?access_token=tok-FAKE-1234567890abcdef",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer FAKE-token-abc123"
+            }
+          ],
+          "data": "{\"note\": \"secret body FAKE-body-123\"}",
+          "auth_integration_id": "110000000000000000000004",
+          "use_basic_auth": false,
+          "parametrized_parts": {
+            "url": "https://hooks.partner.example/orders?access_token=tok-FAKE-1234567890abcdef",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer FAKE-token-abc123"
+              }
+            ],
+            "data": "{\"note\": \"secret body FAKE-body-123\"}"
+          }
+        }
+      ],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

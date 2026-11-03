@@ -1,0 +1,24 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "c00000000000000000000001",
+        "name": "VIP flow",
+        "status": "active",
+        "archived": false,
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "c00000000000000000000002",
+        "name": "Draft flow",
+        "status": "draft",
+        "archived": false,
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      }
+    ],
+    "error": null
+  }
+}

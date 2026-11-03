@@ -1,0 +1,63 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "brand": "Brand 0",
+    "visits": 1000,
+    "prev_visits": 900,
+    "revenue": "$5,000.00",
+    "prev_revenue": "$5,000.00"
+   },
+   {
+    "brand": "Brand 1",
+    "visits": 1100,
+    "prev_visits": 1020,
+    "revenue": "$8,571.00",
+    "prev_revenue": "$7,741.00"
+   },
+   {
+    "brand": "Brand 2",
+    "visits": 1200,
+    "prev_visits": 1140,
+    "revenue": "$5,142.00",
+    "prev_revenue": "$10,482.00"
+   },
+   {
+    "brand": "Brand 3",
+    "visits": 1300,
+    "prev_visits": 1260,
+    "revenue": "$8,713.00",
+    "prev_revenue": "$6,223.00"
+   },
+   {
+    "brand": "Brand 4",
+    "visits": 1400,
+    "prev_visits": 1380,
+    "revenue": "$5,284.00",
+    "prev_revenue": "$8,964.00"
+   },
+   {
+    "brand": "Brand 5",
+    "visits": 1500,
+    "prev_visits": 1500,
+    "revenue": "$8,855.00",
+    "prev_revenue": "$11,705.00"
+   },
+   {
+    "brand": "Brand 6",
+    "visits": 1600,
+    "prev_visits": 1620,
+    "revenue": "$5,426.00",
+    "prev_revenue": "$7,446.00"
+   },
+   {
+    "brand": "Brand 7",
+    "visits": 1700,
+    "prev_visits": 1740,
+    "revenue": "$8,997.00",
+    "prev_revenue": "$10,187.00"
+   }
+  ]
+ }
+}

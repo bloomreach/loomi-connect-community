@@ -1,0 +1,61 @@
+{
+  "about": "Rules for scripts/engagement_dependency_map.py: which objects count as live, how used_by prefixes map to object kinds, and how references are matched inside saved definitions. Each key is explained under notes.",
+  "live_kinds": ["scenario", "email", "sms", "banner", "in_app_message"],
+  "live_statuses": ["active", "running", "serving", "scheduled", "started"],
+  "reporting_kinds": ["report", "funnel", "trend", "dashboard", "metric"],
+  "used_by_prefixes": {
+    "campaign_design": "scenario",
+    "banner": "banner",
+    "in_app_message": "in_app_message",
+    "email_campaign": "email",
+    "sms_campaign": "sms",
+    "segmentation": "segmentation",
+    "event_segmentation": "event_segmentation",
+    "aggregate": "aggregate",
+    "running_aggregate": "running_aggregate",
+    "expression": "expression",
+    "prediction": "prediction",
+    "report": "report",
+    "funnel": "funnel",
+    "trend": "trend",
+    "metric": "metric",
+    "dashboard": "dashboard",
+    "email_block": "email_block",
+    "snippet": "snippet",
+    "managed_tag": "managed_tag",
+    "managed_endpoint": "managed_endpoint",
+    "contextual_bandit": "contextual_bandit",
+    "autosegment": "autosegment",
+    "experiment": "experiment"
+  },
+  "kinds": ["scenario", "email", "sms", "banner", "in_app_message", "segmentation", "event_segmentation", "customer_filter", "aggregate", "running_aggregate", "expression", "prediction", "catalog", "recommendation", "consent", "project_variable", "report", "funnel", "trend", "dashboard"],
+  "name_only_kinds": ["consent", "project_variable"],
+  "name_keys": {
+    "consent": ["category", "consent_category"]
+  },
+  "jinja_patterns": {
+    "project_variable": ["project_variables?\\s*\\.\\s*{name}\\b", "project_variables?\\s*\\[\\s*['\"]{name}['\"]\\s*\\]"],
+    "catalog": ["catalogs\\s*\\.\\s*{name}\\b", "catalogs\\s*\\[\\s*['\"]{name}['\"]\\s*\\]"],
+    "aggregate": ["aggregates\\s*\\.\\s*{name}\\b", "aggregates\\s*\\[\\s*['\"]{name}['\"]\\s*\\]"],
+    "expression": ["expressions\\s*\\.\\s*{name}\\b", "expressions\\s*\\[\\s*['\"]{name}['\"]\\s*\\]"],
+    "segmentation": ["segmentations\\s*\\.\\s*{name}\\b", "segmentations\\s*\\[\\s*['\"]{name}['\"]\\s*\\]"]
+  },
+  "min_id_chars": 8,
+  "min_name_match_chars": 4,
+  "max_path_hops": 6,
+  "max_dependants_listed": 25,
+  "notes": {
+    "live_kinds": "Object kinds that reach customers. A dependant of one of these kinds with a live status blocks deletion.",
+    "live_statuses": "Statuses (compared case-insensitively) that count as live for a live kind. Draft, inactive, paused, finished and archived objects aren't live. A live kind with no status is reported as 'status unknown' and treated as a reason to check, not as safe.",
+    "reporting_kinds": "Object kinds that only measure. Deleting something they use breaks a report or dashboard, which is a medium finding, not a block.",
+    "used_by_prefixes": "How each used_by entry (<prefix>_<id>) maps to an object kind. The id is everything after the last underscore. Prefixes not listed here are kept as their own kind and treated as not live.",
+    "kinds": "The object kinds the script accepts in --list, --detail and --target. A kind seen only through used_by (email_block, metric and so on) is added automatically.",
+    "name_only_kinds": "Kinds whose ID is just their name. They're matched only through name_keys and jinja_patterns, never as a bare word, so a property that happens to share the name isn't counted.",
+    "name_keys": "Kinds referenced by name rather than ID, and the JSON keys whose whole value is that name. A consent category appears as {\"category\": \"newsletter\"} in filters and as consent_category on campaign steps.",
+    "jinja_patterns": "Regular expressions (case-insensitive) for references in Jinja and template code. {name} is replaced by the escaped reference name, and for aggregates, expressions and segmentations also by the escaped ID. A match counts as a reference by name.",
+    "min_id_chars": "IDs shorter than this aren't searched for inside longer strings (only as whole values), to avoid accidental matches.",
+    "min_name_match_chars": "A target's name is matched as a whole string value only if it has at least this many characters. Name matches are labelled 'name (verify)' because two objects can share a name.",
+    "max_path_hops": "Indirect dependants further than this many hops away are still counted, but their path isn't printed.",
+    "max_dependants_listed": "At most this many dependants are listed per target in the output; the rest are counted."
+  }
+}

@@ -1,0 +1,18 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 1,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "MUG-03",
+     "title": "Example stoneware mug 3",
+     "brand": "Example Home",
+     "price": 30,
+     "product_type": "Mugs"
+    }
+   ]
+  }
+ }
+}

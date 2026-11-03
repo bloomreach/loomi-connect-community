@@ -1,0 +1,5 @@
+{"success": true, "data": [
+ {"catalog_id": "cat-example", "_id": "R1", "properties": {"title": "Tent Peg Set", "price": 9.99, "stock_level": 3, "url": "https://example-shop.test/p/R1", "image": "https://cdn.example-shop.test/img/r1.jpg"}},
+ {"catalog_id": "cat-example", "_id": "OLD1", "properties": {"title": "Discontinued Stove", "price": 60, "stock_level": 4, "url": "https://example-shop.test/p/OLD1"}},
+ {"catalog_id": "cat-example", "_id": "OLD2", "properties": {"title": "Old Lantern", "price": 25, "stock_level": 0, "url": "https://example-shop.test/p/OLD2"}}
+], "total": 900}

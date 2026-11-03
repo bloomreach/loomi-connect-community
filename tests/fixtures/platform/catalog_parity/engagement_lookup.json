@@ -1,0 +1,7 @@
+{"success": true, "data": [
+ {"catalog_id": "cat-example", "_id": "p100", "properties": {"title": "Trail Runner Shoe", "price": 120, "sale_price": 99, "stock_level": "5", "url": "http://example-shop.test/p/P100/", "image": "https://images.example-shop.test/large/p100.jpg", "cost": 50}},
+ {"catalog_id": "cat-example", "_id": "P200", "properties": {"title": "Rain jacket", "price": 80, "stock_level": 12, "url": "https://example-shop.test/p/P200", "image": "https://cdn.example-shop.test/img/p200.jpg"}},
+ {"catalog_id": "cat-example", "_id": "P300", "properties": {"title": "Wool Socks (2 pack)", "price": 18.5, "stock_level": 0, "url": "https://example-shop.test/p/P300", "image": "https://cdn.example-shop.test/img/other.jpg"}},
+ {"catalog_id": "cat-example", "_id": "R1", "properties": {"title": "Tent Peg Set", "price": 9.99, "stock_level": 3, "url": "https://example-shop.test/p/R1", "image": "https://cdn.example-shop.test/img/r1.jpg"}},
+ {"catalog_id": "cat-example", "_id": "R2", "properties": {"title": "Head Torch", "price": 24.0, "sale_price": 20.0, "stock_level": 3, "url": "https://example-shop.test/p/R2", "image": "https://cdn.example-shop.test/img/r2.jpg"}}
+], "total": 5}

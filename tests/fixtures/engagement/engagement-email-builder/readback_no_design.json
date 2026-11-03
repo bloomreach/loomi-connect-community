@@ -1,0 +1,79 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "new000000000000000000001",
+   "name": "Black Friday - lapsed VIPs - DRAFT",
+   "status": "draft",
+   "archived": false,
+   "schedule": {
+    "active": true,
+    "type": "now"
+   },
+   "customer_filter": {
+    "filters": [
+     {
+      "type": "attribute",
+      "attribute": {
+       "type": "segmentation",
+       "id": "seg0000000000000000000001"
+      },
+      "constraint": {
+       "type": "string",
+       "operator": "equals",
+       "operands": [
+        {
+         "type": "constant",
+         "value": "Lapsed VIP"
+        }
+       ]
+      },
+      "independent_if_reused": true
+     }
+    ],
+    "formula": "F0"
+   },
+   "design": {
+    "type": "raw",
+    "data": {
+     "sender_name": "Acme Outdoor",
+     "sender_email": "news@acme-outdoor.example",
+     "subject": "Your VIP 20% is waiting, {{ customer['first_name'] | default('there', true) }}",
+     "preheader": "Three picks we think you'll love, plus a code that ends Sunday.",
+     "provider": {
+      "type": "global"
+     },
+     "file_ids": [],
+     "reply_to": null,
+     "translations": {}
+    }
+   },
+   "split": {
+    "type": "off",
+    "variants": [
+     {
+      "design": {
+       "type": "raw",
+       "data": {
+        "sender_name": "Acme Outdoor",
+        "sender_email": "news@acme-outdoor.example",
+        "subject": "Your VIP 20% is waiting, {{ customer['first_name'] | default('there', true) }}",
+        "preheader": "Three picks we think you'll love, plus a code that ends Sunday.",
+        "provider": {
+         "type": "global"
+        },
+        "file_ids": [],
+        "reply_to": null,
+        "translations": {}
+       }
+      }
+     }
+    ]
+   },
+   "consent_category": "newsletter",
+   "general_consent": false,
+   "frequency_policy": "unlimited-policy"
+  },
+  "error": null
+ }
+}

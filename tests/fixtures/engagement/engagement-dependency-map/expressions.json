@@ -1,0 +1,30 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "ee0000000000000000000001",
+        "name": "Spend band",
+        "context_type": "customer",
+        "archived": false,
+        "used_by": [
+          "segmentation_550000000000000000000001"
+        ],
+        "all_exposing_properties": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "ee0000000000000000000002",
+        "name": "Legacy expression",
+        "context_type": "customer",
+        "archived": false,
+        "used_by": [],
+        "all_exposing_properties": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      }
+    ],
+    "error": null
+  }
+}

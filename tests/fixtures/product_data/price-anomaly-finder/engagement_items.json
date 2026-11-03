@@ -1,0 +1,36 @@
+{
+ "success": true,
+ "data": [
+  {
+   "catalog_id": "c1",
+   "_id": "ENG-1",
+   "properties": {
+    "title": "Example socks",
+    "price": 12,
+    "original_price": 12,
+    "category_level_1": "Socks"
+   }
+  },
+  {
+   "catalog_id": "c1",
+   "_id": "ENG-2",
+   "properties": {
+    "title": "Example socks two",
+    "price": 15,
+    "original_price": 10,
+    "category_level_1": "Socks"
+   }
+  },
+  {
+   "catalog_id": "c1",
+   "_id": "ENG-3",
+   "properties": {
+    "title": "Example socks three",
+    "price": "9",
+    "original_price": "12",
+    "category_level_1": "Socks"
+   }
+  }
+ ],
+ "total": 3
+}

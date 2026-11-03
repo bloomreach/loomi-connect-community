@@ -1,0 +1,79 @@
+{
+ "success": true,
+ "data": {
+  "columns": [
+   [
+    {
+     "type": "single",
+     "value": null
+    }
+   ],
+   [
+    {
+     "type": "single",
+     "value": "accept"
+    }
+   ],
+   [
+    {
+     "type": "single",
+     "value": "reject"
+    }
+   ]
+  ],
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": null
+     }
+    ],
+    "values": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "newsletter"
+     }
+    ],
+    "values": [
+     0,
+     500,
+     300
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "sms"
+     }
+    ],
+    "values": [
+     0,
+     40,
+     10
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "promo_legacy"
+     }
+    ],
+    "values": [
+     0,
+     3,
+     0
+    ]
+   }
+  ]
+ }
+}

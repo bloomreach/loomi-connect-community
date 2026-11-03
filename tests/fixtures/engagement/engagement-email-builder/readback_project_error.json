@@ -1,0 +1,7 @@
+{
+ "result": {
+  "success": false,
+  "data": null,
+  "error": "Project '00000000-0000-0000-0000-000000000000' not found in any organization. Call list_projects first to verify the project ID."
+ }
+}

@@ -1,0 +1,25 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "ee0000000000000000000001",
+      "name": "Spend band",
+      "formula": "floor(a / 100)",
+      "variables": [
+        {
+          "name": "a",
+          "attribute": {
+            "type": "aggregate",
+            "id": "aa0000000000000000000001"
+          }
+        }
+      ],
+      "used_by": [
+        "segmentation_550000000000000000000001"
+      ],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

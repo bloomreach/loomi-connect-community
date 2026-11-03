@@ -1,0 +1,72 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 100,
+   "docs": []
+  },
+  "facet_counts": {
+   "facets": [
+    {
+     "name": "colors",
+     "type": "text",
+     "value": [
+      {
+       "name": "gray",
+       "count": 683
+      },
+      {
+       "name": "grey",
+       "count": 70
+      },
+      {
+       "name": "Navy",
+       "count": 40
+      },
+      {
+       "name": "navy blue",
+       "count": 4
+      },
+      {
+       "name": "black",
+       "count": 90
+      }
+     ]
+    },
+    {
+     "name": "material",
+     "type": "text",
+     "value": [
+      {
+       "name": "Metal",
+       "count": 10
+      },
+      {
+       "name": "Metal|Wood",
+       "count": 4
+      },
+      {
+       "name": "metal",
+       "count": 2
+      },
+      {
+       "name": "Wood",
+       "count": 20
+      }
+     ]
+    },
+    {
+     "name": "category",
+     "type": "text",
+     "value": [
+      {
+       "cat_id": "1",
+       "cat_name": "Kitchen",
+       "count": 5
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

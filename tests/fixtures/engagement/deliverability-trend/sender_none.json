@@ -1,0 +1,93 @@
+{
+"success": true,
+"query": "(synthetic)",
+"analysis_type": "report",
+"data": {
+"columns": [
+[
+{
+"type": "single",
+"value": "clicked"
+}
+],
+[
+{
+"type": "single",
+"value": "complained"
+}
+],
+[
+{
+"type": "single",
+"value": "delivered"
+}
+],
+[
+{
+"type": "single",
+"value": "enqueued"
+}
+],
+[
+{
+"type": "single",
+"value": "hard_bounced"
+}
+],
+[
+{
+"type": "single",
+"value": "opened"
+}
+],
+[
+{
+"type": "single",
+"value": "sent"
+}
+],
+[
+{
+"type": "single",
+"value": "soft_bounced"
+}
+],
+[
+{
+"type": "single",
+"value": "success"
+}
+],
+[
+{
+"type": "single",
+"value": "unsubscribed"
+}
+]
+],
+"rows": [
+{
+"headers": [
+{
+"type": "single",
+"value": null
+}
+],
+"values": [
+0,
+0,
+4990,
+5000,
+0,
+0,
+0,
+0,
+0,
+0
+]
+}
+],
+"success": true
+},
+"error": null
+}

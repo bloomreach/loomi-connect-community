@@ -1,0 +1,50 @@
+[
+  {
+    "kind": "aggregate",
+    "id": "aa0000000000000000000001"
+  },
+  {
+    "kind": "aggregate",
+    "name": "Old test aggregate"
+  },
+  {
+    "kind": "aggregate",
+    "id": "aa0000000000000000000003"
+  },
+  {
+    "kind": "expression",
+    "id": "ee0000000000000000000002"
+  },
+  {
+    "kind": "aggregate",
+    "id": "aa0000000000000000000004"
+  },
+  {
+    "kind": "segmentation",
+    "name": "Loop A"
+  },
+  {
+    "kind": "segmentation",
+    "name": "Loop B"
+  },
+  {
+    "kind": "customer_filter",
+    "id": "ff0000000000000000000001"
+  },
+  {
+    "kind": "consent",
+    "name": "newsletter"
+  },
+  {
+    "kind": "project_variable",
+    "name": "brand_name"
+  },
+  {
+    "kind": "project_variable",
+    "name": "unused_var"
+  },
+  {
+    "kind": "segmentation",
+    "name": "High spenders"
+  }
+]

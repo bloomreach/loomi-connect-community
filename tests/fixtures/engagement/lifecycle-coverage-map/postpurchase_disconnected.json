@@ -1,0 +1,37 @@
+{
+ "_id": "sc-thanks",
+ "name": "Thank you",
+ "status": "active",
+ "nodes": [
+  {
+   "id": 1,
+   "type": "on-event-trigger",
+   "event": {
+    "type": "purchase",
+    "filter": []
+   }
+  },
+  {
+   "id": 2,
+   "type": "send-email-action",
+   "name": "Thanks"
+  },
+  {
+   "id": 3,
+   "type": "per-customer-webhook-action",
+   "name": "Hook"
+  }
+ ],
+ "connections": [
+  {
+   "source": {
+    "node_id": 2,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 3,
+    "connector_index": 0
+   }
+  }
+ ]
+}

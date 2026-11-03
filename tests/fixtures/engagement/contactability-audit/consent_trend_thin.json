@@ -1,0 +1,45 @@
+{
+ "success": true,
+ "data": {
+  "columns": [
+   [
+    {
+     "type": "single",
+     "value": "accept"
+    }
+   ],
+   [
+    {
+     "type": "single",
+     "value": "reject"
+    }
+   ]
+  ],
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1780268400
+     }
+    ],
+    "values": [
+     1,
+     0
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1790809200
+     }
+    ],
+    "values": [
+     1,
+     1
+    ]
+   }
+  ]
+ }
+}

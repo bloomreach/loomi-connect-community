@@ -1,0 +1,7 @@
+{"result": {"success": true, "data": [
+ {"id": 1, "experimentName": "Search ranking test: boots", "experimentType": "TESTING", "experimentStatus": "COMPLETED", "startedAt": 1752624000000, "endedAt": 1754438400000, "modifiedAt": 1772137301776, "user": "editor@example.com"},
+ {"id": 2, "experimentName": "Category grid test", "experimentType": "TESTING", "experimentStatus": "RUNNING", "startedAt": 1756684800000, "endedAt": null, "modifiedAt": 1756684800000, "user": "editor@example.com"},
+ {"id": 3, "experimentName": "Old test", "experimentType": "TESTING", "experimentStatus": "ARCHIVED", "startedAt": 1606997286210, "endedAt": 1606997335071, "modifiedAt": 1772137301776, "user": "editor@example.com"},
+ {"id": 4, "experimentName": "Draft test", "experimentType": "TESTING", "experimentStatus": "DRAFT", "startedAt": null, "endedAt": null, "modifiedAt": 1756684800000, "user": "editor@example.com"},
+ {"id": 5, "experimentName": "Spanning test", "experimentType": "TESTING", "experimentStatus": "COMPLETED", "startedAt": 1748736000000, "endedAt": 1752019200000, "modifiedAt": 1752019200000, "user": "editor@example.com"}
+], "meta": {"pagination": {"total": 5, "limit": 10, "page": 0}}, "error": null}}

@@ -1,0 +1,51 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "aa0000000000000000000001",
+        "name": "Total spend 365d",
+        "archived": false,
+        "used_by": [
+          "expression_ee0000000000000000000001",
+          "report_d100000000000000000000001"
+        ],
+        "all_exposing_properties": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "aa0000000000000000000002",
+        "name": "Old test aggregate",
+        "archived": false,
+        "used_by": [],
+        "all_exposing_properties": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "aa0000000000000000000003",
+        "name": "Legacy aggregate",
+        "archived": false,
+        "used_by": [
+          "expression_ee0000000000000000000002"
+        ],
+        "all_exposing_properties": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "aa0000000000000000000004",
+        "name": "Mystery aggregate",
+        "archived": false,
+        "used_by": [
+          "campaign_design_c00000000000000000000009"
+        ],
+        "all_exposing_properties": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      }
+    ],
+    "error": null
+  }
+}

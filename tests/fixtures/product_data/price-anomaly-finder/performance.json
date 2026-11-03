@@ -1,0 +1,24 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "prod_id": "MUG-X100",
+    "product_title": "Example stoneware mug tall",
+    "revenue": "$1,250.00",
+    "visits": 400
+   },
+   {
+    "prod_id": "MUG-DEEP",
+    "revenue": "$0.00",
+    "visits": 10
+   },
+   {
+    "prod_id": "MUG-OUT",
+    "revenue": "$90.00",
+    "visits": 80
+   }
+  ],
+  "total_rows": 3
+ }
+}

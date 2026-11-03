@@ -1,0 +1,24 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "770000000000000000000001",
+      "name": "Order shipped",
+      "archived": false,
+      "event_type": "order_shipped",
+      "properties": [
+        {
+          "name": "order_id",
+          "optional": false,
+          "type": "string"
+        }
+      ],
+      "scenario_ids": [
+        "5c0000000000000000000002"
+      ],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

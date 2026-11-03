@@ -1,0 +1,5 @@
+{"result": {"success": true, "data": [
+ {"_id": "s1", "name": "Welcome series", "status": "active", "archived": false, "edited_by_display_name": "Example Editor"},
+ {"_id": "s2", "name": "Abandoned cart - email", "status": "draft", "archived": false},
+ {"_id": "s3", "name": "Monthly newsletter", "status": "active", "archived": false}
+], "error": null, "offset": 0, "limit": 200}}

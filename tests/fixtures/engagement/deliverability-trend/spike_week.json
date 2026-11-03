@@ -1,0 +1,113 @@
+{
+"success": true,
+"query": "(synthetic)",
+"analysis_type": "report",
+"data": {
+"columns": [
+[
+{
+"type": "single",
+"value": "clicked"
+}
+],
+[
+{
+"type": "single",
+"value": "complained"
+}
+],
+[
+{
+"type": "single",
+"value": "delivered"
+}
+],
+[
+{
+"type": "single",
+"value": "enqueued"
+}
+],
+[
+{
+"type": "single",
+"value": "hard_bounced"
+}
+],
+[
+{
+"type": "single",
+"value": "opened"
+}
+],
+[
+{
+"type": "single",
+"value": "sent"
+}
+],
+[
+{
+"type": "single",
+"value": "soft_bounced"
+}
+],
+[
+{
+"type": "single",
+"value": "success"
+}
+],
+[
+{
+"type": "single",
+"value": "unsubscribed"
+}
+]
+],
+"rows": [
+{
+"headers": [
+{
+"type": "single",
+"value": "Autumn sale"
+}
+],
+"values": [
+0,
+2,
+2900,
+3000,
+60,
+0,
+0,
+40,
+0,
+8
+]
+},
+{
+"headers": [
+{
+"type": "single",
+"value": "Newsletter"
+}
+],
+"values": [
+0,
+1,
+3950,
+4000,
+18,
+0,
+0,
+32,
+0,
+11
+]
+}
+],
+"success": true
+},
+"error": null
+}

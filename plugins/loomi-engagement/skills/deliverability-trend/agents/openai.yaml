@@ -1,0 +1,5 @@
+interface:
+  display_name: "Deliverability Trend"
+  short_description: "90-day email bounce, complaint and unsubscribe trend with drift and spike causes"
+policy:
+  allow_implicit_invocation: true

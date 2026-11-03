@@ -1,0 +1,12 @@
+{"success": true, "account_name": "example_account", "period_hours": 24,
+ "page_view_pixels": [
+  {"display_type": "search-pageview", "event_count": 1200, "issue_count": 3, "issue_rate_pct": 0.25, "top_issues": []},
+  {"display_type": "category-pageview", "event_count": 900, "issue_count": 0, "issue_rate_pct": 0, "top_issues": []},
+  {"display_type": "product-pageview", "event_count": 2500, "issue_count": 0, "issue_rate_pct": 0, "top_issues": []},
+  {"display_type": "conversion-pageview", "event_count": 0, "issue_count": 0, "issue_rate_pct": 0, "top_issues": []},
+  {"display_type": "home-pageview", "event_count": 300, "issue_count": 0, "issue_rate_pct": 0, "top_issues": []}],
+ "event_pixels": [
+  {"display_type": "atc-event", "event_count": 150, "issue_count": 0, "issue_rate_pct": 0, "top_issues": []},
+  {"display_type": "search-event", "event_count": 800, "issue_count": 0, "issue_rate_pct": 0, "top_issues": []},
+  {"display_type": "suggest-event", "event_count": 0, "issue_count": 0, "issue_rate_pct": 0, "top_issues": []}],
+ "error": null, "environment_used": "production"}

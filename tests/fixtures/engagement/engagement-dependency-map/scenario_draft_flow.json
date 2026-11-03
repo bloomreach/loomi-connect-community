@@ -1,0 +1,29 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "c00000000000000000000002",
+      "name": "Draft flow",
+      "status": "draft",
+      "trigger": null,
+      "nodes": [
+        {
+          "id": 1,
+          "type": "condition",
+          "customer_filter": {
+            "formula": "F0",
+            "filters": [
+              {
+                "type": "customer_filter",
+                "customer_filter_id": "ff0000000000000000000001"
+              }
+            ]
+          }
+        }
+      ],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

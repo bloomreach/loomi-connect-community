@@ -1,0 +1,5 @@
+interface:
+  display_name: "Engagement Dependency Map"
+  short_description: "What uses a Bloomreach Engagement definition, what breaks if it goes, and a safe deletion order"
+policy:
+  allow_implicit_invocation: true

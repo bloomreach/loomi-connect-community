@@ -1,0 +1,29 @@
+{
+  "about": "Rules for scripts/integration_inventory.py: how integration types are grouped, which assets count as live, and what a secret looks like. The script never prints a secret, a header value, a body or a full URL; these rules decide what it describes instead. Each key is explained under notes.",
+  "live_statuses": ["active", "running", "serving", "scheduled", "started"],
+  "asset_kinds": ["scenario", "email", "sms", "banner", "in_app_message"],
+  "type_groups": {
+    "channel": ["mailgun", "email", "smtp", "sendgrid", "sparkpost", "sms", "twilio", "infobip", "vonage", "nexmo", "sinch", "whatsapp", "rcs", "push", "firebase", "apns", "browserpush", "messagebird"],
+    "storage": ["storage", "blob", "datalake", "gcs", "s3", "sftp", "ftp", "bigquery", "snowflake", "databricks", "redshift", "sql", "mysql", "postgres", "mssql", "oracle"],
+    "ads": ["ads", "adwords", "facebook", "meta", "google-ads", "tiktok", "snapchat", "pinterest", "linkedin", "criteo", "dv360"],
+    "auth": ["auth", "oauth", "token", "http", "webhook", "basic"],
+    "external_segments": ["external_segments", "external-segments"]
+  },
+  "usage_visible_groups": ["ads", "auth"],
+  "test_words": ["test", "testing", "tmp", "temp", "demo", "poc", "sandbox", "dev", "qa", "old", "copy", "untitled", "do not use", "dnu"],
+  "secret_words": ["auth", "token", "secret", "password", "passwd", "pwd", "apikey", "api_key", "api-key", "key", "bearer", "credential", "signature", "sig", "private", "session", "cookie"],
+  "secret_value_patterns": ["^(?:Bearer|Basic|Token)\\s+\\S{8,}", "^[A-Za-z0-9_\\-]{2,10}_[A-Za-z0-9]{16,}$", "^eyJ[A-Za-z0-9_\\-]+\\.[A-Za-z0-9_\\-]+\\.", "^[A-Fa-f0-9]{32,}$", "^(?=.*\\d)(?=.*[A-Za-z])[A-Za-z0-9+/=_\\-]{24,}$"],
+  "safe_value_patterns": ["^\\s*$", "^(?:true|false|yes|no|on|off)$", "^-?\\d+(?:\\.\\d+)?$", "^#[0-9A-Fa-f]{3,8}$", "^[0-9a-f]{24}$", "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"],
+  "webhook_node_marker": "webhook",
+  "notes": {
+    "live_statuses": "Statuses (compared case-insensitively) that make a scenario, campaign, weblayer or in-app message live. A live asset that uses a broken or secret-bearing configuration raises the finding to high.",
+    "asset_kinds": "The asset kinds accepted by --assets. They're searched for integration IDs, API trigger IDs and project variable references.",
+    "type_groups": "Integration types grouped by what they're for, by substring of the type (case-insensitive). The first group that matches wins; a type that matches none is 'other'.",
+    "usage_visible_groups": "Groups whose use shows up in scenario, campaign or weblayer definitions (ad audience steps, webhook authentication). Only these can be called 'no reference found' (medium). Channel providers, storage and SQL connections are used by delivery, imports and exports that Loomi Connect doesn't expose, so for them an absent reference is only low.",
+    "test_words": "Whole words (or phrases) in an integration, API trigger or variable name that suggest a test or throwaway copy.",
+    "secret_words": "Words in a variable reference, variable description, header name or URL query parameter name that suggest a credential. A matching variable with a non-empty value is reported as a stored credential; a matching query parameter with a fixed value is a credential in a URL.",
+    "secret_value_patterns": "Regular expressions for values that look like keys or tokens, whatever the name: an auth scheme and token, a prefixed key, a JWT, a long hex string, or a long run of mixed letters and digits with no spaces. A match is never printed; the value is described as 'looks like a key'.",
+    "safe_value_patterns": "Regular expressions for values that are never treated as secrets: empty, booleans, numbers, colours, and Engagement object IDs and UUIDs (a catalog ID kept in a variable isn't a key).",
+    "webhook_node_marker": "A scenario node whose type contains this text is a webhook step (seen live: per-customer-webhook-action)."
+  }
+}

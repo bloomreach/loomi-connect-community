@@ -1,0 +1,91 @@
+{
+  "about": "Flow definitions, value assumptions and thresholds for the lifecycle coverage map. scripts/lifecycle_coverage.py reads this file and its CLI defaults come from it. Conversion rates are conservative planning assumptions, not benchmarks: say so whenever a figure built on them is shown. Each key is explained under notes.",
+  "flow_order": ["welcome", "browse_abandonment", "cart_abandonment", "post_purchase", "replenishment", "birthday", "win_back", "sunset"],
+  "flows": {
+    "welcome": {
+      "label": "Welcome",
+      "trigger_events": ["consent", "registration", "sign_up", "signup", "newsletter_signup", "subscribe", "double_opt_in"],
+      "exclude_filter_values": ["reject", "withdraw", "unsubscribe"],
+      "keywords": ["welcome", "onboard", "new subscriber", "sign up", "signup"],
+      "conversion_rate": 0.03,
+      "audience_months": 1,
+      "max_first_wait_hours": 24,
+      "revenue": true
+    },
+    "browse_abandonment": {
+      "label": "Browse abandonment",
+      "trigger_events": ["view_item", "product_view", "view_product", "view_category"],
+      "keywords": ["browse", "viewed"],
+      "conversion_rate": 0.01,
+      "audience_months": 1,
+      "max_first_wait_hours": 48,
+      "revenue": true
+    },
+    "cart_abandonment": {
+      "label": "Cart abandonment",
+      "trigger_events": ["cart_update", "add_to_cart", "cart_add", "checkout", "checkout_start", "begin_checkout"],
+      "keywords": ["abandon", "cart", "basket", "checkout"],
+      "conversion_rate": 0.05,
+      "audience_months": 1,
+      "max_first_wait_hours": 24,
+      "revenue": true
+    },
+    "post_purchase": {
+      "label": "Post-purchase and review",
+      "trigger_events": ["purchase", "order"],
+      "keywords": ["post-purchase", "post purchase", "thank", "review", "nps", "cross-sell", "follow-up", "follow up"],
+      "conversion_rate": 0.02,
+      "audience_months": 1,
+      "revenue": true
+    },
+    "replenishment": {
+      "label": "Replenishment",
+      "trigger_events": ["purchase", "order", "purchase_item"],
+      "keywords": ["replenish", "refill", "reorder", "re-order", "running low"],
+      "min_first_wait_days": 14,
+      "conversion_rate": 0.05,
+      "audience_months": 1,
+      "revenue": true
+    },
+    "birthday": {
+      "label": "Birthday or anniversary",
+      "date_properties": ["birth", "anniversary", "dob"],
+      "keywords": ["birthday", "anniversary", "b-day"],
+      "conversion_rate": 0.03,
+      "audience_months": 12,
+      "revenue": true
+    },
+    "win_back": {
+      "label": "Win-back",
+      "keywords": ["win-back", "winback", "win back", "reactivat", "re-engag", "reengag", "lapsed", "lapsing", "we miss you", "come back"],
+      "conversion_rate": 0.02,
+      "audience_months": 1,
+      "revenue": true
+    },
+    "sunset": {
+      "label": "Sunset or re-permission",
+      "keywords": ["sunset", "re-permission", "repermission", "re-consent", "reconsent", "disengaged", "inactive subscriber", "list clean"],
+      "conversion_rate": 0,
+      "audience_months": 1,
+      "revenue": false
+    }
+  },
+  "status_map": {"active": "live", "draft": "draft", "inactive": "stopped", "paused": "stopped", "finished": "stopped", "stopped": "stopped"},
+  "message_node_prefixes": ["send-", "push-notification"],
+  "message_node_exclude": ["webhook"],
+  "default_reachable_share": 0.4,
+  "weak_share_at_stake": 0.5,
+  "high_share_of_total": 0.25,
+  "min_monthly_audience": 50,
+  "notes": {
+    "flow_order": "The eight lifecycle flows, in the order the coverage table lists them.",
+    "flows": "One entry per flow. trigger_events: event types an on-event trigger must listen to for a confirmed match (compared case-insensitively). exclude_filter_values: constants in the trigger's event filter that rule a match out (a consent trigger filtered to reject is not a welcome). keywords: words in the scenario or node names; with a scheduled trigger they give a medium-confidence match, on their own a low-confidence one that never counts as coverage. date_properties: substrings of the property an on-date-attribute trigger, or a condition, uses. min_first_wait_days: a purchase-triggered flow whose first message waits at least this long counts as replenishment, not post-purchase. conversion_rate: assumed share of reachable entrants who buy because of the flow. audience_months: how many months of entrants the flow's audience query counts (birthday counts everyone with a birth date, so 12). max_first_wait_hours: a live flow whose first message waits longer is weak. revenue: false for flows whose value is deliverability, not sales.",
+    "status_map": "Scenario status from search_scenarios mapped to the coverage status. Anything not listed counts as stopped.",
+    "message_node_prefixes": "Node types starting with one of these are customer messages (email, SMS, MMS, WhatsApp, push).",
+    "message_node_exclude": "Node types containing one of these are never counted as customer messages, even if they match a prefix.",
+    "default_reachable_share": "Share of a flow's audience assumed reachable when --reachable isn't given. An assumption: replace it with the email-reachable share from contactability-audit when you have it.",
+    "weak_share_at_stake": "For a live but weak flow, this share of the flow's full monthly value is counted as at stake (the flow sends, but late, on one channel or to part of its audience).",
+    "high_share_of_total": "A missing, draft, stopped or weak flow whose value at stake is at least this share of the total at stake is high priority; other gaps are medium.",
+    "min_monthly_audience": "Gaps with a smaller monthly audience than this are low priority, and their value is not shown (too few people for a stable figure)."
+  }
+}

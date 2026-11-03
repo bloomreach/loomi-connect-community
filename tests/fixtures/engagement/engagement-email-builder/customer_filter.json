@@ -1,0 +1,3 @@
+{"success": true, "data": {"_id": "cf00000000000000000000001", "name": "Bought in last 90 days", "archived": false,
+ "filters": [{"type": "attribute", "attribute": {"type": "property", "property": "country"}, "constraint": {"type": "string", "operator": "equals", "operands": [{"type": "constant", "value": "US"}]}}],
+ "formula": "F0"}, "error": null}

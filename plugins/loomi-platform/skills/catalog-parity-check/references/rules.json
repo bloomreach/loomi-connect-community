@@ -1,0 +1,149 @@
+{
+  "about": "The catalog parity rules. scripts/catalog_parity.py reads this file, so change a sample size, tolerance, field list or priority here and nowhere else. Each key is explained under notes.",
+  "top_sellers": 30,
+  "page_one_queries": 3,
+  "page_size": 12,
+  "random_sample": 40,
+  "id_case_insensitive": true,
+  "fields": {
+    "price": {
+      "discovery": [
+        "price"
+      ],
+      "engagement": [
+        "price"
+      ]
+    },
+    "sale_price": {
+      "discovery": [
+        "sale_price"
+      ],
+      "engagement": [
+        "sale_price",
+        "discounted_price",
+        "price_sale"
+      ]
+    },
+    "availability": {
+      "discovery": [
+        "availability",
+        "in_stock",
+        "stock_level"
+      ],
+      "engagement": [
+        "availability",
+        "in_stock",
+        "stock_level",
+        "stock",
+        "active"
+      ]
+    },
+    "url": {
+      "discovery": [
+        "url"
+      ],
+      "engagement": [
+        "url",
+        "link",
+        "product_url"
+      ]
+    },
+    "image": {
+      "discovery": [
+        "thumb_image",
+        "large_image",
+        "image"
+      ],
+      "engagement": [
+        "image",
+        "image_url",
+        "image_link",
+        "thumb_image"
+      ]
+    },
+    "title": {
+      "discovery": [
+        "title"
+      ],
+      "engagement": [
+        "title",
+        "name",
+        "product_name"
+      ]
+    }
+  },
+  "price_abs_tolerance": 0.01,
+  "price_rel_tolerance_pct": 0.5,
+  "out_of_stock_values": [
+    "false",
+    "0",
+    "no",
+    "n",
+    "out of stock",
+    "outofstock",
+    "out_of_stock",
+    "unavailable",
+    "sold out",
+    "soldout",
+    "inactive",
+    "discontinued"
+  ],
+  "in_stock_values": [
+    "true",
+    "1",
+    "yes",
+    "y",
+    "in stock",
+    "instock",
+    "in_stock",
+    "available",
+    "active",
+    "limited availability",
+    "low stock",
+    "preorder",
+    "backorder"
+  ],
+  "unknown_stock_values": [
+    "",
+    "unknown",
+    "null",
+    "none",
+    "n/a",
+    "na"
+  ],
+  "url_ignore_scheme": true,
+  "url_ignore_www": true,
+  "url_ignore_query": true,
+  "priority": {
+    "missing_in_discovery": "high",
+    "missing_in_engagement": "medium",
+    "stock_out_on_site_in_engagement": "high",
+    "stock_in_on_site_out_in_engagement": "medium",
+    "price": "high",
+    "sale_price": "high",
+    "url": "medium",
+    "image": "low",
+    "title": "low"
+  },
+  "max_findings_listed": 30,
+  "confidence_z": 1.96,
+  "notes": {
+    "top_sellers": "Rows of the Discovery product performance table, sorted by revenue, that go into the priority sample. Read by the SKILL.md call plan and by the script, which tags them top_seller.",
+    "page_one_queries": "How many of the highest-revenue searches to take page one from for the priority sample. Read by the SKILL.md call plan, not the script.",
+    "page_size": "Rows of each saved product grid that count as page one. Fetch grids with rows set to this; the script tags the first page_size products page_one.",
+    "random_sample": "Products to sample at random from Discovery for the headline rates, taken as 8 or more small pages (5 products each) spread across the catalog, plus about half as many Engagement-side items. Read by the SKILL.md call plan; the script reports the sample it was given.",
+    "id_case_insensitive": "Compare product IDs after trimming and lower-casing them. Set false if IDs that differ only by case are different products.",
+    "fields": "The compared fields: for each, the Discovery attributes and the Engagement item properties that may hold it. The first one with a value is used. --field NAME=DFIELD:EFIELD overrides one for a run.",
+    "price_abs_tolerance": "Prices (and sale prices) within this amount of each other match, in the catalog's currency.",
+    "price_rel_tolerance_pct": "Prices also match when within this percentage of the larger one. A price matches if it is within either tolerance.",
+    "out_of_stock_values": "Stock values that mean out of stock, compared lower-case. A boolean false, and a number of 0 or less, count too.",
+    "in_stock_values": "Stock values that mean in stock, compared lower-case. A boolean true, and a number above 0, count too.",
+    "unknown_stock_values": "Stock values that mean the status isn't known. A product whose stock is unknown on either side isn't compared on stock.",
+    "url_ignore_scheme": "Treat http:// and https:// as the same when comparing product URLs (images too).",
+    "url_ignore_www": "Treat www.example.com and example.com as the same host.",
+    "url_ignore_query": "Ignore the query string and fragment (tracking parameters, image sizes) when comparing URLs.",
+    "priority": "Priority of each check. missing_in_discovery drops to low when Engagement already marks the product out of stock, because recommendations usually filter it out. stock_out_on_site_in_engagement is a recommendation or email linking to a product the site can't sell.",
+    "max_findings_listed": "At most this many products with findings are listed in full, highest priority and revenue first; the rest are counted by check.",
+    "confidence_z": "The z value for the confidence interval around each mismatch rate (1.96 is 95%), using the Wilson score interval. The interval assumes independent draws: pages of adjacent products make it too narrow."
+  }
+}

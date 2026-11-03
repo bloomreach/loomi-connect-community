@@ -1,0 +1,4 @@
+{"result": {"success": true, "data": {"_id": "cmp000000000000000000002", "name": "Old promo", "status": "inactive",
+ "archived": false, "edited": 1700000000,
+ "design": {"type": "beefree", "data": {"sender_name": "Acme Deals", "sender_email": "deals@acme-outdoor.example", "subject": "Deals"}},
+ "split": {"type": "off", "variants": []}}, "error": null}}

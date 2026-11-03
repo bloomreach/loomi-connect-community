@@ -1,0 +1,18 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "770000000000000000000003",
+      "name": "Legacy hook",
+      "archived": true,
+      "event_type": "legacy_event",
+      "properties": [],
+      "scenario_ids": [
+        "5c0000000000000000000003"
+      ],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

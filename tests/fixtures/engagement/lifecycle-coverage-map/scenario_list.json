@@ -1,0 +1,22 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "sc-welcome",
+    "name": "Welcome series",
+    "status": "active"
+   },
+   {
+    "_id": "sc-sunset",
+    "name": "Sunset unengaged subscribers",
+    "status": "draft"
+   },
+   {
+    "_id": "sc-other",
+    "name": "Weekly newsletter",
+    "status": "active"
+   }
+  ]
+ }
+}

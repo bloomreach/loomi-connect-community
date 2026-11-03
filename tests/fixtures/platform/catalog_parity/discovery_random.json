@@ -1,0 +1,5 @@
+{"result": {"success": true, "data": [
+ {"id": "R1", "attributes": {"pid": "R1", "title": "Tent Peg Set", "price": 9.99, "availability": true, "url": "https://example-shop.test/p/R1", "thumb_image": "https://cdn.example-shop.test/img/r1.jpg"}},
+ {"id": "R2", "attributes": {"pid": "R2", "title": "Head Torch", "price": 30.0, "availability": true, "url": "https://example-shop.test/p/R2", "thumb_image": "https://cdn.example-shop.test/img/r2.jpg"}},
+ {"id": "R3", "attributes": {"pid": "R3", "title": "Dry Bag", "price": 20.0, "availability": true, "url": "https://example-shop.test/p/R3", "thumb_image": "https://cdn.example-shop.test/img/r3.jpg"}}
+], "count": 3}}

@@ -1,0 +1,10 @@
+{
+  "name": "Black Friday - lapsed VIPs - DRAFT",
+  "subject": "Your VIP 20% is waiting, {{ customer['first_name'] | default('there', true) }}",
+  "preheader": "Three picks we think you'll love, plus a code that ends Sunday.",
+  "sender": {"name": "Acme Outdoor", "email": "news@acme-outdoor.example", "source": "project_default"},
+  "audience": {"type": "segment", "segmentation_id": "seg0000000000000000000001", "segment": "Lapsed VIP"},
+  "consent_category": "newsletter",
+  "postal_address": null,
+  "user_supplied_hosts": ["acme-outdoor.example"]
+}

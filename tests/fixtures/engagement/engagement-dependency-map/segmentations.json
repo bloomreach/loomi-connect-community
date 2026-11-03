@@ -1,0 +1,39 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "550000000000000000000001",
+        "name": "High spenders",
+        "archived": false,
+        "used_by": [
+          "campaign_design_c00000000000000000000001",
+          "dashboard_dd0000000000000000000001"
+        ],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "550000000000000000000002",
+        "name": "Loop A",
+        "archived": false,
+        "used_by": [
+          "segmentation_550000000000000000000003"
+        ],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "550000000000000000000003",
+        "name": "Loop B",
+        "archived": false,
+        "used_by": [
+          "segmentation_550000000000000000000002"
+        ],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      }
+    ],
+    "error": null
+  }
+}

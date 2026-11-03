@@ -1,0 +1,15 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "ff0000000000000000000001",
+        "name": "Old filter",
+        "archived": false,
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      }
+    ],
+    "error": null
+  }
+}

@@ -31,7 +31,7 @@
     {
       "name": "loomi-platform",
       "source": "./plugins/loomi-platform",
-      "description": "Skills that span products: weekly briefing, revenue anomalies, peak readiness, data and feed health, campaign planning, collections and change impact, and turning search demand into campaigns",
+      "description": "Skills that span products: weekly briefing and quarterly review, revenue anomalies, peak and go-live readiness, data and feed health, catalog parity, campaign planning, collections and change impact, and turning search demand into campaigns",
       "category": "marketing",
       "tags": [
         "bloomreach",
@@ -44,7 +44,7 @@
     {
       "name": "loomi-product-data",
       "source": "./plugins/loomi-product-data",
-      "description": "Skills that improve product data for search engines and AI answers (SEO, AEO and GEO) via Loomi Connect: find the products whose data most needs work, then suggest enhancements from their images, attributes and shopper searches.",
+      "description": "Skills that improve product data via Loomi Connect: find the products whose data most needs work for search engines and AI answers (SEO, AEO and GEO), suggest enhancements from their images, attributes and shopper searches, and catch wrong prices and messy attribute values.",
       "category": "marketing",
       "tags": [
         "bloomreach",

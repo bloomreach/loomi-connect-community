@@ -1,0 +1,13 @@
+{
+"success": true,
+"data": [
+{
+"id": "scn-1",
+"name": "Welcome"
+},
+{
+"id": "scn-2",
+"name": "Cart"
+}
+]
+}

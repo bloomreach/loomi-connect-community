@@ -1,0 +1,5 @@
+interface:
+  display_name: "Contactability Audit"
+  short_description: "How much of a Bloomreach Engagement customer base can be reached by email, SMS and push, and how consent is trending"
+policy:
+  allow_implicit_invocation: true

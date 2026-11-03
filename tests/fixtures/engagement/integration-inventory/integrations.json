@@ -1,0 +1,38 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "id": "110000000000000000000001",
+        "name": "Mail provider",
+        "type": "mailgunemail"
+      },
+      {
+        "id": "110000000000000000000002",
+        "name": "Mail provider (new)",
+        "type": "mailgunemail"
+      },
+      {
+        "id": "110000000000000000000003",
+        "name": "Storage exports",
+        "type": "azure-blob-storage"
+      },
+      {
+        "id": "110000000000000000000004",
+        "name": "CRM auth",
+        "type": "http-auth"
+      },
+      {
+        "id": "110000000000000000000005",
+        "name": "Ads audience test",
+        "type": "facebook-ads"
+      },
+      {
+        "id": "110000000000000000000006",
+        "name": "Partner https://api.partner.example/v1?api_key=key-FAKE-0123456789abcdef",
+        "type": "http-auth"
+      }
+    ],
+    "error": null
+  }
+}

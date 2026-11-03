@@ -1,0 +1,5 @@
+interface:
+  display_name: "Lifecycle Coverage Map"
+  short_description: "Which lifecycle flows a Bloomreach Engagement project runs, which are missing, and what the gaps are worth"
+policy:
+  allow_implicit_invocation: true

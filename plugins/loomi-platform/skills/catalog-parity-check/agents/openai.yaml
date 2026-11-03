@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Catalog Parity Check"
+  short_description: "Find products, prices and stock that differ between the Discovery and Engagement catalogs"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true

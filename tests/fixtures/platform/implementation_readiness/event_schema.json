@@ -1,0 +1,7 @@
+{"success": true, "events": [
+ {"type": "session_start", "source": "data", "used": true, "properties": {"are_all_used": true, "default_group": {"properties": [{"property": "browser", "type": "string", "used": true}]}}},
+ {"type": "view_item", "source": "data", "used": true, "properties": {"are_all_used": true, "default_group": {"properties": [{"property": "product_id", "type": "string", "used": true}, {"property": "price", "type": "number", "used": true}, {"property": "title", "type": "string", "used": true}]}}},
+ {"type": "cart_update", "source": "data", "used": true, "properties": {"are_all_used": true, "default_group": {"properties": [{"property": "action", "type": "string", "used": true}, {"property": "product_id", "type": "string", "used": true}]}}},
+ {"type": "purchase", "source": "data", "used": false, "properties": {"are_all_used": false, "default_group": {"properties": [{"property": "purchase_id", "type": "string", "used": false}]}}},
+ {"type": "order_item", "source": "user", "used": true, "properties": {"are_all_used": true, "default_group": {"properties": [{"property": "product_id", "type": "string", "used": true}, {"property": "purchase_id", "type": "string", "used": true}, {"property": "price", "type": "number", "used": true}, {"property": "quantity", "type": "number", "used": true}]}}}
+], "default_forbidden": false, "default_private": false, "error": null}

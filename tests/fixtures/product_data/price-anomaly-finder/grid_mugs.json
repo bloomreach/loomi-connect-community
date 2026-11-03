@@ -1,0 +1,229 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 21,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "MUG-01",
+     "title": "Example stoneware mug 1",
+     "brand": "Example Home",
+     "price": 12,
+     "sale_price": 10,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-02",
+     "title": "Example stoneware mug 2",
+     "brand": "Example Home",
+     "price": 14,
+     "sale_price": null,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-03",
+     "title": "Example stoneware mug 3",
+     "brand": "Example Home",
+     "price": 15,
+     "sale_price": 15,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-04",
+     "title": "Example stoneware mug 4",
+     "brand": "Example Home",
+     "price": 15,
+     "sale_price": 15,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-05",
+     "title": "Example stoneware mug 5",
+     "brand": "Example Home",
+     "price": 16,
+     "sale_price": 16,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-06",
+     "title": "Example stoneware mug 6",
+     "brand": "Example Home",
+     "price": 18,
+     "sale_price": 18,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-07",
+     "title": "Example stoneware mug 7",
+     "brand": "Example Home",
+     "price": 20,
+     "sale_price": 20,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-08",
+     "title": "Example stoneware mug 8",
+     "brand": "Example Home",
+     "price": 13,
+     "sale_price": 13,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-09",
+     "title": "Example stoneware mug 9",
+     "brand": "Example Home",
+     "price": 17,
+     "sale_price": 17,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-10",
+     "title": "Example stoneware mug 10",
+     "brand": "Example Home",
+     "price": 19,
+     "sale_price": 19,
+     "product_type": "Mugs|Drinkware",
+     "margin": 4.5,
+     "cost": 7.25,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-X100",
+     "title": "Example stoneware mug tall",
+     "brand": "Example Home",
+     "price": 1599,
+     "sale_price": 1599,
+     "product_type": "Mugs",
+     "margin": 9.9,
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-OUT",
+     "title": "Example artisan mug",
+     "brand": "Example Home",
+     "price": 75,
+     "sale_price": 75,
+     "product_type": "Mugs",
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-SALEUP",
+     "title": "Example travel mug",
+     "brand": "Example Home",
+     "price": 16,
+     "sale_price": 19.5,
+     "product_type": "Mugs",
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-DEEP",
+     "title": "Example espresso cup",
+     "brand": "Example Home",
+     "price": 18,
+     "sale_price": 1.8,
+     "product_type": "Mugs",
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-ZERO",
+     "title": "Example latte mug",
+     "brand": "Example Home",
+     "price": 0,
+     "product_type": "Mugs",
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-NONE",
+     "title": "Example soup mug",
+     "brand": "Example Home",
+     "product_type": "Mugs",
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-VAR",
+     "title": "Example mug set",
+     "brand": "Example Home",
+     "price": 20,
+     "sale_price": 20,
+     "product_type": "Mugs",
+     "docType": "product",
+     "variants": [
+      {
+       "skuid": "MUG-VAR-1",
+       "sku_price": 20
+      },
+      {
+       "skuid": "MUG-VAR-2",
+       "sku_price": 21
+      },
+      {
+       "skuid": "MUG-VAR-3",
+       "sku_price": 2100,
+       "sku_sale_price": 2200
+      }
+     ]
+    },
+    {
+     "pid": "MUG-DUP-A",
+     "title": "Example Diner Mug",
+     "brand": "Example Home",
+     "price": 15,
+     "sale_price": 15,
+     "product_type": "Mugs",
+     "docType": "product"
+    },
+    {
+     "pid": "MUG-DUP-B",
+     "title": "example diner mug!",
+     "brand": "Example Home",
+     "price": 19,
+     "sale_price": 19,
+     "product_type": "Mugs",
+     "docType": "product"
+    },
+    {
+     "pid": "=HYPERLINK(1)",
+     "title": "-Example formula mug",
+     "brand": "Example Home",
+     "price": 16,
+     "sale_price": 30,
+     "product_type": "Mugs",
+     "docType": "product"
+    },
+    {
+     "docType": "content",
+     "slots": []
+    }
+   ]
+  }
+ },
+ "error": null
+}

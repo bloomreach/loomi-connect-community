@@ -1,0 +1,5 @@
+{"success": true, "data": {"response": {"numFound": 3, "docs": [
+ {"docType": "content", "slots": ["1"]},
+ {"pid": "P500", "title": "Hiking Boot"},
+ {"pid": "P100", "title": "Trail Runner Shoe"}
+]}}}

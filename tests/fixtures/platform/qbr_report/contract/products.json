@@ -1,0 +1,151 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "prod_id": "p0",
+    "product_title": "Product 0",
+    "brand": "Brand 0",
+    "visits": 500,
+    "prev_visits": 480,
+    "revenue": "$1,000.00",
+    "prev_revenue": "$1,000.00"
+   },
+   {
+    "prod_id": "p1",
+    "product_title": "Product 1",
+    "brand": "Brand 1",
+    "visits": 537,
+    "prev_visits": 510,
+    "revenue": "$3,919.00",
+    "prev_revenue": "$5,729.00"
+   },
+   {
+    "prod_id": "p2",
+    "product_title": "Product 2",
+    "brand": "Brand 2",
+    "visits": 574,
+    "prev_visits": 540,
+    "revenue": "$1,838.00",
+    "prev_revenue": "$5,458.00"
+   },
+   {
+    "prod_id": "p3",
+    "product_title": "Product 3",
+    "brand": "Brand 3",
+    "visits": 611,
+    "prev_visits": 570,
+    "revenue": "$4,757.00",
+    "prev_revenue": "$5,187.00"
+   },
+   {
+    "prod_id": "p4",
+    "product_title": "Product 4",
+    "brand": "Brand 0",
+    "visits": 648,
+    "prev_visits": 600,
+    "revenue": "$2,676.00",
+    "prev_revenue": "$4,916.00"
+   },
+   {
+    "prod_id": "p5",
+    "product_title": "Product 5",
+    "brand": "Brand 1",
+    "visits": 685,
+    "prev_visits": 630,
+    "revenue": "$5,595.00",
+    "prev_revenue": "$4,645.00"
+   },
+   {
+    "prod_id": "p6",
+    "product_title": "Product 6",
+    "brand": "Brand 2",
+    "visits": 722,
+    "prev_visits": 660,
+    "revenue": "$3,514.00",
+    "prev_revenue": "$4,374.00"
+   },
+   {
+    "prod_id": "p7",
+    "product_title": "Product 7",
+    "brand": "Brand 3",
+    "visits": 759,
+    "prev_visits": 690,
+    "revenue": "$1,433.00",
+    "prev_revenue": "$4,103.00"
+   },
+   {
+    "prod_id": "p8",
+    "product_title": "Product 8",
+    "brand": "Brand 0",
+    "visits": 796,
+    "prev_visits": 720,
+    "revenue": "$4,352.00",
+    "prev_revenue": "$3,832.00"
+   },
+   {
+    "prod_id": "p9",
+    "product_title": "Product 9",
+    "brand": "Brand 1",
+    "visits": 833,
+    "prev_visits": 750,
+    "revenue": "$2,271.00",
+    "prev_revenue": "$3,561.00"
+   },
+   {
+    "prod_id": "p10",
+    "product_title": "Product 10",
+    "brand": "Brand 2",
+    "visits": 870,
+    "prev_visits": 780,
+    "revenue": "$5,190.00",
+    "prev_revenue": "$3,290.00"
+   },
+   {
+    "prod_id": "p11",
+    "product_title": "Product 11",
+    "brand": "Brand 3",
+    "visits": 907,
+    "prev_visits": 810,
+    "revenue": "$3,109.00",
+    "prev_revenue": "$3,019.00"
+   },
+   {
+    "prod_id": "p12",
+    "product_title": "Product 12",
+    "brand": "Brand 0",
+    "visits": 944,
+    "prev_visits": 840,
+    "revenue": "$1,028.00",
+    "prev_revenue": "$2,748.00"
+   },
+   {
+    "prod_id": "p13",
+    "product_title": "Product 13",
+    "brand": "Brand 1",
+    "visits": 981,
+    "prev_visits": 870,
+    "revenue": "$3,947.00",
+    "prev_revenue": "$2,477.00"
+   },
+   {
+    "prod_id": "p14",
+    "product_title": "Product 14",
+    "brand": "Brand 2",
+    "visits": 1018,
+    "prev_visits": 900,
+    "revenue": "$1,866.00",
+    "prev_revenue": "$2,206.00"
+   },
+   {
+    "prod_id": "p99",
+    "product_title": "Quiet product",
+    "brand": "Brand 9",
+    "visits": 10,
+    "prev_visits": 20,
+    "revenue": "$9,000.00",
+    "prev_revenue": "$1.00"
+   }
+  ]
+ }
+}
