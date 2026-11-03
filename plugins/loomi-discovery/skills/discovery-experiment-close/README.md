@@ -23,7 +23,8 @@ See [examples/close-brand-boost.md](examples/close-brand-boost.md).
 
 ## Notes and limitations
 
-- It refuses to ship a change the evidence doesn't support (under 95% confidence, under 14 days, a guardrail metric clearly worse, or no report), unless you explicitly override after seeing why. The thresholds are in `references/rules.json` and match `discovery-experiment-readout`.
+- It refuses to ship a change the evidence doesn't support (confidence under `min_confidence`, a test shorter than `min_days`, a guardrail metric clearly worse, or no report), unless you explicitly override after seeing why. The thresholds are in `references/rules.json` and match `discovery-experiment-readout`.
+- It never assumes the environment or the site: every write carries the experiment's environment, and the site when the account has sites.
 - Ending a test can't be undone, and a completed test can't be restarted. Loomi Connect has no tool to unarchive an experiment.
 - What ending does to each rule comes from the tool descriptions; the skill reads every rule back afterwards and fixes any left in the wrong state, with your confirmation.
 - Redirect tests are ended and archived, but a redirect left in the wrong state is a change you make in the Discovery dashboard.

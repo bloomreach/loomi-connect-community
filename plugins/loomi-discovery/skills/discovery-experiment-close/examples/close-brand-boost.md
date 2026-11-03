@@ -17,17 +17,17 @@ Every name, ID and number below is invented.
 
 **Steps, each needing your "yes":**
 1. End the experiment keeping Brand boost. **Live at once and can't be undone**: rule 7001 serves 100% of "rain jacket" traffic; the test can't be restarted.
-   `end_discovery_experiment {"account_name": "acme", "experiment_id": 900001, "environment": "staging", "winner_bucket_id": 5002}`
+   `end_discovery_experiment {"account_name": "acme", "environment": "staging", "experiment_id": 900001, "winner_bucket_id": 5002}`
 2. Read rule 7001 back: it should be enabled with syncStatus SUCCESS. Only if it's off: switch it on (`update_ranking_rule`, `enabled: true`; undo `enabled: false`).
 3. Archive the experiment (optional). No effect on shoppers; Loomi Connect can't unarchive it.
 
-Plan saved to `close-plan.json`.
+Plan saved to `close-plan.json`. Each step is its own batch and needs its own yes.
 
 > End "Search terms - rain jacket" now, keeping Brand boost? This is live at once and can't be undone.
 
 *User: yes*
 
-Ended. The experiment is COMPLETED with Brand boost (bucket 5002) as the winner. Rule 7001 reads back enabled, syncStatus SUCCESS, so no fix was needed.
+Ended. `close_plan.py verify` on the read-backs: the experiment is COMPLETED with Brand boost (bucket 5002) as the winner (`in_place`), and rule 7001 is enabled with syncStatus SUCCESS (`in_place`), so the conditional switch-on isn't needed.
 
 > Archive "Search terms - rain jacket"? It has no effect on shoppers, but Loomi Connect can't unarchive it.
 

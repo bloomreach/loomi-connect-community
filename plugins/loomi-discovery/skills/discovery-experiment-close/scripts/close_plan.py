@@ -1,30 +1,39 @@
 #!/usr/bin/env python3
-"""Build the change plan for closing a Bloomreach Discovery A/B test. It never writes anything itself.
+"""Build and check the plan for closing a Bloomreach Discovery A/B test. It never writes anything itself.
 
 Usage:
-  python3 close_plan.py --experiment experiment.json [--report report.json] [--rule rule_2221685.json ...]
-         [--keep "<bucket name or id>"] [--override] [--account <account>] [--today 2026-11-03] [--out plan.json]
+  python3 close_plan.py plan --experiment experiment.json --account <account> [--environment staging]
+         [--site-group-id <id>] [--report report.json] [--rule <rule id>=rule.json ...] [--keep "<bucket>"]
+         [--override] [--today 2026-11-03] [--out plan.json]
+  python3 close_plan.py verify --plan plan.json [--experiment experiment_after.json] [--rule <rule id>=rule.json ...]
+         [--out verify.json]
 
---experiment  saved search_discovery_experiments result fetched with experiment_id (it has successMetric,
-              winnerBucketId and environment_used).
---report      saved get_discovery_experiment_report result. Needed to ship a change; optional to keep the control.
---rule        saved get_ranking_rule result for a bucket's rule (repeat per rule): the before state.
---keep        the bucket that should serve everyone after the test. Default: the script's recommendation
-              (the conclusive winner if there is one, otherwise the control).
---override    the user has seen the warnings and still wants to ship a change the evidence doesn't support.
---account     the account name to put in the payloads (default "<account>").
---today       the date to count a running test's days to (default: today in UTC).
+plan:
+  --experiment     saved search_discovery_experiments result fetched with experiment_id (any status): it has the
+                   buckets, successMetric, winnerBucketId and environment_used.
+  --account        the account name for the payloads (required).
+  --environment    production or staging. Required unless the experiment carries environment_used; if both are
+                   given they must match.
+  --site-group-id  the site, when the account has sites: copied into every payload.
+  --report         saved get_discovery_experiment_report result. Needed to ship a change.
+  --rule           <rule id>=<saved get_ranking_rule result> for a bucket's rule (repeat per rule): the before state.
+  --keep           the bucket to keep (name or id). Default: the recommendation (the conclusive winner, else the control).
+  --override       the user has seen the warnings and still wants to ship a change the evidence doesn't support.
 
-Prints JSON: the experiment and its buckets with the before state of each rule; the evidence gate (metric,
-confidence, days, guardrails, split); the decision and whether it ships a change; whether the plan is refused and
-why; and the steps in order, each with its tool, exact payload, live impact, whether it can be undone, how to check
-it, and the undo. Conditional steps run only if the read-back after ending shows they're needed.
+verify:
+  --plan           the plan file written by `plan --out`.
+  --experiment     the experiment fetched again after a write.
+  --rule           <rule id>=<saved get_ranking_rule result> read back after ending (repeat per rule). A not-found
+                   response counts as gone.
+
+The plan follows "Plan files for write skills" in docs/skill-authoring.md: `changes` are the steps in order (end,
+enable/disable a rule only if the read-back shows it's needed, archive), each a batch of its own, plus the decision,
+the evidence gate and warnings. Refused changes are `blocked` with the reasons in `problems`.
 
 Thresholds are in references/rules.json. Standard library only; no network access.
 """
 import argparse
 import json
-import re
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -33,6 +42,10 @@ from pathlib import Path
 RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
 METRIC_WORDS = {"cr": ("cr", "conversion"), "atc_rate": ("atc", "add-to-cart", "add to cart"),
                 "aov": ("aov", "average order"), "rpv": ("rpv", "revenue per visit")}
+ENVIRONMENTS = ("production", "staging")
+NOT_FOUND = ("not found", "not_found", "404", "does not exist", "doesn't exist", "no such")
+IRREVERSIBLE = {"end": "Ending can't be undone and a COMPLETED test can't be restarted.",
+                "archive": "Loomi Connect has no tool to unarchive; the dashboard may allow it."}
 
 
 def fail(msg):
@@ -41,27 +54,37 @@ def fail(msg):
 
 
 def tool_error(err):
-    """A Loomi Connect error safe to repeat. An unknown account_name makes some Discovery tools list every
-    account the user can access, so an account error that looks like a list is replaced, never echoed."""
+    """A Loomi Connect error safe to repeat. An unknown account_name makes some Discovery tools list every account
+    the user can access, so any error about an account is replaced, never echoed."""
     text = str(err or "no error text")
-    if "account" in text.lower() and text.count(",") >= 3:
+    if "account" in text.lower():
         return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list "
                 "other accounts. Ask the user to check the account name.")
     return text[:200]
 
 
-def load(path):
-    """The data object of a saved Loomi Connect result, unwrapping {"result": ...} and data.data."""
+def read_json(path):
     try:
         with open(path, encoding="utf-8") as f:
-            doc = json.load(f)
+            return json.load(f)
     except (OSError, ValueError) as e:
         fail(f"{path}: can't read it as JSON ({e}).")
+
+
+def errors_in(doc):
+    """The error text of a success:false response (top level or under "result"), or None."""
+    for d in (doc, doc.get("result") if isinstance(doc, dict) else None):
+        if isinstance(d, dict) and d.get("success") is False:
+            return str(d.get("error") or "no error text")
+    return None
+
+
+def unwrap(doc, path):
+    """The data object of a saved Loomi Connect result, unwrapping {"result": ...} and data.data, plus the
+    environment the call used."""
     env = None
     for d in (doc, doc.get("result") if isinstance(doc, dict) else None):
         if isinstance(d, dict):
-            if d.get("success") is False:
-                fail(f"{path}: {tool_error(d.get('error'))} This step couldn't run; don't treat it as 'nothing found'.")
             env = env or d.get("environment_used")
     if isinstance(doc, dict) and isinstance(doc.get("result"), dict):
         doc = doc["result"]
@@ -73,11 +96,41 @@ def load(path):
     return data, env
 
 
+def load(path):
+    doc = read_json(path)
+    err = errors_in(doc)
+    if err is not None:
+        fail(f"{path}: {tool_error(err)} This step couldn't run; don't treat it as 'nothing found'.")
+    return unwrap(doc, path)
+
+
 def day_arg(text):
     try:
         return date.fromisoformat(text)
     except ValueError:
         raise argparse.ArgumentTypeError(f"not a date (YYYY-MM-DD): {text!r}")
+
+
+def rule_arg(text):
+    """<rule id>=<file>, split on the first "="."""
+    rid, sep, path = text.partition("=")
+    if not sep or not rid.strip() or not path.strip():
+        raise argparse.ArgumentTypeError(f"use <rule id>=<file>: {text!r}")
+    return rid.strip(), path.strip()
+
+
+def env_arg(text):
+    t = text.strip().lower()
+    if t not in ENVIRONMENTS:
+        raise argparse.ArgumentTypeError(f"environment must be production or staging: {text!r}")
+    return t
+
+
+def site_arg(text):
+    t = text.strip()
+    if not t:
+        raise argparse.ArgumentTypeError("site_group_id is empty")
+    return int(t) if t.isdigit() else t
 
 
 def ms_date(value, path, field):
@@ -147,15 +200,20 @@ def read_report(path, buckets):
     return by_name
 
 
-def read_rules(paths):
+def rule_state(data):
+    return {"enabled": data.get("enabled"), "is_live": data.get("isLive"), "sync_status": data.get("syncStatus"),
+            "audiences": len(data.get("audiences") or []), "queries": [q.get("query") for q in data.get("queries") or []]}
+
+
+def read_rules(pairs):
     out = {}
-    for p in paths:
-        data, _ = load(p)
+    for rid, path in pairs:
+        data, _ = load(path)
         if data.get("id") in (None, ""):
-            fail(f"{p}: not a get_ranking_rule result (no id).")
-        out[str(data["id"])] = {"enabled": data.get("enabled"), "is_live": data.get("isLive"),
-                                "sync_status": data.get("syncStatus"), "audiences": len(data.get("audiences") or []),
-                                "queries": [q.get("query") for q in data.get("queries") or []]}
+            fail(f"{path}: not a get_ranking_rule result (no id).")
+        if str(data["id"]) != rid:
+            fail(f"{path}: holds rule {data['id']}, not rule {rid}.")
+        out[rid] = rule_state(data)
     return out
 
 
@@ -202,89 +260,102 @@ def recommend(buckets, report, metric, days):
     return control
 
 
-def payload(account, env, exp_id, **extra):
-    p = {"account_name": account, "experiment_id": exp_id}
-    if env:
-        p["environment"] = env
-    p.update(extra)
-    return p
+def change(n, kind, target, tool, payload, before, after, undo, live_impact, impact, problems=None, warnings=None,
+           **extra):
+    c = {"n": n, "status": "blocked" if problems else "ready", "kind": kind, "target": target, "tool": tool,
+         "payload": payload, "before": before, "after": after, "undo": undo, "live_impact": live_impact,
+         "impact": impact, "problems": list(problems or []), "warnings": list(warnings or [])}
+    c.update(extra)
+    return c
 
 
-def build_steps(exp, buckets, keep, rules_before, account, env, ships_change):
+def build_changes(exp, buckets, keep, rules_before, ctx, refusal):
+    """The steps in order. `refusal` (the evidence reasons, when not overridden) blocks every write."""
     status = str(exp.get("experimentStatus") or "").upper()
-    steps = []
-    if ships_change:
-        target = (f"rule {keep['rule']['id']}" if keep["rule"] else
-                  f"removing rule {next(b['rule']['id'] for b in buckets if b['control'])} (default behaviour)")
-        steps.append({"step": "change_qa", "write": False,
-                      "what": f"Run the discovery-change-qa checks on {target} for the test's scope. Stop on NO-GO; "
-                              "show the warnings on GO WITH CAUTION and ask whether to continue."})
+    base = {k: v for k, v in (("account_name", ctx["account"]), ("environment", ctx["environment"]),
+                               ("site_group_id", ctx["site_group_id"])) if v is not None}
+    exp_id = exp.get("id")
+    changes = []
+
     if status == "RUNNING":
-        extra = {"winner_bucket_id": keep["id"]} if keep["rule"] else {}
-        impact = (f"LIVE at once: {keep['name']} (rule {keep['rule']['id']}) serves 100% of traffic for the test's scope; "
+        payload = dict(base, experiment_id=exp_id, **({"winner_bucket_id": keep["id"]} if keep["rule"] else {}))
+        impact = (f"Live at once: {keep['name']} (rule {keep['rule']['id']}) serves 100% of traffic for the test's scope; "
                   "every other bucket's rule is disabled." if keep["rule"] else
-                  "LIVE at once: every bucket's rule is disabled and traffic returns to default behaviour "
+                  "Live at once: every bucket's rule is disabled and traffic returns to default behaviour "
                   f"({keep['name']}). No winner is recorded.")
-        steps.append({"step": "end", "write": True, "tool": "end_discovery_experiment",
-                      "payload": payload(account, env, exp.get("id"), **extra), "live_impact": impact,
-                      "undo": None, "irreversible": "Ending can't be undone and a COMPLETED test can't be restarted.",
-                      "verify": "search_discovery_experiments with experiment_id: experimentStatus is COMPLETED"
-                                + (f" and winnerBucketId is {keep['id']}." if keep["rule"] else ".")})
+        changes.append(change(len(changes) + 1, "end", f"experiment {exp_id}", "end_discovery_experiment", payload,
+                              {"experimentStatus": status, "winnerBucketId": exp.get("winnerBucketId")},
+                              {"experimentStatus": "COMPLETED", "winnerBucketId": keep["id"] if keep["rule"] else None},
+                              [], "live", impact, refusal, [IRREVERSIBLE["end"]]))
     elif status == "COMPLETED":
-        steps.append({"step": "end", "write": False, "what": "Already COMPLETED: nothing to end. The rule checks below "
-                      "still apply."})
-    for b in buckets:
+        c = change(len(changes) + 1, "end", f"experiment {exp_id}", None, None,
+                   {"experimentStatus": status, "winnerBucketId": exp.get("winnerBucketId")},
+                   {"experimentStatus": status, "winnerBucketId": exp.get("winnerBucketId")}, [], "none",
+                   "Already COMPLETED: nothing to end. The rule checks below still apply.")
+        c["status"] = "no_change"
+        changes.append(c)
+
+    for b in buckets:  # the experiment's own bucket order
         if not b["rule"]:
             continue
         rid, kept = b["rule"]["id"], b["id"] == keep["id"]
-        tool = "update_ranking_rule" if b["rule"]["type"] == "ranking" else None
+        kind = "enable" if kept else "disable"
         before = rules_before.get(str(rid))
-        check = {"step": "read_back", "write": False, "rule_id": rid, "bucket": b["name"],
-                 "what": f"get_ranking_rule {rid}: expect enabled {'true' if kept else 'false'}"
-                         + (" and syncStatus SUCCESS." if kept else ".")}
+        problems = list(refusal)
         if b["rule"]["type"] != "ranking":
-            check["what"] = (f"{b['rule']['type']} rule {rid}: read it back with its own read tool (search_redirects with "
-                             f"rule_id for a redirect) and expect enabled {'true' if kept else 'false'}.")
-        steps.append(check)
-        fix = {"step": "enable_winner" if kept else "disable_leftover", "write": True, "conditional": True,
-               "when": f"only if the read-back shows rule {rid} {'disabled' if kept else 'still enabled'}",
-               "rule_id": rid, "bucket": b["name"], "before": before}
-        if tool:
-            fix.update(tool=tool, payload={"account_name": account, "rule_id": rid, "enabled": kept, **({"environment": env} if env else {})},
-                       live_impact=(f"LIVE: rule {rid} applies to every shopper in its scope." if kept else
-                                    f"LIVE: rule {rid} stops applying."),
-                       undo={"tool": tool, "payload": {"account_name": account, "rule_id": rid, "enabled": not kept,
-                                                       **({"environment": env} if env else {})}},
-                       irreversible=None)
+            problems.append(f"{b['rule']['type']} rule {rid}: this skill doesn't write non-ranking rules. If the "
+                            "read-back shows it in the wrong state, give the user the change to make in the Discovery "
+                            "dashboard (read it back with search_redirects and rule_id for a redirect).")
+            tool = payload = None
+            undo = []
         else:
-            fix.update(tool=None, live_impact="This skill doesn't write non-ranking rules: give the user the change to make "
-                       "in the Discovery dashboard.", undo=None, irreversible=None)
-        steps.append(fix)
+            tool = "update_ranking_rule"
+            payload = dict(base, rule_id=rid, enabled=kept)
+            undo = [{"tool": tool, "payload": dict(base, rule_id=rid, enabled=not kept)}]
+        changes.append(change(
+            len(changes) + 1, kind, f"rule {rid} ({b['name']})", tool, payload, before, {"enabled": kept}, undo, "live",
+            (f"Live: rule {rid} applies to every shopper in its scope." if kept else f"Live: rule {rid} stops applying."),
+            problems, [], conditional=True,
+            when=f"only if the read-back after ending shows rule {rid} {'disabled' if kept else 'still enabled'}"))
+
     if status in ("RUNNING", "COMPLETED"):
-        steps.append({"step": "archive", "write": True, "optional": True, "tool": "archive_discovery_experiment",
-                      "payload": payload(account, env, exp.get("id")), "live_impact": "None: it only hides the "
-                      "experiment from the dashboard's default view.", "undo": None,
-                      "irreversible": "Loomi Connect has no tool to unarchive; the dashboard may allow it.",
-                      "verify": "search_discovery_experiments with experiment_id: experimentStatus is ARCHIVED."})
-    return steps
+        changes.append(change(
+            len(changes) + 1, "archive", f"experiment {exp_id}", "archive_discovery_experiment",
+            dict(base, experiment_id=exp_id), {"experimentStatus": "COMPLETED"}, {"experimentStatus": "ARCHIVED"}, [],
+            "none", "None on shoppers: it only hides the experiment from the dashboard's default view.",
+            refusal, [IRREVERSIBLE["archive"]], optional=True))
+    return changes
 
 
-def main():
-    sys.stdout.reconfigure(encoding="utf-8")  # names can hold any character; Windows consoles default to cp1252
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--experiment", required=True, help="saved search_discovery_experiments result for one experiment")
-    ap.add_argument("--report", help="saved get_discovery_experiment_report result")
-    ap.add_argument("--rule", action="append", default=[], help="saved get_ranking_rule result (repeat per rule)")
-    ap.add_argument("--keep", help="bucket name or id to keep (default: the recommendation)")
-    ap.add_argument("--override", action="store_true", help="ship the change despite the evidence warnings")
-    ap.add_argument("--account", default="<account>", help="account name for the payloads")
-    ap.add_argument("--today", type=day_arg, help="date to count a running test to (default: today in UTC)")
-    ap.add_argument("--out", help="also write the plan to this file")
-    a = ap.parse_args()
+def resolve_environment(given, from_exp, path):
+    from_exp = str(from_exp).strip().lower() if from_exp else None
+    if from_exp and from_exp not in ENVIRONMENTS:
+        fail(f"{path}: environment_used is {from_exp!r}, not production or staging.")
+    if given and from_exp and given != from_exp:
+        fail(f"--environment is {given} but the experiment was fetched from {from_exp}. Use the experiment's environment.")
+    env = given or from_exp
+    if not env:
+        fail(f"{path} doesn't say which environment the experiment is in (no environment_used). Pass --environment "
+             "production or staging; it's never assumed.")
+    return env
 
-    exp, env = load(a.experiment)
+
+def emit(out, path):
+    text = json.dumps(out, indent=2, ensure_ascii=False)
+    if path:
+        try:
+            with open(path, "w", encoding="utf-8", newline="\n") as f:
+                f.write(text + "\n")
+        except OSError as e:
+            fail(f"{path}: can't write the output file ({e}).")
+    print(text)
+
+
+def cmd_plan(a):
+    exp, env_used = load(a.experiment)
     if exp.get("id") in (None, "") or "buckets" not in exp:
         fail(f"{a.experiment}: not one experiment's detail. Fetch it with search_discovery_experiments and experiment_id.")
+    env = resolve_environment(a.environment, env_used, a.experiment)
     status = str(exp.get("experimentStatus") or "").upper()
     buckets = read_buckets(exp, a.experiment)
     report = read_report(a.report, buckets) if a.report else None
@@ -299,17 +370,18 @@ def main():
         metric = RULES["default_metric"]
         warnings.append(f"The experiment has no success metric; using default_metric ({metric}).")
 
-    out = {"ok": True, "experiment": {"id": exp.get("id"), "name": exp.get("experimentName"), "status": status,
-                                      "environment": env, "success_metric": exp.get("successMetric"), "metric": metric,
-                                      "started": start.isoformat() if start else None,
-                                      "ended": end.isoformat() if end else None, "days": days,
-                                      "declared_winner_bucket_id": exp.get("winnerBucketId")},
+    out = {"ok": True, "account": a.account, "environment": env, "site_group_id": a.site_group_id,
+           "experiment": {"id": exp.get("id"), "name": exp.get("experimentName"), "status": status,
+                          "success_metric": exp.get("successMetric"), "metric": metric,
+                          "started": start.isoformat() if start else None, "ended": end.isoformat() if end else None,
+                          "days": days, "declared_winner_bucket_id": exp.get("winnerBucketId")},
            "buckets": [dict(b, rule_before=rules_before.get(str(b["rule"]["id"])) if b["rule"] else None,
                             result=report.get(b["name"]) if report else None) for b in buckets]}
     if status in ("DRAFT", "ARCHIVED"):
         out.update(refused=True, refusal_reasons=[
             "A DRAFT never ran: there's nothing to end. Delete or edit it in the Discovery dashboard." if status == "DRAFT"
-            else "Already ARCHIVED: there's nothing left to close."], steps=[], warnings=warnings)
+            else "Already ARCHIVED: there's nothing left to close."], checks_before=[], warnings=warnings,
+            changes=[], batches=[])
         return emit(out, a.out)
 
     recommended = recommend(buckets, report, metric, days)
@@ -334,6 +406,14 @@ def main():
     refused = bool(reasons) and not a.override
     if reasons and a.override:
         warnings += [f"Overridden: {r}" for r in reasons]
+    checks = []
+    if ships_change:
+        target = (f"rule {keep['rule']['id']}" if keep["rule"] else
+                  f"removing rule {control['rule']['id']} (default behaviour)" if control["rule"] else "default behaviour")
+        checks.append(f"Run the discovery-change-qa checks on {target} for the test's scope. Stop on NO-GO; show the "
+                      "warnings on GO WITH CAUTION and ask whether to continue.")
+    ctx = {"account": a.account, "environment": env, "site_group_id": a.site_group_id}
+    changes = build_changes(exp, buckets, keep, rules_before, ctx, reasons if refused else [])
     out.update(
         recommended_bucket={"id": recommended["id"], "name": recommended["name"]},
         decision={"keep_bucket": keep["name"], "keep_bucket_id": keep["id"], "keep_rule_id": (keep["rule"] or {}).get("id"),
@@ -342,17 +422,106 @@ def main():
         gate={"metric": metric, "min_confidence": RULES["min_confidence"], "min_days": RULES["min_days"],
               "days": days, "reasons": reasons},
         refused=refused, refusal_reasons=reasons if refused else [], override_used=bool(reasons and a.override),
-        warnings=warnings,
-        steps=[] if refused else build_steps(exp, buckets, keep, rules_before, a.account, env, ships_change))
+        warnings=warnings, checks_before=checks, changes=changes,
+        batches=[[c["n"]] for c in changes if c["status"] == "ready"])
     emit(out, a.out)
 
 
-def emit(out, path):
-    text = json.dumps(out, indent=2, ensure_ascii=False)
-    if path:
-        with open(path, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text + "\n")
-    print(text)
+def read_plan(path):
+    plan = read_json(path)
+    if not isinstance(plan, dict) or plan.get("ok") is not True or not isinstance(plan.get("changes"), list):
+        fail(f"{path}: not a plan written by close_plan.py plan --out.")
+    for c in plan["changes"]:
+        if not isinstance(c, dict) or not all(k in c for k in ("n", "kind", "target", "status", "after")):
+            fail(f"{path}: a change is missing n, kind, target, status or after.")
+    return plan
+
+
+def readback(path):
+    """(data, None) for a saved read-back, or (None, "gone") when the response says the item wasn't found."""
+    doc = read_json(path)
+    err = errors_in(doc)
+    if err is not None:
+        if any(w in err.lower() for w in NOT_FOUND):
+            return None, "gone"
+        fail(f"{path}: {tool_error(err)} The read-back couldn't run; don't treat it as checked.")
+    data, _ = unwrap(doc, path)
+    return data, None
+
+
+def cmd_verify(a):
+    plan = read_plan(a.plan)
+    exp = None
+    if a.experiment:
+        exp, gone = readback(a.experiment)
+        if gone:
+            exp = {"experimentStatus": "GONE"}
+    rules = {}
+    for rid, path in a.rule:
+        data, gone = readback(path)
+        if data is not None and str(data.get("id")) != rid:
+            fail(f"{path}: holds rule {data.get('id')}, not rule {rid}.")
+        rules[rid] = "gone" if gone else data
+    results = []
+    for c in plan["changes"]:
+        r = {"n": c["n"], "kind": c["kind"], "target": c["target"], "planned_status": c["status"]}
+        if c["kind"] in ("end", "archive"):
+            if exp is None:
+                r.update(result="not_checked", detail="Pass the experiment fetched again with --experiment.")
+            elif exp.get("experimentStatus") == "GONE":
+                r.update(result="gone", detail="The experiment wasn't found.")
+            else:
+                st = str(exp.get("experimentStatus") or "").upper()
+                want = c["after"].get("experimentStatus")
+                ok = st == want or (want == "COMPLETED" and st == "ARCHIVED")
+                if ok and c["kind"] == "end" and c["after"].get("winnerBucketId") is not None:
+                    ok = exp.get("winnerBucketId") == c["after"]["winnerBucketId"]
+                r.update(result="in_place" if ok else "not_in_place",
+                         detail=f"experimentStatus {st}, winnerBucketId {exp.get('winnerBucketId')}")
+        else:
+            rid = c["target"].split()[1]
+            got = rules.get(rid)
+            if got is None:
+                r.update(result="not_checked", detail=f"Pass rule {rid} read back after ending with --rule {rid}=<file>.")
+            elif got == "gone":
+                r.update(result="gone", detail=f"Rule {rid} wasn't found.")
+            else:
+                ok = got.get("enabled") == c["after"]["enabled"]
+                r.update(result="in_place" if ok else "not_in_place", state=rule_state(got),
+                         action=("none: already in the right state" if ok else
+                                 "make this change (its own yes)" if c.get("conditional") and c["status"] == "ready"
+                                 else "give the user the change to make in the dashboard"))
+                if ok and c["after"]["enabled"] and got.get("syncStatus") not in (None, "SUCCESS"):
+                    r["detail"] = f"syncStatus is {got.get('syncStatus')}: read it again in a minute."
+        results.append(r)
+    emit({"ok": True, "plan": a.plan, "results": results,
+          "all_in_place": all(x["result"] == "in_place" for x in results)}, a.out)
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names can hold any character; Windows consoles default to cp1252
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    p = sub.add_parser("plan", help="build the plan for closing one experiment")
+    p.add_argument("--experiment", required=True, help="saved search_discovery_experiments result for one experiment")
+    p.add_argument("--account", required=True, help="account name for the payloads")
+    p.add_argument("--environment", type=env_arg, help="production or staging (required unless the experiment says)")
+    p.add_argument("--site-group-id", type=site_arg, help="site group ID, copied into every payload")
+    p.add_argument("--report", help="saved get_discovery_experiment_report result")
+    p.add_argument("--rule", type=rule_arg, action="append", default=[],
+                   help="<rule id>=<saved get_ranking_rule result> (repeat per rule)")
+    p.add_argument("--keep", help="bucket name or id to keep (default: the recommendation)")
+    p.add_argument("--override", action="store_true", help="ship the change despite the evidence warnings")
+    p.add_argument("--today", type=day_arg, help="date to count a running test to (default: today in UTC)")
+    p.add_argument("--out", help="also write the plan to this file")
+    v = sub.add_parser("verify", help="check the read-backs against the plan")
+    v.add_argument("--plan", required=True, help="plan file from `plan --out`")
+    v.add_argument("--experiment", help="the experiment fetched again after a write")
+    v.add_argument("--rule", type=rule_arg, action="append", default=[],
+                   help="<rule id>=<rule read back after ending> (repeat per rule)")
+    v.add_argument("--out", help="also write the result to this file")
+    a = ap.parse_args()
+    cmd_plan(a) if a.cmd == "plan" else cmd_verify(a)
 
 
 if __name__ == "__main__":

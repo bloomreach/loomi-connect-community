@@ -10,7 +10,7 @@ RUNNING ── end_discovery_experiment ──▶ COMPLETED ── archive_disco
 ```
 
 - Only a RUNNING test can be ended, and only a COMPLETED test can be archived. A DRAFT never ran: edit or delete it in the Discovery dashboard.
-- Experiments are scoped to an environment (`production` or `staging`). Pass the experiment's `environment_used` to every call, and check `environment_used` in each response.
+- Experiments are scoped to an environment (`production` or `staging`). Pass the experiment's `environment_used` to every call, and check `environment_used` in each response. The script never assumes an environment. Leave out `site_group_id` when the account has no sites.
 
 ## What "keep a bucket" means
 
@@ -33,19 +33,19 @@ There's no separate "promote" step: once the test has ended, the kept rule is an
 ## Payloads
 
 ```json
-{"account_name": "<account>", "experiment_id": 12345, "environment": "production", "winner_bucket_id": 678}
+{"account_name": "<account>", "environment": "production", "site_group_id": "<site>", "experiment_id": 12345, "winner_bucket_id": 678}
 ```
 
 `end_discovery_experiment`. Leave out `winner_bucket_id` to keep default behaviour.
 
 ```json
-{"account_name": "<account>", "rule_id": 2234567, "enabled": false, "environment": "production"}
+{"account_name": "<account>", "environment": "production", "site_group_id": "<site>", "rule_id": 2234567, "enabled": false}
 ```
 
 `update_ranking_rule`. Only the fields you pass change. Undo: the same call with `enabled` flipped.
 
 ```json
-{"account_name": "<account>", "experiment_id": 12345, "environment": "production"}
+{"account_name": "<account>", "environment": "production", "site_group_id": "<site>", "experiment_id": 12345}
 ```
 
 `archive_discovery_experiment`. COMPLETED only.
