@@ -4,9 +4,9 @@
 Usage:
   python3 exclusion_plan.py plan --request request.json --rules rules.json [--rules page2.json]
          [--suggestions before.json] [--queries queries.json ...] --account NAME
-         [--environment staging] [--out plan.json]
+         --environment staging|production [--site-group-id ID] [--out plan.json]
   python3 exclusion_plan.py verify --plan plan.json --rules rules_after.json [--rules ...]
-         [--suggestions after.json] [--applied C1,C2] [--out verify.json]
+         [--suggestions after.json] [--applied 1,2] [--created 6=106 ...] [--out verify.json]
 
 request.json lists what to change, as {"changes": [...]} or a plain list. Each change is one of:
   {"action": "exclude",   "keyword": "dress fabric", "reason": "..."}   hide a suggestion
@@ -20,14 +20,16 @@ before the change. --suggestions maps each prefix to what get_autosuggest_result
 ({"dr": ["dress", "dress fabric"]}). --queries are saved get_discovery_query_performance results, used to
 warn before excluding a search shoppers really use.
 
-plan prints JSON with every change (tool, exact payload, before, after, undo, live impact, warnings),
-the batches to confirm one at a time (no live impact, live, irreversible), what was skipped and why, and
-a before/after preview of the suggestions. New rules are created disabled and enabled in a separate,
-live batch. Removing a keyword from a rule that would be left empty disables the rule rather than
-deleting it. Deletes are only planned when asked for, and always in their own batch.
+plan prints the plan file every write skill in this repo uses (docs/skill-authoring.md, "Plan files for
+write skills"): each change with its status (ready, blocked or no_change), kind, tool, exact payload,
+before, after, undo, live impact, problems and warnings; and the batches of ready changes to confirm one
+at a time. New rules are created disabled and switched on by a separate enable; enables and deletes are
+each a batch of their own. Removing a keyword from a rule that would be left empty disables the rule
+rather than deleting it. It also gives a before/after preview of the suggestions.
 
-verify compares a fresh read of the rules (and suggestions) with the plan: which changes are in place,
-which aren't, which rules are still syncing, and which excluded suggestions still show.
+verify compares a fresh read of the rules (and suggestions) with the plan and reports each ready change
+as in_place, not_in_place or gone. New rules are matched by the ID their create returned (--created
+N=ID), never by name. A not-found read-back counts as gone.
 
 Thresholds are in references/rules.json. Standard library only; no network access.
 """
@@ -42,7 +44,8 @@ RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rul
 MISSING = {"", "na", "n/a", "-", "−", "—", "–", "null", "none", "nan"}
 TOOLS = {"create": "create_autosuggest_exclusion_rule", "update": "update_autosuggest_exclusion_rule",
          "delete": "delete_autosuggest_exclusion_rule"}
-BATCH_ORDER = ("no live impact", "live", "irreversible")
+NOT_FOUND = re.compile(r"not.?found|404|does not exist|doesn't exist|no such", re.I)
+SYNCED = ("", "synced", "success", "completed", "none")
 
 
 def fail(msg):
@@ -52,9 +55,9 @@ def fail(msg):
 
 def tool_error(err):
     """A Loomi Connect error safe to repeat. An unknown account_name makes some Discovery tools list every
-    account the user can access, so an account error that looks like a list is replaced, never echoed."""
+    account the user can access, so any error about an account is replaced, never echoed."""
     text = str(err or "no error text")
-    if "account" in text.lower() and text.count(",") >= 3:
+    if "account" in text.lower():
         return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list "
                 "other accounts. Ask the user to check the account name.")
     return text[:200]
@@ -88,20 +91,36 @@ def number(v):
     return -x if negative else x
 
 
-def read(path):
-    """A saved tool result, unwrapped from {"result": ...} and checked for success: false."""
+def read_raw(path):
     try:
         with open(path, encoding="utf-8") as f:
-            data = json.load(f)
+            return json.load(f)
     except (OSError, ValueError) as e:
         fail(f"{path}: can't read it as JSON ({e}).")
+
+
+def error_of(data):
+    """The error record of a success:false result, or None."""
     for d in (data, data.get("result") if isinstance(data, dict) else None):
         if isinstance(d, dict) and d.get("success") is False:
-            fail(f"{path}: Loomi Connect returned an error: {tool_error(d.get('error'))} "
-                 "This check couldn't run; don't treat it as 'nothing found'.")
+            return d
+    return None
+
+
+def unwrap(data):
     if isinstance(data, dict) and isinstance(data.get("result"), dict):
         data = data["result"]
     return data
+
+
+def read(path):
+    """A saved tool result, unwrapped from {"result": ...} and checked for success: false."""
+    data = read_raw(path)
+    err = error_of(data)
+    if err:
+        fail(f"{path}: Loomi Connect returned an error: {tool_error(err.get('error'))} "
+             "This check couldn't run; don't treat it as 'nothing found'.")
+    return unwrap(data)
 
 
 def norm(text):
@@ -127,20 +146,43 @@ def rule_record(r, path):
             "sync_status": r.get("syncStatus", r.get("sync_status"))}
 
 
+def rules_from(data, path, rules):
+    """Add the rules in one unwrapped result to `rules`; True when the result was a list."""
+    items = data.get("data", data) if isinstance(data, dict) else data
+    if isinstance(items, dict):
+        items = items.get("rules", items.get("items", [items]))
+    if not isinstance(items, list):
+        fail(f"{path}: not an exclusion rule list or detail (field 'data').")
+    for r in items:
+        if isinstance(r, dict) and r:
+            rec = rule_record(r, path)
+            rules[rec["id"]] = rec
+    return isinstance(data, dict) and isinstance(data.get("data"), list) or isinstance(data, list)
+
+
 def load_rules(paths):
     rules = {}
     for p in paths:
-        data = read(p)
-        items = data.get("data", data) if isinstance(data, dict) else data
-        if isinstance(items, dict):
-            items = items.get("rules", items.get("items", [items]))
-        if not isinstance(items, list):
-            fail(f"{p}: not an exclusion rule list or detail (field 'data').")
-        for r in items:
-            if isinstance(r, dict) and r:
-                rec = rule_record(r, p)
-                rules[rec["id"]] = rec
+        rules_from(read(p), p, rules)
     return rules
+
+
+def load_readback(paths):
+    """Rules read after the writes. A not-found response counts as an empty read (the rule is gone);
+    any other error stops. Returns (rules, whether any file was a full list, whether any was not found)."""
+    rules, listed, not_found = {}, False, False
+    for p in paths:
+        data = read_raw(p)
+        err = error_of(data)
+        if err:
+            text = str(err.get("error") or "")
+            if NOT_FOUND.search(text) and "account" not in text.lower():  # an unknown account isn't a deleted rule
+                not_found = True
+                continue
+            fail(f"{p}: Loomi Connect returned an error: {tool_error(err.get('error'))} "
+                 "This check couldn't run; don't treat it as 'nothing found'.")
+        listed = rules_from(unwrap(data), p, rules) or listed
+    return rules, listed, not_found
 
 
 def load_suggestions(path):
@@ -214,25 +256,32 @@ def keyword_warnings(kw, queries, suggestions):
     return out
 
 
-def payload(account, environment, **kw):
-    return dict({"account_name": account, "environment": environment}, **kw)
-
-
 def plan(args):
     req = load_request(args.request)
     rules = load_rules(args.rules)
     sugg = load_suggestions(args.suggestions)
     queries = load_queries(args.queries)
-    acc, env = args.account, args.environment
+    acc, env, site = args.account, args.environment, args.site_group_id
+
+    def payload(**kw):
+        p = {"account_name": acc, "environment": env}
+        if site is not None:
+            p["site_group_id"] = site
+        p.update(kw)
+        return p
+
     by_kw = {}
     for r in rules.values():
         for k in r["keywords"]:
             by_kw.setdefault(norm(k), []).append(r)
-    changes, skipped = [], []
+    changes = []
 
-    def add(kind, rid, before, after, undo, impact, reason, **extra):
-        c = {"id": f"C{len(changes) + 1}", "kind": kind, "rule_id": rid, "before": before, "after": after,
-             "undo": undo, "live_impact": impact, "reasons": reason, "warnings": []}
+    def add(status, kind, target, rule_id=None, tool=None, pay=None, before=None, after=None, undo=None,
+            impact="none", reasons=None, problems=None, warnings=None, **extra):
+        c = {"n": len(changes) + 1, "status": status, "kind": kind, "target": target, "rule_id": rule_id,
+             "tool": tool, "payload": pay, "before": before, "after": after, "undo": undo or [],
+             "live_impact": impact, "problems": problems or [], "warnings": warnings or [],
+             "reasons": [x for x in (reasons or []) if x]}
         c.update(extra)
         changes.append(c)
         return c
@@ -240,32 +289,43 @@ def plan(args):
     def state(r):
         return {k: r[k] for k in ("id", "name", "keywords", "enabled", "domain_key", "note")}
 
+    def label(r):
+        return f"rule {r['id']} '{r['name']}'"
+
     # Rule-level actions first: enable, disable, delete.
     for c in req["changes"]:
         if c["action"] not in ("disable", "enable", "delete"):
             continue
         r = rules.get(c["rule_id"])
         if not r:
-            skipped.append({"change": c, "why": f"rule {c['rule_id']} isn't in the rules read before the change"})
+            add("blocked", c["action"], f"rule {c['rule_id']}", c["rule_id"], reasons=[c.get("reason")],
+                problems=[f"rule {c['rule_id']} isn't in the rules read before the change"])
             continue
         if c["action"] == "delete":
-            ch = add("delete", r["id"], state(r), None,
-                     {"tool": TOOLS["create"], "payload": payload(acc, env, rule_name=r["name"], keywords=r["keywords"],
-                      domain_key=r["domain_key"], note=r["note"] or None, enabled=r["enabled"]),
-                      "note": "Deleting can't be undone: this recreates the rule with a new ID."},
-                     "irreversible", [c.get("reason")], tool=TOOLS["delete"],
-                     payload=payload(acc, env, rule_id=r["id"]), separate_yes=True)
-            ch["warnings"].append({"priority": "high", "warning": "Delete is permanent. Disabling the rule has the same "
-                                   "effect on shoppers and can be undone."})
+            # Deleting can't be undone: the undo recreates the rule disabled, with a new ID, and switches it on
+            # separately if it was on.
+            undo = [{"tool": TOOLS["create"], "payload": payload(rule_name=r["name"], keywords=r["keywords"],
+                                                                 domain_key=r["domain_key"], note=r["note"] or None,
+                                                                 enabled=False)}]
+            if r["enabled"]:
+                undo.append({"tool": TOOLS["update"], "payload": payload(rule_id="<id returned by the undo create>",
+                                                                         enabled=True)})
+            add("ready", "delete", label(r), r["id"], TOOLS["delete"], payload(rule_id=r["id"]), state(r), None, undo,
+                "live" if r["enabled"] else "none", [c.get("reason")],
+                warnings=[{"priority": "high", "warning": "Delete is permanent. Disabling the rule has the same effect "
+                           "on shoppers and can be undone."}],
+                undo_note="Deleting can't be undone: this recreates the rule, disabled, with a new ID.",
+                keywords_shown=r["keywords"] if r["enabled"] else [])
             continue
         want = c["action"] == "enable"
         if r["enabled"] == want:
-            skipped.append({"change": c, "why": f"rule {r['id']} is already {'enabled' if want else 'disabled'}"})
+            add("no_change", c["action"], label(r), r["id"], before=state(r), reasons=[c.get("reason")],
+                problems=[f"rule {r['id']} is already {'enabled' if want else 'disabled'}"])
             continue
-        add(c["action"], r["id"], state(r), dict(state(r), enabled=want),
-            {"tool": TOOLS["update"], "payload": payload(acc, env, rule_id=r["id"], enabled=not want)},
-            "live", [c.get("reason")], tool=TOOLS["update"], payload=payload(acc, env, rule_id=r["id"], enabled=want),
-            keywords_hidden=r["keywords"] if want else [], keywords_shown=[] if want else r["keywords"])
+        add("ready", c["action"], label(r), r["id"], TOOLS["update"], payload(rule_id=r["id"], enabled=want), state(r),
+            dict(state(r), enabled=want), [{"tool": TOOLS["update"], "payload": payload(rule_id=r["id"], enabled=not want)}],
+            "live", [c.get("reason")], keywords_hidden=r["keywords"] if want else [],
+            keywords_shown=[] if want else r["keywords"])
 
     # Keywords to stop hiding: remove them from every rule that has them.
     removing = {}
@@ -274,36 +334,36 @@ def plan(args):
             continue
         hits = by_kw.get(norm(c["keyword"]), [])
         if not hits:
-            skipped.append({"change": c, "why": f"no exclusion rule contains '{c['keyword']}'"})
+            add("no_change", "update", f"keyword '{c['keyword']}'", reasons=[c.get("reason")],
+                problems=[f"no exclusion rule contains '{c['keyword']}'"])
         for r in hits:
             removing.setdefault(r["id"], {"keywords": set(), "reasons": []})
             removing[r["id"]]["keywords"].add(norm(c["keyword"]))
             removing[r["id"]]["reasons"].append(c.get("reason"))
-    touched = {c["rule_id"] for c in changes}
+    touched = {c["rule_id"] for c in changes if c["status"] == "ready"}
     for rid, rem in sorted(removing.items()):
         r = rules[rid]
+        gone = [k for k in r["keywords"] if norm(k) in rem["keywords"]]
         if rid in touched:  # one change per rule per run keeps the plan and its undo unambiguous
-            skipped.append({"change": {"rule_id": rid, "keywords": sorted(rem["keywords"])},
-                            "why": f"rule {rid} already has a rule-level change in this request; run the keyword change "
-                                   "separately afterwards"})
+            add("blocked", "update", label(r), rid, before=state(r), reasons=rem["reasons"],
+                problems=[f"rule {rid} already has a rule-level change in this request; run the keyword change "
+                          "separately afterwards"])
             continue
         keep = [k for k in r["keywords"] if norm(k) not in rem["keywords"]]
-        gone = [k for k in r["keywords"] if norm(k) in rem["keywords"]]
-        impact = "live" if r["enabled"] else "no live impact"
         if not keep:  # keywords can't be empty: disable instead of deleting
             if not r["enabled"]:
-                skipped.append({"change": {"rule_id": rid, "keywords": gone},
-                                "why": f"rule {rid} is already disabled, so these keywords aren't hidden"})
+                add("no_change", "disable", label(r), rid, before=state(r), reasons=rem["reasons"],
+                    problems=[f"rule {rid} is already disabled, so these keywords aren't hidden"])
                 continue
-            add("disable", rid, state(r), dict(state(r), enabled=False),
-                {"tool": TOOLS["update"], "payload": payload(acc, env, rule_id=rid, enabled=True)}, "live", rem["reasons"],
-                tool=TOOLS["update"], payload=payload(acc, env, rule_id=rid, enabled=False), keywords_shown=gone,
+            add("ready", "disable", label(r), rid, TOOLS["update"], payload(rule_id=rid, enabled=False), state(r),
+                dict(state(r), enabled=False), [{"tool": TOOLS["update"], "payload": payload(rule_id=rid, enabled=True)}],
+                "live", rem["reasons"], keywords_shown=gone,
                 note="Every keyword in this rule is being unexcluded, so the rule is disabled rather than deleted.")
         else:
-            add("update", rid, state(r), dict(state(r), keywords=keep),
-                {"tool": TOOLS["update"], "payload": payload(acc, env, rule_id=rid, keywords=r["keywords"])}, impact,
-                rem["reasons"], tool=TOOLS["update"], payload=payload(acc, env, rule_id=rid, keywords=keep),
-                keywords_shown=gone if r["enabled"] else [])
+            add("ready", "update", label(r), rid, TOOLS["update"], payload(rule_id=rid, keywords=keep), state(r),
+                dict(state(r), keywords=keep),
+                [{"tool": TOOLS["update"], "payload": payload(rule_id=rid, keywords=r["keywords"])}],
+                "live" if r["enabled"] else "none", rem["reasons"], keywords_shown=gone if r["enabled"] else [])
 
     # Keywords to hide.
     new_kw, reasons, seen = [], [], set()
@@ -316,90 +376,115 @@ def plan(args):
         seen.add(k)
         hits = by_kw.get(k, [])
         if any(r["enabled"] for r in hits):
-            skipped.append({"change": c, "why": f"already excluded by enabled rule {[r['id'] for r in hits if r['enabled']][0]}"})
+            add("no_change", "update", f"keyword '{kw}'", reasons=[c.get("reason")],
+                problems=[f"already excluded by enabled rule {[r['id'] for r in hits if r['enabled']][0]}"])
             continue
         if hits:
-            skipped.append({"change": c, "why": f"already in disabled rule {hits[0]['id']}: enable that rule instead "
-                            f"(it holds {len(hits[0]['keywords'])} keyword(s) in all)"})
+            add("blocked", "update", f"keyword '{kw}'", hits[0]["id"], reasons=[c.get("reason")],
+                problems=[f"already in disabled rule {hits[0]['id']}: enable that rule instead "
+                          f"(it holds {len(hits[0]['keywords'])} keyword(s) in all)"])
             continue
         new_kw.append((kw, keyword_warnings(kw, queries, sugg)))
         reasons.append(c.get("reason"))
     target = req.get("add_to_rule_id")
     if new_kw and target is not None:
         r = rules.get(int(target)) if str(target).lstrip("-").isdigit() else None
+        kws = [k for k, _ in new_kw]
+        warnings = [w for _, ws in new_kw for w in ws]
         if not r:
-            fail(f"{args.request}: add_to_rule_id {target} isn't in the rules read before the change.")
-        if r["id"] in {c["rule_id"] for c in changes}:
-            fail(f"{args.request}: rule {r['id']} already has another change in this request; add keywords to it "
-                 "in a separate run.")
-        after_kw = r["keywords"] + [k for k, _ in new_kw]
-        if len(after_kw) > RULES["max_keywords_per_rule"]:
-            fail(f"{args.request}: rule {r['id']} would hold {len(after_kw)} keywords, over max_keywords_per_rule.")
-        ch = add("update", r["id"], state(r), dict(state(r), keywords=after_kw),
-                 {"tool": TOOLS["update"], "payload": payload(acc, env, rule_id=r["id"], keywords=r["keywords"])},
-                 "live" if r["enabled"] else "no live impact", reasons, tool=TOOLS["update"],
-                 payload=payload(acc, env, rule_id=r["id"], keywords=after_kw),
-                 keywords_hidden=[k for k, _ in new_kw] if r["enabled"] else [])
-        ch["warnings"] = [w for _, ws in new_kw for w in ws]
+            add("blocked", "update", f"rule {target} (add {len(kws)} keyword(s))", reasons=reasons, warnings=warnings,
+                problems=[f"add_to_rule_id {target} isn't in the rules read before the change"], keywords=kws)
+        elif r["id"] in {c["rule_id"] for c in changes if c["status"] == "ready"}:
+            add("blocked", "update", label(r), r["id"], before=state(r), reasons=reasons, warnings=warnings,
+                problems=[f"rule {r['id']} already has another change in this request; add keywords to it in a "
+                          "separate run"], keywords=kws)
+        elif len(r["keywords"]) + len(kws) > RULES["max_keywords_per_rule"]:
+            add("blocked", "update", label(r), r["id"], before=state(r), reasons=reasons, warnings=warnings,
+                problems=[f"rule {r['id']} would hold {len(r['keywords']) + len(kws)} keywords, over "
+                          "max_keywords_per_rule"], keywords=kws)
+        else:
+            after_kw = r["keywords"] + kws
+            add("ready", "update", label(r), r["id"], TOOLS["update"], payload(rule_id=r["id"], keywords=after_kw),
+                state(r), dict(state(r), keywords=after_kw),
+                [{"tool": TOOLS["update"], "payload": payload(rule_id=r["id"], keywords=r["keywords"])}],
+                "live" if r["enabled"] else "none", reasons, warnings=warnings,
+                keywords_hidden=kws if r["enabled"] else [])
     elif new_kw:
         size = RULES["max_keywords_per_rule"]
         groups = [new_kw[i:i + size] for i in range(0, len(new_kw), size)]
         base = (req.get("rule_name") or RULES["default_rule_name"]).strip()
-        for n, group in enumerate(groups, 1):
-            name = base if len(groups) == 1 else f"{base} {n}"
+        for g, group in enumerate(groups, 1):
+            name = base if len(groups) == 1 else f"{base} {g}"
             warnings = [w for _, ws in group for w in ws]
             if len(name) > RULES["max_text_chars"]:
                 name = name[:RULES["max_text_chars"]]
                 warnings.append({"priority": "low", "warning": "The rule name was cut to max_text_chars."})
             kws = [k for k, _ in group]
             note = "; ".join(sorted({str(x) for x in reasons if x}))[:RULES["max_text_chars"]] or None
-            create = add("create", None, None, {"name": name, "keywords": kws, "enabled": False,
-                         "domain_key": req.get("domain_key")},
-                         {"tool": TOOLS["delete"], "payload": payload(acc, env, rule_id="<id returned by this create>"),
-                          "note": "The rule didn't exist before, so deleting it restores the old state."},
-                         "no live impact", reasons, tool=TOOLS["create"],
-                         payload=payload(acc, env, rule_name=name, keywords=kws, domain_key=req.get("domain_key"),
-                                         note=note, enabled=False))
-            create["warnings"] = warnings
-            add("enable", None, {"name": name, "enabled": False}, {"name": name, "enabled": True},
-                {"tool": TOOLS["update"], "payload": payload(acc, env, rule_id=f"<id returned by {create['id']}>",
-                 enabled=False)}, "live", reasons, tool=TOOLS["update"],
-                payload=payload(acc, env, rule_id=f"<id returned by {create['id']}>", enabled=True),
-                depends_on=create["id"], keywords_hidden=kws)
+            create = add("ready", "create", f"new rule '{name}'", None, TOOLS["create"],
+                         payload(rule_name=name, keywords=kws, domain_key=req.get("domain_key"), note=note, enabled=False),
+                         None, {"name": name, "keywords": kws, "enabled": False, "domain_key": req.get("domain_key")},
+                         [], "none", reasons, warnings=warnings)
+            create["undo"] = [{"tool": TOOLS["delete"],
+                               "payload": payload(rule_id=f"<id returned by change {create['n']}>")}]
+            create["undo_note"] = "The rule didn't exist before, so deleting it restores the old state."
+            add("ready", "enable", f"new rule '{name}'", None, TOOLS["update"],
+                payload(rule_id=f"<id returned by change {create['n']}>", enabled=True),
+                {"name": name, "enabled": False}, {"name": name, "enabled": True},
+                [{"tool": TOOLS["update"], "payload": payload(rule_id=f"<id returned by change {create['n']}>",
+                                                              enabled=False)}],
+                "live", reasons, depends_on=create["n"], keywords_hidden=kws)
 
-    # Batches: no live impact first, then live, then deletes; each capped and confirmed on its own.
-    batches = []
-    for kind in BATCH_ORDER:
-        group = [c for c in changes if c["live_impact"] == kind]
-        cap = 1 if kind == "irreversible" else RULES["max_changes_per_batch"]
-        for i in range(0, len(group), cap):
-            part = group[i:i + cap]
-            batches.append({"batch": len(batches) + 1, "live_impact": kind, "changes": [c["id"] for c in part],
-                            "confirm": confirm_text(kind, part)})
-
-    hidden = {norm(k) for c in changes for k in c.get("keywords_hidden", [])}
-    shown = {norm(k) for c in changes for k in c.get("keywords_shown", [])}
+    batches = make_batches(changes)
+    ready = [c for c in changes if c["status"] == "ready"]
+    hidden = {norm(k) for c in ready for k in c.get("keywords_hidden", [])}
+    shown = {norm(k) for c in ready for k in c.get("keywords_shown", [])}
     preview = {p: {"before": s, "after_expected": [x for x in s if norm(x) not in hidden],
-                   "hidden": [x for x in s if norm(x) in hidden]} for p, s in sugg.items()}
-    out = {"ok": True, "account": acc, "environment": env, "changes": changes, "batches": batches, "skipped": skipped,
+                   "hidden": [x for x in s if norm(x) in hidden]} for p, s in sorted(sugg.items())}
+    by_n = {c["n"]: c for c in changes}
+    out = {"ok": True, "account": acc, "environment": env, "site_group_id": site, "changes": changes,
+           "batches": batches, "batch_confirm": [confirm_text([by_n[n] for n in b]) for b in batches],
            "preview": preview, "may_reappear": sorted(shown),
-           "counts": {k: sum(c["live_impact"] == k for c in changes) for k in BATCH_ORDER}}
+           "counts": {s: sum(c["status"] == s for c in changes) for s in ("ready", "blocked", "no_change")}}
+    if site is not None:
+        out["site_group_id_note"] = ("Exclusion rules are account-level: the write tools accept site_group_id, but it "
+                                     "doesn't limit a rule to one site.")
     if not sugg:
         out["preview_note"] = "No suggestions file given: fetch get_autosuggest_results for the affected prefixes first."
     return out
 
 
-def confirm_text(kind, part):
-    what = {"create": "create disabled rule", "enable": "enable", "disable": "disable", "update": "update keywords of",
+def switches_on(c):
+    return c["kind"] == "enable" or (c.get("payload") or {}).get("enabled") is True
+
+
+def make_batches(changes):
+    """Ready changes only. No-live-impact changes first, then other live changes, each capped at
+    max_changes_per_batch; then every switch-on and every delete as a batch of its own."""
+    ready = [c for c in changes if c["status"] == "ready"]
+    alone = [c for c in ready if c["kind"] == "delete" or switches_on(c)]
+    rest = [c for c in ready if c not in alone]
+    cap = RULES["max_changes_per_batch"]
+    batches = []
+    for impact in ("none", "live"):
+        group = [c["n"] for c in rest if c["live_impact"] == impact]
+        batches += [group[i:i + cap] for i in range(0, len(group), cap)]
+    batches += [[c["n"]] for c in alone if c["kind"] != "delete"]
+    batches += [[c["n"]] for c in alone if c["kind"] == "delete"]
+    return batches
+
+
+def confirm_text(part):
+    what = {"create": "create disabled", "enable": "switch on", "disable": "disable", "update": "update keywords of",
             "delete": "PERMANENTLY DELETE"}
-    items = []
-    for c in part:
-        label = (c.get("after") or c.get("before") or {}).get("name") or f"rule {c['rule_id']}"
-        items.append(f"{what[c['kind']]} '{label}'" + (f" (rule {c['rule_id']})" if c["rule_id"] is not None else ""))
+    items = [f"{what[c['kind']]} {c['target']}" for c in part]
     warned = sum(len(c["warnings"]) for c in part)
-    lead = {"no live impact": "No shopper sees a change yet.",
-            "live": "Live at once for every shopper once it syncs (seconds to minutes).",
-            "irreversible": "This can't be undone."}[kind]
+    if any(c["kind"] == "delete" for c in part):
+        lead = "This can't be undone."
+    elif any(c["live_impact"] == "live" for c in part):
+        lead = "Live at once for every shopper once it syncs (seconds to minutes)."
+    else:
+        lead = "No shopper sees a change yet."
     note = f" Read the {warned} warning(s) first." if warned else ""
     return f"{lead}{note} Shall I " + "; ".join(items) + "?"
 
@@ -409,46 +494,80 @@ def confirm_text(kind, part):
 
 def verify(args):
     p = read(args.plan)
-    if not isinstance(p, dict) or not isinstance(p.get("changes"), list):
+    if not isinstance(p, dict) or not isinstance(p.get("changes"), list) or \
+            not all(isinstance(c, dict) and isinstance(c.get("n"), int) and "status" in c for c in p["changes"]):
         fail(f"{args.plan}: not a plan from exclusion_plan.py (field 'changes').")
-    rules = load_rules(args.rules)
+    rules, listed, not_found = load_readback(args.rules)
     sugg = load_suggestions(args.suggestions)
-    applied = {x.strip() for x in args.applied.split(",") if x.strip()} if args.applied else None
+    applied = args.applied
+    created = dict(args.created)
     results, still = [], []
     for c in p["changes"]:
-        if applied is not None and c.get("id") not in applied:
+        if c["status"] != "ready" or (applied is not None and c["n"] not in applied):
             continue
         after = c.get("after") or {}
-        if c["kind"] == "create" or (c["kind"] == "enable" and c.get("rule_id") is None):
-            match = [r for r in rules.values() if r["name"] == after.get("name")
-                     and {norm(k) for k in r["keywords"]} == {norm(k) for k in (c["payload"].get("keywords") or after.get("keywords") or [])}] \
-                if c["kind"] == "create" else [r for r in rules.values() if r["name"] == after.get("name")]
-            r = match[0] if match else None
-            # A create only has to exist (the enable that follows it checks its state); an enable must be on.
-            ok = bool(r) and (c["kind"] == "create" or r["enabled"] == after.get("enabled"))
-        else:
-            r = rules.get(c.get("rule_id"))
-            if c["kind"] == "delete":
-                ok = r is None
-            elif r is None:
-                ok = False
-            elif c["kind"] == "update":
-                ok = [norm(k) for k in r["keywords"]] == [norm(k) for k in after.get("keywords", [])]
+        rid, note = c.get("rule_id"), None
+        if c["kind"] == "create" or (c["kind"] == "enable" and rid is None):
+            source = c["n"] if c["kind"] == "create" else c.get("depends_on")
+            rid = created.get(source)
+            if rid is None:
+                results.append({"n": c["n"], "kind": c["kind"], "rule_id": None, "status": "not_in_place",
+                                "note": f"Pass the ID change {source}'s create returned (--created {source}=ID); "
+                                        "new rules are never matched by name."})
+                continue
+        r = rules.get(rid)
+        if c["kind"] == "delete":
+            if r is not None:
+                status = "not_in_place"
+            elif listed or not_found:
+                status = "gone"
             else:
-                ok = r["enabled"] == after.get("enabled")
-        status = "in place" if ok else "not in place"
-        if ok and r and str(r.get("sync_status") or "").lower() not in ("", "synced", "success", "completed", "none"):
-            status = "in place, still syncing"
-        results.append({"id": c["id"], "kind": c["kind"], "rule_id": r["id"] if r else c.get("rule_id"), "status": status})
-    hidden = {norm(k) for c in p["changes"] if applied is None or c.get("id") in applied for k in c.get("keywords_hidden", [])}
-    for prefix, s in sugg.items():
+                status, note = "not_in_place", f"no read-back covers rule {rid}: read the full rule list"
+        elif r is None:
+            status = "not_in_place"
+        elif c["kind"] == "create":
+            want = {norm(k) for k in (c["payload"] or {}).get("keywords") or after.get("keywords") or []}
+            status = "in_place" if {norm(k) for k in r["keywords"]} == want else "not_in_place"
+        elif c["kind"] == "update":
+            status = "in_place" if [norm(k) for k in r["keywords"]] == [norm(k) for k in after.get("keywords", [])] \
+                else "not_in_place"
+        else:
+            status = "in_place" if r["enabled"] == after.get("enabled") else "not_in_place"
+        res = {"n": c["n"], "kind": c["kind"], "rule_id": rid, "status": status}
+        if status == "in_place" and r and str(r.get("sync_status") or "").lower() not in SYNCED:
+            res["syncing"] = True
+        if note:
+            res["note"] = note
+        results.append(res)
+    hidden = {norm(k) for c in p["changes"] if c.get("status") == "ready" and (applied is None or c["n"] in applied)
+              for k in c.get("keywords_hidden", [])}
+    for prefix, s in sorted(sugg.items()):
         for x in s:
             if norm(x) in hidden:
                 still.append({"prefix": prefix, "suggestion": x})
-    ok = all(r["status"].startswith("in place") for r in results)
+    expected = {"delete": "gone"}
+    ok = all(r["status"] == expected.get(r["kind"], "in_place") for r in results)
     return {"ok": True, "all_in_place": ok, "results": results, "still_suggested": still,
             "note": ("Excluded suggestions can take a few minutes to disappear after a rule syncs; check again "
                      "before calling it a failure.") if still else None}
+
+
+def number_list(text):
+    try:
+        return {int(x) for x in text.split(",") if x.strip()}
+    except ValueError:
+        raise argparse.ArgumentTypeError("use comma-separated change numbers, e.g. 1,2,5")
+
+
+def created_pair(text):
+    """N=ID: change N's create returned rule ID. Splits on the first '='."""
+    n, sep, rid = text.partition("=")
+    try:
+        if not sep:
+            raise ValueError
+        return int(n), int(rid)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"expected N=ID with numbers, e.g. 6=106 (got {text!r})")
 
 
 def main():
@@ -462,21 +581,28 @@ def main():
     pl.add_argument("--suggestions", help="prefix -> get_autosuggest_results list, before the change")
     pl.add_argument("--queries", action="append", default=[], help="saved get_discovery_query_performance result")
     pl.add_argument("--account", required=True, help="the Discovery account name the user confirmed")
-    pl.add_argument("--environment", choices=["staging", "production"], default="staging",
-                    help="where to write (default staging; production needs its own yes)")
+    pl.add_argument("--environment", required=True, choices=["staging", "production"],
+                    help="where to write (staging first; production needs its own plan and yes)")
+    pl.add_argument("--site-group-id", help="copied into every payload when given (it doesn't scope exclusion rules)")
     pl.add_argument("--out", help="also write the JSON result to this file (save it before writing)")
     ve = sub.add_parser("verify", help="check a fresh read against the plan")
     ve.add_argument("--plan", required=True, help="the plan JSON from the plan step")
-    ve.add_argument("--rules", action="append", default=[], required=True, help="saved rules, read after the change")
+    ve.add_argument("--rules", action="append", default=[], required=True,
+                    help="saved rules (or a not-found response), read after the change")
     ve.add_argument("--suggestions", help="prefix -> get_autosuggest_results list, read after the change")
-    ve.add_argument("--applied", help="comma-separated change IDs that were run (default: all)")
+    ve.add_argument("--applied", type=number_list, help="comma-separated change numbers that were run (default: all)")
+    ve.add_argument("--created", type=created_pair, action="append", default=[],
+                    help="N=ID: the rule ID change N's create returned (repeat per create)")
     ve.add_argument("--out", help="also write the JSON result to this file")
     a = ap.parse_args()
     out = plan(a) if a.cmd == "plan" else verify(a)
     text = json.dumps(out, indent=2, ensure_ascii=False)
     if a.out:
-        with open(a.out, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text + "\n")
+        try:
+            with open(a.out, "w", encoding="utf-8", newline="\n") as f:
+                f.write(text + "\n")
+        except OSError as e:
+            fail(f"{a.out}: can't write the result there ({e}).")
     print(text)
 
 

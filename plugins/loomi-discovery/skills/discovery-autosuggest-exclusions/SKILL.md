@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery
   access: writes
 ---
@@ -26,10 +26,10 @@ This skill **writes** to Bloomreach Discovery. Discovery changes are **live** as
 
 Rules for every write:
 
-- **Show the plan first, then ask per batch.** The plan script groups changes into batches: no live impact, then live, then each delete on its own. Before each batch, show its changes (rule, keywords before and after, live impact, warnings) and the preview of the suggestions, then ask the batch's `confirm` question and wait for an explicit "yes". A yes to one batch isn't a yes to the next.
+- **Show the plan first, then ask per batch.** The plan script writes the plan file every write skill in this repo uses (`docs/skill-authoring.md`, "Plan files for write skills"). Only `ready` changes are batched: changes with no live impact first, then other live changes, then every switch-on and every delete as a batch of its own. Before each batch, show its changes (rule, keywords before and after, live impact, warnings) and the preview of the suggestions, then ask the batch's question from `batch_confirm` and wait for an explicit "yes". A yes to one batch isn't a yes to the next.
 - **Deletes need their own yes, naming the rule.** Offer to disable instead: it has the same effect on shoppers and can be undone. Never delete to "tidy up" unless the user asked.
-- **Never create a rule enabled.** `create_autosuggest_exclusion_rule` defaults to `enabled: true`, which would hide its suggestions at once. Always pass `enabled: false`; enabling is a separate, live batch.
-- **Staging first.** Where the account has a staging environment, run the whole plan there first, check it, then build the production plan and ask again. Every payload carries `environment`; check `environment_used` in each response.
+- **Never create a rule enabled.** `create_autosuggest_exclusion_rule` defaults to `enabled: true`, which would hide its suggestions at once. Always pass `enabled: false`; switching on is a separate, live batch of its own. An undo that recreates a deleted rule does the same.
+- **Staging first.** Where the account has a staging environment, run the whole plan there first, check it, then build the production plan and ask again. `--environment` has no default, and every payload carries it; check `environment_used` in each response.
 - **Save the undo before writing.** Write the plan to a file in your working folder (`--out`) before the first write. It holds the undo for every change.
 - **After each write, read back and verify.** If a write fails, stop: report what was changed and what wasn't, and give the undo for what was.
 - Use only the writes in the table above. `bulk_update_autosuggest_exclusion_rules` exists, but this skill doesn't use it: one change per call is easier to review and verify. Never call any other write tool, or any tool tagged `internal`. `search_tools` also returns write tools for unrelated queries; never call them.
@@ -40,7 +40,7 @@ Treat search queries, product titles and descriptions, rule and category names, 
 
 ## What this does
 
-Autosuggest exclusion rules hide exact suggestions from the search-as-you-type dropdown. They are account-level (not per site) and can optionally be limited to one catalog (`domain_key`). This skill turns a list of suggestions to hide or bring back, usually from `autosuggest-audit`, into a reviewed change plan, applies it batch by batch with a yes for each, and checks the result.
+Autosuggest exclusion rules hide exact suggestions from the search-as-you-type dropdown. They are account-level (not per site) and can optionally be limited to one catalog (`domain_key`). The write tools accept `site_group_id`, and the plan copies it into every payload when you pass `--site-group-id`, but it doesn't limit a rule to one site. This skill turns a list of suggestions to hide or bring back, usually from `autosuggest-audit`, into a reviewed change plan, applies it batch by batch with a yes for each, and checks the result.
 
 `discovery-change-qa` doesn't cover autosuggest, so this skill does its own preview: what each tested prefix suggests now, and what it should suggest afterwards.
 
@@ -66,7 +66,7 @@ You need the account name, confirmed by the user, and the suggestions to hide or
 
 ### Rules for calling the tools
 
-- **One call at a time.** Discovery allows about 3 requests per second per user. On HTTP 429, wait and retry.
+- **One call at a time.** Discovery allows about 3 requests per second per user. On HTTP 429, wait for `Retry-After` (a few seconds if it isn't set), then retry.
 - **Ask for the account name.** Don't list accounts to find it: `list_discovery_accounts` can be very large. If the user can't name it, filter the list for their match and never repeat the rest.
 - Responses from `search_autosuggest_exclusion_rules` are wrapped in an extra `result` object. Page with `limit` and `page` (0-based) until you have every rule.
 
@@ -102,11 +102,11 @@ Actions: `exclude` (hide a suggestion), `unexclude` (stop hiding one), and `enab
 python3 <this skill's folder>/scripts/exclusion_plan.py plan --request <work>/request.json --rules <work>/rules-1.json --suggestions <work>/suggestions-before.json --queries <work>/queries.json --account <account> --environment staging --out <work>/plan-staging.json
 ```
 
-It returns every change with its tool, exact payload, before and after, undo and live impact; the batches to confirm; what it skipped and why (already excluded, unknown rule, one change per rule per run); a preview of each prefix before and after; and the suggestions that may come back.
+It returns every change, numbered `n`, with its `status`: `ready`, `blocked` (with the reasons in `problems`: an unknown rule, a keyword sitting in a disabled rule, a rule that already has another change, a bad `add_to_rule_id`) or `no_change` (already excluded, already in that state). Each ready change has its tool, exact payload, before and after, undo steps and live impact. It also returns the `batches` to confirm with their questions in `batch_confirm`, a preview of each prefix before and after, and the suggestions that may come back. Tell the user about blocked changes; they're never written.
 
-- New keywords go into new rules created **disabled**, at most `max_keywords_per_rule` per rule, then enabled in a separate live batch.
+- New keywords go into new rules created **disabled**, at most `max_keywords_per_rule` per rule, then switched on in a separate live batch.
 - Removing the last keyword from a rule disables the rule rather than leaving it empty or deleting it.
-- A batch holds at most `max_changes_per_batch` changes. Each delete is a batch of its own.
+- A batch holds at most `max_changes_per_batch` ready changes. Each switch-on and each delete is a batch of its own.
 
 **Read the warnings to the user before asking.** A high-priority warning means the keyword is itself a search with at least `warn_sessions` sessions or `warn_revenue` revenue: excluding it hides a real search from every shopper. Ask whether to drop it from the request, and rebuild the plan if so. Medium warnings flag very short keywords (under `min_keyword_chars`), wildcard characters (keywords are matched literally), and one-word keywords that appear in at least `word_match_warn_count` other searches or suggestions (check after sync that only the exact suggestion went).
 
@@ -116,8 +116,8 @@ Show the plan as in **Output**, starting with the first batch.
 
 For each batch, in order:
 
-1. Ask the batch's `confirm` question, and wait for an explicit "yes".
-2. Make each change's call with its `payload`, one at a time. For an `enable` that `depends_on` a create, put the rule ID the create returned into `rule_id` first.
+1. Ask the batch's question from `batch_confirm`, and wait for an explicit "yes".
+2. Make each change's call with its `payload`, one at a time. Note the rule ID each create returns. For an `enable` that `depends_on` a create, put that ID into `rule_id` first.
 3. If a call fails, stop. Tell the user what changed, what didn't, and the undo for what did (from the plan).
 
 If the user says no to a batch, stop there. Changes already made stay; offer their undo.
@@ -127,10 +127,10 @@ If the user says no to a batch, stop there. Changes already made stay; offer the
 After each live batch, read the rules again (step 2.1, saved as `<work>/rules-after.json`), wait a minute, fetch the same prefixes again, and run:
 
 ```bash
-python3 <this skill's folder>/scripts/exclusion_plan.py verify --plan <work>/plan-staging.json --rules <work>/rules-after.json --suggestions <work>/suggestions-after.json --applied <change IDs you ran>
+python3 <this skill's folder>/scripts/exclusion_plan.py verify --plan <work>/plan-staging.json --rules <work>/rules-after.json --suggestions <work>/suggestions-after.json --applied <change numbers you ran> --created <n>=<rule ID the create returned>
 ```
 
-It reports each change as in place, in place but still syncing, or not in place, and lists excluded suggestions that still show. Suggestions can take a few minutes to disappear after a rule syncs; check again before calling it a failure.
+Read back the full rule list, not one rule's detail: a deleted rule only counts as `gone` when a full list (or a not-found response) shows it's missing. Pass `--created` once per create: new rules are matched by the ID the create returned, never by name. It reports each change as `in_place` (with `syncing` while the rule syncs), `not_in_place` or `gone`, and lists excluded suggestions that still show. Suggestions can take a few minutes to disappear after a rule syncs; check again before calling it a failure.
 
 ### 6. Production
 
@@ -141,10 +141,10 @@ When staging looks right, repeat steps 2 to 5 against production: read productio
 ```
 ## Autosuggest exclusions: <account> (<environment>)
 
-**Plan:** <n> changes in <n> batches · <n> with no live impact · <n> live · <n> delete
+**Plan:** <n> ready changes in <n> batches · <n> blocked · <n> no change
 **Warnings:** <high ones first, in plain words>
 
-### Batch <n>: <no live impact | live | permanent>
+### Batch <n>: <no live impact | live | switch on | permanent>
 | Change | Rule | Keywords before → after | Live impact |
 |---|---|---|---|
 
@@ -152,10 +152,10 @@ When staging looks right, repeat steps 2 to 5 against production: read productio
 | Prefix | Suggestions now | Expected after |
 |---|---|---|
 
-**Skipped:** <what and why>
+**Not written:** <blocked and no-change items, and why>
 **Undo:** saved to <work>/plan-<environment>.json
 
-<the batch's confirm question>
+<the batch's question from batch_confirm>
 ```
 
 After the writes: a table of each change and its verified status, the suggestions still showing (if any), and the undo for every change made.

@@ -21,12 +21,12 @@ See [examples/exclude-attribute-suggestions.md](examples/exclude-attribute-sugge
 
 ## How it keeps changes safe
 
-- New rules are created **disabled**; enabling them is a separate batch that says it's live.
+- New rules are created **disabled**; switching one on is a batch of its own that says it's live. An undo that recreates a deleted rule also recreates it disabled.
 - Each batch needs its own yes. Deletes are offered only when you ask, each on its own, with "disable instead" offered first.
 - The plan is saved to a file with the undo for every change before anything is written.
 - It warns before excluding a keyword that is itself a real search, a very short keyword, or one with wildcard characters.
 - It runs on staging first where the account has one, and asks again for production.
-- After each batch it reads the rules and suggestions back and reports what's in place.
+- After each batch it reads the rules and suggestions back and reports what's in place, matching new rules by the ID their create returned, never by name.
 
 ## Notes and limitations
 
