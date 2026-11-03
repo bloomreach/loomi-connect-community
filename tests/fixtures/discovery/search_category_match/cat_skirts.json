@@ -1,0 +1,230 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 30,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "100",
+     "title": "Product 100",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "101",
+     "title": "Product 101",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "102",
+     "title": "Product 102",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "103",
+     "title": "Product 103",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "104",
+     "title": "Product 104",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "105",
+     "title": "Product 105",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "106",
+     "title": "Product 106",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "107",
+     "title": "Product 107",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "108",
+     "title": "Product 108",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "109",
+     "title": "Product 109",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "110",
+     "title": "Product 110",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "111",
+     "title": "Product 111",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "112",
+     "title": "Product 112",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "113",
+     "title": "Product 113",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "114",
+     "title": "Product 114",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "115",
+     "title": "Product 115",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "116",
+     "title": "Product 116",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "117",
+     "title": "Product 117",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "118",
+     "title": "Product 118",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "119",
+     "title": "Product 119",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "120",
+     "title": "Product 120",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "121",
+     "title": "Product 121",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "122",
+     "title": "Product 122",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    },
+    {
+     "pid": "123",
+     "title": "Product 123",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "in_stock": true
+    }
+   ]
+  },
+  "debug": {
+   "feUrl": "http://internal.invalid/?auth_key=FAKE"
+  }
+ }
+}

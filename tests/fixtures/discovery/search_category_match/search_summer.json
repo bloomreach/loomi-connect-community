@@ -1,0 +1,99 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 10,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "800",
+     "title": "Product 800",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "801",
+     "title": "Product 801",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "802",
+     "title": "Product 802",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "803",
+     "title": "Product 803",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "804",
+     "title": "Product 804",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "805",
+     "title": "Product 805",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "806",
+     "title": "Product 806",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "807",
+     "title": "Product 807",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "808",
+     "title": "Product 808",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "809",
+     "title": "Product 809",
+     "brand": "Acme",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "feUrl": "http://internal.invalid/?auth_key=FAKE"
+  },
+  "keywordRedirect": {
+   "original query": "summer sale",
+   "redirected query": "summer sale",
+   "redirected url": "https://shop.example.test/summer"
+  }
+ }
+}

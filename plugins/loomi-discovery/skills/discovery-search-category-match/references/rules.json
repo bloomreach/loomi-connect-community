@@ -1,0 +1,33 @@
+{
+  "about": "Thresholds for the search versus category comparison. scripts/category_match.py reads this file, so change a rule here and nowhere else. Each key is explained under notes.",
+  "top_queries": 50,
+  "min_sessions": 200,
+  "page_size": 24,
+  "overlap_aligned": 0.6,
+  "overlap_low": 0.3,
+  "broader_ratio": 1.5,
+  "perf_gap": 0.15,
+  "brand_shift": 0.3,
+  "price_ratio": 1.5,
+  "stock_gap": 0.15,
+  "stock_fields": ["in_stock", "inStock", "availability", "available", "stock_status", "inventory", "stock_level", "quantity"],
+  "department_words": {
+    "men": ["men", "mens", "man", "male"],
+    "women": ["women", "womens", "woman", "ladies", "lady", "female"],
+    "kids": ["kids", "kid", "children", "childrens", "child", "boys", "girls", "baby", "babies"]
+  },
+  "notes": {
+    "top_queries": "How many of the busiest search queries (by browse sessions) are checked for a matching category.",
+    "min_sessions": "Queries with fewer browse sessions than this are skipped: too little traffic to judge.",
+    "page_size": "How many products count as page one when comparing the search and category grids.",
+    "overlap_aligned": "If at least this share of the category's page one also appears on the search page one, search and category are aligned: no action.",
+    "overlap_low": "If less than this share of the category's page one appears on the search page one, the pages are mismatched.",
+    "broader_ratio": "Search counts as broader than the category when it finds at least this many times as many products (numFound).",
+    "perf_gap": "The category beats the search (or the other way round) when its conversion rate is better by at least this share, e.g. 0.15 = 15% better. Revenue per visit is used when conversion is missing.",
+    "brand_shift": "A brand mix difference (total variation distance, 0 to 1) at or above this is flagged.",
+    "price_ratio": "A median page-one price on one page at least this many times the other's is flagged.",
+    "stock_gap": "An in-stock share on the search page lower than the category's by at least this much (0 to 1) is flagged.",
+    "stock_fields": "Product fields read as stock (true/false, 'in stock'/'out of stock', or a number above 0). Ask for one of them in the grid fl. If none is returned, the stock check is reported as not checked.",
+    "department_words": "Words in a query that name a top-level department, keyed by the department's name in the category path. 'mens pants' matches /men/pants, not /women/pants."
+  }
+}
