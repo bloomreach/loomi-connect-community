@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery
   access: writes
 ---
@@ -30,9 +30,9 @@ This skill **writes** to Bloomreach Discovery. Discovery changes are **live imme
 Rules for every write:
 
 - **Plan first, then ask.** Build the plan with the script (step 4), show it, run the impact checks (step 5), then ask for an explicit "yes" that names what will change: "Disable these 6 rules on staging?" A yes covers one batch, never the next one, and never production.
-- **Deletes get their own yes**, after the other changes, naming each rule: "Permanently delete rule 2002 'Summer sale boost'? This can't be undone." Never delete an enabled rule: the plan turns that into a disable.
+- **Each delete is its own batch and gets its own yes**, after the other changes, naming the rule: "Permanently delete rule 2002 'Summer sale boost'? This can't be undone." Never delete an enabled rule: the plan turns that into a disable.
 - **Staging first.** Write the batch to staging (`environment: "staging"`), check it, then ask separately before production. Rule IDs can differ between environments, so production needs its own read and plan.
-- **Never change a rule in a running A/B test** (`isLive`, `isAbTestLive`, or a RUNNING experiment's bucket). The plan refuses it.
+- **Never change a rule in a running A/B test** (`isLive`, `isAbTestLive`, or a bucket of an experiment whose status is in `running_statuses` or missing). The plan blocks it.
 - **Save the plan with `--out` before writing**: it holds the undo for every change.
 - **One write at a time**, in plan order. After each, read the rule back and check it. If any write fails, stop: report what changed and what didn't, and give the undo for what changed. Don't retry with changed values without asking.
 - **Only the tools in the table above.** `search_tools` also returns other write tools; never call them, or any tool tagged `internal`.
@@ -64,7 +64,7 @@ You need the account, and optionally the site. Ask for the account name; don't l
 
 ### Rules for calling the tools
 
-- **One call at a time.** Discovery allows 3 requests per second. If a call returns HTTP 429, wait a few seconds and retry.
+- **One call at a time.** Discovery allows 3 requests per second. If a call returns HTTP 429, wait for `Retry-After` (a few seconds if it isn't set), then retry.
 - **Save what you read** to files in your working folder: the script reads them.
 
 ### Running the scripts
@@ -94,13 +94,10 @@ One call at a time, in the environment you'll write to:
 python3 <this skill's folder>/scripts/cleanup_plan.py plan --request <work>/request.json --rule <id>=<work>/rule_<id>.json --experiments <work>/experiments.json --environment staging --account <account> --out <work>/plan.json
 ```
 
-Repeat `--rule` for each rule; add `--site-group-id` if you use a site. The plan lists:
+`--environment` and `--account` are required; repeat `--rule` for each rule, and add `--site-group-id` if you use a site (it goes into every payload). The plan uses the shared shape in the repo's authoring guide ("Plan files for write skills"):
 
-- `changes`: disables, date and scope changes, each with `before`, `after`, `tool`, `payload`, `undo` (or `undo_note` when there's no exact undo) and `qa`, the check to run;
-- `deletes`: apart, each needing its own yes;
-- `refused`: what the skill won't do and why (running test, protected name, media rule, redirect, not editable, delete too soon, switching a rule on);
-- `noop`: already in the requested state; `missing`: rules you didn't read;
-- `next_batch`: changes over `max_changes_per_batch` or `max_deletes_per_batch`.
+- `changes`: every request, numbered `n`, with `status` `ready`, `blocked` (reasons in `problems`: running test, protected name, media rule, redirect, not editable, delete too soon, switching a rule on, no rule detail read) or `no_change`; its `kind` (`disable`, `update`, `delete`), `before`, `after`, `tool`, `payload`, `undo` (a list, empty when there's no exact undo, with `undo_note` saying why), `live_impact`, `warnings`, and `qa`, the check to run;
+- `batches`: the ready changes to ask about, at most `max_changes_per_batch` per batch. Each delete is a batch of its own.
 
 If scripts can't run here, build the same plan by hand from the rules in [references/change-request.md](references/change-request.md).
 
@@ -116,9 +113,9 @@ On a **NO-GO**, take that change out of the batch and say why. On **GO WITH CAUT
 
 ### 6. Confirm and write the batch
 
-Show the plan as a table (rule, what changes, before → after, undo, check result) and ask for a yes naming the batch and environment. Then, one at a time, call each change's `tool` with its `payload`. After each write, read the rule back with its `get_*` tool and save it.
+Show the plan as a table (rule, what changes, before → after, undo, check result) and ask for a yes naming the first batch and the environment. Then, one at a time, call each change's `tool` with its `payload`. After each write, read the rule back with its `get_*` tool and save it. Ask again for each further batch.
 
-Then ask, separately, about the deletes, naming each rule. Write them one at a time.
+Each delete is its own batch: ask about it on its own, naming the rule, write it, then read the rule again and save the response. A not-found response is what you expect.
 
 ### 7. Verify
 
@@ -126,14 +123,14 @@ Then ask, separately, about the deletes, naming each rule. Write them one at a t
 python3 <this skill's folder>/scripts/cleanup_plan.py verify --plan <work>/plan.json --rule <id>=<work>/after_<id>.json --out <work>/verify.json
 ```
 
-Report any change that doesn't match the plan. For a production pass, go back to step 3 in production, and ask again.
+Every ready change needs a read-back, deletes too. The result per change is `in_place`, `not_in_place` or `gone` (a delete is done only when the rule reads back as not found). Report any change that isn't as planned. For a production pass, go back to step 3 in production, and ask again.
 
 ## Output
 
 ```
 ## Rule cleanup: <account/site> — <staging|production>
 
-**Done:** <n> changes, <n> deletes. **Skipped:** <n> refused, <n> already done, <n> next batch.
+**Done:** <n> changes, <n> deletes. **Skipped:** <n> blocked, <n> already done (no_change), <n> in later batches.
 
 | # | Rule | Change | Before → after | Check | Result |
 |---|---|---|---|---|---|

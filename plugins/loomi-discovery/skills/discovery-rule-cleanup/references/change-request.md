@@ -26,21 +26,23 @@ A JSON list, or `{"changes": [...]}`. One entry per rule:
 
 ## What the plan does with each request
 
+The plan uses the shared shape in the repo's authoring guide ("Plan files for write skills"). "Blocked" below means `status: blocked`, with the reason in `problems`.
+
 | Request | Plan |
 |---|---|
-| Media rule (`ruleType: campaign`) | Refused: no write tool. Give the dashboard steps |
-| Redirect | Refused: `discovery-redirect-fixer` |
-| Rule in a running test (`isLive`, `isAbTestLive`, or a bucket of a RUNNING experiment) | Refused until the test ends |
-| `isEditable: false` | Refused |
-| Name matches `protected_name_pattern` | Refused unless `owner_confirmed: true` |
-| `disable` on a disabled rule | No-op |
+| Media rule (`ruleType: campaign`) | Blocked: no write tool. Give the dashboard steps |
+| Redirect | Blocked: `discovery-redirect-fixer` |
+| Rule in a running test (`isLive`, `isAbTestLive`, or a bucket of an experiment whose status is in `running_statuses`, compared case-insensitively, or missing) | Blocked until the test ends |
+| `isEditable: false` | Blocked |
+| Name matches `protected_name_pattern` | Blocked unless `owner_confirmed: true` |
+| `disable` on a disabled rule | `no_change` |
 | `delete` on an enabled rule | Planned as a **disable**: delete it later |
-| `delete` on a disabled rule that's expired, or last changed `delete_min_disabled_days` ago or more | A delete, listed apart, with no undo |
-| `delete` on a rule disabled more recently | Refused for now |
-| `set_end_date` in the past | Refused: disable instead |
+| `delete` on a disabled rule that's expired, or last changed `delete_min_disabled_days` ago or more | A delete in a batch of its own, with an empty undo |
+| `delete` on a rule disabled more recently | Blocked for now |
+| `set_end_date` in the past | Blocked: disable instead |
 | `set_end_date` on a rule with no end date | Planned, but the undo is "clear it in the dashboard" |
-| `set_queries` when the saved rule has no `matchType` | Refused: save the detail, not the list |
-| More than `max_changes_per_batch` changes or `max_deletes_per_batch` deletes | The rest go to `next_batch` |
+| `set_queries` when the saved rule has no `matchType` | Blocked: save the detail, not the list |
+| More than `max_changes_per_batch` ready changes | Further batches. Only ready changes count; each delete is a batch of its own |
 
 ## The write tools (checked against their published schemas, 2026-11)
 

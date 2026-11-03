@@ -5,7 +5,7 @@
    {
     "id": "e1",
     "experimentName": "Coat layout",
-    "experimentStatus": "RUNNING",
+    "experimentStatus": "Running",
     "buckets": [
      {
       "ruleIdentifierInfo": {

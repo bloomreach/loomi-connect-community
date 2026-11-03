@@ -6,7 +6,7 @@ All account names, rule IDs, queries and figures are invented.
 
 **Assistant (after reading 6 rules and the experiments on staging, and building the plan):**
 
-> I've planned 4 changes and 1 delete on **staging**. Two items are refused.
+> I've planned 4 changes and 1 delete on **staging**. Two items are blocked.
 >
 > | # | Rule | Change | Before → after | Check | Undo |
 > |---|---|---|---|---|---|
@@ -15,7 +15,7 @@ All account names, rule IDs, queries and figures are invented.
 > | 3 | 2007 Dress facets (dress) | end date | none → 31 Dec 2026 | GO | clear in the dashboard |
 > | 4 | 2009 Backpack boost | queries | backpack → backpacks | GO WITH CAUTION: "backpacks" has 3× the traffic | queries: backpack |
 >
-> **Refused:** 2005 is in the running test "Boots layout"; 2010 is a banner (media rules have no write tool, so here are the dashboard steps: …).
+> **Blocked:** 2005 is in the running test "Boots layout"; 2010 is a banner (media rules have no write tool, so here are the dashboard steps: …).
 >
 > The plan and undo are saved in `plan.json`. **Disable 2001 and 2003, set 2007's end date and retarget 2009 on staging?**
 
@@ -25,4 +25,4 @@ All account names, rule IDs, queries and figures are invented.
 
 **User:** "Yes, delete it."
 
-> Deleted, and confirmed gone. Do you want the same changes in **production**? I'll read the production rules and plan again first.
+> Deleted, and confirmed gone: the rule now reads back as not found. Do you want the same changes in **production**? I'll read the production rules and plan again first.

@@ -19,7 +19,7 @@ Applies a Bloomreach Discovery merchandising rule cleanup, usually the list from
 
 ## Notes and limitations
 
-- **Discovery changes are live immediately**, and deletes can't be undone. The skill asks before each batch, separately before deletes, and separately before production.
+- **Discovery changes are live immediately**, and deletes can't be undone. The skill asks before each batch, separately before each delete, and separately before production.
 - It never deletes an enabled rule: that becomes a disable, and the delete can follow later.
 - Media rules (banners) have no write tool in Loomi Connect, so the skill gives dashboard steps. Redirects go to `discovery-redirect-fixer`.
 - The update tools can't clear an end date. If a rule had none, undoing a new end date means clearing it in the dashboard; the plan says so.
