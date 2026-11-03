@@ -1,0 +1,509 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 70,
+   "docs": [
+    {
+     "docType": "content",
+     "slots": [
+      {
+       "id": "s1"
+      }
+     ],
+     "title": "Sale banner"
+    },
+    {
+     "pid": "p300",
+     "title": "Product p300"
+    },
+    {
+     "pid": "p301",
+     "title": "Product p301"
+    },
+    {
+     "pid": "p302",
+     "title": "Product p302"
+    },
+    {
+     "pid": "p303",
+     "title": "Product p303"
+    },
+    {
+     "pid": "p304",
+     "title": "Product p304"
+    },
+    {
+     "pid": "p305",
+     "title": "Product p305"
+    },
+    {
+     "pid": "p306",
+     "title": "Product p306"
+    },
+    {
+     "pid": "p307",
+     "title": "Product p307"
+    },
+    {
+     "pid": "p308",
+     "title": "Product p308"
+    },
+    {
+     "pid": "p309",
+     "title": "Product p309"
+    },
+    {
+     "pid": "p310",
+     "title": "Product p310"
+    },
+    {
+     "pid": "p311",
+     "title": "Product p311"
+    },
+    {
+     "pid": "p312",
+     "title": "Product p312"
+    },
+    {
+     "pid": "p313",
+     "title": "Product p313"
+    },
+    {
+     "pid": "p314",
+     "title": "Product p314"
+    },
+    {
+     "pid": "p315",
+     "title": "Product p315"
+    },
+    {
+     "pid": "p316",
+     "title": "Product p316"
+    },
+    {
+     "pid": "p317",
+     "title": "Product p317"
+    },
+    {
+     "pid": "p318",
+     "title": "Product p318"
+    },
+    {
+     "pid": "p319",
+     "title": "Product p319"
+    },
+    {
+     "pid": "p320",
+     "title": "Product p320"
+    },
+    {
+     "pid": "p321",
+     "title": "Product p321"
+    },
+    {
+     "pid": "p322",
+     "title": "Product p322"
+    },
+    {
+     "pid": "p323",
+     "title": "Product p323"
+    },
+    {
+     "pid": "p324",
+     "title": "Product p324"
+    },
+    {
+     "pid": "p325",
+     "title": "Product p325"
+    },
+    {
+     "pid": "p326",
+     "title": "Product p326"
+    },
+    {
+     "pid": "p327",
+     "title": "Product p327"
+    },
+    {
+     "pid": "p328",
+     "title": "Product p328"
+    },
+    {
+     "pid": "p329",
+     "title": "Product p329"
+    }
+   ]
+  },
+  "debug": {
+   "explain.structured": {
+    "p300": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 350,
+      "relevance": 50,
+      "performance": 300,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p301": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 348,
+      "relevance": 49,
+      "performance": 299,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p302": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 346,
+      "relevance": 48,
+      "performance": 298,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p303": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 344,
+      "relevance": 47,
+      "performance": 297,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p304": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 342,
+      "relevance": 46,
+      "performance": 296,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p305": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 340,
+      "relevance": 45,
+      "performance": 295,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p306": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 338,
+      "relevance": 44,
+      "performance": 294,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p307": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 336,
+      "relevance": 43,
+      "performance": 293,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p308": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 334,
+      "relevance": 42,
+      "performance": 292,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p309": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 332,
+      "relevance": 41,
+      "performance": 291,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p310": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 330,
+      "relevance": 40,
+      "performance": 290,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p311": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 328,
+      "relevance": 39,
+      "performance": 289,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p312": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 326,
+      "relevance": 38,
+      "performance": 288,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p313": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 324,
+      "relevance": 37,
+      "performance": 287,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p314": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 322,
+      "relevance": 36,
+      "performance": 286,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p315": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 320,
+      "relevance": 35,
+      "performance": 285,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p316": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 318,
+      "relevance": 34,
+      "performance": 284,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p317": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 316,
+      "relevance": 33,
+      "performance": 283,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p318": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 314,
+      "relevance": 32,
+      "performance": 282,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p319": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 312,
+      "relevance": 31,
+      "performance": 281,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p320": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 310,
+      "relevance": 30,
+      "performance": 280,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p321": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 308,
+      "relevance": 29,
+      "performance": 279,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p322": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 306,
+      "relevance": 28,
+      "performance": 278,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p323": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 304,
+      "relevance": 27,
+      "performance": 277,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p324": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 302,
+      "relevance": 26,
+      "performance": 276,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p325": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 300,
+      "relevance": 25,
+      "performance": 275,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p326": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 298,
+      "relevance": 24,
+      "performance": 274,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p327": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 296,
+      "relevance": 23,
+      "performance": 273,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p328": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 294,
+      "relevance": 22,
+      "performance": 272,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p329": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 292,
+      "relevance": 21,
+      "performance": 271,
+      "merchandisingRulesApplied": {}
+     }
+    ]
+   },
+   "customizations.explain": [],
+   "feUrl": "https://example.invalid/x?auth_key=FAKE"
+  },
+  "keywordRedirect": {
+   "redirected_url": "https://shop.example.test/jackets"
+  }
+ },
+ "error": null
+}

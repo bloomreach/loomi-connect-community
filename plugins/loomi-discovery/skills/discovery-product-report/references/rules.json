@@ -1,0 +1,27 @@
+{
+  "about": "Thresholds for the one-product report. scripts/product_report.py reads this file. Each key is explained under notes.",
+  "page_size": 24,
+  "max_rows_per_call": 200,
+  "top_queries": 50,
+  "max_query_grids": 8,
+  "max_peer_lookups": 12,
+  "min_peers": 3,
+  "weak_ratio": 0.75,
+  "strong_ratio": 1.25,
+  "low_stock_values": ["low", "out_of_stock", "out of stock", "0", "false", "none"],
+  "required_fields": ["title", "description", "thumb_image", "price", "brand"],
+  "max_actions": 3,
+  "notes": {
+    "page_size": "Products on the first page. A product ranked deeper than this is 'not on page one' (also --page-size).",
+    "max_rows_per_call": "Largest rows value to request from search_discovery_product_grid_insights; rows=500 and above return HTTP 500.",
+    "top_queries": "How many top queries by revenue to read from get_discovery_query_performance when choosing which searches to check.",
+    "max_query_grids": "At most this many search grids are fetched for the product (the most relevant top queries), to keep the call count small.",
+    "max_peer_lookups": "At most this many peer products (from page one of the product's main category) get a get_discovery_product_performance call.",
+    "min_peers": "With fewer peers than this, the peer comparison is reported as not checked rather than judged.",
+    "weak_ratio": "A metric below this share of the peer median is weak (for example conversion rate under 75% of similar products).",
+    "strong_ratio": "A metric above this share of the peer median is strong; a strong product ranked off page one is worth a look.",
+    "low_stock_values": "Catalog stock_level or availability values (lower-cased) that count as low or out of stock.",
+    "required_fields": "Catalog fields a product should have; each missing one is a data gap handed to product-data-enhancer.",
+    "max_actions": "How many next actions the report lists, most important first."
+  }
+}

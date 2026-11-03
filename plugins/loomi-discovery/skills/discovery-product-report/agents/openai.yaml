@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Discovery Product Report"
+  short_description: "How one Bloomreach Discovery product is doing across search, categories, rules and stock"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true

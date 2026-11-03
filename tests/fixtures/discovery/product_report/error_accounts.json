@@ -1,0 +1,7 @@
+{
+ "result": {
+  "success": false,
+  "data": [],
+  "error": "Unknown account. Available accounts: acme_a, acme_b, acme_c, acme_d"
+ }
+}

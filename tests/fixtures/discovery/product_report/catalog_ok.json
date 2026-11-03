@@ -1,0 +1,18 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": "p100",
+   "attributes": {
+    "availability": true,
+    "brand": "Northwind",
+    "title": "Rain jacket",
+    "description": "Light and waterproof.",
+    "price": 120,
+    "stock_level": "high",
+    "thumb_image": "https://img.example.test/p100.webp"
+   },
+   "variant_record_count": 3
+  }
+ }
+}
