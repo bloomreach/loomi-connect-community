@@ -1,0 +1,34 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 5,
+   "algoId": "br-train",
+   "name": "New ABR",
+   "type": "ABR_MERCHANT",
+   "status": "In Training",
+   "searchType": "KEYWORD",
+   "domainKey": "acme",
+   "signals": null,
+   "modelTrainingStatus": "TRAINING_COMPLETED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1792800000000,
+   "createdBy": "editor.one@example.test",
+   "lastModifiedAt": 1792800000000,
+   "lastModifiedBy": "editor.two@example.test",
+   "weights": [
+    {
+     "feature_key": "text_match",
+     "display_weight": 60
+    },
+    {
+     "feature_key": "revenue",
+     "display_weight": 40
+    }
+   ],
+   "modelMetaData": null
+  },
+  "error": null
+ }
+}

@@ -1,0 +1,31 @@
+{
+  "about": "Thresholds for the ranking algorithm review. scripts/algorithm_review.py reads this file, so change a rule here and nowhere else. Each key is explained under notes; references/review-checks.md says what each check means.",
+  "training_stuck_days": 7,
+  "syncing_stuck_hours": 24,
+  "stale_days": 365,
+  "dominance_share": 0.4,
+  "min_performance_share": 0.05,
+  "zero_weight": 0.001,
+  "custom_signal_share": 0.25,
+  "near_duplicate_similarity": 0.98,
+  "min_visits": 500,
+  "underperform_ratio": 0.75,
+  "max_listed": 5,
+  "sample_queries": 20,
+  "sample_categories": 15,
+  "notes": {
+    "training_stuck_days": "An algorithm still 'In Training' this many days after it was last changed is stuck (trained models usually finish in 24-48 hours).",
+    "syncing_stuck_hours": "An algorithm still 'Syncing' this many hours after it was last changed is stuck (a weight sync usually takes about 20 minutes).",
+    "stale_days": "A custom or manual algorithm in use that hasn't changed for this many days is worth a second look: its weights were set for an older catalog and traffic.",
+    "dominance_share": "One signal with at least this share of an algorithm's total combined weight dominates the ranking.",
+    "min_performance_share": "An algorithm in use whose shopper-behaviour signals (views, add-to-carts, conversions, revenue) have less than this share of its total weight ignores what shoppers do.",
+    "zero_weight": "A weight at or below this counts as zero.",
+    "custom_signal_share": "A custom catalog signal (for example margin or rating) with at least this share of the total weight is driving the ranking; confirm that's intended.",
+    "near_duplicate_similarity": "Two algorithms of the same scope whose weight vectors have at least this cosine similarity are near-duplicates.",
+    "min_visits": "An algorithm's served queries or categories need at least this many visits in the sample before its conversion is compared.",
+    "underperform_ratio": "An algorithm whose sampled queries or categories convert below this share of the others' conversion rate is a candidate for an A/B test against the default.",
+    "max_listed": "How many signals, scopes or examples to list per finding.",
+    "sample_queries": "How many top-revenue search queries to fetch a product grid for, to see which algorithm each one uses.",
+    "sample_categories": "How many top-revenue categories to fetch a product grid for, to see which algorithm each one uses."
+  }
+}

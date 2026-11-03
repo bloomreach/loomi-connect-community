@@ -1,0 +1,76 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 11,
+    "algoId": "br-standard",
+    "name": "Classic category ranking",
+    "type": "ML_NON_LINEAR_GLOBAL",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "domainKey": "acme",
+    "signals": null,
+    "modelTrainingStatus": "TRAINING_COMPLETED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1724544000000,
+    "createdBy": "editor.one@example.test",
+    "lastModifiedAt": 1724544000000,
+    "lastModifiedBy": "editor.two@example.test"
+   },
+   {
+    "id": 12,
+    "algoId": "br-cat",
+    "name": "Category optimised",
+    "type": "ML_LINEAR_GLOBAL",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "domainKey": "acme",
+    "signals": null,
+    "modelTrainingStatus": "TRAINING_COMPLETED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1791072000000,
+    "createdBy": "editor.one@example.test",
+    "lastModifiedAt": 1791072000000,
+    "lastModifiedBy": "editor.two@example.test"
+   },
+   {
+    "id": 13,
+    "algoId": "br-noperf",
+    "name": "Text only category",
+    "type": "MANUAL",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "domainKey": "acme",
+    "signals": null,
+    "modelTrainingStatus": "TRAINING_COMPLETED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1791072000000,
+    "createdBy": "editor.one@example.test",
+    "lastModifiedAt": 1791072000000,
+    "lastModifiedBy": "editor.two@example.test"
+   },
+   {
+    "id": 14,
+    "algoId": "br-norev",
+    "name": "No revenue",
+    "type": "MANUAL",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "domainKey": "acme",
+    "signals": null,
+    "modelTrainingStatus": "TRAINING_COMPLETED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1791072000000,
+    "createdBy": "editor.one@example.test",
+    "lastModifiedAt": 1791072000000,
+    "lastModifiedBy": "editor.two@example.test"
+   }
+  ],
+  "error": null
+ }
+}

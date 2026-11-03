@@ -1,0 +1,25 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "dress",
+    "visits": 5000,
+    "revenue": "$50000.00",
+    "conversion_rate": "4.00%"
+   },
+   {
+    "query": "shirt",
+    "visits": 4000,
+    "revenue": "$9000.00",
+    "conversion_rate": "1.00%"
+   },
+   {
+    "query": "jeans",
+    "visits": 3000,
+    "revenue": "$30000.00",
+    "conversion_rate": "4.00%"
+   }
+  ]
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "cat_id": "100",
+    "category": "dresses",
+    "visits": 6000,
+    "revenue": "$60000.00",
+    "conversion_rate": "3.00%"
+   },
+   {
+    "cat_id": "200",
+    "category": "shirts",
+    "visits": 2000,
+    "revenue": "$10000.00",
+    "conversion_rate": "2.00%"
+   },
+   {
+    "cat_id": "300",
+    "category": "jeans",
+    "visits": 300,
+    "revenue": "$900.00",
+    "conversion_rate": "1.00%"
+   }
+  ]
+ }
+}

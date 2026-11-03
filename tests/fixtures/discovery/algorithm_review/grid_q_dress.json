@@ -1,0 +1,98 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 5,
+   "docs": [
+    {
+     "pid": "p1",
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "customizations.explain": [
+    {
+     "id": 501,
+     "ruleType": "ranking_algo",
+     "audienceNames": [],
+     "liveInTest": false,
+     "queries": [
+      {
+       "query": "dress",
+       "type": "sitesearch",
+       "matchType": "EXACT_MATCH"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "ranking_algo",
+       "value": "{\"id\": \"br-text\"}"
+      }
+     ]
+    },
+    {
+     "id": 900,
+     "ruleType": "ranking_algo",
+     "audienceNames": [],
+     "liveInTest": false,
+     "queries": [
+      {
+       "query": "*",
+       "type": "global",
+       "matchType": "EXACT_MATCH"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "ranking_algo",
+       "value": "{\"id\": \"br-margin\"}"
+      }
+     ]
+    },
+    {
+     "id": 502,
+     "ruleType": "ranking_algo",
+     "audienceNames": [
+      "VIP shoppers"
+     ],
+     "liveInTest": false,
+     "queries": [
+      {
+       "query": "dress",
+       "type": "sitesearch",
+       "matchType": "EXACT_MATCH"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "ranking_algo",
+       "value": "{\"id\": \"br-margin\"}"
+      }
+     ]
+    },
+    {
+     "id": 77,
+     "ruleType": "facet",
+     "audienceNames": [],
+     "liveInTest": false,
+     "queries": [
+      {
+       "query": "*",
+       "type": "global"
+      }
+     ],
+     "customizationItems": [
+      {
+       "type": "always_included_facets",
+       "value": "[\"brand\"]"
+      }
+     ]
+    }
+   ],
+   "rankingAlgorithmName": "Text relevance",
+   "feUrl": "http://frontend.example.test/api?auth_key=FAKEKEY123"
+  }
+ },
+ "error": null
+}
