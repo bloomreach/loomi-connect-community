@@ -117,7 +117,10 @@ The script fills each link's parameters with the variant's current values, then 
 | Placeholder host (`example.com` and the others in rules.json) | Warning |
 | Placeholder word in the path or query (`test`, `todo`, `lorem` …) | Warning |
 
-Then load every link in `links_to_load`, trying each method in turn, per link:
+Then load every link in `links_to_load`, trying each method in turn, per link. Two rules first:
+
+- **Never send a customer's data to a website.** If a link holds Jinja, render it with dummy values (`test@example.invalid`, "Test"), never a real customer's, and mask personal values wherever you show a URL.
+- **Don't trigger actions.** Load subscribe, unsubscribe, confirm, verify and other links carrying a token with `HEAD` only (web-fetch tool), never in a browser; if `HEAD` isn't possible, mark them **not checked**.
 
 1. **A web-fetch tool.** `HEAD`, falling back to `GET`, following redirects.
 2. **A browser tool**, if the web-fetch tool is missing or refuses the URL. Open the link in a new tab. Where the tool can run JavaScript, read the real status with `({status: (performance.getEntriesByType('navigation')[0] || {}).responseStatus, url: location.href, type: document.contentType})`; otherwise read the title and text. Never click, sign in, accept cookies, submit anything or solve a CAPTCHA. Wait for any site approval the client asks for; a declined approval means **not checked**.

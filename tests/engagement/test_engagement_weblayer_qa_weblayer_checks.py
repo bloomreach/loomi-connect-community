@@ -184,7 +184,7 @@ class WeblayerChecksTest(unittest.TestCase):
 
     def test_external_loads(self):
         loads = self.broken["variants"][0]["external_loads"]
-        self.assertIn({"kind": "fetch", "target": "https://collector.analytics.invalid/hit?e=1", "expected": False}, loads)
+        self.assertIn({"kind": "fetch", "target": "https://collector.analytics.invalid/hit", "expected": False}, loads)
         self.assertEqual(severity(self.broken, 0, "external load(s)"), "warning")
 
     def test_size(self):
@@ -217,6 +217,20 @@ class WeblayerChecksTest(unittest.TestCase):
         rules = json.loads((SKILL / "references/rules.json").read_text(encoding="utf-8"))
         keys = set(rules) - {"about", "notes"}
         self.assertEqual(keys, set(rules["notes"]))
+
+
+class ExpectedLoadTest(unittest.TestCase):
+    def test_allowlist_matches_hosts_not_substrings(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("weblayer_checks", SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        for target in ["/brstatic/utils.js", "https://api.exponea.com", "https://api.exponea.com/track",
+                       "https://cdn.jsdelivr.net/npm/intl-tel-input@17/build/js/utils.js"]:
+            self.assertTrue(mod.expected_load(target), target)
+        for target in ["https://evil.invalid/brstatic/x.js", "https://api.exponea.com.evil.invalid/x",
+                       "https://cdn.jsdelivr.net/npm/other@1/x.js", "http://api.exponea.com/x", "/other/x.js"]:
+            self.assertFalse(mod.expected_load(target), target)
 
 
 if __name__ == "__main__":

@@ -49,6 +49,17 @@ class MessageChecksTest(unittest.TestCase):
         self.assertEqual(spam["level"], "high")
         self.assertTrue(any("points to evil.test" in r for r in spam["reasons"]))
 
+    def test_non_web_links_are_never_loaded(self):
+        _, out = run(FX / "email_broken.json")
+        self.assertIn(("warning", "non_web_link"), checks(out, "Broken promo / Variant A"))
+        self.assertTrue(all(l["url"].startswith(("http://", "https://")) for l in out["links_to_load"]))
+
+    def test_emails_masked_in_evidence(self):
+        _, out = run(FX / "email_broken.json")
+        evidence = [f.get("evidence", "") for m in out["messages"] for f in m["findings"]]
+        self.assertIn("http://brxcdn.com/a?e=<email>", evidence)
+        self.assertFalse(any("jane@" in e for e in evidence))
+
     def test_each_variant_checked_separately(self):
         _, out = run(FX / "email_broken.json")
         b = checks(out, "Broken promo / Variant B")

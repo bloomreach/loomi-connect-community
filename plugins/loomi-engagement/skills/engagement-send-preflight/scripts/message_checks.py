@@ -37,6 +37,7 @@ SEVERITIES = ("blocker", "warning", "nitpick")
 CHECKED_NODES = {"send-email-action": "email", "send-sms-action": "sms", "push-notification-mobile-action": "push"}
 SEND_HINTS = ("send-", "push", "whatsapp", "rcs", "inbox", "webhook", "mms")
 JINJA_EXPR = re.compile(r"\{\{.*?\}\}", re.S)
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 JINJA_TAG = re.compile(r"\{%-?\s*(\w+)(.*?)-?%\}", re.S)
 BLOCKS = {"if": "endif", "for": "endfor", "macro": "endmacro", "call": "endcall", "filter": "endfilter",
           "raw": "endraw", "with": "endwith", "block": "endblock", "set": "endset"}
@@ -215,7 +216,7 @@ class Report:
         if where:
             f["where"] = where
         if evidence:
-            f["evidence"] = evidence[:160]
+            f["evidence"] = EMAIL.sub("<email>", evidence)[:160]
         self.findings.append(f)
 
 
@@ -339,6 +340,11 @@ def link_checks(rep, links, channel, all_hosts):
             url, low = "https://" + url, "https://" + low
         if not re.match(r"[a-z][a-z0-9+.-]*:", low) and not low.startswith("//"):
             rep.add(sev, "missing_scheme", "Link has no https:// so it's treated as a relative link and goes nowhere", where, url)
+            continue
+        if not low.startswith(("http://", "https://", "//")):
+            # javascript:, data:, file: and app links are never loaded: a browser tool could run or open them.
+            rep.add("warning", "non_web_link", "Link isn't a web address (" + low.split(":", 1)[0] + ":); email clients and "
+                    "phones may block it. Check it by hand", where, url)
             continue
         if low.startswith("http://"):
             rep.add("warning", "no_tls", "Link uses http://, not https://", where, url)

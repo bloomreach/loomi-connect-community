@@ -23,6 +23,7 @@ import sys
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urlsplit
 
 RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
 ORDER = {"blocker": 0, "warning": 1, "nitpick": 2}
@@ -52,6 +53,25 @@ def load(path):
     if not isinstance(data, dict) or not isinstance(data.get("variants"), list):
         fail(f"{path}: not a search_banners detail result (no variants). Call search_banners with banner_id.")
     return data
+
+
+def expected_load(target):
+    """True if a load is one the platform skeleton needs: a relative path under an allowed path, or an
+    exact allowed host with an allowed path prefix. Substring matches would let evil.tld/brstatic/ through."""
+    a = RULES["allowed_loads"]
+    if target.startswith("/") and not target.startswith("//"):
+        return any(target.startswith(p) for p in a["relative_paths"])
+    try:
+        u = urlsplit(target if not target.startswith("//") else "https:" + target)
+    except ValueError:
+        return False
+    if u.scheme != "https" or not u.hostname:
+        return False
+    for entry in a["hosts"]:
+        host, _, path = entry.partition("/")
+        if u.hostname == host and (not path or u.path.startswith("/" + path)):
+            return True
+    return False
 
 
 def excerpt(s):
@@ -452,7 +472,9 @@ def check_variant(v):
         if kind in js and not any(l["kind"] == kind.rstrip("(") for l in loads):
             loads.append({"kind": kind.rstrip("("), "target": "(computed URL)"})
     for l in loads:
-        l["expected"] = any(a in l["target"] for a in RULES["allowed_loads"])
+        l["expected"] = expected_load(l["target"])
+        # Query strings can hold API keys; report the target without one.
+        l["target"] = excerpt(l["target"].split("?", 1)[0])
     unexpected = [l for l in loads if not l["expected"]]
     if unexpected:
         add("warning", "external loads", f"{len(unexpected)} external load(s) or network call(s) the skeleton doesn't need, e.g. {excerpt(unexpected[0]['target'])}",

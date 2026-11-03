@@ -8,6 +8,9 @@ Checks marked **(script)** are done by `message_checks.py`, with thresholds from
 
 - Extract every href and URL: email modules and rendered HTML, image sources, SMS body, push deep links and web fallbacks. Note which are **primary**: the main call-to-action button, the hero image and its link, and the push primary action. The script lists them in `links_to_load`, primary first (a guess: buttons, the linked hero image and the first SMS link). Skip `{{ email.unsubscribe }}` and other Bloomreach system links, which only exist at send time.
 - Render Jinja in URLs against a sample profile before checking them (`links_needing_render`). If a URL can't be rendered, report the template; don't guess.
+- **Never send a customer's data to a website.** Before loading a rendered URL, replace any personal value in it (email, name, phone, customer ID, address) with a dummy such as `test@example.invalid`, and show rendered URLs in the report with personal values masked.
+- **Don't trigger actions.** Load unsubscribe, confirm, verify, opt-in and other links carrying a token with `HEAD` only (web-fetch tool), never in a browser; if `HEAD` isn't possible, mark them **not checked**.
+- **(script)** `javascript:`, `data:`, `file:` and app links are never loaded: they're reported as findings and left out of `links_to_load`.
 - Check at most about 150 unique URLs per run, primary links first, and say so if you hit the cap.
 
 ### Static checks (script)

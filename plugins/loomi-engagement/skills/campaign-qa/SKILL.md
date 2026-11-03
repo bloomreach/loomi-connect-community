@@ -103,7 +103,7 @@ Work through the parts of [references/message-checks.md](references/message-chec
 
 1. **References.** Check each `customer.*`, `event.*`, `aggregates[...]`, `catalogs[...]`, `recommendations(...)` and `project_variables.*` against the schema and assets.
 2. **Render.** Use the user's test profiles first. Otherwise call `list_customers` **with a query and a small `count`** (without a query it returns every customer), and pick 3–5 profiles with varying data completeness: one rich, one sparse, one missing key attributes. Render subject, preheader and body (or SMS text) for each, and read the result.
-3. **Links.** Render `links_needing_render` against a profile, then load every link in `links_to_load` and the rendered ones, following "Loading links".
+3. **Links.** Render `links_needing_render` against a profile (with dummy values in place of personal data), then load every link in `links_to_load` and the rendered ones, following "Loading links".
 4. **Judgement calls.** Postal address (if the script found none, read the footer), restricted SMS content, misleading subject or sender, dark mode.
 
 ### Step 5: Campaign settings
