@@ -1,0 +1,13 @@
+{
+  "about": "Rules for planning synonym changes. scripts/synonym_plan.py reads this file, so change a limit here and nowhere else. Each key is explained under notes; references/synonym-writes.md explains how the write tools behave.",
+  "max_changes_per_batch": 10,
+  "max_words_per_term": 3,
+  "forbidden_characters": ["\"", "`"],
+  "running_statuses": ["running", "live"],
+  "notes": {
+    "max_changes_per_batch": "At most this many creates, updates, enables and disables go in one batch, which gets one explicit yes. Deletes and reverts are always planned separately, with a yes per item.",
+    "max_words_per_term": "Each synonym term may have at most this many words (the synonym tools reject longer terms).",
+    "forbidden_characters": "Characters a synonym term must not contain (the synonym tools say not to use quotes).",
+    "running_statuses": "Experiment statuses that count as running: a change to a synonym whose terms a running experiment mentions is blocked."
+  }
+}
