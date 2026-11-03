@@ -1,0 +1,6 @@
+{"success": true, "data": {"rows": [
+ {"query": "dress", "browse_sessions": "1,200", "revenue": "$8,400.00"},
+ {"query": "black dress", "browse_sessions": "300", "revenue": "$1,100.00"},
+ {"query": "red dress", "browse_sessions": "120", "revenue": "$600.00"},
+ {"query": "dress fabric", "browse_sessions": "40", "revenue": "$0.00"}
+]}}
