@@ -20,12 +20,16 @@ references/rules.json. Standard library only; no network access.
 """
 import argparse
 import json
+import math
 import re
 import statistics
 import sys
 from pathlib import Path
 
 RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
+MISSING = {"", "na", "n/a", "-", "−", "—", "–", "null", "none", "nan"}
+ACCOUNT_LIST_ERROR = ("Loomi Connect returned an error about the account name; it isn't repeated because it can list "
+                      "other accounts. Ask the user to check the account name.")
 
 
 def fail(msg):
@@ -41,9 +45,17 @@ def load(path):
         fail(f"{path}: can't read it as JSON ({e}).")
     for d in (doc, doc.get("result") if isinstance(doc, dict) else None):
         if isinstance(d, dict) and d.get("success") is False:
-            fail(f"{path}: Loomi Connect returned an error: {d.get('error') or 'no error text'}. "
-                 "This check couldn't run; don't treat it as 'nothing found'.")
+            fail(f"{path}: {tool_error(d.get('error'))} This check couldn't run; don't treat it as 'nothing found'.")
     return doc
+
+
+def tool_error(err):
+    """A Loomi Connect error that's safe to show: never a list of account names (an unknown account name can return
+    every account the user can access)."""
+    text = str(err or "no error text")
+    if "account" in text.lower() and text.count(",") >= 3:
+        return ACCOUNT_LIST_ERROR
+    return "Loomi Connect returned an error: " + (text if len(text) <= 200 else text[:200] + "...")
 
 
 def unwrap(doc):
@@ -61,14 +73,32 @@ def rows(path):
     return [r for r in doc if isinstance(r, dict)] if isinstance(doc, list) else []
 
 
-def num(v):
-    """A number from 21.43, "21.43%" or "$20.62"; None when missing."""
-    if v in (None, ""):
+def number(v):
+    """A number from a tool value ("$1,000.00", "2.50%", "(12.00)"), or None when missing or not a number."""
+    if v is None or isinstance(v, bool):
         return None
-    try:
-        return float(re.sub(r"[^0-9.\-]", "", str(v)))
-    except ValueError:
+    if isinstance(v, (int, float)):
+        return float(v) if math.isfinite(v) else None
+    if not isinstance(v, str):
         return None
+    s = v.strip()
+    if s.lower() in MISSING:
+        return None
+    negative = False
+    if s.startswith("(") and s.endswith(")"):
+        negative, s = True, s[1:-1].strip()
+    if s[:1] in ("−", "–"):
+        s = "-" + s[1:]
+    if s.startswith("-"):
+        negative, s = not negative, s[1:]
+    s = re.sub(r"[$£€,%\s]", "", s)
+    m = re.match(r"[+]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?", s)
+    if not m:
+        return None
+    x = float(m.group(0))
+    if not math.isfinite(x):
+        return None
+    return -x if negative else x
 
 
 def singular(w):
@@ -151,12 +181,12 @@ def cmd_find(a):
     qrows = []
     for p in a.queries:
         qrows += rows(p)
-    qrows.sort(key=lambda r: -(num(r.get("browse_sessions")) or num(r.get("visits")) or 0))
+    qrows.sort(key=lambda r: -(number(r.get("browse_sessions")) or number(r.get("visits")) or 0))
     cats = categories(a.categories)
     expand = synonym_terms(a.synonyms)
     pairs, low = [], 0
     for r in qrows[:a.top]:
-        sessions = num(r.get("browse_sessions")) or num(r.get("visits")) or 0
+        sessions = number(r.get("browse_sessions")) or number(r.get("visits")) or 0
         if sessions < a.min_sessions:
             low += 1
             continue
@@ -175,19 +205,23 @@ def grid(path):
     doc = load(path)
     while isinstance(doc, dict) and isinstance(doc.get("result"), dict):
         doc = doc["result"]
-    data = doc.get("data", doc) if isinstance(doc, dict) else {"response": {"docs": doc}}
+    data = doc.get("data", doc) if isinstance(doc, dict) else doc
     if isinstance(data, list):
         data = {"response": {"docs": data, "numFound": len(data)}}
-    resp = data.get("response") or {}
+    resp = data.get("response") if isinstance(data, dict) else None
+    if not isinstance(resp, dict) or not isinstance(resp.get("docs", []), list):
+        fail(f"{path}: not a product grid result (expected data.response.docs). Save the "
+             "search_discovery_product_grid_insights result for this query or category.")
     docs = [d for d in resp.get("docs") or [] if isinstance(d, dict)
             and d.get("docType") != "content" and d.get("pid") not in (None, "")]
-    return {"docs": docs, "found": resp.get("numFound", len(docs)),
+    found = number(resp.get("numFound"))
+    return {"docs": docs, "found": int(found) if found is not None else len(docs),
             "redirect": data.get("keywordRedirect") or None}
 
 
 def price(d):
     for k in ("sale_price", "price"):
-        v = num(d.get(k)[0] if isinstance(d.get(k), list) and d.get(k) else d.get(k))
+        v = number(d.get(k)[0] if isinstance(d.get(k), list) and d.get(k) else d.get(k))
         if v and v > 0:
             return v
     return None
@@ -208,7 +242,7 @@ def stock(d):
                 return True
             if s in ("false", "no", "out of stock", "outofstock", "out_of_stock", "unavailable", "sold out", "0"):
                 return False
-            n = num(s)
+            n = number(s)
             return None if n is None else n > 0
     return None
 
@@ -236,8 +270,8 @@ def page_stats(g, n):
 def perf(row):
     if not row:
         return None
-    return {"sessions": int(num(row.get("browse_sessions")) or 0), "conversion_rate": num(row.get("conversion_rate")),
-            "rpv": num(row.get("rpv")), "revenue": num(row.get("revenue"))}
+    return {"sessions": int(number(row.get("browse_sessions")) or 0), "conversion_rate": number(row.get("conversion_rate")),
+            "rpv": number(row.get("rpv")), "revenue": number(row.get("revenue"))}
 
 
 def compare_perf(q, c):
@@ -260,11 +294,7 @@ def cmd_compare(a):
     cperf = {str(r.get("cat_id") or "").lower(): r for p in a.category_perf for r in rows(p)}
     paths = {c["cat_id"].lower(): c["path"] for c in categories(a.categories)} if a.categories else {}
     out = []
-    for spec in a.pair:
-        parts = spec.split("|")
-        if len(parts) != 4 or not all(p.strip() for p in parts):
-            fail(f"--pair needs four parts, 'query|category id|search grid file|category grid file': {spec!r}")
-        query, cat_id, sfile, cfile = (p.strip() for p in parts)
+    for query, cat_id, sfile, cfile in a.pair:
         s, c = grid(sfile), grid(cfile)
         ss, cs = page_stats(s, a.page_size), page_stats(c, a.page_size)
         shared = set(ss["_ids"]) & set(cs["_ids"])
@@ -324,6 +354,35 @@ def cmd_compare(a):
     return {"ok": True, "pairs": out, "counts": {v: sum(r["verdict"] == v for r in out) for v in order}}
 
 
+def pair_arg(spec):
+    """'query|category id|search grid file|category grid file' -> a 4-tuple (one-line argparse error otherwise)."""
+    parts = [p.strip() for p in spec.split("|")]
+    if len(parts) != 4 or not all(parts):
+        raise argparse.ArgumentTypeError(
+            f"needs four parts, 'query|category id|search grid file|category grid file': {spec!r}")
+    return tuple(parts)
+
+
+def positive_int(text):
+    try:
+        n = int(text)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"not a whole number: {text!r}")
+    if n < 1:
+        raise argparse.ArgumentTypeError(f"must be 1 or more: {n}")
+    return n
+
+
+def non_negative_int(text):
+    try:
+        n = int(text)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"not a whole number: {text!r}")
+    if n < 0:
+        raise argparse.ArgumentTypeError(f"must be 0 or more: {n}")
+    return n
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")  # titles and brands can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -332,16 +391,17 @@ def main():
     f.add_argument("--queries", action="append", required=True, help="saved get_discovery_query_performance (repeat per page)")
     f.add_argument("--categories", required=True, help="saved list_categories")
     f.add_argument("--synonyms", help="saved list_synonyms_user (optional)")
-    f.add_argument("--top", type=int, default=RULES["top_queries"], help="queries to check (default: rules)")
-    f.add_argument("--min-sessions", type=int, default=RULES["min_sessions"], help="skip quieter queries (default: rules)")
+    f.add_argument("--top", type=positive_int, default=RULES["top_queries"], help="queries to check (default: rules)")
+    f.add_argument("--min-sessions", type=non_negative_int, default=RULES["min_sessions"],
+                   help="skip quieter queries (default: rules)")
     f.add_argument("--out", help="also write the JSON result to this file")
     c = sub.add_parser("compare", help="compare search and category page one for each pair")
-    c.add_argument("--pair", action="append", required=True,
+    c.add_argument("--pair", action="append", required=True, type=pair_arg,
                    help="'query|category id|search grid file|category grid file' (repeat per pair)")
     c.add_argument("--queries", action="append", default=[], help="saved get_discovery_query_performance")
     c.add_argument("--category-perf", action="append", default=[], help="saved get_discovery_category_performance_table")
     c.add_argument("--categories", help="saved list_categories, for category paths")
-    c.add_argument("--page-size", type=int, default=RULES["page_size"], help="products on page one (default: rules)")
+    c.add_argument("--page-size", type=positive_int, default=RULES["page_size"], help="products on page one (default: rules)")
     c.add_argument("--out", help="also write the JSON result to this file")
     a = ap.parse_args()
     result = cmd_find(a) if a.cmd == "find" else cmd_compare(a)

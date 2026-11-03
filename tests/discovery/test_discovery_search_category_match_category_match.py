@@ -148,13 +148,67 @@ class ErrorTest(unittest.TestCase):
         code, out, _ = run("find", "--queries", FX / "missing.json", "--categories", FX / "categories.json")
         self.assertEqual(code, 1)
         self.assertIn("can't read it", out["error"])
-        code, out, _ = run("compare", "--pair", "dress|21200|only-three")
-        self.assertEqual(code, 1)
-        self.assertIn("four parts", out["error"])
+        code, _, err = run("compare", "--pair", "dress|21200|only-three")
+        self.assertEqual(code, 2)
+        self.assertIn("four parts", err)
+        self.assertNotIn("Traceback", err)
+
+    def test_account_list_errors_are_not_repeated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bad = Path(tmp) / "bad.json"
+            bad.write_text(json.dumps({"success": False, "error": "Unknown account 'acme'. Valid accounts: alpha, beta, "
+                                       "gamma, delta, epsilon"}), encoding="utf-8")
+            code, out, _ = run("find", "--queries", bad, "--categories", FX / "categories.json")
+            self.assertEqual(code, 1)
+            self.assertIn("isn't repeated", out["error"])
+            for name in ("alpha", "beta", "gamma"):
+                self.assertNotIn(name, out["error"])
+            long = Path(tmp) / "long.json"
+            long.write_text(json.dumps({"success": False, "error": "x" * 500}), encoding="utf-8")
+            _, out, _ = run("find", "--queries", long, "--categories", FX / "categories.json")
+            self.assertLess(len(out["error"]), 400)
+
+    def test_bad_input_never_gives_a_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            junk = {"list_of_numbers.json": [1, 2, 3], "string.json": "oops", "number.json": 7,
+                    "wrong_docs.json": {"data": {"response": {"docs": "x", "numFound": "lots"}}},
+                    "wrong_data.json": {"data": "x"}, "not_json.json": None}
+            for name, body in junk.items():
+                path = Path(tmp) / name
+                path.write_text("{not json" if body is None else json.dumps(body), encoding="utf-8")
+                runs = [("find", "--queries", path, "--categories", FX / "categories.json"),
+                        ("find", "--queries", FX / "queries.json", "--categories", path),
+                        ("find", "--queries", FX / "queries.json", "--categories", FX / "categories.json",
+                         "--synonyms", path),
+                        ("compare", "--pair", f"dress|21200|{path}|{FX / 'cat_dresses.json'}"),
+                        ("compare", "--pair", f"dress|21200|{FX / 'search_dress.json'}|{FX / 'cat_dresses.json'}",
+                         "--queries", path, "--category-perf", path, "--categories", path)]
+                for args in runs:
+                    code, out, err = run(*args)
+                    self.assertNotIn("Traceback", err, (name, args[0]))
+                    self.assertIn(code, (0, 1), (name, args))
+            for args in (("find", "--queries", FX / "queries.json", "--categories", FX / "categories.json", "--top", "0"),
+                         ("compare", "--pair", f"a|b|{FX / 'search_dress.json'}|{FX / 'cat_dresses.json'}",
+                          "--page-size", "x")):
+                code, _, err = run(*args)
+                self.assertEqual(code, 2)
+                self.assertNotIn("Traceback", err)
 
     def test_help(self):
         code, _, _ = run("--help")
         self.assertEqual(code, 0)
+
+
+class NumberTest(unittest.TestCase):
+    def test_number_parsing(self):
+        import importlib.util
+        sys.dont_write_bytecode = True  # no __pycache__ in the skill folder
+        spec = importlib.util.spec_from_file_location("category_match", SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        for text, want in [("(12.00)", -12.0), ("1.5e3", 1500.0), ("$1,000.00", 1000.0), ("21.43%", 21.43),
+                           ("-3", -3.0), ("NA", None), ("", None), (None, None), ("abc", None), (True, None), (7, 7.0)]:
+            self.assertEqual(mod.number(text), want, text)
 
 
 class RulesTest(unittest.TestCase):

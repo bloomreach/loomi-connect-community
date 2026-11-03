@@ -22,7 +22,7 @@ See [examples/category-search-check.md](examples/category-search-check.md) for i
 ## Notes and limitations
 
 - **Matching is by name, department word and synonym.** "dress" matches "dresses", "mens pants" matches `/men/pants`, and an enabled synonym can link "trouser" to "pants". Queries that match several categories are reported, not compared, because one redirect can't serve every department.
-- **Page one only.** Overlap compares the first 24 products (`page_size` in `references/rules.json`).
+- **Page one only.** Overlap compares the first `page_size` products (in `references/rules.json`).
 - **Stock** is compared only if the catalog has a stock field and it's requested in the grid `fl`.
 - **Recommendations aren't made for you.** Hand each one to `discovery-change-qa` before anyone switches it on; Discovery changes are live immediately.
 - Thresholds are in `references/rules.json`.
