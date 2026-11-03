@@ -1,0 +1,467 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 100,
+   "audienceName": "High value",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 2,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "url",
+     "externalName": "URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "sgmt=high-value",
+       "externalValue": "sgmt=high-value",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 101,
+   "audienceName": "High value copy",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "url",
+     "externalName": "URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "sgmt=high-value",
+       "externalValue": "sgmt=high-value",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 102,
+   "audienceName": "Spring email",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "SpringEmail ",
+       "externalValue": "SpringEmail ",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 103,
+   "audienceName": "Old Skool",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "Old Skool",
+       "externalValue": "Old Skool",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 104,
+   "audienceName": "VIC",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "VIC",
+       "externalValue": "VIC",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 105,
+   "audienceName": "Gifting - do not delete",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "url",
+     "externalName": "URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "&gifting=true",
+       "externalValue": "&gifting=true",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 106,
+   "audienceName": "Test audience",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "testref",
+       "externalValue": "testref",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 107,
+   "audienceName": "Brand new",
+   "user": "editor@example.test",
+   "createdAt": 1793404800000,
+   "modifiedAt": 1793404800000,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "brandnew",
+       "externalValue": "brandnew",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 108,
+   "audienceName": "Diamond",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "diamond",
+       "externalValue": "diamond",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 109,
+   "audienceName": "Diamond club",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "diamond_club",
+       "externalValue": "diamond_club",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 110,
+   "audienceName": "Paris",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "geo",
+     "externalName": "Location",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "paris|ile-de-france|france",
+       "externalValue": "paris|ile-de-france|france",
+       "matchtype": {
+        "id": 1,
+        "internalName": "EXACT_MATCH",
+        "externalName": "EXACT_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 111,
+   "audienceName": "Not Paris",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 0,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "geo",
+     "externalName": "Location",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "paris|ile-de-france|france",
+       "externalValue": "paris|ile-de-france|france",
+       "matchtype": {
+        "id": 1,
+        "internalName": "IS_NOT",
+        "externalName": "IS_NOT"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 112,
+   "audienceName": "Contradiction",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "geo",
+     "externalName": "Location",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "lyon",
+       "externalValue": "lyon",
+       "matchtype": {
+        "id": 1,
+        "internalName": "EXACT_MATCH",
+        "externalName": "EXACT_MATCH"
+       }
+      },
+      {
+       "id": 1,
+       "internalValue": "lyon",
+       "externalValue": "lyon",
+       "matchtype": {
+        "id": 1,
+        "internalName": "IS_NOT",
+        "externalName": "IS_NOT"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 113,
+   "audienceName": "Style formal",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 3,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "seg-0001",
+     "externalName": "Style Preference",
+     "type": "engagement",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "seg-value-0001",
+       "externalValue": "seg-value-0001",
+       "matchtype": {
+        "id": 1,
+        "internalName": "EXACT_MATCH",
+        "externalName": "EXACT_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  },
+  {
+   "id": 114,
+   "audienceName": "Décoration fans",
+   "user": "editor@example.test",
+   "createdAt": 1717071566578,
+   "modifiedAt": 1717071566578,
+   "rulesAffected": 1,
+   "editable": true,
+   "dimensionList": [
+    {
+     "id": 1,
+     "internalName": "ref_url",
+     "externalName": "Referral URL",
+     "type": "discovery",
+     "dimensionValueList": [
+      {
+       "id": 0,
+       "internalValue": "Décoration",
+       "externalValue": "Décoration",
+       "matchtype": {
+        "id": 1,
+        "internalName": "CONTAIN_MATCH",
+        "externalName": "CONTAIN_MATCH"
+       }
+      }
+     ]
+    }
+   ],
+   "sitegroup": null
+  }
+ ],
+ "size": 15,
+ "error": null
+}

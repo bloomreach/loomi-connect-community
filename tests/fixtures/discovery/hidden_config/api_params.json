@@ -1,0 +1,140 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 501,
+   "name": "Force price sort",
+   "ruleType": "api_params",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": [],
+   "customizationItems": {
+    "sort": "price asc"
+   }
+  },
+  {
+   "id": 502,
+   "name": "Debug left on",
+   "ruleType": "api_params",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "query": "*",
+     "queryType": "sitesearch"
+    }
+   ],
+   "params": [
+    {
+     "name": "br_diagnostics",
+     "value": "all"
+    }
+   ]
+  },
+  {
+   "id": 503,
+   "name": "Black Friday rows",
+   "ruleType": "api_params",
+   "enabled": true,
+   "durationTag": "expired",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": [],
+   "customizationItems": {
+    "rows": 60
+   }
+  },
+  {
+   "id": 504,
+   "name": "Old experiment",
+   "ruleType": "api_params",
+   "enabled": false,
+   "durationTag": "unscheduled",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": [],
+   "customizationItems": {
+    "rows": 12
+   }
+  },
+  {
+   "id": 505,
+   "name": "Mystery",
+   "ruleType": "api_params",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": []
+  },
+  {
+   "id": 506,
+   "name": "",
+   "ruleType": "api_params",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": [
+    {
+     "query": "sale",
+     "queryType": "sitesearch"
+    }
+   ],
+   "customizationItems": {
+    "rows": 48
+   }
+  },
+  {
+   "id": 507,
+   "name": "Newest first",
+   "ruleType": "api_params",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": [],
+   "customizationItems": {
+    "sort": "newest desc"
+   }
+  },
+  {
+   "id": 508,
+   "name": null,
+   "ruleType": "api_params",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": [],
+   "customizationItems": {
+    "custom_flag": "x"
+   }
+  },
+  {
+   "id": 509,
+   "name": "keep - do not delete",
+   "ruleType": "api_params",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "lastModifiedAt": 1717071566578,
+   "lastModifiedBy": "editor@example.test",
+   "queries": [],
+   "customizationItems": {
+    "fl": "pid,title"
+   }
+  }
+ ],
+ "meta": {
+  "pagination": {
+   "total": 9,
+   "limit": 1000,
+   "page": 0
+  }
+ },
+ "error": null
+}
