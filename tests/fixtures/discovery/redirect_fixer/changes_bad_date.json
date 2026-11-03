@@ -1,0 +1,11 @@
+[
+ {
+  "action": "create",
+  "queries": [
+   "x"
+  ],
+  "redirect_type": "redirect_terms",
+  "destination_url": "https://www.example-shop.test/x",
+  "started_at": "yesterday"
+ }
+]

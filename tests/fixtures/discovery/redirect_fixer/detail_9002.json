@@ -1,0 +1,39 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "data": {
+    "id": 9002,
+    "startedAt": null,
+    "endedAt": null,
+    "isLive": false,
+    "ruleType": "redirect",
+    "audiences": [],
+    "queries": [
+     {
+      "id": 90020,
+      "query": "sale",
+      "queryType": "sitesearch",
+      "matchType": "PHRASE_MATCH"
+     }
+    ],
+    "customizationItems": {
+     "redirect": {
+      "ruleName": "Sale",
+      "isKeyword": true,
+      "id": 9002,
+      "isEnabled": true,
+      "matchType": "PHRASE_MATCH",
+      "audienceId": -1,
+      "url": "https://www.example-shop.test/sale"
+     }
+    },
+    "name": "Sale",
+    "enabled": true,
+    "user": "editor@example.test",
+    "syncStatus": "SUCCESS"
+   }
+  },
+  "error": null
+ }
+}

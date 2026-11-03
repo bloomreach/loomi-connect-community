@@ -1,0 +1,37 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 61,
+    "name": "Boots ranking test",
+    "status": "RUNNING",
+    "buckets": [
+     {
+      "name": "A",
+      "rules": [
+       {
+        "query": "boots"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 62,
+    "name": "Old test",
+    "status": "ENDED",
+    "buckets": [
+     {
+      "name": "A",
+      "rules": [
+       {
+        "query": "track order"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

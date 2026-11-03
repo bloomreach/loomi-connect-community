@@ -1,0 +1,80 @@
+[
+ {
+  "action": "update",
+  "rule_id": 9001,
+  "destination_url": "https://www.example-shop.test/returns",
+  "reason": "No https://"
+ },
+ {
+  "action": "update",
+  "rule_id": 9002,
+  "redirect_type": "redirect_terms",
+  "reason": "Phrase match catches 'sale dresses'"
+ },
+ {
+  "action": "create",
+  "queries": [
+   "track order",
+   "order status"
+  ],
+  "redirect_type": "redirect_terms",
+  "destination_url": "https://www.example-shop.test/orders",
+  "name": "Track order",
+  "reason": "Navigational"
+ },
+ {
+  "action": "delete",
+  "rule_id": 9003,
+  "reason": "Duplicate of 9001"
+ },
+ {
+  "action": "update",
+  "rule_id": 9004,
+  "enabled": false,
+  "reason": "Seasonal"
+ },
+ {
+  "action": "create",
+  "queries": [
+   "returns"
+  ],
+  "redirect_type": "redirect_terms",
+  "destination_url": "https://www.example-shop.test/returns-2",
+  "reason": "Conflict"
+ },
+ {
+  "action": "create",
+  "queries": [
+   "jacket deals"
+  ],
+  "redirect_type": "redirect_phrases",
+  "destination_url": "http://www.example.com/todo page",
+  "ended_at": "2020-01-01"
+ },
+ {
+  "action": "update",
+  "rule_id": 9005,
+  "enabled": true
+ },
+ {
+  "action": "update",
+  "rule_id": 9001,
+  "name": "Returns"
+ },
+ {
+  "action": "create",
+  "queries": [
+   "boots"
+  ],
+  "redirect_type": "redirect_terms",
+  "destination_url": "https://www.example-shop.test/boots"
+ },
+ {
+  "action": "update",
+  "rule_id": 9003,
+  "ended_at": "2027-01-01"
+ },
+ {
+  "action": "frobnicate"
+ }
+]

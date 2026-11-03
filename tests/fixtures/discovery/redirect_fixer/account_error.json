@@ -1,0 +1,6 @@
+{
+ "result": {
+  "success": false,
+  "error": "Unknown account 'acme'. Available accounts: alpha, beta, gamma, delta"
+ }
+}

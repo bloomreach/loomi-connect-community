@@ -1,0 +1,39 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "data": {
+    "id": 9001,
+    "startedAt": null,
+    "endedAt": null,
+    "isLive": false,
+    "ruleType": "redirect",
+    "audiences": [],
+    "queries": [
+     {
+      "id": 90010,
+      "query": "returns",
+      "queryType": "sitesearch",
+      "matchType": "EXACT_MATCH"
+     }
+    ],
+    "customizationItems": {
+     "redirect": {
+      "ruleName": "Returns",
+      "isKeyword": true,
+      "id": 9001,
+      "isEnabled": true,
+      "matchType": "EXACT_MATCH",
+      "audienceId": -1,
+      "url": "www.example-shop.test/returns"
+     }
+    },
+    "name": "Returns",
+    "enabled": true,
+    "user": "editor@example.test",
+    "syncStatus": "SUCCESS"
+   }
+  },
+  "error": null
+ }
+}

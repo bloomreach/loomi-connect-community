@@ -1,0 +1,9 @@
+{
+ "changes": [
+  {
+   "action": "update",
+   "rule_id": 9002,
+   "enabled": false
+  }
+ ]
+}
