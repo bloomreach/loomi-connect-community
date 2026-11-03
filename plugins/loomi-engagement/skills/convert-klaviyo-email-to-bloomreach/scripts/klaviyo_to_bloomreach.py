@@ -363,6 +363,11 @@ def analyze(path, out_dir):
 # ----------------------------------------------------------------------------------------------
 # TRANSLATE: Klaviyo template language -> Bloomreach Jinja
 # ----------------------------------------------------------------------------------------------
+# Fallbacks for customer properties printed without a default (Bloomreach prints None for an empty one).
+# mapping.fallbacks overrides these per property; anything else falls back to ''.
+DEFAULT_FALLBACKS = {"first_name": "friend"}
+
+
 class Translator:
     def __init__(self, mapping):
         self.m = mapping
@@ -402,6 +407,16 @@ class Translator:
         if s2 != s:
             self.note("Django filter syntax (|default:'x', |lookup:'k', |floatformat) -> Jinja")
         return s2
+
+    def add_fallback(self, mo):
+        expr, rest = mo.group(1), mo.group(2).strip()
+        if "default(" in rest:
+            return mo.group(0)
+        prop = re.sub(r"^customer(?:\.|\[')|'\]$", "", expr)
+        fb = self.m.get("fallbacks", {}).get(prop, DEFAULT_FALLBACKS.get(prop, ""))
+        self.note(f"{{{{ customer.{prop} }}}} with no fallback -> default({fb!r}, true)")
+        quoted = "'" + str(fb).replace("\\", "\\\\").replace("'", "\\'") + "'"
+        return "{{ %s | default(%s, true)%s }}" % (expr, quoted, " " + rest if rest else "")
 
     def translate(self, html, context="text"):
         m = self.m
@@ -518,6 +533,10 @@ class Translator:
 
         # Django filter syntax inside Jinja delimiters only
         h = re.sub(r"\{\{.*?\}\}|\{%.*?%\}", lambda mo: self.django_filters(mo.group(0)), h, flags=re.S)
+
+        # Klaviyo prints an empty property as nothing; Bloomreach prints None. Give every customer property
+        # printed without a default one: mapping.fallbacks, else DEFAULT_FALLBACKS, else ''.
+        h = re.sub(r"\{\{\s*(customer(?:\.\w+|\['[^']*'\]))\s*((?:\|[^}]*)?)\}\}", self.add_fallback, h)
 
         # lint for leftovers
         for bad, msg in ((r"\{%\s*(catalog|endcatalog|unsubscribe|web_view|coupon_code|currency_format|manage_preferences|include|firstof|with|endwith)\b", "Untranslated Klaviyo tag"),
@@ -938,12 +957,6 @@ def build(args):
         tr.note(f"dropped {dropped_mobile} mobile-only duplicate block(s) (desktop version kept for all screens)")
     if "#TODO" in email_html or 'href="#"' in email_html:
         tr.warnings.append("Some links are empty ('#') because the Klaviyo source had none — add URLs before sending")
-    # Klaviyo prints an empty property as nothing; Bloomreach prints None, so flag merge tags with no fallback.
-    for where, text in (("subject", subject), ("preheader", pre), ("body", "".join(rows_html))):
-        for expr in sorted(set(re.findall(r"\{\{\s*customer[.\[][^}]*\}\}", text))):
-            if "default(" not in expr:
-                tr.warnings.append(f"{expr} in the {where} has no fallback, so a customer without it sees 'None' — "
-                                   "add one if the copy needs it, e.g. {{ customer.first_name | default('friend', true) }}")
 
     # ---- scenario payload
     data = {"beefree_template": json.dumps(bee, separators=(",", ":"), ensure_ascii=False), "jinja_html": email_html,

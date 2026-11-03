@@ -10,15 +10,16 @@ syntax but not yet seen in a real export — verify the first time you meet it a
 Klaviyo uses Django-style templates. Bloomreach uses Jinja. Filters with a colon argument
 (`|default:'x'`) must become call syntax (`| default('x', true)`). Klaviyo's `default` replaces any empty value; Bloomreach's only does that with `true`.
 A Klaviyo merge tag with no default prints nothing for an empty property, but in Bloomreach it prints `None`.
-The build warns about each customer property with no fallback (subject, preheader or body). Where the copy reads
-badly without one, add it, e.g. `{{ customer.first_name | default('friend', true) }}`.
+So the build gives every customer property printed with no default a fallback: `{{ first_name }}` becomes
+`{{ customer.first_name | default('friend', true) }}`, other properties get `default('', true)`, and
+`mapping.fallbacks` overrides either.
 
 | Klaviyo | Bloomreach | Status |
 |---|---|---|
 | `{{ person.first_name\|default:'friend' }}` | `{{ customer.first_name \| default('friend', true) }}` (property name from `get_mapping`) | tested |
-| `{{ person.<prop> }}` (last_name, email, phone_number, city, region, country, zip) | `{{ customer.<mapped prop> }}` | handled |
+| `{{ person.<prop> }}` (last_name, email, phone_number, city, region, country, zip) | `{{ customer.<mapped prop> \| default('', true) }}` | handled |
 | `{{ person\|lookup:'Custom Prop' }}` | `{{ customer.<mapped> }}` or `{{ customer['Mapped Prop'] }}` | handled |
-| `{{ first_name }}` (shorthand, older templates) | `{{ customer.first_name }}` | handled |
+| `{{ first_name }}` (shorthand, older templates) | `{{ customer.first_name \| default('friend', true) }}` | handled |
 | `{% if person.x == 'y' %}…{% endif %}` | same, with `customer.<mapped>` | handled |
 | `\|default:'x'`, `\|lookup:'k'`, `\|floatformat:2`, `\|truncatechars:n`, `\|upper/lower/title` | `\| default('x', true)`, `['k']`, `\| float \| round(2)`, `\| truncate(n)`, same | handled |
 | `{{ organization.name }}` | `{{ project_variables.<ref> }}` or literal | tested |

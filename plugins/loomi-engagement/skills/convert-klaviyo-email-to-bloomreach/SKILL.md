@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement) and Python 3 with beautifulsoup4 and jinja2 (installed with pip into a virtual environment in step 0; needs a client that can install packages).
 metadata:
   author: jeffbird13-bloomreach
-  version: "1.0.3"
+  version: "1.0.4"
   products: engagement
   access: writes
 ---
@@ -160,6 +160,7 @@ skill's folder is a full example; copy it to your working folder and edit it the
   "event_list_id_field": "product_id",
   "currency_symbol": "$",
   "voucher_pools": {"Klaviyo coupon name": "Bloomreach pool name"},
+  "fallbacks": {"first_name": "friend"},
   "image_map": {},
   "keep_mobile_variants": false
 }
@@ -173,6 +174,9 @@ Rules:
 - `event_list_aggregates`: preferred source for cart loops (see step 3). Without it the loop reads the trigger event and the build warns.
 - `event_list_id_field`: the key inside each list entry (`product_id`), or `null` if the list holds plain IDs.
 - A property mapped to `null` is rendered as an empty string and reported.
+- `fallbacks` (optional): what to print for a customer property that's empty, keyed by the Bloomreach property
+  name. Used only where the Klaviyo source had no default. Without an entry, `first_name` gets `'friend'` and
+  everything else `''`.
 
 Show the user **one table** — Klaviyo field → Bloomreach field → source — and ask them to confirm or
 correct it before building. For a batch, confirm once and reuse.
@@ -238,9 +242,10 @@ python3 <skill>/scripts/klaviyo_to_bloomreach.py build --model <work>/<slug>/mod
 Writes `bee.json`, `email.html` (compact jinja_html, ~10–15KB instead of Klaviyo's ~80KB) and
 `payload.json`, and prints the change log, `errors` and `warnings`. **Fix every error and rebuild until
 `"ok": true`** — errors mean the email would send broken (untranslated tags, missing unsubscribe/address,
-no voucher pool, event data with a `now` trigger). For each warning that a customer property has no fallback,
-ask the user whether to add one, e.g. `{{ customer.first_name | default('friend', true) }}` (otherwise an empty
-property prints `None`).
+no voucher pool, event data with a `now` trigger). Customer properties printed with no default get one
+automatically, because an empty property prints `None` in Bloomreach where Klaviyo printed nothing: `'friend'` for
+`first_name`, `''` for the rest, or the value in `mapping.fallbacks`. The change log lists each one; show the user
+the first-name fallback, since it appears in copy.
 
 Then render it locally against real project data:
 
