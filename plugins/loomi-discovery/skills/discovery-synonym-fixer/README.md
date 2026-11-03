@@ -27,3 +27,5 @@ See [examples/example-plan.md](examples/example-plan.md).
 - Bloomreach-generated synonyms can't be changed with the Loomi Connect tools. Disable one in the dashboard first (it becomes "User Modified"), or add a user synonym, which applies alongside it.
 - Deleting a "User Modified" synonym re-enables the Bloomreach-generated original. The skill plans that as a revert and recommends disabling instead.
 - `update_synonym` defaults to one-way and enabled, so the skill always sends every field.
+- New synonyms are created switched off and switched on as a separate change with its own yes; `create_synonym` would otherwise create them on.
+- The plan follows the shared plan-file shape for write skills, and `synonym_plan.py verify` checks the read-back after each batch.

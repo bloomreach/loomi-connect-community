@@ -1,4 +1,4 @@
-{"account_name": "acme_outdoors", "environment": "staging", "site_group_id": null, "changes": [
+{"changes": [
   {"action": "create", "source": "T-Shirt", "targets": ["tshirt", "t shirt"], "two_way": false, "reason": "t-shirt misses tshirt products"},
   {"action": "create", "source": "kids", "targets": ["children", "toddler"], "two_way": true},
   {"action": "update", "id": 101, "targets": ["maxi dress"]},

@@ -5,9 +5,9 @@
   "forbidden_characters": ["\"", "`"],
   "running_statuses": ["running", "live"],
   "notes": {
-    "max_changes_per_batch": "At most this many creates, updates, enables and disables go in one batch, which gets one explicit yes. Deletes and reverts are always planned separately, with a yes per item.",
+    "max_changes_per_batch": "At most this many ready creates, updates and disables go in one batch, which gets one explicit yes. Blocked and no_change changes don't count. Deletes, reverts and every change that switches a synonym on are always batches of one, with a yes each.",
     "max_words_per_term": "Each synonym term may have at most this many words (the synonym tools reject longer terms).",
     "forbidden_characters": "Characters a synonym term must not contain (the synonym tools say not to use quotes).",
-    "running_statuses": "Experiment statuses that count as running: a change to a synonym whose terms a running experiment mentions is blocked."
+    "running_statuses": "Experiment statuses that count as running, compared case-insensitively (RUNNING and running match). An experiment with no status also counts as running. A change to a synonym whose terms a running experiment mentions is blocked."
   }
 }

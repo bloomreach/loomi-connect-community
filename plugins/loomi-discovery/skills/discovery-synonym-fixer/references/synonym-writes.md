@@ -6,7 +6,7 @@ Read this before the first write. It comes from the tools' published description
 
 | Tool | What it does | Notes |
 |---|---|---|
-| `create_synonym` | Creates a user synonym | One-way: `source_synonym` is what shoppers type, `target_synonym` is the comma-separated expansion, `group_synonym: false`. Two-way: every term comma-separated in `source_synonym`, `target_synonym` empty, `group_synonym: true`. `enabled` defaults to `true` |
+| `create_synonym` | Creates a user synonym | One-way: `source_synonym` is what shoppers type, `target_synonym` is the comma-separated expansion, `group_synonym: false`. Two-way: every term comma-separated in `source_synonym`, `target_synonym` empty, `group_synonym: true`. **`enabled` defaults to `true`**, so the plan always passes `false` and switches the synonym on with a separate `update_synonym` change |
 | `update_synonym` | Changes terms, direction or enabled state of a synonym from `list_synonyms_user` | **`group_synonym` defaults to `false` and `enabled` to `true`.** Leaving either out silently turns a two-way synonym one-way, or switches a disabled synonym on. Always send `source_synonym`, `target_synonym`, `group_synonym` and `enabled`, which is what the plan's payloads do |
 | `delete_synonym` | Deletes a synonym from `list_synonyms_user` | Permanent for a **User Created** synonym. For a **User Modified** synonym (a Bloomreach-generated one someone edited or disabled), it doesn't delete: the synonym moves back to the Bloomreach-generated list and is **re-enabled** with its generated terms |
 
@@ -26,9 +26,12 @@ Synonym changes sync about **once an hour** in production. A write shows in `lis
 
 ## Undo
 
+Each change's `undo` in the plan is a list of calls, made in order.
+
 | Change | Undo |
 |---|---|
-| Create | `delete_synonym` with the new ID (a User Created synonym, so the delete is complete), or disable it with `update_synonym` |
+| Create (switched off) | `delete_synonym` with the new ID (a User Created synonym, so the delete is complete) |
+| Switch on a new synonym | `update_synonym` with `enabled: false`, all four fields |
 | Update, enable, disable | `update_synonym` with the old values, all four fields |
-| Delete of a User Created synonym | `create_synonym` with the old values. It gets a new ID |
-| Delete (revert) of a User Modified synonym | Not possible with these tools. The user disables it again in the dashboard. Prefer disabling to deleting |
+| Delete of a User Created synonym | `create_synonym` with the old values and `enabled: false` (it gets a new ID), then, if it was on, `update_synonym` with `enabled: true` as a separate step with its own yes |
+| Delete (revert) of a User Modified synonym | Not possible with these tools (the undo list is empty). The user disables it again in the dashboard. Prefer disabling to deleting |

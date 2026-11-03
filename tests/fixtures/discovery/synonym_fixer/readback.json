@@ -1,0 +1,9 @@
+{"success": true, "environment_used": "staging", "data": [
+  {"id": 101, "sourceSynonym": "long dress", "targetSynonym": "maxi dress", "enabled": true, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "deleted": false},
+  {"id": 102, "sourceSynonym": "rain coat", "targetSynonym": "raincoat", "enabled": true, "groupSynonym": false, "synonymType": "User Modified", "lastModifiedBy": "editor@example.test", "deleted": false},
+  {"id": 103, "sourceSynonym": "sneakers,trainers,runners", "targetSynonym": "", "enabled": true, "groupSynonym": true, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "deleted": false},
+  {"id": 105, "sourceSynonym": "tshirt", "targetSynonym": "tee", "enabled": true, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "deleted": false},
+  {"id": 107, "sourceSynonym": "anorak", "targetSynonym": "windbreaker", "enabled": true, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "deleted": false},
+  {"id": 2001, "sourceSynonym": "t-shirt", "targetSynonym": "tshirt,t shirt", "enabled": true, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "deleted": false},
+  {"id": 2002, "sourceSynonym": "kids,children,toddler", "targetSynonym": "", "enabled": false, "groupSynonym": true, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "deleted": false}
+]}

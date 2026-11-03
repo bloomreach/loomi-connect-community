@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery
   access: writes
 ---
@@ -18,9 +18,9 @@ This skill **writes** to Bloomreach Discovery. Synonym changes are **live for ev
 
 | Write | Tool | Live impact |
 |---|---|---|
-| 1. Create a user synonym | `create_synonym` | Live after the next sync: searches for its terms also find the other terms' products |
-| 2. Change a synonym's terms or direction | `update_synonym` (all four fields) | Live after the next sync |
-| 3. Enable or disable a synonym | `update_synonym` with `enabled` | Live after the next sync |
+| 1. Create a user synonym, **switched off** | `create_synonym` with `enabled: false` | None while off |
+| 2. Switch a synonym on (a new one, or an existing one) | `update_synonym` (all four fields, `enabled: true`) | **Live after the next sync**: searches for its terms also find the other terms' products. Its own "yes", per synonym |
+| 3. Change a synonym's terms or direction, or switch it off | `update_synonym` (all four fields) | Live after the next sync if the synonym is on |
 | 4. Delete a User Created synonym | `delete_synonym` | Permanent. Its own "yes", per synonym |
 | 5. Revert a User Modified synonym | `delete_synonym` | **Re-enables** the Bloomreach-generated synonym it was made from. Its own "yes", per synonym, after saying so. Prefer disabling |
 
@@ -28,11 +28,12 @@ Rules for every write:
 
 - **Plan first, write second.** Build the plan with the script (step 4), save it to a file in your working folder (it holds the undo), and show it. Nothing is written until the plan is saved.
 - **Preview every create, update and enable** (step 5). Stop a change on NO-GO; on GO WITH CAUTION, show the warnings before asking.
-- **Ask for an explicit "yes" per batch**, naming the changes: "Create t-shirt → tshirt, t shirt and enable sneakers ↔ trainers ↔ runners in staging?" A yes to one batch isn't a yes to the next. **Deletes and reverts get their own "yes", one synonym at a time**, naming it.
+- **Ask for an explicit "yes" per batch**, naming the changes: "Create t-shirt → tshirt, t shirt (switched off) and disable rain coat → raincoat in staging?" A yes to one batch isn't a yes to the next. **Switching a synonym on, deleting and reverting each get their own "yes", one synonym at a time**, naming it. The plan's `batches` already separate them.
+- **New synonyms are created switched off.** `create_synonym` defaults to `enabled: true`; the plan's payload passes `false`, and a separate change switches it on after its own yes.
 - **Staging first** where the account has one: write there, check, then ask again before production.
 - **Only the tools in the table.** `search_tools` also returns other write tools, such as ranking rule, redirect or facet tools. Never call them, or anything tagged `internal`.
 - **Always send all four fields to `update_synonym`** (`source_synonym`, `target_synonym`, `group_synonym`, `enabled`): it defaults to one-way and enabled, so a partial update silently changes the synonym. The plan's payloads are complete; send them as they are.
-- **After each write, read back** with `list_synonyms_user` and report what changed. **If a write fails, stop.** Report what was and wasn't changed, and give the undo from the plan. Don't retry with changed values without asking.
+- **After each batch, read back** with `list_synonyms_user` and check it with the script's `verify` step. **If a write fails, or `verify` doesn't report it in place, stop.** Report what was and wasn't changed, and give the undo from the plan. Don't retry with changed values without asking.
 - **Never repeat** `auth_key` URLs from grid debug output (`feUrl`, `sqApiUrl`), or editor names and emails (`lastModifiedBy` in synonym lists).
 - If a call errors with a list of account names, don't repeat or summarise it; ask the user to check the account name.
 
@@ -60,7 +61,7 @@ The write tools may not be listed directly. Find them with the Loomi Connect `se
 
 You need: the account (ask the user for its name; don't list every account), production or staging, and the fixes. Ask for anything missing.
 
-Make Loomi Connect calls one at a time. Discovery allows about 3 requests per second per user; on HTTP 429, wait a few seconds and retry. Never write in parallel.
+Make Loomi Connect calls one at a time. Discovery allows about 3 requests per second per user; on HTTP 429, wait for `Retry-After` (a few seconds if it isn't set), then retry. Never write in parallel.
 
 ### Running the scripts
 
@@ -78,18 +79,17 @@ Call `list_synonyms_user` with `page=-1` (every synonym) for the chosen environm
 
 ### 3. Write the request
 
-Write `<work>/request.json` from the fixes:
+Write `<work>/request.json` from the fixes. It holds only the changes; the account, environment and site are given to the script as options in step 4:
 
 ```json
-{"account_name": "<account>", "environment": "staging", "site_group_id": null,
- "changes": [
-   {"action": "create", "source": "t-shirt", "targets": ["tshirt", "t shirt"], "two_way": false, "reason": "..."},
+{"changes": [
+   {"action": "create", "source": "t-shirt", "targets": ["tshirt", "t shirt"], "two_way": false},
    {"action": "update", "id": 101, "targets": ["maxi dress"]},
    {"action": "disable", "id": 102},
    {"action": "delete", "id": 104}]}
 ```
 
-Actions are `create`, `update`, `enable`, `disable` and `delete`. For a two-way group, give every term in `source` (or `source` plus `targets`) with `"two_way": true`. Use IDs from step 2. Prefer **disable** to delete: it's reversible.
+Actions are `create`, `update`, `enable`, `disable` and `delete`. A create is switched on afterwards by its own change; add `"enabled": false` to leave it off. For a two-way group, give every term in `source` (or `source` plus `targets`) with `"two_way": true`. Use IDs from step 2. Prefer **disable** to delete: it's reversible.
 
 Which direction? One-way when shoppers who type the source should also see the target's products, but not the other way round ("frock" → "dress"). Two-way when the terms mean the same thing ("tshirt", "t-shirt", "t shirt", "tee"). The target terms must find products: step 5 checks.
 
@@ -98,10 +98,14 @@ Which direction? One-way when shoppers who type the source should also see the t
 Call `search_discovery_experiments` for running experiments and save it. Then:
 
 ```bash
-python3 <this skill's folder>/scripts/synonym_plan.py --request <work>/request.json --existing <work>/synonyms.json --experiments <work>/experiments.json --qa-dir <work>/qa --out <work>/plan.json
+python3 <this skill's folder>/scripts/synonym_plan.py plan --account <account> --environment <staging or production> --request <work>/request.json --existing <work>/synonyms.json --experiments <work>/experiments.json --qa-dir <work>/qa --out <work>/plan.json
 ```
 
-For each change the plan gives `status` (`planned` or `blocked`), `problems` and `warnings`, the `before` and `after` state, the exact `payload` for the tool, and the `undo`. It blocks no-ops, duplicates, terms that break the rules, direction changes the tools don't allow, Bloomreach-generated IDs, two changes to one synonym, and changes whose terms a running experiment covers. It groups the rest into `batches`: up to `max_changes_per_batch` creates, updates, enables and disables per batch, and every delete or revert on its own.
+Add `--site-group-id <id>` for a site-level synonym. `--account` and `--environment` are required: there's no default environment.
+
+The plan follows the shared shape for write skills (`docs/skill-authoring.md`, "Plan files for write skills"). For each change it gives `status` (`ready`, `blocked` or `no_change`), `kind` (`create`, `update`, `enable`, `disable`, `delete`), `problems` and `warnings`, the `before` and `after` state, the exact `payload` for the tool, the `undo` (a list of calls), and `live_impact`. It blocks duplicates, no-ops, terms that break the rules, direction changes the tools don't allow, Bloomreach-generated IDs, two changes to one synonym, and changes whose terms a running experiment covers (`running_statuses`). Each create that should end up on gets a second `enable` change straight after it.
+
+`batches` lists the ready changes in the order to write them: up to `max_changes_per_batch` creates, updates and disables per batch, then every switch-on, delete and revert as a batch of one.
 
 Show the plan as a table: change, before, after, status, problems and warnings. Explain each blocked change and what to do instead. Keep `<work>/plan.json`: it's the undo.
 
@@ -109,7 +113,7 @@ Show the plan as a table: change, before, after, status, problems and warnings. 
 
 ### 5. Preview each change
 
-For every planned create, update and enable, `--qa-dir` wrote a change file (`<work>/qa/change-<n>.json`). Check each one with `discovery-change-qa` if it's installed (pass the file as `--change`, with the grids it asks for). Otherwise do its synonym checks by hand, one call at a time:
+For every ready create, update and enable, `--qa-dir` wrote a change file (`<work>/qa/change-<n>.json`). Check each one with `discovery-change-qa` if it's installed (pass the file as `--change`, with the grids it asks for). Otherwise do its synonym checks by hand, one call at a time:
 
 1. Fetch the product grid for the source term and for each target term (`fl="pid,title,brand"`, a small `rows`, `extra_params={"facet": "false"}`).
 2. **NO-GO** if a target term finds nothing (the synonym adds nothing, or points the wrong way: swap the direction), or if the targets' first results are a different kind of product from the source's (the synonym would broaden into irrelevant results).
@@ -119,13 +123,19 @@ Drop NO-GO changes from the batch and say why.
 
 ### 6. Write, one batch at a time
 
-For each batch:
+For each batch in `batches`, in order:
 
 1. Show exactly what will change, and in which environment.
-2. Ask for the "yes" (per batch; per synonym for a delete or revert, after saying what a revert does).
-3. Make the calls one at a time, sending each `payload` exactly as planned.
-4. After each call, check `success` and `environment_used`, then read back with `list_synonyms_user` and confirm the record matches `after` (or is gone, for a delete). For a create, note the new ID: it completes the undo.
-5. On any failure, stop and report: what was written, what wasn't, and the undo for what was.
+2. Ask for the "yes" (per batch; per synonym for a switch-on, delete or revert, after saying what a revert does).
+3. Make the calls one at a time, sending each `payload` exactly as planned. An `enable` change for a new synonym uses the ID the create returned in place of `<id from the create change>`; so does its undo.
+4. After each call, check `success` and `environment_used`. Then read back with `list_synonyms_user` (`page=-1`), save it, and check the batch:
+
+   ```bash
+   python3 <this skill's folder>/scripts/synonym_plan.py verify --plan <work>/plan.json --readback <work>/synonyms_after.json --changes <the batch's change numbers> --out <work>/verify.json
+   ```
+
+   Each change is reported `in_place`, `not_in_place` or `gone`, against what it should be (`gone` for a delete). For a create it gives `new_id`, which completes the undo.
+5. If a call fails or `all_ok` is false, stop and report: what was written, what wasn't, and the undo for what was.
 
 ### 7. After the writes
 
@@ -136,15 +146,16 @@ Tell the user the changes reach search after the next hourly sync in production.
 ```
 ## Synonym changes: <account> (<environment>)
 
-**Planned:** <n> · **Blocked:** <n> · **Deletes:** <n> · **Reverts:** <n>
+**Ready:** <n> · **Blocked:** <n> · **No change:** <n> · **Deletes:** <n>
 
 | # | Change | Before | After | Preview | Status |
 |---|---|---|---|---|---|
-| 1 | Create one-way | — | t-shirt → tshirt, t shirt | GO | Written (id <new id>) |
-| 2 | Disable | rain coat → raincoat (on) | (off) | — | Written |
-| 8 | Create | — | corset → corset | — | Blocked: no-op |
+| 1 | Create one-way (off) | — | t-shirt → tshirt, t shirt | GO | Written (id <new id>), in place |
+| 2 | Switch on | (off) | (on) | — | Written, in place |
+| 3 | Disable | rain coat → raincoat (on) | (off) | — | Written, in place |
+| 10 | Create | — | corset → corset | — | Blocked: no-op |
 
-**Undo:** saved in plan.json. To reverse change 1: delete synonym <new id>.
+**Undo:** saved in plan.json. To reverse changes 1 and 2: delete synonym <new id>.
 **When it takes effect:** after the next hourly sync in production.
 **Next:** <check search after the sync / repeat for production>
 ```
@@ -156,6 +167,8 @@ Tell the user the changes reach search after the next hourly sync in production.
 | Updating with only the changed field | Send all four fields; the tool defaults to one-way and enabled |
 | Deleting a User Modified synonym to switch it off | Disable it: deleting re-enables the Bloomreach-generated version |
 | Trying to change a Bloomreach-generated synonym | The user disables it in the dashboard first, or add a user synonym alongside |
-| One yes for everything | One yes per batch, and one per delete or revert |
+| One yes for everything | One yes per batch, and one per switch-on, delete or revert |
+| Creating a synonym switched on | Create it off, then switch it on as its own change |
+| Comparing read-backs by eye | Run the script's `verify` step |
 | Checking search straight after writing | Wait for the hourly sync |
 | Writing during a running experiment on the term | Wait for the test to end |
