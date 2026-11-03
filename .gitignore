@@ -27,6 +27,7 @@ node_modules/
 
 # Local Claude Code / Codex settings
 .claude/settings.local.json
+.mcp.json
 .claude/worktrees/
 
 # Skill zips built for claude.ai / ChatGPT upload

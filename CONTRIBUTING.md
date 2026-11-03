@@ -8,6 +8,7 @@ Thanks for helping. This guide explains how to get a contribution merged.
 - **Subagents**: Claude Code agent definitions for a role, for example "CRM analyst". These are Claude-only today.
 - **Scripts**: helpers that a skill uses. They live inside that skill's `scripts/` folder.
 - **Docs**: guides, fixes and improvements.
+- **Sample connectors**: small MCP servers in `connectors/` for testing skills on a public Bloomreach REST API. Read-only unless stated, standard library only, keys from the environment, with offline tests. See the [charter](CHARTER.md#secrets-and-keys).
 
 Everything must be built on Bloomreach's publicly available interfaces (MCP, REST, documented product formats), as the [charter](CHARTER.md) sets out.
 

@@ -45,7 +45,8 @@ You find and explain problems. You don't fix them. Report each with evidence, a 
    - Writes only to paths the caller passes (`--out`, `--out-dir`), never next to the script; no path built from data that could escape the working folder (`..`, absolute paths).
 7. **Install and run steps.** Package installs go into a virtual environment in the working folder, never the system Python (`--break-system-packages`, `sudo pip`). Documented commands are single plain commands (the validator checks `;`, `$(...)`, redirects and flags); look for anything that would still be dangerous if an app ran it literally, such as `curl … | sh` or commands built from user input.
 8. **Plugin contents.** Plugins don't ship hooks, `.mcp.json`, MCP server definitions or commands that run code on install. Subagents in `plugins/*/agents/` leave `tools` unset rather than naming a server prefix, and don't widen what a skill may do.
-9. **Repo automation.** `.github/workflows/*` use `pull_request` (not `pull_request_target`) for untrusted code, pin actions to tags or SHAs, and don't expose secrets to fork PRs.
+9. **Connectors** (`connectors/`). Keys come only from environment variables, never tool arguments. No result, error or log can contain a configured secret or a credential field from a response (`password`, `auth`, tokens). Requests go only to documented `https` hosts, don't follow redirects, and have a timeout and size cap. Tools are read-only unless the connector says otherwise, and writes would need the same confirmation as skills. Tests in `tests/connectors/` run offline against a fake loopback server.
+10. **Repo automation.** `.github/workflows/*` use `pull_request` (not `pull_request_target`) for untrusted code, pin actions to tags or SHAs, and don't expose secrets to fork PRs.
 
 ## How to work
 

@@ -23,6 +23,8 @@ Skills here follow the open [Agent Skills](https://agentskills.io/specification)
 
 Each plugin is a folder of skills under `skills/<skill-name>/SKILL.md`, plus a manifest for Claude (`.claude-plugin/`) and one for Codex (`.codex-plugin/`).
 
+[`connectors/`](connectors/) holds sample connectors for Bloomreach's public REST APIs, for testing skills built on them. See [docs/connecting-rest-apis.md](docs/connecting-rest-apis.md).
+
 ## Before you start: connect Loomi Connect
 
 Every skill here calls Loomi Connect tools, so connect the Loomi Connect MCP server to your client first. See [docs/connecting-loomi-connect.md](docs/connecting-loomi-connect.md).

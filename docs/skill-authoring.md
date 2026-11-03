@@ -156,7 +156,7 @@ Data Hub tools use a `workspace_id`, resolved with `list_workspaces`. Discovery 
 
 A skill may use one of Bloomreach's publicly documented REST APIs instead of, or as well as, Loomi Connect. The same rules apply, plus:
 
-- The user sets up the connection (a REST connector or tool in their client) with their own credentials. The skill never asks for, stores or passes credentials, and its scripts never call the API: they only reshape what the assistant fetched.
+- The user sets up the connection (a REST connector in their client, as in [connecting-rest-apis.md](connecting-rest-apis.md)) with their own credentials. If the connector's tools aren't available, the skill stops and points the user to that guide. The skill never asks for, stores or passes credentials, and its scripts never call the API: they only reshape what the assistant fetched.
 - Name the API and link its public documentation in the README, and in `compatibility`.
 - Use only documented endpoints and parameters, never ones seen in the Bloomreach app's network traffic.
 

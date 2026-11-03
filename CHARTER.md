@@ -20,6 +20,22 @@ Skills here are built **only on Bloomreach's publicly available interfaces**: th
 
 Every skill in the repository today uses the Loomi Connect MCP server. Skills built on a public REST API are equally welcome, and the same rules apply to them.
 
+## Secrets and keys
+
+Loomi Connect uses your own sign-in. Bloomreach's REST APIs use keys, of two kinds:
+
+- **Public identifiers**, such as an Engagement project token or public API token, and a Discovery `account_id` or `domain_key`. They're embedded in storefronts by design, so they're configuration, not secrets. Real ones still never go in the repository.
+- **Secrets**, such as an Engagement private API Key ID and API Secret, a Discovery API key or `auth_key`, or a Content management token.
+
+Secrets are held only by a connector the user configures in their own client: an MCP server that reads them from the user's environment or keychain and exposes tools. Then:
+
+- the assistant sees tools, never keys;
+- skills never ask for, store, pass or print a key, and if a key shows up in the chat or a response, they tell the user to rotate it;
+- keys never appear in the repository, in examples, fixtures or logs, and CI checks for them;
+- connectors and keys use the least access that works: a dedicated Engagement API group with only the permissions needed, Discovery keys scoped to one environment, and staging before production.
+
+[docs/connecting-rest-apis.md](docs/connecting-rest-apis.md) explains how to set one up.
+
 ## Out of scope
 
 The repository doesn't accept contributions that:
@@ -29,12 +45,12 @@ The repository doesn't accept contributions that:
 - **scrape or automate the Bloomreach app's user interface** in place of an interface;
 - reverse-engineer Bloomreach products, or **work around** permissions, rate limits or access controls;
 - ship **credentials**, tokens, real project or workspace IDs, or customer data;
-- reproduce Loomi Connect's server code or Bloomreach's official documentation. This repository is neither, and isn't a support channel.
+- reproduce Loomi Connect's server code or Bloomreach's official documentation. This repository is neither, and isn't a support channel. Small **sample connectors** in `connectors/` are the exception: clearly marked samples for testing skills on a public API, read-only unless stated, standard-library only, with offline tests.
 
 ## How skills use these interfaces
 
 - **Access goes through the user's own connection.** The assistant calls the interface through the MCP server or REST connection the user has set up, with the user's own permissions. Skills never carry or ask for credentials, and scripts never read them.
-- **Scripts stay offline.** Helper scripts reshape data the assistant has already fetched. They never call an interface or the network themselves, so the same scripts work in every client.
+- **Scripts stay offline.** A skill's helper scripts reshape data the assistant has already fetched. They never call an interface or the network themselves, so the same scripts work in every client. Calling an API is the connector's job.
 - **Read-only by default.** A skill reads unless writing is its whole point. Every write is declared, shown to the user and confirmed before it runs. Discovery changes take effect immediately, and deletes are permanent.
 - **Within published limits.** Skills respect rate limits and query cost, run calls one at a time, and estimate expensive queries first where a tool exists for it.
 - **Grounded in tested behaviour.** When an interface behaves differently from its description, the difference is recorded in [docs/known-tool-behaviour.md](docs/known-tool-behaviour.md), and skills work with the behaviour as tested.
