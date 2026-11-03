@@ -92,7 +92,7 @@ class KlaviyoToBloomreachTest(unittest.TestCase):
         result, html = self.convert("export_cart.html")
         # one {{ first_name }} in the body copy and one in the subject
         self.assertEqual(result["changes"]["{{ first_name }} shorthand -> customer property"], 2)
-        self.assertIn("<title>Hi {{ customer.first_name }}, you left something</title>", html)
+        self.assertIn("<title>Hi {{ customer.first_name | default('friend', true) }}, you left something</title>", html)
 
     def render(self, html, context):
         """Run render-check on built HTML with a context; return its JSON result."""
@@ -112,6 +112,26 @@ class KlaviyoToBloomreachTest(unittest.TestCase):
         # The body line has a default in the export; the subject line doesn't, so it's left as is.
         self.assertIn("Hi there, your cart", out["visible_text_preview"])
         self.assertNotIn("Hi None, your cart", out["visible_text_preview"])
+
+    def test_fallback_added_where_klaviyo_had_no_default(self):
+        # Klaviyo prints an empty property as nothing; Bloomreach prints None, so the subject gets a fallback.
+        result, html = self.convert("export_cart.html")
+        self.assertIn("{{ customer.first_name | default('friend', true) }}, you left something", html)
+        self.assertEqual(result["changes"]["{{ customer.first_name }} with no fallback -> default('friend', true)"], 1)
+        # The body line already had a default, which is kept as it was.
+        self.assertIn("customer.first_name | default('there', true)", html)
+        self.assertNotIn("default('there', true) | default(", html)
+        out = self.render(html, {"customer": {"first_name": None}})
+        self.assertNotIn("None", out["visible_text_preview"])
+
+    def test_fallbacks_from_mapping_and_for_other_properties(self):
+        mapping = json.loads((FX / "mapping.json").read_text(encoding="utf-8"))
+        mapping["fallbacks"] = {"first_name": "valued customer"}
+        meta = json.loads((FX / "meta_now.json").read_text(encoding="utf-8"))
+        meta["subject"] = "Hi {{ first_name }}, {{ person.last_name|upper }} family"
+        _, html = self.convert("export_cart.html", mapping=mapping, meta=meta)
+        self.assertIn("<title>Hi {{ customer.first_name | default('valued customer', true) }}, "
+                      "{{ customer.last_name | default('', true) | upper }} family</title>", html)
 
     def test_cart_loop_guards_empty_aggregate(self):
         # An empty aggregate renders as the string 'None'; looping over it would iterate its letters.
