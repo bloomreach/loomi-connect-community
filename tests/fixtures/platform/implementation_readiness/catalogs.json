@@ -1,0 +1,4 @@
+{"result": {"success": true, "data": [
+ {"_id": "cat1", "name": "products", "type": "product", "catalog_version": "v2", "is_product_catalog": true, "created_by_display_name": "Example Editor"},
+ {"_id": "cat2", "name": "stores", "type": "generic", "catalog_version": "v2", "is_product_catalog": false}
+], "error": null}}

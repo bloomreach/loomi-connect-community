@@ -1,0 +1,311 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 30,
+   "docs": [
+    {
+     "pid": "P001",
+     "title": "Example item 1",
+     "colors": [
+      "Navy"
+     ],
+     "margin": 3.2,
+     "sizes": "XL",
+     "material": "100% Cotton",
+     "brand": "Example Brand"
+    },
+    {
+     "pid": "P002",
+     "title": "Example item 2",
+     "colors": [
+      "Navy"
+     ],
+     "margin": 3.2,
+     "sizes": "XL",
+     "material": "cotton",
+     "brand": "Example Brand"
+    },
+    {
+     "pid": "P003",
+     "title": "Example item 3",
+     "colors": [
+      "Navy"
+     ],
+     "margin": 3.2,
+     "sizes": "XL",
+     "material": "Cotton",
+     "brand": "Example Brand"
+    },
+    {
+     "pid": "P004",
+     "title": "Example item 4",
+     "colors": [
+      "Navy"
+     ],
+     "margin": 3.2,
+     "sizes": "X-Large",
+     "material": "Cotton",
+     "brand": "Example Brand"
+    },
+    {
+     "pid": "P005",
+     "title": "Example item 5",
+     "colors": [
+      "Navy"
+     ],
+     "margin": 3.2,
+     "sizes": "x large",
+     "material": "Polyester",
+     "brand": "Example Brand"
+    },
+    {
+     "pid": "P006",
+     "title": "Example item 6",
+     "colors": [
+      "navy blue"
+     ],
+     "margin": 3.2,
+     "sizes": "S",
+     "material": "Polyester",
+     "brand": "Example Brand"
+    },
+    {
+     "pid": "P007",
+     "title": "Example item 7",
+     "colors": [
+      "navy blue"
+     ],
+     "margin": 3.2,
+     "sizes": "Small",
+     "material": "Polyester",
+     "brand": "Example Brand"
+    },
+    {
+     "pid": "P008",
+     "title": "Example item 8",
+     "colors": [
+      "NAVY"
+     ],
+     "margin": 3.2,
+     "sizes": "Small",
+     "material": "Polyster",
+     "brand": "Example Brand"
+    },
+    {
+     "pid": "P009",
+     "title": "Example item 9",
+     "colors": [
+      "NAVY"
+     ],
+     "margin": 3.2,
+     "material": "Wool",
+     "brand": "Example Brand "
+    },
+    {
+     "pid": "P010",
+     "title": "Example item 10",
+     "colors": [
+      "NAVY"
+     ],
+     "margin": 3.2,
+     "material": "Wool",
+     "brand": "Example Brand "
+    },
+    {
+     "pid": "P011",
+     "title": "Example item 11",
+     "colors": [
+      "Nvy"
+     ],
+     "margin": 3.2,
+     "material": "Wood",
+     "brand": "Exmaple Brand"
+    },
+    {
+     "pid": "P012",
+     "title": "Example item 12",
+     "colors": [
+      "Black"
+     ],
+     "margin": 3.2,
+     "material": "Wood",
+     "brand": "Other Label"
+    },
+    {
+     "pid": "P013",
+     "title": "Example item 13",
+     "colors": [
+      "Black"
+     ],
+     "margin": 3.2,
+     "material": "Metal|Wood",
+     "brand": "Other Label"
+    },
+    {
+     "pid": "P014",
+     "title": "Example item 14",
+     "colors": [
+      "Black"
+     ],
+     "margin": 3.2,
+     "brand": "Other Label",
+     "material": "Polyester"
+    },
+    {
+     "pid": "P015",
+     "title": "Example item 15",
+     "colors": [
+      "Black"
+     ],
+     "margin": 3.2,
+     "material": "Polyester"
+    },
+    {
+     "pid": "P016",
+     "title": "Example item 16",
+     "colors": [
+      "Black"
+     ],
+     "margin": 3.2,
+     "material": "Polyester"
+    },
+    {
+     "pid": "P017",
+     "title": "Example item 17",
+     "colors": [
+      "Black"
+     ],
+     "margin": 3.2,
+     "material": "Planters"
+    },
+    {
+     "pid": "P018",
+     "title": "Example item 18",
+     "colors": [
+      "black "
+     ],
+     "margin": 3.2,
+     "material": "Planters"
+    },
+    {
+     "pid": "P019",
+     "title": "Example item 19",
+     "colors": [
+      "Gray"
+     ],
+     "margin": 3.2,
+     "material": "Platters"
+    },
+    {
+     "pid": "P020",
+     "title": "Example item 20",
+     "colors": [
+      "Gray"
+     ],
+     "margin": 3.2,
+     "material": "Platters"
+    },
+    {
+     "pid": "P021",
+     "title": "Example item 21",
+     "colors": [
+      "Gray"
+     ],
+     "margin": 3.2,
+     "length": "32in"
+    },
+    {
+     "pid": "P022",
+     "title": "Example item 22",
+     "colors": [
+      "Gray"
+     ],
+     "margin": 3.2,
+     "length": "32in"
+    },
+    {
+     "pid": "P023",
+     "title": "Example item 23",
+     "colors": [
+      "grey"
+     ],
+     "margin": 3.2,
+     "length": "32\""
+    },
+    {
+     "pid": "P024",
+     "title": "Example item 24",
+     "colors": [
+      "grey"
+     ],
+     "margin": 3.2,
+     "length": "81 cm"
+    },
+    {
+     "pid": "P025",
+     "title": "Example item 25",
+     "colors": [
+      "=SUM(A1)"
+     ],
+     "margin": 3.2,
+     "length": "100 cm"
+    },
+    {
+     "pid": "P026",
+     "title": "Example item 26",
+     "colors": [
+      "+Red"
+     ],
+     "margin": 3.2,
+     "length": "99 cm"
+    },
+    {
+     "pid": "P027",
+     "title": "Example item 27",
+     "colors": [
+      "red"
+     ],
+     "margin": 3.2,
+     "length": "8' x 10'",
+     "variants": [
+      {
+       "skuid": "V3",
+       "sku_color": "navy"
+      }
+     ]
+    },
+    {
+     "pid": "P028",
+     "title": "Example item 28",
+     "colors": [
+      "red"
+     ],
+     "margin": 3.2,
+     "length": "8 x 10 ft",
+     "variants": [
+      {
+       "skuid": "V1",
+       "sku_color": "Navy"
+      },
+      {
+       "skuid": "V2",
+       "sku_color": "navy"
+      }
+     ]
+    },
+    {
+     "pid": "P029",
+     "title": "Example item 29",
+     "colors": [
+      "red"
+     ],
+     "margin": 3.2
+    },
+    {
+     "docType": "content"
+    }
+   ]
+  }
+ }
+}

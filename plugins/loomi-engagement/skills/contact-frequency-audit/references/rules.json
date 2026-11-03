@@ -1,0 +1,37 @@
+{
+  "about": "Thresholds for the contact frequency audit. scripts/frequency_distribution.py reads this file and takes its CLI defaults from it, so change a rule here and nowhere else. Rates and shares are percentages. The default caps are widely quoted rules of thumb, not Bloomreach limits. Each key is explained under notes.",
+  "window_days": 28,
+  "thresholds": {
+    "email": [1, 2, 4, 8, 12, 16],
+    "sms": [1, 2, 4, 8],
+    "push": [1, 2, 4, 8, 16, 30]
+  },
+  "channel_filters": {
+    "email": {"action_type": "email", "status": "delivered"},
+    "sms": {"action_type": "sms", "status": "sent"},
+    "push": {"action_type": "mobile notification", "status": "sent"}
+  },
+  "optout_statuses": ["unsubscribed", "complained"],
+  "engaged_status": "clicked",
+  "min_bucket_customers": 200,
+  "fatigue_ratio": 2.0,
+  "fatigue_min_points": 0.2,
+  "engagement_drop_ratio": 0.25,
+  "share_high_pct": 10,
+  "coverage_min_pct": 50,
+  "default_caps_per_week": {"email": 3, "sms": 1, "push": 5},
+  "notes": {
+    "window_days": "Default window in days. 28 makes 'per week' exact (4 weeks); for a monthly view use 28 or 30 and read the per-window figures.",
+    "thresholds": "Messages per window at which each frequency bucket starts, per channel (read by the call plan in SKILL.md: one customer count per threshold and metric). Buckets run from one threshold to just under the next; the last is open-ended. Keep 4 to 6 per channel: each threshold costs one EQL query per metric.",
+    "channel_filters": "The campaign event's action_type and the status that means 'received', per channel (read by the call plan in SKILL.md). Tested values: email is delivered; SMS and mobile push record sent, not delivered; push is 'mobile notification' (with a space) and web push 'browser notification'. Check the project's own values first.",
+    "optout_statuses": "Statuses that count as opting out (read by the call plan in SKILL.md): a customer with any of them in the window counts once. Use the project's names (some use unsubscribe and complaint).",
+    "engaged_status": "The status that counts as engaged (read by the call plan in SKILL.md): a customer with at least one in the window. Clicks, not opens: opens are inflated by mail privacy features.",
+    "min_bucket_customers": "A bucket with fewer customers than this is shown but not judged, and can't be the reference bucket.",
+    "fatigue_ratio": "A bucket is fatigued when its opt-out rate is at least this many times the reference bucket's (the first judged bucket) and at least fatigue_min_points higher.",
+    "fatigue_min_points": "Minimum opt-out rate increase, in percentage points, over the reference bucket for fatigue to count.",
+    "engagement_drop_ratio": "A bucket is also fatigued when its engaged share is at least this fraction (0.25 = 25%) lower than the previous judged bucket's. Engagement normally rises with frequency (more chances to click), so a fall is a strong signal.",
+    "share_high_pct": "When at least this percentage of recipients is at or above the first fatigued bucket (or over the chosen cap), the channel is high priority; otherwise fatigue is medium.",
+    "coverage_min_pct": "When fewer than this percentage of the customers who opted out in the window received the channel in the window, per-bucket opt-out rates understate the problem (identity gaps, or opt-outs from other sources); the result carries a warning.",
+    "default_caps_per_week": "Rule-of-thumb caps used only when the data shows no fatigue (or too little data), labelled as such: email about 3 a week for promotional mail, SMS about 1 a week, mobile push about 5 a week. Tune them to the brand and the customers' consent terms."
+  }
+}

@@ -1,0 +1,59 @@
+{
+ "success": true,
+ "data": {
+  "categories": [
+   {
+    "id": "newsletter",
+    "legitimate_interest": false,
+    "translations": {
+     "": {
+      "name": "Newsletter"
+     }
+    }
+   },
+   {
+    "id": "sms",
+    "legitimate_interest": false,
+    "translations": {
+     "": {
+      "name": "SMS"
+     }
+    }
+   },
+   {
+    "id": "partner_offers",
+    "legitimate_interest": false,
+    "translations": {
+     "": {
+      "name": "Partner offers"
+     }
+    }
+   },
+   {
+    "id": "old_survey",
+    "legitimate_interest": false,
+    "translations": {
+     "": {
+      "name": "Surveys"
+     }
+    }
+   },
+   {
+    "id": "existing_clients",
+    "legitimate_interest": true,
+    "translations": {
+     "": {
+      "name": "Legitimate interest"
+     }
+    }
+   }
+  ],
+  "general_consent": {
+   "email": false,
+   "sms": false,
+   "notification": true
+  },
+  "success": true
+ },
+ "error": null
+}

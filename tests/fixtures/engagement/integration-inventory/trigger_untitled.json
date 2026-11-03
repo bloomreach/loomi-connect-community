@@ -1,0 +1,22 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "770000000000000000000002",
+      "name": "Untitled API trigger",
+      "archived": false,
+      "event_type": null,
+      "properties": [
+        {
+          "name": "test",
+          "optional": false,
+          "type": "string"
+        }
+      ],
+      "scenario_ids": [],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

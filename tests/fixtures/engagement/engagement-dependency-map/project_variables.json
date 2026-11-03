@@ -1,0 +1,18 @@
+{
+  "success": true,
+  "data": [
+    {
+      "reference": "brand_name",
+      "value": "Example Brand",
+      "type": null,
+      "description": "Brand"
+    },
+    {
+      "reference": "unused_var",
+      "value": "",
+      "type": null,
+      "description": ""
+    }
+  ],
+  "error": null
+}

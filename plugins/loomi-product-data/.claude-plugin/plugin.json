@@ -1,7 +1,7 @@
 {
   "name": "loomi-product-data",
   "version": "0.1.0",
-  "description": "Skills that improve product data for search engines and AI answers (SEO, AEO and GEO) via Loomi Connect: find the products whose data most needs work, then suggest enhancements from their images, attributes and shopper searches.",
+  "description": "Skills that improve product data via Loomi Connect: find the products whose data most needs work for search engines and AI answers (SEO, AEO and GEO), suggest enhancements from their images, attributes and shopper searches, and catch wrong prices and messy attribute values.",
   "author": {
     "name": "Bloomreach and contributors"
   },

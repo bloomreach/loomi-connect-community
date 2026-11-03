@@ -1,0 +1,48 @@
+{
+  "success": true,
+  "data": [
+    {
+      "reference": "brand_name",
+      "value": "Example Brand",
+      "type": null,
+      "description": "Brand name"
+    },
+    {
+      "reference": "BrandName",
+      "value": "Example Brand",
+      "type": null,
+      "description": ""
+    },
+    {
+      "reference": "partner_api_secret",
+      "value": "sk_live_FAKE0123456789abcd",
+      "type": null,
+      "description": ""
+    },
+    {
+      "reference": "Basic_auth_for_API",
+      "value": "FAKEdXNlcjpwYXNz",
+      "type": null,
+      "description": ""
+    },
+    {
+      "reference": "logo_url",
+      "value": "https://cdn.example.com/logo.png?sig=FAKEsig123",
+      "type": null,
+      "description": "Logo"
+    },
+    {
+      "reference": "empty_used",
+      "value": "",
+      "type": null,
+      "description": ""
+    },
+    {
+      "reference": "catalog_id",
+      "value": "0a0b0c0d0e0f0a0b0c0d0e0f",
+      "type": null,
+      "description": ""
+    }
+  ],
+  "error": null
+}

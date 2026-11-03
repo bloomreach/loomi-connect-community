@@ -1,0 +1,29 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": null
+     }
+    ],
+    "values": [
+     1500
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "en"
+     }
+    ],
+    "values": [
+     "500"
+    ]
+   }
+  ]
+ }
+}

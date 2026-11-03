@@ -1,0 +1,5 @@
+{"success": true, "data": {"enabled": true, "general_consent": {"email": false, "sms": false},
+ "categories": [
+  {"id": "newsletter", "legitimate_interest": false, "translations": {"": {"name": "Newsletter"}}},
+  {"id": "transactional_li", "legitimate_interest": true, "translations": {"": {"name": "Existing clients"}}}
+ ]}, "error": null}

@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "e300000000000000000000001",
+      "name": "Weekly news",
+      "status": "active",
+      "archived": false,
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    }
+  ]
+}

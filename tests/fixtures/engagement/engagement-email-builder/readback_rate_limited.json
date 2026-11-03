@@ -1,0 +1,7 @@
+{
+ "result": {
+  "success": false,
+  "data": null,
+  "error": "429 Too Many Requests"
+ }
+}

@@ -1,0 +1,65 @@
+{
+  "about": "The synonym and abbreviation table for scripts/attribute_clusters.py. 'values' maps a whole value to its canonical key (only the key is used for grouping; the proposed canonical value shown to the user is the most-used spelling in the catalog). 'words' expands abbreviations word by word, before 'values' is applied. 'strip' lists regular expressions removed first. 'known' lists real, distinct values that are never merged with each other by edit distance; every 'values' key target is known too. Keys are folded the same way as catalog values (case, accents, punctuation), so write them in plain lower case. Keep entries conservative: only add pairs that mean the same thing for every product.",
+  "generic": {
+    "strip": [],
+    "words": {"and": ""},
+    "values": {},
+    "known": []
+  },
+  "colour": {
+    "strip": ["\\bcolou?r\\b"],
+    "words": {"blk": "black", "bk": "black", "wht": "white", "wh": "white", "nvy": "navy", "gry": "grey", "gray": "grey", "brn": "brown", "grn": "green", "blu": "blue", "pnk": "pink", "slvr": "silver", "lt": "light", "dk": "dark", "drk": "dark"},
+    "values": {
+      "navy blue": "navy",
+      "multi": "multicolour", "multicolor": "multicolour", "multi colour": "multicolour", "multi color": "multicolour", "multicoloured": "multicolour", "multicolored": "multicolour", "multi coloured": "multicolour", "multi colored": "multicolour"
+    },
+    "known": ["black", "white", "grey", "navy", "blue", "red", "green", "yellow", "orange", "pink", "purple", "brown", "beige", "tan", "cream", "ivory", "gold", "silver", "khaki", "olive", "teal", "burgundy", "maroon", "coral", "mint", "rose", "taupe", "mauve", "berry", "bronze", "peach", "natural", "charcoal", "camel", "nude", "lilac", "violet", "indigo", "turquoise", "aqua", "copper", "light blue", "dark blue", "light grey", "dark grey", "light green", "dark green", "multicolour"]
+  },
+  "size": {
+    "strip": ["^size\\s+"],
+    "words": {},
+    "values": {
+      "xxs": "xxs", "2xs": "xxs", "xx small": "xxs", "extra extra small": "xxs",
+      "xs": "xs", "x small": "xs", "extra small": "xs", "xsmall": "xs",
+      "s": "s", "sm": "s", "small": "s",
+      "m": "m", "med": "m", "medium": "m",
+      "l": "l", "lg": "l", "large": "l",
+      "xl": "xl", "x large": "xl", "extra large": "xl", "xlarge": "xl",
+      "xxl": "xxl", "2xl": "xxl", "xx large": "xxl", "extra extra large": "xxl", "xxlarge": "xxl",
+      "xxxl": "xxxl", "3xl": "xxxl", "xxx large": "xxxl",
+      "one size": "one size", "onesize": "one size", "os": "one size", "o s": "one size", "one size fits all": "one size", "osfa": "one size"
+    },
+    "known": ["petite", "tall", "regular", "short", "long", "twin", "full", "queen", "king", "runner", "round", "oversized"]
+  },
+  "material": {
+    "strip": ["^100\\s*%\\s*", "^pure\\s+"],
+    "words": {"poly": "polyester", "ss": "stainless steel", "aluminium": "aluminum"},
+    "values": {"stainless": "stainless steel", "pu leather": "faux leather", "pu": "faux leather"},
+    "known": ["cotton", "organic cotton", "recycled cotton", "linen", "wool", "merino wool", "silk", "nylon", "polyester", "recycled polyester", "leather", "faux leather", "suede", "denim", "metal", "glass", "wood", "steel", "stainless steel", "aluminum", "ceramic", "porcelain", "stoneware", "plastic", "bamboo", "rattan", "marble", "stone", "paper", "canvas", "velvet", "acrylic", "viscose", "rayon", "elastane", "spandex", "cashmere"]
+  },
+  "brand": {
+    "strip": ["\\s+(inc|ltd|llc|co|corp|gmbh)\\.?$"],
+    "words": {},
+    "values": {},
+    "known": []
+  },
+  "gender": {
+    "strip": [],
+    "words": {},
+    "values": {
+      "men": "men", "mens": "men", "man": "men", "male": "men", "men s": "men",
+      "women": "women", "womens": "women", "woman": "women", "female": "women", "ladies": "women", "women s": "women",
+      "unisex": "unisex", "uni sex": "unisex",
+      "boys": "boys", "boy": "boys", "boy s": "boys",
+      "girls": "girls", "girl": "girls", "girl s": "girls",
+      "kids": "kids", "kid": "kids", "children": "kids", "child": "kids", "kids s": "kids"
+    },
+    "known": ["baby", "toddler"]
+  },
+  "fit": {
+    "strip": ["\\s+fit$"],
+    "words": {},
+    "values": {},
+    "known": ["regular", "slim", "skinny", "relaxed", "straight", "tapered", "loose", "oversized", "athletic", "classic", "wide"]
+  }
+}

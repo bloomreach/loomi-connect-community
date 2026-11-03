@@ -1,0 +1,2 @@
+[{"area": "Discovery catalog", "check": "feed and index jobs", "status": "green", "evidence": "daily feed and index succeeded 3h ago", "fix": "—", "owner": "developer"},
+ {"area": "Discovery tracking", "check": "pixel issue rates", "status": "GREEN", "evidence": "all core types under 1%", "owner": "developer"}]

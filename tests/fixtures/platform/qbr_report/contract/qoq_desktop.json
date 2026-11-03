@@ -1,0 +1,1 @@
+{"success": true, "data": {"current": {"revenue": "$700000.00", "visits": 40000, "conversions": 2900, "rpv": "NA", "aov": null, "conversion_rate": "NA"}, "previous": {"revenue": "$600000.00", "visits": 37000, "conversions": 2500}, "trends": {"revenue": "NA"}, "meta": {"report_id": 101001}}, "error": null, "environment_used": "production"}

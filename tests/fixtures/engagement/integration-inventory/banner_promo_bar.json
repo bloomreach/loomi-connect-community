@@ -1,0 +1,20 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "b000000000000000000000001",
+      "name": "Promo bar",
+      "status": "active",
+      "variants": [
+        {
+          "html": "<div>{{ project_variables['empty_used'] }}</div>",
+          "script": "",
+          "style": ""
+        }
+      ],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

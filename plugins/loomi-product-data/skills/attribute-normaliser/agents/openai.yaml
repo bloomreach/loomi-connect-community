@@ -1,0 +1,5 @@
+interface:
+  display_name: "Attribute Normaliser"
+  short_description: "Cluster messy attribute values and write a mapping file for the feed team"
+policy:
+  allow_implicit_invocation: true

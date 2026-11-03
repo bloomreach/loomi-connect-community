@@ -1,0 +1,1 @@
+{"success": true, "data": {"categories": [{"id": "newsletter", "legitimate_interest": false}, {"id": "sms", "legitimate_interest": false}], "enabled": true, "general_consent": {"email": true, "sms": false}, "success": true}, "error": null}

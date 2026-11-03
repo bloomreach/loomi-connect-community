@@ -1,0 +1,26 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "5c0000000000000000000002",
+      "name": "Shipping notice",
+      "status": "active",
+      "trigger": null,
+      "nodes": [
+        {
+          "id": 1,
+          "type": "on-api-trigger",
+          "api_trigger_id": "770000000000000000000001"
+        },
+        {
+          "id": 2,
+          "type": "email-action",
+          "subject": "Your {{ project_variables.missing_var }} order"
+        }
+      ],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

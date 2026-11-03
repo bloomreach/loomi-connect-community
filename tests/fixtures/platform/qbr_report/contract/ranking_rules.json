@@ -1,0 +1,6 @@
+{"success": true, "data": [
+ {"id": 11, "ruleType": "ranking", "enabled": true, "durationTag": "unscheduled", "createdAt": 1753000000000, "lastModifiedAt": 1753000500000, "lastModifiedBy": "editor@example.com"},
+ {"id": 12, "ruleType": "ranking", "enabled": true, "durationTag": "expired", "createdAt": 1700000000000, "lastModifiedAt": 1755000000000, "lastModifiedBy": "editor@example.com"},
+ {"id": 13, "ruleType": "ranking", "enabled": false, "durationTag": "unscheduled", "createdAt": 1700000000000, "lastModifiedAt": 1700000000000, "lastModifiedBy": "editor@example.com"},
+ {"id": 14, "ruleType": "ranking", "enabled": true, "durationTag": "scheduled", "createdAt": 1760000000000, "lastModifiedAt": 1760000000000, "lastModifiedBy": "editor@example.com"}
+], "meta": {"pagination": {"total": 4}}}

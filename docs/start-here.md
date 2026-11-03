@@ -13,6 +13,7 @@ Before you start, [connect Loomi Connect](connecting-loomi-connect.md) and insta
 | "Give me the weekly briefing" | [weekly-ecommerce-briefing](../plugins/loomi-platform/skills/weekly-ecommerce-briefing/): KPIs, movers, marketing, health alerts and three things to do this week |
 | "What are our top searches and categories, and which have problems?" | [weekly-ecommerce-briefing](../plugins/loomi-platform/skills/weekly-ecommerce-briefing/) for the weekly short list; [discovery-search-health](../plugins/loomi-discovery/skills/discovery-search-health/) and [discovery-category-health](../plugins/loomi-discovery/skills/discovery-category-health/) for the full picture |
 | "What's trending in search?" | [discovery-trending-searches](../plugins/loomi-discovery/skills/discovery-trending-searches/) |
+| "Put together our QBR" | [qbr-report](../plugins/loomi-platform/skills/qbr-report/) (quarterly): the quarter against last quarter and last year, wins, problems, tests run and next quarter's plays |
 | "How did our emails and SMS do?" | [engagement-campaign-digest](../plugins/loomi-engagement/skills/engagement-campaign-digest/) |
 | "Are our new products getting seen?" | [new-arrivals-tracker](../plugins/loomi-discovery/skills/new-arrivals-tracker/) |
 
@@ -30,6 +31,8 @@ Before you start, [connect Loomi Connect](connecting-loomi-connect.md) and insta
 | "Why does searching 'dresses' show different products from the dresses page?" | [discovery-search-category-match](../plugins/loomi-discovery/skills/discovery-search-category-match/): search vs category page one, with a redirect or ranking recommendation |
 | "Is search down?" / "Are we within our MUV contract?" | [discovery-api-health](../plugins/loomi-discovery/skills/discovery-api-health/): API volume, errors and unique visitors against contract |
 | "Where are shoppers dropping out?" | [funnel-leak-finder](../plugins/loomi-engagement/skills/funnel-leak-finder/) |
+| "Is our email deliverability getting worse?" | [deliverability-trend](../plugins/loomi-engagement/skills/deliverability-trend/): weekly bounce, complaint and unsubscribe trend, with where the problems come from |
+| "Do our Discovery and Engagement catalogs match?" | [catalog-parity-check](../plugins/loomi-platform/skills/catalog-parity-check/): missing products and price, stock and URL mismatches, with rates and revenue at stake |
 | "A customer has a problem. What do we know about them?" | [customer-360-lookup](../plugins/loomi-engagement/skills/customer-360-lookup/): one customer's profile, recent activity and support flags, with personal data kept to a minimum |
 
 ## Improving search
@@ -66,6 +69,8 @@ Start with the health check, then go deeper where it points you.
 | "Are our product recommendations set up well?" | [recommendation-model-audit](../plugins/loomi-engagement/skills/recommendation-model-audit/) |
 | "Which products have weak data for Google and AI search?" | [product-data-audit](../plugins/loomi-product-data/skills/product-data-audit/) |
 | "Improve the titles, descriptions and attributes for these products" | [product-data-enhancer](../plugins/loomi-product-data/skills/product-data-enhancer/): looks at the product images as well as the data, and suggests changes for you to review |
+| "Find wrong prices in our catalog" | [price-anomaly-finder](../plugins/loomi-product-data/skills/price-anomaly-finder/): catalog-wide price outliers, unit errors and sale-price mistakes, ranked by exposure |
+| "Our colour filter shows navy three times" | [attribute-normaliser](../plugins/loomi-product-data/skills/attribute-normaliser/): clusters messy attribute values and writes a mapping file for the feed team |
 
 ## Testing changes and checking they worked
 
@@ -81,10 +86,13 @@ Start with the health check, then go deeper where it points you.
 |---|---|
 | "What campaigns should we run in the next 6–8 weeks?" | [campaign-planner](../plugins/loomi-platform/skills/campaign-planner/): retail calendar (default markets US, UK and EU), last year's results and current demand |
 | "Which audiences should we be targeting?" | [segment-opportunity-finder](../plugins/loomi-engagement/skills/segment-opportunity-finder/) |
+| "How many of our customers can we actually email?" | [contactability-audit](../plugins/loomi-engagement/skills/contactability-audit/): reach by channel, consent trend, unreachable high-value customers |
+| "Which lifecycle flows are we missing?" | [lifecycle-coverage-map](../plugins/loomi-engagement/skills/lifecycle-coverage-map/): which standard flows exist and are live, and what each gap is worth |
 | "How much revenue are we losing from lapsed customers?" | [winback-opportunity](../plugins/loomi-engagement/skills/winback-opportunity/) |
 | "Build me a segment of…" | [engagement-segment-builder](../plugins/loomi-engagement/skills/engagement-segment-builder/) (**writes**, after you confirm) |
 | "Set up a flow that…" / "Change the wait in our welcome series" | [engagement-scenario-builder](../plugins/loomi-engagement/skills/engagement-scenario-builder/) (**writes** a draft, after you confirm) |
 | "Move our Klaviyo emails into Bloomreach" | [convert-klaviyo-email-to-bloomreach](../plugins/loomi-engagement/skills/convert-klaviyo-email-to-bloomreach/) (**writes** drafts and uploads images, after you confirm) |
+| "Write a Black Friday email for our lapsed VIPs" | [engagement-email-builder](../plugins/loomi-engagement/skills/engagement-email-builder/) (**writes** a draft, after you confirm) |
 | "How is our abandoned cart flow doing?" | [engagement-scenario-performance](../plugins/loomi-engagement/skills/engagement-scenario-performance/) |
 | "Write the Jinja for a recommendations block" / "Why won't this Jinja save?" | [engagement-jinja-writer](../plugins/loomi-engagement/skills/engagement-jinja-writer/): personalization, recommendations, cart items and social proof for weblayers, emails and scenarios |
 | "Build me a newsletter pop-up" / "Why isn't our weblayer showing?" | [engagement-weblayer-builder](../plugins/loomi-engagement/skills/engagement-weblayer-builder/): pop-ups, banners and inline weblayers, with dynamic data from engagement-jinja-writer |
@@ -94,6 +102,7 @@ Start with the health check, then go deeper where it points you.
 | "What's going out this week, and is it ready?" | [engagement-send-preflight](../plugins/loomi-engagement/skills/engagement-send-preflight/): every send due in the next few days, with a go/no-go for each |
 | "Turn what people search for into a campaign" | [search-demand-to-campaign](../plugins/loomi-platform/skills/search-demand-to-campaign/) (**writes** a draft, after you confirm) |
 | "Are we sending too much to the same people?" | [engagement-send-collision-check](../plugins/loomi-engagement/skills/engagement-send-collision-check/) |
+| "Are customers getting too many emails or texts?" | [contact-frequency-audit](../plugins/loomi-engagement/skills/contact-frequency-audit/): messages actually received per customer, fatigue by frequency and a recommended cap |
 | "Are we using our predictions?" | [prediction-activation-check](../plugins/loomi-engagement/skills/prediction-activation-check/) |
 
 ## Before a big event
@@ -113,11 +122,14 @@ Run it again a few days before the event.
 - [onsite-experience-audit](../plugins/loomi-engagement/skills/onsite-experience-audit/): old banners, weblayers and surveys.
 - [discovery-synonym-review](../plugins/loomi-discovery/skills/discovery-synonym-review/): leftover test synonyms.
 - [engagement-asset-cleanup](../plugins/loomi-engagement/skills/engagement-asset-cleanup/): old drafts, test copies and unused segments, aggregates and reports.
+- [engagement-dependency-map](../plugins/loomi-engagement/skills/engagement-dependency-map/): what uses each item on the cleanup list, and the order to delete them safely.
+- [integration-inventory](../plugins/loomi-engagement/skills/integration-inventory/): unused, duplicate and broken integrations, API triggers and project variables, and keys stored where they shouldn't be.
 - [project-access-review](../plugins/loomi-engagement/skills/project-access-review/) (quarterly): who has access to each project, and who probably shouldn't.
 
 ## Getting to know a new project
 
 - [loomi-project-overview](../plugins/loomi-engagement/skills/loomi-project-overview/): what data an Engagement project holds.
+- [implementation-readiness](../plugins/loomi-platform/skills/implementation-readiness/): for a new account, a go-live checklist with blockers first and an owner for each fix.
 - [engagement-report-explainer](../plugins/loomi-engagement/skills/engagement-report-explainer/): what the dashboards and reports you've inherited actually measure.
 - Then [engagement-tracking-health](../plugins/loomi-engagement/skills/engagement-tracking-health/) and [data-feed-health](../plugins/loomi-platform/skills/data-feed-health/), so you know which numbers you can trust.
 

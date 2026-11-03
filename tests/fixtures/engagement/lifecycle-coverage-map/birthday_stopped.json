@@ -1,0 +1,61 @@
+{
+ "_id": "sc-bday",
+ "name": "Monthly treat",
+ "status": "inactive",
+ "nodes": [
+  {
+   "id": 1,
+   "type": "repeated-trigger",
+   "repeat": "daily",
+   "times": [
+    {
+     "hour": 9,
+     "minute": 0
+    }
+   ],
+   "days": []
+  },
+  {
+   "id": 2,
+   "type": "condition",
+   "name": "Birthday is today",
+   "customer_filter": {
+    "filters": [
+     {
+      "attribute": {
+       "property": "birth_date",
+       "type": "property"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": 3,
+   "type": "send-email-action",
+   "name": "Treat"
+  }
+ ],
+ "connections": [
+  {
+   "source": {
+    "node_id": 1,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 2,
+    "connector_index": 0
+   }
+  },
+  {
+   "source": {
+    "node_id": 2,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 3,
+    "connector_index": 0
+   }
+  }
+ ]
+}

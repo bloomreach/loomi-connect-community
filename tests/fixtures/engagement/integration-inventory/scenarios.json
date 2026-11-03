@@ -1,0 +1,40 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "5c0000000000000000000001",
+        "name": "Order sync",
+        "status": "active",
+        "archived": false,
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "5c0000000000000000000002",
+        "name": "Shipping notice",
+        "status": "active",
+        "archived": false,
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "5c0000000000000000000003",
+        "name": "Legacy flow",
+        "status": "active",
+        "archived": false,
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "5c0000000000000000000004",
+        "name": "Draft hooks",
+        "status": "draft",
+        "archived": false,
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      }
+    ],
+    "error": null
+  }
+}

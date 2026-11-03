@@ -1,0 +1,28 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "5c0000000000000000000004",
+      "name": "Draft hooks",
+      "status": "draft",
+      "trigger": null,
+      "nodes": [
+        {
+          "id": 5,
+          "type": "per-customer-webhook-action",
+          "name": "Old hook",
+          "method": "GET",
+          "url": "http://plain.example/api?key=",
+          "headers": [],
+          "auth_integration_id": "990000000000000000000099",
+          "use_basic_auth": true,
+          "auth_user": "FAKE-user",
+          "data": ""
+        }
+      ],
+      "created_by_display_name": "Pat Example",
+      "edited_by_display_name": "pat.example@example.com"
+    },
+    "error": null
+  }
+}

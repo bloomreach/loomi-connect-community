@@ -1,0 +1,42 @@
+{
+  "about": "The attribute clustering rules. scripts/attribute_clusters.py reads this file (its CLI defaults come from it), so change a threshold or list here and nowhere else. The synonym and abbreviation table is references/value-synonyms.json. Each key is explained under notes.",
+  "default_attributes": ["color", "colors", "colour", "sku_color", "color_groups", "size", "sizes", "sku_size", "product_size", "material", "brand", "product_brand", "gender", "fit", "pattern", "style"],
+  "attribute_kinds": {
+    "colour": ["color", "colors", "colour", "colours", "sku_color", "color_groups", "sku_color_group", "color_group", "br_slicing_color"],
+    "size": ["size", "sizes", "sku_size", "product_size", "br_slicing_size", "dimensions", "length", "width", "height", "waist", "inseam"],
+    "material": ["material", "materials", "fabric", "composition"],
+    "brand": ["brand", "product_brand", "manufacturer", "vendor"],
+    "gender": ["gender", "department"],
+    "fit": ["fit"]
+  },
+  "skip_attribute_words": ["margin", "cost", "profit", "price", "score", "omni", "id", "sku", "url", "image", "category", "rating", "days", "date", "stock", "rate"],
+  "multi_value_separators": ["|"],
+  "sort_words": true,
+  "max_value_length": 80,
+  "min_length_for_edit": 5,
+  "max_edit_distance": 1,
+  "long_value_length": 10,
+  "max_edit_distance_long": 2,
+  "typo_max_share": 0.25,
+  "unit_tolerance": 0.02,
+  "max_values_for_edit": 3000,
+  "sample_pids": 5,
+  "max_clusters_listed": 40,
+  "notes": {
+    "default_attributes": "Attributes checked when no --attributes are given, if the catalog has them. Attributes from a --facet-attributes file (facetable text attributes) are added.",
+    "attribute_kinds": "Which synonym table and unit rules apply to which attribute names. An attribute not listed here only gets the generic folding and abbreviations.",
+    "skip_attribute_words": "Facetable attributes whose name contains one of these words are left out of the automatic list: numbers, IDs, internal fields such as margin, and the category tree. Name one with --attributes to check it anyway (never margin or cost).",
+    "multi_value_separators": "A value containing one of these is split into its parts ('Metal|Wood' counts towards Metal and Wood), as the feed packs several values into one.",
+    "sort_words": "Ignore word order when comparing values ('blue navy' and 'navy blue'). The reason says 'word order' when it mattered.",
+    "max_value_length": "Values longer than this many characters are skipped: they're free text, not facet values.",
+    "min_length_for_edit": "The edit-distance pass compares two values word by word: they must have the same words except one, and that word must be at least this long and start with the same letter. So 'wool' and 'wood', 'hooks' and 'books', or 'scented wax' and 'unscented wax' stay apart.",
+    "max_edit_distance": "The differing word may be at most this many single-character edits apart (insert, delete, substitute or swap two neighbours). Such merges are low confidence and flagged for review. Values with different digits, and two values that are both known in value-synonyms.json, are never merged this way.",
+    "long_value_length": "A differing word at least this long may use max_edit_distance_long instead.",
+    "max_edit_distance_long": "The edit distance allowed for a long differing word.",
+    "typo_max_share": "A value is only merged as a typo of another if it is used on at most this share as many products (0.25 = a quarter). Real typos are rare; two common values one letter apart ('planters' and 'platters', 'globes' and 'gloves') are different things.",
+    "unit_tolerance": "Measurements in different unit systems (inches vs centimetres) are merged when every dimension is within this share after conversion (0.02 = 2%), as a medium-confidence cluster. Exact equal conversions ('32in' and '32\"') are high confidence. Measurements in the same system are only merged when exactly equal.",
+    "max_values_for_edit": "Attributes with more distinct values than this skip the edit-distance pass (it compares every pair); folding, synonyms and units still run, and the notes say so.",
+    "sample_pids": "How many example product IDs are listed for each non-canonical value (product records only; facet counts carry no IDs).",
+    "max_clusters_listed": "At most this many clusters per attribute are listed in the JSON output, most products to change first; every cluster goes to --csv."
+  }
+}

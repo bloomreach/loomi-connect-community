@@ -1,0 +1,5 @@
+interface:
+  display_name: "Price Anomaly Finder"
+  short_description: "Find wrong prices, unit errors and sale-price mistakes across the catalog"
+policy:
+  allow_implicit_invocation: true

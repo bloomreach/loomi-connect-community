@@ -1,0 +1,57 @@
+{
+  "about": "Thresholds for the email deliverability trend. scripts/deliverability_trend.py reads this file and takes its CLI defaults from it, so change a rule here and nowhere else. Rates are percentages. The guard-rails are widely quoted rules of thumb, not Bloomreach or mailbox-provider limits for any one project. Each key is explained under notes.",
+  "window_days": 90,
+  "recent_weeks": 4,
+  "min_baseline_weeks": 4,
+  "min_weekly_sends": 1000,
+  "min_breakdown_sends": 500,
+  "guardrails": {
+    "delivery_rate": {"warn_below": 98.0, "limit_below": 95.0},
+    "hard_bounce_rate": {"warn": 1.0, "limit": 2.0},
+    "soft_bounce_rate": {"warn": 3.0, "limit": 5.0},
+    "complaint_rate": {"warn": 0.1, "limit": 0.3},
+    "unsubscribe_rate": {"warn": 0.5, "limit": 1.0}
+  },
+  "drift_ratio": 1.5,
+  "drift_min_points": {
+    "delivery_rate": 1.0,
+    "hard_bounce_rate": 0.2,
+    "soft_bounce_rate": 0.5,
+    "complaint_rate": 0.02,
+    "unsubscribe_rate": 0.1
+  },
+  "spike_ratio": 2.0,
+  "spike_min_events": 20,
+  "top_contributors": 5,
+  "status_aliases": {
+    "enqueued": "enqueued",
+    "sent": "sent",
+    "delivered": "delivered",
+    "hard_bounced": "hard_bounce",
+    "hard_bounce": "hard_bounce",
+    "soft_bounced": "soft_bounce",
+    "soft_bounce": "soft_bounce",
+    "complained": "complaint",
+    "complaint": "complaint",
+    "spam": "complaint",
+    "unsubscribed": "unsubscribe",
+    "unsubscribe": "unsubscribe",
+    "failed": "failed",
+    "opened": "opened",
+    "clicked": "clicked"
+  },
+  "notes": {
+    "window_days": "Default length of the trend window in days (read by the call plan in SKILL.md: the daily query uses 'grouping top' one or two above this). Weeks run Monday to Sunday in the project's time zone, so the first and last week are usually partial; they are marked partial and their rates are still judged.",
+    "recent_weeks": "The last this-many weeks are 'recent'; the weeks before them are the baseline. Drift compares the pooled recent rate with the pooled baseline rate.",
+    "min_baseline_weeks": "With fewer judged baseline weeks than this, drift and spikes aren't judged (there's no stable baseline); guard-rails still are.",
+    "min_weekly_sends": "A week with fewer sends than this is 'low volume': shown, but not judged for spikes or guard-rails, because a handful of bounces swings its rates.",
+    "min_breakdown_sends": "A sending domain, campaign type, audience group or campaign with fewer sends than this is shown but not judged against the guard-rails.",
+    "guardrails": "Rule-of-thumb limits. warn crossed is medium priority, limit crossed is high (in a recent week or the recent pool). delivery_rate is delivered / sends and is judged when it falls below. hard and soft bounce rates are of sends; complaint and unsubscribe rates are of delivered. The complaint limits follow the 0.1% / 0.3% spam-rate guidance Gmail and Yahoo published for bulk senders in 2024; the bounce, delivery and unsubscribe limits are common ESP rules of thumb (bounces under about 2%, unsubscribes under about 0.5%). Tune them to the project's own agreements.",
+    "drift_ratio": "A metric drifts when its pooled recent rate is at least this many times its pooled baseline rate and also at least drift_min_points higher. Delivery rate drifts when it falls by at least drift_min_points.",
+    "drift_min_points": "Minimum change, in percentage points, for drift to count, per metric, so a move from 0.01% to 0.02% isn't called drift.",
+    "spike_ratio": "A judged week whose rate is at least this many times the median rate of all judged weeks (the median resists the spike itself), with at least spike_min_events problem events, is a spike. A spike in a recent week is medium priority; an earlier one is low.",
+    "spike_min_events": "A week needs at least this many of the metric's events (bounces, complaints or unsubscribes) to count as a spike.",
+    "top_contributors": "How many campaigns to list per spike week and per metric in the campaign breakdown, most problem events first.",
+    "status_aliases": "Maps the campaign event's status values to the metrics. Projects differ: one tested project records hard_bounced, soft_bounced, complained and unsubscribed; older documentation uses hard_bounce and unsubscribe. Statuses not listed are ignored. Sends are enqueued when the data has any, otherwise sent, otherwise delivered + bounces + failed."
+  }
+}

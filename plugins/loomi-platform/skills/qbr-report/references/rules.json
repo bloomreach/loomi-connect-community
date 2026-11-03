@@ -1,0 +1,33 @@
+{
+  "about": "The quarterly business review's thresholds. scripts/qbr_numbers.py reads this file, so change a rule here and nowhere else. The method is weekly-ecommerce-briefing's (its scripts/briefing_numbers.py and references/rules.json are the authoritative version); this skill applies it to quarters with the floors scaled as each note says. Intended differences from the briefing script: (1) a search is a dead end only when its product views are exactly 0, where the briefing rounds views per visit to 2 decimals first; (2) categories are never classed as dead ends: a category with no product views is judged by the normal checks (no revenue, conversion, bounce, revenue drop), where the briefing moves it to a dead-end list; (3) ties in traffic or revenue are broken by name, so the order never depends on the input; (4) names are trimmed, and number() also reads (12.00) as -12 and treats text such as N/A as missing. Each key is explained under notes.",
+  "min_visits": 300,
+  "min_sessions": 100,
+  "movers_top": 5,
+  "list_top": 10,
+  "issue_top": 5,
+  "peers": 20,
+  "low_conversion_ratio": 0.75,
+  "high_bounce_ratio": 1.25,
+  "high_bounce_min_points": 10,
+  "revenue_drop_ratio": 0.75,
+  "revenue_drop_min": 5000,
+  "dead_end_bounce_pct": 90,
+  "same_period_tolerance_pct": 0.5,
+  "work_listed": 20,
+  "notes": {
+    "min_visits": "Categories, products and brands with fewer visits than this in both quarters are left out. The briefing's weekly 100 times 3: a quarter is 13 weeks, but scaling by 13 would drop mid-sized categories that still matter; times 3 keeps them and drops rows with only occasional traffic.",
+    "min_sessions": "Searches with fewer sessions than this in both quarters are left out. The briefing's weekly 30 times about 3.3 (rounded to 100), for the same reason as min_visits.",
+    "movers_top": "Rows in each rising and falling movers list. 5 rather than the briefing's 3, because a QBR has room for more.",
+    "list_top": "Rows in the top searches and top categories lists.",
+    "issue_top": "Rows in the searches and categories with problems lists.",
+    "peers": "A row is judged against the median of this many highest-traffic rows (like with like).",
+    "low_conversion_ratio": "Conversion below this share of the typical conversion is a problem.",
+    "high_bounce_ratio": "Bounce above this multiple of the typical bounce is a problem, when it is also high_bounce_min_points or more above it.",
+    "high_bounce_min_points": "See high_bounce_ratio.",
+    "revenue_drop_ratio": "Revenue below this share of the previous quarter's is a problem, when the drop is also revenue_drop_min or more.",
+    "revenue_drop_min": "See revenue_drop_ratio, in the account's currency. The briefing's weekly 1,000 times 5: a quarter's revenue is about 13 weeks', but times 5 keeps mid-sized categories that fell by a quarter in the problem list.",
+    "dead_end_bounce_pct": "A search with no product views and at least this bounce rate is a dead end.",
+    "same_period_tolerance_pct": "The quarter-on-quarter and year-on-year cards must agree on this quarter's revenue within this percentage; otherwise the two calls covered different dates and the script warns.",
+    "work_listed": "At most this many experiments are listed by name in the work-done section; the rest are counted."
+  }
+}

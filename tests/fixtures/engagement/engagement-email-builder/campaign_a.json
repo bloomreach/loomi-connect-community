@@ -1,0 +1,6 @@
+{"result": {"success": true, "data": {"_id": "cmp000000000000000000001", "name": "Autumn newsletter", "status": "active",
+ "archived": false, "edited": 1790000000.5, "edited_by_display_name": "Synthetic Editor",
+ "schedule": {"active": true, "type": "now"}, "customer_filter": {"filters": [], "formula": ""},
+ "design": {"type": "raw", "data": {"sender_name": "Acme Outdoor", "sender_email": "news@acme-outdoor.example", "subject": "Autumn", "preheader": null, "provider": {"type": "global"}, "file_ids": [], "translations": {}}},
+ "split": {"type": "off", "variants": [{"design": {"type": "raw", "data": {"sender_name": "Acme Outdoor", "sender_email": "news@acme-outdoor.example", "subject": "Autumn"}}}]},
+ "consent_category": "newsletter", "general_consent": false}, "error": null}}

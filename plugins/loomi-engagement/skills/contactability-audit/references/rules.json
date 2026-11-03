@@ -1,0 +1,31 @@
+{
+  "about": "Thresholds and word lists for the contactability audit. scripts/contactability_report.py reads this file and its CLI defaults come from it. Shares are fractions of the base the user chose (for example buyers in the last 365 days). Each key is explained under notes.",
+  "channel_order": ["email", "sms", "push"],
+  "primary_channels": ["email"],
+  "low_reach_share": 0.3,
+  "medium_reach_share": 0.5,
+  "consent_gap_share": 0.15,
+  "opt_in_actions": ["accept", "accepted", "opt-in", "opt_in", "optin", "subscribe", "subscribed", "granted", "grant"],
+  "opt_out_actions": ["reject", "rejected", "withdraw", "withdrawn", "opt-out", "opt_out", "optout", "unsubscribe", "unsubscribed", "revoke", "revoked", "deny", "denied"],
+  "min_trend_events": 30,
+  "net_negative_months": 2,
+  "optout_spike_ratio": 2.0,
+  "min_spike_optouts": 50,
+  "high_value_unreachable_high": 0.3,
+  "high_value_unreachable_medium": 0.15,
+  "notes": {
+    "channel_order": "Channels listed first, in this order; any other channel the user measures (WhatsApp, app inbox) follows alphabetically.",
+    "primary_channels": "Channels whose low reach is a high-priority finding. Low reach on the other channels is one level lower.",
+    "low_reach_share": "A channel whose reachable share of the base is below this is low reach (high priority for a primary channel, medium otherwise). Reach on any channel below this is high priority too.",
+    "medium_reach_share": "A channel whose reachable share is at least low_reach_share but below this is limited reach (medium for a primary channel, low otherwise). Reach on any channel in this range is medium priority.",
+    "consent_gap_share": "When customers who have the identifier but not the consent are at least this share of the base, the gap is a medium-priority re-permission opportunity.",
+    "opt_in_actions": "Values of the consent event's action property counted as opt-ins (compared case-insensitively).",
+    "opt_out_actions": "Values of the consent event's action property counted as opt-outs (compared case-insensitively). Other values are reported as other and not counted either way.",
+    "min_trend_events": "With fewer opt-in plus opt-out events than this in the whole window, the trend isn't read (a low-priority note instead).",
+    "net_negative_months": "When at least this many of the most recent months in a row have more opt-outs than opt-ins, the reachable list is shrinking (high priority).",
+    "optout_spike_ratio": "A month whose opt-outs are at least this multiple of the median of the other months is a spike (medium priority): look for a send or a consent-form change that month.",
+    "min_spike_optouts": "A month needs at least this many opt-outs to count as a spike, so tiny lists don't flag noise.",
+    "high_value_unreachable_high": "When at least this share of high-value customers can't be reached on any measured channel, the finding is high priority.",
+    "high_value_unreachable_medium": "At least this share (but under the high threshold) is medium priority; below it, low."
+  }
+}

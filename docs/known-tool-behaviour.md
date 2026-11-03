@@ -57,6 +57,12 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 **Dates and windows**
 - KPI cards (`get_discovery_*_performance`) don't say which dates they cover. Data usually ends about 2 days before today. Use `get_discovery_trend` to see the actual dates.
 - `get_discovery_trend` leaves out days with no data and shows `$0.00` for others, so pair days by date, never by position.
+- `get_discovery_product_performance_table` can return `total_rows: 0` with no error on an account without tracking.
+- The card and table tools accept `compare_start_date` and `compare_end_date`. Without them the comparison is the same number of days before, which isn't the previous quarter when quarters differ in length. A comparison period with no data returns zeros and `"NA"` trends with `success: true`.
+- `get_discovery_api_requests` returns counts as strings (`results[].total.request_count.value`) under `data.body`. API traffic can arrive while every pixel type has 0 events, so it doesn't prove the pixel works.
+- `search_discovery_experiments`: archiving an experiment updates `modifiedAt`, so use `startedAt` and `endedAt` for when a test ran.
+- `search_discovery_catalog_products` with an unknown `product_id` raises an HTTP 404 tool error that includes an internal URL with the account number; never repeat it. List records carry every feed attribute, including empty strings (about 15 KB per product on a wide catalog).
+- `get_discovery_catalog_config`: `custom_attributes.*.facetable` is `auto`, `manual` or `off`; reserved and core attributes have searchability only; there is no sortable setting.
 - The device cards (`device_type`) add up exactly to the overall card. The search and category cards overlap, double-counting visits and orders, so "other" = overall − search − category is only approximate.
 - `get_pixel_health_status` windows end now, not when the dashboard data ends. Taking 336 hours minus 168 hours gives the previous week.
 
@@ -81,6 +87,9 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - `fq="field:*"` doesn't test whether a field is filled. `material:*` matched every product, including those with no material.
 - `fq='pid:"A" OR pid:"B"'` fetches a short list of products by ID.
 - `fl` silently drops fields that don't exist.
+- `fl` doesn't return parent attributes that `list_facet_attributes` marks `stored: false` (for example `gender`, `collection`, `rating`); read them from facets. Variant-level attributes such as `sku_color` still come back inside `variants`.
+- `fl` returns `margin` if asked for it. Never request it.
+- `extra_params={"facet.limit": "1000"}` returns more than the default 200 values per facet. Multi-valued attributes come back as one packed string ("Metal|Wood").
 - **Images:** `thumb_image` is a single URL. `large_image` is a list and is missing on many products. There's no alt-text field.
 - **Response size:** facets are truncated (brand to about 200 values), and `rows=1` with facets on still returns about 30,000 characters. A 20-row page with descriptions is about 25,000 characters.
 - `search_discovery_catalog_products` records include internal fields such as `margin`, and have fewer image fields than the grid.
@@ -187,6 +196,11 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - Event metrics are "high" even on a small sandbox (about 370,000 customers), including a 7-day daily trend with `grouping top 7`. Customer counts with a windowed `exists`, and one- or two-step funnels, were "medium" on the same project.
 - It lists "lifetime date range" as a cost factor even when `since … until …` sits inside `exists[...]` or an inline `funnel(...)`, so it doesn't see windows inside brackets.
 - `execute_analytics_eql` also returns its own `cost_estimate`.
+- A timestamp breakdown without `grouping top N` is "very_high"; adding `grouping top 6` before `format year month` brought a 6-month cross-tab down to "high". One 91-day daily-by-status query on `campaign` was "high" on a project of about 1.2 million customers.
+- Monthly buckets are Unix seconds at local midnight in the project's time zone (23:00 UTC the day before in a UTC+1 project), and months with no events are left out.
+- In event-count queries `customers matching` must come before `since … until …`. A window inside `count event X where … since … until … >= K` is applied, even though `estimate_eql_cost` still lists "lifetime date range".
+- `not (A and has consent X)` parses and runs inside `customers matching`.
+- Don't use a personal property (such as `customer.email`) for a `grouping top 1` total: it returns a real value. Use a low-cardinality, non-personal one.
 - **Date windows:**
   - A trailing `in last N days` after `customers matching exists[...]` doesn't limit the events; the result is a lifetime count. Put the window inside the brackets, after `where`.
   - In `select`, `customers matching` must come before a trailing `in last`.
@@ -209,6 +223,10 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 
 **Campaigns and on-site**
 - There's no tool for campaign stats. Calculate metrics from the `campaign` event.
+- `campaign` event `status` values seen live for email: `enqueued`, `delivered`, `opened`, `clicked`, `hard_bounced`, `soft_bounced`, `unsubscribed`, `complained` (no `sent`). SMS, push and WhatsApp have `sent` and no `delivered`. `action_type` for push is `mobile notification` / `browser notification`, with spaces. Older references in this repo use `hard_bounce`, `unsubscribe` and `mobile_push`; accept both spellings.
+- `campaign_trigger` and `sender` were null on every email `campaign` event on a demo project. To split scenario sends from one-off campaigns, match `campaign_id` against `search_scenarios`.
+- Customers who unsubscribed in a window may have no delivered email in it (opt-outs from other sources), so "received and unsubscribed" can be 0.
+- `get_event_schema` can be very large (about 155,000 characters on a demo project).
 - There's no tool for Engagement A/B results either. `search_experiments` returns web experiments only, and it can return an empty list or a wrapped 403. Scenario and email splits have to be read from the `campaign` event (`action_type = "split"`, `variant`) or a saved report.
 - `get_campaign_calendar` lists scenario send steps, including webhooks, and planned times for draft scenarios. It leaves out event-triggered flows.
   - Each entry's `action_id` is the scenario node's `id`, so an entry can be matched to the step in `search_scenarios`.
@@ -216,6 +234,12 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
   - Recurring scenarios list one `times[]` entry per planned run in the window, so a daily flow shows 7 in a week.
 - `search_email_campaigns` returns standalone campaigns only.
 - `create_email_campaign` takes `design.type: "raw"` (HTML) only. It can't create a Visual Builder design.
+- `create_email_campaign` always creates a draft. `schedule` is required: `{"type": "now"}` means "send as soon as a person starts it", and the read-back shows `schedule: {"active": true, "type": "now"}` for a draft that isn't running.
+  - `sender_name` and `sender_email` are required, and no tool returns the project's default sender; take one from an existing campaign.
+  - Its description says a saved customer filter can't be referenced by ID (copy `filters` and `formula` inline), but the `email-template-best-practices` guide shows `{"customer_filter": {"id": …}}`. **(bug?)** Use the inline form.
+  - `consent_category` and `general_consent` are mutually exclusive; both or neither gives a 400 "Consent settings mismatch". Projects with consent disabled need `unsubscribe_list`.
+  - The guide says to send `frequency_policy` as `{"id": …}`, but campaign details return it as a plain string.
+- `search_email_campaigns` returns `success: false` with "was not found" for an unknown campaign and "Project … not found in any organization" for an unknown project. Check for the project wording before treating a campaign as gone.
 - `generate_email_campaign_preview_link`:
   - works on email campaigns only;
   - fails with "Email integration is not set" when the project has no default email integration;
@@ -235,6 +259,10 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - Segmentations don't carry their sizes. Count them with EQL.
 - Event schemas can contain junk event types from security scanners.
 - Scenario list records have no `triggers_used` field, although the `trigger_types` filter uses it.
+- Birthday flows can use `trigger_types=["ondateattribute"]` or a `repeated-trigger` with a "date is today" condition, so the filter alone misses some.
+- A trigger node can be left unconnected even when the flow looks complete; only the definition's `connections` shows it.
+- A send node carries `consent_category`, the best evidence of which category a channel uses: `get_consent_settings` doesn't tie categories to channels. Categories with `legitimate_interest: true` are granted by a customer filter, so no consent events doesn't mean unused. Shop-platform integrations can also store marketing consent as customer properties (`accepts_marketing`, `*_marketing_consent`).
+- Webhook nodes have type `per-customer-webhook-action` and link authentication through `auth_integration_id`. `parametrized_parts.url` holds the filled-in URL, so a token in the query string appears there in plain text.
 - Scenario node fields sit at the top level of each node (`event`, `units`, `customer_filter` …), not under a `config` key.
 - A/B split outputs are numbered by each variant's `id`, not its position, and ids can have gaps. Personalised splits (`ab-split-contextual`) number variants from `0` and their outputs from `id + 1`. A `limit` node has output `1` (within the limit) and `2` (over it).
 - Engagement saves a weekly or monthly `repeated-trigger` with `days: []` without complaint. Treat it as a warning, not an invalid scenario.
@@ -242,6 +270,7 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - `search_segmentations`, `search_aggregates`, `search_running_aggregates`, `search_predictions` and `search_expressions` list archived items too, flagged `archived: true`. They take no `archived` parameter. Conditions in live scenarios can still point at archived ones.
 - `create_scenario` / `update_scenario` accept `description` and `max_customers` without error but don't keep them (tested with an update; the read-back had no description and `max_customers: null`). Set flow-level settings in the Engagement UI.
 - `search_api_triggers` can return an empty list: then no scenario in the project can start from an API call yet.
+- `search_api_triggers` detail returns `event_type` (can be `null`), `properties` and `scenario_ids`; the list includes editor names. `search_integrations` returns only `id`, `name` and `type`, in list and detail mode, with no host, config or status. Both wrap results in `result`; `list_project_variables` doesn't (`{"success", "data"}`).
 - IDs from `search_integrations` are rejected as an email node's `provider.integration_id`. Copy `{"type":"global"}` from an existing email node instead.
 - `update_scenario_node` is a shallow merge: a `design` you send replaces the stored one, so send the whole `design`.
 - `create_scenario` accepted payloads of 28–30 KB intact. A single step's design can be over 70 KB.
@@ -251,11 +280,17 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 **Where assets are used**
 - There's no general "where is this used" tool. `get_catalog_usages` covers catalogs only.
 - Segmentation and `search_aggregates` lists carry `used_by`. Aggregates also return `all_exposing_properties`, so one can be in use through a property even when `used_by` is empty.
-- Report, dashboard, expression and customer-filter lists carry no `used_by`.
+- Report, dashboard and customer-filter lists carry no `used_by`. `search_expressions` lists do carry it (most records on a demo project had one), but no variable bindings, although its description says it shows them. **(bug?)**
+- `used_by` prefixes seen beyond those above: `in_app_message_`, `event_segmentation_`, `running_aggregate_`, `aggregate_`, `expression_`, `prediction_`, `email_block_`, `snippet_`, `managed_endpoint_`, `contextual_bandit_`, `autosegment_`, `experiment_`.
+- Jinja (including webhook bodies) references aggregates by ID (`aggregates['<id>']`), so an aggregate can be used by a scenario with no `used_by` entry pointing to it. Consent conditions in a segmentation reference the category by name (`{"type": "consent", "category": "<name>"}`), not by ID.
 - Even where it exists, `used_by` misses references in Jinja templates, exports and the API. Treat an empty `used_by` as "review", not "unused".
 - `initiative_id` appears on scenario and report lists, but not on segmentation, aggregate or dashboard lists.
 - `search_item_collections` is a Data Hub tool and takes a `workspace_id`. Engagement catalogs use `search_catalogs` and `get_catalog_usages`.
 - `search_catalog_items` only reaches the first 1,000 items of a catalog (`skip + count` ≤ 1,000, per its schema).
+- `search_catalog_items` returns `{catalog_id, _id, properties:{…}}`. Numbers can be strings in one item and numbers in the next; prices come as `price` and `original_price`.
+- `search_catalog_items` with `field="item_id"` and `query=<id>` finds one item; `total` is the catalog size and `matched` the hits. Items after partial updates can carry only one property. `get_catalog_item` (via `call_tool`) returns `success: false`, "Item … not found in catalog …", for a missing item.
+- `search_catalogs` list records include `is_product_catalog`; a product catalog can have `type: "generic"`.
+- `get_event_schema` properties sit under `events[].properties.<group>.properties[]`, keyed `property`, next to an `are_all_used` flag. `get_customer_schema` can list `registered` as a soft ID.
 
 **Recommendations and catalogs**
 - The `search_recommendations` list has no engine type or catalog. Fetch each engine by ID for its `definition`, which has no fallback setting.

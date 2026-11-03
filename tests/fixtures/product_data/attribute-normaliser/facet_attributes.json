@@ -1,0 +1,40 @@
+{
+ "success": true,
+ "data": [
+  {
+   "name": "colors",
+   "type": "STR",
+   "facetable": true
+  },
+  {
+   "name": "margin",
+   "type": "NUM",
+   "facetable": true
+  },
+  {
+   "name": "omni_score_views",
+   "type": "NUM",
+   "facetable": true
+  },
+  {
+   "name": "collection",
+   "type": "STR",
+   "facetable": true
+  },
+  {
+   "name": "inStock",
+   "type": "STR",
+   "facetable": true
+  },
+  {
+   "name": "width",
+   "type": "STR",
+   "facetable": true
+  },
+  {
+   "name": "category",
+   "type": "HIERARCHY",
+   "facetable": true
+  }
+ ]
+}

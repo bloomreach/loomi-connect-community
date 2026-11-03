@@ -192,6 +192,13 @@ A write skill's script turns the request into a **plan file** before anything is
 - **`verify`:** a second subcommand takes the plan and the read-back files and reports each change as `in_place`, `not_in_place` or `gone`. A delete needs a read-back; a not-found response counts as `gone`.
 - **Deterministic:** sort anything built from a set, and catch `OSError` on `--out` and on reading files, reporting it with `fail()`.
 
+**Engagement write skills** use the same shape with these differences (see `engagement-email-builder`):
+
+- The context is `project_id` and `project_name`, both required, in place of `account`, `environment` and `site_group_id`. Engagement has no staging environment.
+- A create that the tool always saves as a draft has `live_impact: none` and needs no separate `enable` change.
+- A skill that never deletes may give `undo: []` with an `undo_note` saying how a person removes the item.
+- `verify` has no `gone` state when nothing is deleted. Any error that names the project, organisation or access, or a 401, 403 or 429, stops the run; only a not-found on the item itself is `not_in_place`.
+
 ### Scripts
 
 - Put scripts in the skill's `scripts/` folder.

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Integration Inventory"
+  short_description: "Integrations, API triggers, project variables and webhooks in Bloomreach Engagement, with secrets kept out"
+policy:
+  allow_implicit_invocation: true

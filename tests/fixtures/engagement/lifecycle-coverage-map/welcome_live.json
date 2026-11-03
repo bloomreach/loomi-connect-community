@@ -1,0 +1,95 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "sc-welcome",
+   "name": "Welcome series",
+   "status": "active",
+   "trigger": null,
+   "nodes": [
+    {
+     "id": 1,
+     "type": "on-event-trigger",
+     "event": {
+      "type": "consent",
+      "filter": [
+       {
+        "attribute": {
+         "property": "action",
+         "type": "property"
+        },
+        "constraint": {
+         "operands": [
+          {
+           "type": "constant",
+           "value": "accept"
+          }
+         ],
+         "operator": "equals",
+         "type": "string"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": 2,
+     "type": "condition",
+     "name": "Has email consent",
+     "customer_filter": {
+      "filters": []
+     }
+    },
+    {
+     "id": 3,
+     "type": "wait-action",
+     "count": 1,
+     "units": "hours"
+    },
+    {
+     "id": 4,
+     "type": "send-email-action",
+     "name": "Welcome 1"
+    },
+    {
+     "id": 9,
+     "type": "label",
+     "name": null,
+     "text": "cart abandonment notes"
+    }
+   ],
+   "connections": [
+    {
+     "source": {
+      "node_id": 1,
+      "connector_index": 1
+     },
+     "destination": {
+      "node_id": 2,
+      "connector_index": 0
+     }
+    },
+    {
+     "source": {
+      "node_id": 2,
+      "connector_index": 1
+     },
+     "destination": {
+      "node_id": 3,
+      "connector_index": 0
+     }
+    },
+    {
+     "source": {
+      "node_id": 3,
+      "connector_index": 1
+     },
+     "destination": {
+      "node_id": 4,
+      "connector_index": 0
+     }
+    }
+   ]
+  }
+ }
+}

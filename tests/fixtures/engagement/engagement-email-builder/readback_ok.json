@@ -1,0 +1,81 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "new000000000000000000001",
+   "name": "Black Friday - lapsed VIPs - DRAFT",
+   "status": "draft",
+   "archived": false,
+   "schedule": {
+    "active": true,
+    "type": "now"
+   },
+   "customer_filter": {
+    "filters": [
+     {
+      "type": "attribute",
+      "attribute": {
+       "type": "segmentation",
+       "id": "seg0000000000000000000001"
+      },
+      "constraint": {
+       "type": "string",
+       "operator": "equals",
+       "operands": [
+        {
+         "type": "constant",
+         "value": "Lapsed VIP"
+        }
+       ]
+      },
+      "independent_if_reused": true
+     }
+    ],
+    "formula": "F0"
+   },
+   "design": {
+    "type": "raw",
+    "data": {
+     "sender_name": "Acme Outdoor",
+     "sender_email": "news@acme-outdoor.example",
+     "subject": "Your VIP 20% is waiting, {{ customer['first_name'] | default('there', true) }}",
+     "preheader": "Three picks we think you'll love, plus a code that ends Sunday.",
+     "jinja_html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Your VIP 20% is waiting</title>\n<style>\n  @media only screen and (max-width: 620px) {\n    .container { width: 100% !important; }\n    .col { display: block !important; width: 100% !important; }\n  }\n</style>\n</head>\n<body style=\"margin:0; padding:0; background-color:#f4f4f4;\">\n<div style=\"display:none; max-height:0; overflow:hidden;\">Three picks we think you'll love, plus a code that ends Sunday.</div>\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n  <tr><td align=\"right\" style=\"padding:8px 24px; font-size:12px;\"><a href=\"{{ email.view }}\">View in browser</a></td></tr>\n  <tr><td align=\"center\" style=\"padding:16px 24px;\">\n    <a href=\"https://www.acme-outdoor.example/\"><img src=\"https://brxcdn.com/acme/logo.png\" alt=\"Acme Outdoor\" width=\"160\" style=\"display:block; border:0;\"></a>\n  </td></tr>\n  <tr><td style=\"padding:8px 24px;\">\n    <h1 style=\"margin:0 0 12px;\">We've missed you, {{ customer['first_name'] | default('there', true) | e }}</h1>\n    <p style=\"margin:0 0 16px;\">As one of our VIPs, you get first access to Black Friday.</p>\n  </td></tr>\n  <tr><td align=\"center\" style=\"padding:8px 24px 16px;\">\n    <p style=\"margin:0 0 8px; font-weight:bold;\">20% off everything until Sunday</p>\n    <p style=\"margin:0;\">Your code: <strong>{{ vouchers['Black Friday 20'].assign_available() }}</strong></p>\n  </td></tr>\n  {% set recs = recommendations('5f0000000000000000000001', size=3, fill_with_random=true) %}\n  {% if recs %}\n  <tr><td style=\"padding:8px 24px;\"><table role=\"presentation\" width=\"100%\"><tr>\n  {% for item in recs %}\n    {% set url = item['url'] | default('', true) | string | trim %}\n    {% set url = url if url.startswith('https://') else 'https://www.acme-outdoor.example/' %}\n    {% set img = item['image'] | default('', true) | string | trim %}\n    <td class=\"col\" width=\"33%\" valign=\"top\" style=\"padding:8px; text-align:center;\">\n      <a href=\"{{ url | e }}\">\n        {% if img.startswith('https://') %}<img src=\"{{ img | e }}\" alt=\"{{ item['title'] | default('Product', true) | e }}\" width=\"168\">{% endif %}\n        <p>{{ item['title'] | default('', true) | e }}</p>\n      </a>\n    </td>\n  {% endfor %}\n  </tr></table></td></tr>\n  {% endif %}\n  <tr><td align=\"center\" style=\"padding:16px 24px 32px;\">\n    <a href=\"https://www.acme-outdoor.example/black-friday\" style=\"display:inline-block; padding:14px 28px; background-color:#222222; color:#ffffff;\">Shop the sale</a>\n  </td></tr>\n  <tr><td align=\"center\" style=\"padding:16px 24px; font-size:12px; color:#666666;\">\n    <p style=\"margin:0 0 8px;\">Acme Outdoor &middot; {{ project_variables.company_address }}</p>\n    <p style=\"margin:0;\">You're receiving this because you subscribed. <a href=\"{{ consent.page }}\">Unsubscribe or manage preferences</a></p>\n  </td></tr>\n</table>\n</body>\n</html>\n",
+     "provider": {
+      "type": "global"
+     },
+     "file_ids": [],
+     "reply_to": null,
+     "translations": {}
+    }
+   },
+   "split": {
+    "type": "off",
+    "variants": [
+     {
+      "design": {
+       "type": "raw",
+       "data": {
+        "sender_name": "Acme Outdoor",
+        "sender_email": "news@acme-outdoor.example",
+        "subject": "Your VIP 20% is waiting, {{ customer['first_name'] | default('there', true) }}",
+        "preheader": "Three picks we think you'll love, plus a code that ends Sunday.",
+        "jinja_html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Your VIP 20% is waiting</title>\n<style>\n  @media only screen and (max-width: 620px) {\n    .container { width: 100% !important; }\n    .col { display: block !important; width: 100% !important; }\n  }\n</style>\n</head>\n<body style=\"margin:0; padding:0; background-color:#f4f4f4;\">\n<div style=\"display:none; max-height:0; overflow:hidden;\">Three picks we think you'll love, plus a code that ends Sunday.</div>\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n  <tr><td align=\"right\" style=\"padding:8px 24px; font-size:12px;\"><a href=\"{{ email.view }}\">View in browser</a></td></tr>\n  <tr><td align=\"center\" style=\"padding:16px 24px;\">\n    <a href=\"https://www.acme-outdoor.example/\"><img src=\"https://brxcdn.com/acme/logo.png\" alt=\"Acme Outdoor\" width=\"160\" style=\"display:block; border:0;\"></a>\n  </td></tr>\n  <tr><td style=\"padding:8px 24px;\">\n    <h1 style=\"margin:0 0 12px;\">We've missed you, {{ customer['first_name'] | default('there', true) | e }}</h1>\n    <p style=\"margin:0 0 16px;\">As one of our VIPs, you get first access to Black Friday.</p>\n  </td></tr>\n  <tr><td align=\"center\" style=\"padding:8px 24px 16px;\">\n    <p style=\"margin:0 0 8px; font-weight:bold;\">20% off everything until Sunday</p>\n    <p style=\"margin:0;\">Your code: <strong>{{ vouchers['Black Friday 20'].assign_available() }}</strong></p>\n  </td></tr>\n  {% set recs = recommendations('5f0000000000000000000001', size=3, fill_with_random=true) %}\n  {% if recs %}\n  <tr><td style=\"padding:8px 24px;\"><table role=\"presentation\" width=\"100%\"><tr>\n  {% for item in recs %}\n    {% set url = item['url'] | default('', true) | string | trim %}\n    {% set url = url if url.startswith('https://') else 'https://www.acme-outdoor.example/' %}\n    {% set img = item['image'] | default('', true) | string | trim %}\n    <td class=\"col\" width=\"33%\" valign=\"top\" style=\"padding:8px; text-align:center;\">\n      <a href=\"{{ url | e }}\">\n        {% if img.startswith('https://') %}<img src=\"{{ img | e }}\" alt=\"{{ item['title'] | default('Product', true) | e }}\" width=\"168\">{% endif %}\n        <p>{{ item['title'] | default('', true) | e }}</p>\n      </a>\n    </td>\n  {% endfor %}\n  </tr></table></td></tr>\n  {% endif %}\n  <tr><td align=\"center\" style=\"padding:16px 24px 32px;\">\n    <a href=\"https://www.acme-outdoor.example/black-friday\" style=\"display:inline-block; padding:14px 28px; background-color:#222222; color:#ffffff;\">Shop the sale</a>\n  </td></tr>\n  <tr><td align=\"center\" style=\"padding:16px 24px; font-size:12px; color:#666666;\">\n    <p style=\"margin:0 0 8px;\">Acme Outdoor &middot; {{ project_variables.company_address }}</p>\n    <p style=\"margin:0;\">You're receiving this because you subscribed. <a href=\"{{ consent.page }}\">Unsubscribe or manage preferences</a></p>\n  </td></tr>\n</table>\n</body>\n</html>\n",
+        "provider": {
+         "type": "global"
+        },
+        "file_ids": [],
+        "reply_to": null,
+        "translations": {}
+       }
+      }
+     }
+    ]
+   },
+   "consent_category": "newsletter",
+   "general_consent": false,
+   "frequency_policy": "unlimited-policy"
+  },
+  "error": null
+ }
+}

@@ -1,0 +1,1278 @@
+{
+  "ok": true,
+  "kpis": {
+    "overall": {
+      "this_quarter": {
+        "revenue": 1200000.0,
+        "visits": 100000,
+        "orders": 5000,
+        "rpv": 12.0,
+        "conversion_pct": 5.0,
+        "aov": 240.0
+      },
+      "previous_quarter": {
+        "revenue": 1000000.0,
+        "visits": 90000,
+        "orders": 4300,
+        "rpv": 11.11,
+        "conversion_pct": 4.78,
+        "aov": 232.56
+      },
+      "vs_previous_quarter": {
+        "revenue_pct": 20.0,
+        "visits_pct": 11.11,
+        "orders_pct": 16.28,
+        "revenue_delta": 200000.0,
+        "rpv_pct": 8.0,
+        "conversion_pts": 0.22,
+        "aov_pct": 3.2
+      },
+      "same_quarter_last_year": {
+        "revenue": 1100000.0,
+        "visits": 95000,
+        "orders": 4600,
+        "rpv": 11.58,
+        "conversion_pct": 4.84,
+        "aov": 239.13
+      },
+      "vs_same_quarter_last_year": {
+        "revenue_pct": 9.09,
+        "visits_pct": 5.26,
+        "orders_pct": 8.7,
+        "revenue_delta": 100000.0,
+        "rpv_pct": 3.64,
+        "conversion_pts": 0.16,
+        "aov_pct": 0.36
+      }
+    },
+    "search": {
+      "this_quarter": {
+        "revenue": 500000.0,
+        "visits": 30000,
+        "orders": 2400,
+        "rpv": 16.67,
+        "conversion_pct": 8.0,
+        "aov": 208.33
+      },
+      "previous_quarter": {
+        "revenue": 450000.0,
+        "visits": 28000,
+        "orders": 2200,
+        "rpv": 16.07,
+        "conversion_pct": 7.86,
+        "aov": 204.55
+      },
+      "vs_previous_quarter": {
+        "revenue_pct": 11.11,
+        "visits_pct": 7.14,
+        "orders_pct": 9.09,
+        "revenue_delta": 50000.0,
+        "rpv_pct": 3.7,
+        "conversion_pts": 0.14,
+        "aov_pct": 1.85
+      },
+      "same_quarter_last_year": {
+        "revenue": 520000.0,
+        "visits": 31000,
+        "orders": 2500,
+        "rpv": 16.77,
+        "conversion_pct": 8.06,
+        "aov": 208.0
+      },
+      "vs_same_quarter_last_year": {
+        "revenue_pct": -3.85,
+        "visits_pct": -3.23,
+        "orders_pct": -4.0,
+        "revenue_delta": -20000.0,
+        "rpv_pct": -0.64,
+        "conversion_pts": -0.06,
+        "aov_pct": 0.16
+      }
+    },
+    "category": {
+      "this_quarter": {
+        "revenue": 400000.0,
+        "visits": 50000,
+        "orders": 1800,
+        "rpv": 8.0,
+        "conversion_pct": 3.6,
+        "aov": 222.22
+      },
+      "previous_quarter": {
+        "revenue": 380000.0,
+        "visits": 48000,
+        "orders": 1700,
+        "rpv": 7.92,
+        "conversion_pct": 3.54,
+        "aov": 223.53
+      },
+      "vs_previous_quarter": {
+        "revenue_pct": 5.26,
+        "visits_pct": 4.17,
+        "orders_pct": 5.88,
+        "revenue_delta": 20000.0,
+        "rpv_pct": 1.05,
+        "conversion_pts": 0.06,
+        "aov_pct": -0.58
+      },
+      "same_quarter_last_year": {
+        "revenue": 330000.0,
+        "visits": 45000,
+        "orders": 1500,
+        "rpv": 7.33,
+        "conversion_pct": 3.33,
+        "aov": 220.0
+      },
+      "vs_same_quarter_last_year": {
+        "revenue_pct": 21.21,
+        "visits_pct": 11.11,
+        "orders_pct": 20.0,
+        "revenue_delta": 70000.0,
+        "rpv_pct": 9.09,
+        "conversion_pts": 0.27,
+        "aov_pct": 1.01
+      }
+    },
+    "desktop": {
+      "this_quarter": {
+        "revenue": 700000.0,
+        "visits": 40000,
+        "orders": 2900,
+        "rpv": 17.5,
+        "conversion_pct": 7.25,
+        "aov": 241.38
+      },
+      "previous_quarter": {
+        "revenue": 600000.0,
+        "visits": 37000,
+        "orders": 2500,
+        "rpv": 16.22,
+        "conversion_pct": 6.76,
+        "aov": 240.0
+      },
+      "vs_previous_quarter": {
+        "revenue_pct": 16.67,
+        "visits_pct": 8.11,
+        "orders_pct": 16.0,
+        "revenue_delta": 100000.0,
+        "rpv_pct": 7.92,
+        "conversion_pts": 0.49,
+        "aov_pct": 0.57
+      }
+    },
+    "mobile": {
+      "this_quarter": {
+        "revenue": 450000.0,
+        "visits": 55000,
+        "orders": 1900,
+        "rpv": 8.18,
+        "conversion_pct": 3.45,
+        "aov": 236.84
+      },
+      "previous_quarter": {
+        "revenue": 360000.0,
+        "visits": 48000,
+        "orders": 1600,
+        "rpv": 7.5,
+        "conversion_pct": 3.33,
+        "aov": 225.0
+      },
+      "vs_previous_quarter": {
+        "revenue_pct": 25.0,
+        "visits_pct": 14.58,
+        "orders_pct": 18.75,
+        "revenue_delta": 90000.0,
+        "rpv_pct": 9.09,
+        "conversion_pts": 0.12,
+        "aov_pct": 5.26
+      }
+    },
+    "tablet": {
+      "this_quarter": {
+        "revenue": 50000.0,
+        "visits": 5000,
+        "orders": 200,
+        "rpv": 10.0,
+        "conversion_pct": 4.0,
+        "aov": 250.0
+      },
+      "previous_quarter": {
+        "revenue": 40000.0,
+        "visits": 5000,
+        "orders": 200,
+        "rpv": 8.0,
+        "conversion_pct": 4.0,
+        "aov": 200.0
+      },
+      "vs_previous_quarter": {
+        "revenue_pct": 25.0,
+        "visits_pct": 0.0,
+        "orders_pct": 0.0,
+        "revenue_delta": 10000.0,
+        "rpv_pct": 25.0,
+        "conversion_pts": 0.0,
+        "aov_pct": 25.0
+      }
+    },
+    "other": {
+      "revenue": 300000.0,
+      "previous_quarter_revenue": 170000.0,
+      "revenue_pct": 76.47,
+      "note": "overall minus search minus category (approximate: visits overlap)",
+      "same_quarter_last_year_revenue": 250000.0,
+      "vs_same_quarter_last_year_pct": 20.0
+    },
+    "share_of_revenue_change_pct": {
+      "search": 25.0,
+      "category": 10.0,
+      "other": 65.0
+    },
+    "devices_cover_overall_pct": 100.0
+  },
+  "top_and_issues": {
+    "searches": {
+      "considered": 26,
+      "typical_top_median": {
+        "conversion_pct": 4.1,
+        "bounce_pct": 32.8,
+        "rpv": 2.6,
+        "aov": 60.0
+      },
+      "top": [
+        {
+          "name": "query 04",
+          "id": null,
+          "volume": 1720,
+          "previous_volume": 1851,
+          "revenue": 6026.88,
+          "previous_revenue": 5777.8,
+          "conversion_pct": 5.84,
+          "bounce_pct": 31.5,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 3.5,
+          "revenue_change_pct": 4.31
+        },
+        {
+          "name": "query 02",
+          "id": null,
+          "volume": 1860,
+          "previous_volume": 1343,
+          "revenue": 4798.8,
+          "previous_revenue": 4013.17,
+          "conversion_pct": 4.3,
+          "bounce_pct": 21.4,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 2.58,
+          "revenue_change_pct": 19.58
+        },
+        {
+          "name": "query 01",
+          "id": null,
+          "volume": 1930,
+          "previous_volume": 1971,
+          "revenue": 4747.8,
+          "previous_revenue": 4761.92,
+          "conversion_pct": 4.1,
+          "bounce_pct": 21.2,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 2.46,
+          "revenue_change_pct": -0.3
+        },
+        {
+          "name": "query 00",
+          "id": null,
+          "volume": 2000,
+          "previous_volume": 1788,
+          "revenue": 4140.0,
+          "previous_revenue": 3431.95,
+          "conversion_pct": 3.45,
+          "bounce_pct": 33.0,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 2.07,
+          "revenue_change_pct": 20.63
+        },
+        {
+          "name": "query 09",
+          "id": null,
+          "volume": 1370,
+          "previous_volume": 1518,
+          "revenue": 3518.16,
+          "previous_revenue": 20000.0,
+          "conversion_pct": 4.28,
+          "bounce_pct": 26.3,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 2.57,
+          "revenue_change_pct": -82.41
+        },
+        {
+          "name": "query 11",
+          "id": null,
+          "volume": 1230,
+          "previous_volume": 1041,
+          "revenue": 3483.36,
+          "previous_revenue": 4006.06,
+          "conversion_pct": 4.72,
+          "bounce_pct": 95.0,
+          "views_per_visit": 0.0,
+          "aov": 60.0,
+          "rpv": 2.83,
+          "revenue_change_pct": -13.05
+        },
+        {
+          "name": "query 13",
+          "id": null,
+          "volume": 1090,
+          "previous_volume": 1036,
+          "revenue": 3446.58,
+          "previous_revenue": 3431.36,
+          "conversion_pct": null,
+          "bounce_pct": null,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 3.16,
+          "revenue_change_pct": 0.44
+        },
+        {
+          "name": "query 06",
+          "id": null,
+          "volume": 1580,
+          "previous_volume": 1242,
+          "revenue": 3175.8,
+          "previous_revenue": 3577.38,
+          "conversion_pct": 3.35,
+          "bounce_pct": 26.2,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 2.01,
+          "revenue_change_pct": -11.23
+        },
+        {
+          "name": "query 05",
+          "id": null,
+          "volume": 1650,
+          "previous_volume": 2121,
+          "revenue": 3108.6,
+          "previous_revenue": 2846.99,
+          "conversion_pct": 3.14,
+          "bounce_pct": 70.0,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 1.88,
+          "revenue_change_pct": 9.19
+        },
+        {
+          "name": "query 14",
+          "id": null,
+          "volume": 1020,
+          "previous_volume": 737,
+          "revenue": 3060.0,
+          "previous_revenue": 3149.38,
+          "conversion_pct": 5.0,
+          "bounce_pct": 35.3,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 3.0,
+          "revenue_change_pct": -2.84
+        }
+      ],
+      "issues": [
+        {
+          "name": "query 09",
+          "id": null,
+          "volume": 1370,
+          "previous_volume": 1518,
+          "revenue": 3518.16,
+          "previous_revenue": 20000.0,
+          "conversion_pct": 4.28,
+          "bounce_pct": 26.3,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 2.57,
+          "reasons": [
+            "revenue -82.4% vs previous quarter"
+          ],
+          "revenue_at_stake": 16481.84
+        },
+        {
+          "name": "query 03",
+          "id": null,
+          "volume": 1790,
+          "previous_volume": 1708,
+          "revenue": 300.0,
+          "previous_revenue": 5233.97,
+          "conversion_pct": 0.5,
+          "bounce_pct": 22.5,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 3.29,
+          "reasons": [
+            "conversion 0.5% vs 4.1% typical"
+          ],
+          "revenue_at_stake": 4933.97
+        },
+        {
+          "name": "query 07",
+          "id": null,
+          "volume": 1510,
+          "previous_volume": 1220,
+          "revenue": 0.0,
+          "previous_revenue": 4075.25,
+          "conversion_pct": 0.0,
+          "bounce_pct": 32.8,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 2.84,
+          "reasons": [
+            "no revenue",
+            "conversion 0.0% vs 4.1% typical"
+          ],
+          "revenue_at_stake": 4075.25
+        },
+        {
+          "name": "query 05",
+          "id": null,
+          "volume": 1650,
+          "previous_volume": 2121,
+          "revenue": 3108.6,
+          "previous_revenue": 2846.99,
+          "conversion_pct": 3.14,
+          "bounce_pct": 70.0,
+          "views_per_visit": 2.0,
+          "aov": 60.0,
+          "rpv": 1.88,
+          "reasons": [
+            "bounce 70% vs 33% typical"
+          ],
+          "revenue_at_stake": 950.4
+        }
+      ],
+      "issues_total": 4,
+      "dead_ends": {
+        "count": 2,
+        "sessions": 1530,
+        "revenue_at_stake": 3978.0,
+        "names": [
+          "query 11",
+          "no results thing"
+        ]
+      }
+    },
+    "categories": {
+      "considered": 22,
+      "typical_top_median": {
+        "conversion_pct": 2.73,
+        "bounce_pct": 36.2,
+        "rpv": 2.19,
+        "aov": 80.0
+      },
+      "top": [
+        {
+          "name": "Category 05",
+          "id": "c05",
+          "volume": 2500,
+          "previous_volume": 2779,
+          "revenue": 7600.0,
+          "previous_revenue": 9307.78,
+          "conversion_pct": 3.8,
+          "bounce_pct": 41.0,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 3.04,
+          "revenue_change_pct": -18.35
+        },
+        {
+          "name": "Category 02",
+          "id": "c02",
+          "volume": 2800,
+          "previous_volume": 2534,
+          "revenue": 7123.2,
+          "previous_revenue": 5003.74,
+          "conversion_pct": 3.18,
+          "bounce_pct": 33.4,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.54,
+          "revenue_change_pct": 42.36
+        },
+        {
+          "name": "Category 00",
+          "id": "c00",
+          "volume": 3000,
+          "previous_volume": 3461,
+          "revenue": 6528.0,
+          "previous_revenue": 8320.84,
+          "conversion_pct": 2.72,
+          "bounce_pct": 28.0,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.18,
+          "revenue_change_pct": -21.55
+        },
+        {
+          "name": "Category 04",
+          "id": "c04",
+          "volume": 2600,
+          "previous_volume": 2722,
+          "revenue": 6302.4,
+          "previous_revenue": 6968.69,
+          "conversion_pct": 0.8,
+          "bounce_pct": 26.1,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.42,
+          "revenue_change_pct": -9.56
+        },
+        {
+          "name": "Category 03",
+          "id": "c03",
+          "volume": 2700,
+          "previous_volume": 2771,
+          "revenue": 5918.4,
+          "previous_revenue": 7527.37,
+          "conversion_pct": 2.74,
+          "bounce_pct": 38.8,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.19,
+          "revenue_change_pct": -21.37
+        },
+        {
+          "name": "Category 01",
+          "id": "c01",
+          "volume": 2900,
+          "previous_volume": 2589,
+          "revenue": 5452.0,
+          "previous_revenue": 4579.69,
+          "conversion_pct": 2.35,
+          "bounce_pct": 34.7,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 1.88,
+          "revenue_change_pct": 19.05
+        },
+        {
+          "name": "Category 06",
+          "id": "c06",
+          "volume": 2400,
+          "previous_volume": 2303,
+          "revenue": 5337.6,
+          "previous_revenue": 4067.9,
+          "conversion_pct": 2.78,
+          "bounce_pct": 37.7,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.22,
+          "revenue_change_pct": 31.21
+        },
+        {
+          "name": "Category 10",
+          "id": "c10",
+          "volume": 2000,
+          "previous_volume": 1718,
+          "revenue": 5168.0,
+          "previous_revenue": 4399.8,
+          "conversion_pct": 3.23,
+          "bounce_pct": 31.9,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.58,
+          "revenue_change_pct": 17.46
+        },
+        {
+          "name": "Category 08",
+          "id": "c08",
+          "volume": 2200,
+          "previous_volume": 1806,
+          "revenue": 4716.8,
+          "previous_revenue": 3302.42,
+          "conversion_pct": 2.68,
+          "bounce_pct": 75.0,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.14,
+          "revenue_change_pct": 42.83
+        },
+        {
+          "name": "Category 12",
+          "id": "c12",
+          "volume": 1800,
+          "previous_volume": 1788,
+          "revenue": 4219.2,
+          "previous_revenue": 30000.0,
+          "conversion_pct": 2.93,
+          "bounce_pct": 27.0,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.34,
+          "revenue_change_pct": -85.94
+        }
+      ],
+      "issues": [
+        {
+          "name": "Category 12",
+          "id": "c12",
+          "volume": 1800,
+          "previous_volume": 1788,
+          "revenue": 4219.2,
+          "previous_revenue": 30000.0,
+          "conversion_pct": 2.93,
+          "bounce_pct": 27.0,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.34,
+          "reasons": [
+            "revenue -85.9% vs previous quarter"
+          ],
+          "revenue_at_stake": 25780.8
+        },
+        {
+          "name": "Category 04",
+          "id": "c04",
+          "volume": 2600,
+          "previous_volume": 2722,
+          "revenue": 6302.4,
+          "previous_revenue": 6968.69,
+          "conversion_pct": 0.8,
+          "bounce_pct": 26.1,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.42,
+          "reasons": [
+            "conversion 0.8% vs 2.7% typical"
+          ],
+          "revenue_at_stake": 4004.0
+        },
+        {
+          "name": "Category 08",
+          "id": "c08",
+          "volume": 2200,
+          "previous_volume": 1806,
+          "revenue": 4716.8,
+          "previous_revenue": 3302.42,
+          "conversion_pct": 2.68,
+          "bounce_pct": 75.0,
+          "views_per_visit": 3.0,
+          "aov": 80.0,
+          "rpv": 2.14,
+          "reasons": [
+            "bounce 75% vs 36% typical"
+          ],
+          "revenue_at_stake": 79.2
+        }
+      ],
+      "issues_total": 3
+    }
+  },
+  "movers": {
+    "queries": {
+      "considered": 25,
+      "baseline_sessions_change_pct": 6.0,
+      "rising": [
+        {
+          "query": "query 15",
+          "sessions": 950,
+          "previous_sessions": 0,
+          "vs_baseline_pct": null,
+          "trend_score": 950.0,
+          "revenue": 2245.8,
+          "revenue_delta": -84.77,
+          "conversion_rate": "3.94%",
+          "bounce_rate": "33.9%",
+          "new": true
+        },
+        {
+          "query": "query 02",
+          "sessions": 1860,
+          "previous_sessions": 1343,
+          "vs_baseline_pct": 30.66,
+          "trend_score": 11.57,
+          "revenue": 4798.8,
+          "revenue_delta": 785.63,
+          "conversion_rate": "4.3%",
+          "bounce_rate": "21.4%",
+          "new": false
+        },
+        {
+          "query": "query 14",
+          "sessions": 1020,
+          "previous_sessions": 737,
+          "vs_baseline_pct": 30.57,
+          "trend_score": 8.54,
+          "revenue": 3060.0,
+          "revenue_delta": -89.38,
+          "conversion_rate": "5.0%",
+          "bounce_rate": "35.3%",
+          "new": false
+        },
+        {
+          "query": "query 06",
+          "sessions": 1580,
+          "previous_sessions": 1242,
+          "vs_baseline_pct": 20.01,
+          "trend_score": 7.26,
+          "revenue": 3175.8,
+          "revenue_delta": -401.58,
+          "conversion_rate": "3.35%",
+          "bounce_rate": "26.2%",
+          "new": false
+        },
+        {
+          "query": "query 07",
+          "sessions": 1510,
+          "previous_sessions": 1220,
+          "vs_baseline_pct": 16.76,
+          "trend_score": 6.03,
+          "revenue": 0.0,
+          "revenue_delta": -4075.25,
+          "conversion_rate": "0%",
+          "bounce_rate": "32.8%",
+          "new": false
+        }
+      ],
+      "falling": [
+        {
+          "query": "gone search",
+          "sessions": 0,
+          "previous_sessions": 400,
+          "vs_baseline_pct": -100.0,
+          "trend_score": -20.59,
+          "revenue": 0.0,
+          "revenue_delta": -2000.0,
+          "conversion_rate": "0%",
+          "bounce_rate": "0%",
+          "new": false
+        },
+        {
+          "query": "query 05",
+          "sessions": 1650,
+          "previous_sessions": 2121,
+          "vs_baseline_pct": -26.61,
+          "trend_score": -12.62,
+          "revenue": 3108.6,
+          "revenue_delta": 261.61,
+          "conversion_rate": "3.14%",
+          "bounce_rate": "70%",
+          "new": false
+        },
+        {
+          "query": "query 12",
+          "sessions": 1160,
+          "previous_sessions": 1319,
+          "vs_baseline_pct": -17.03,
+          "trend_score": -6.37,
+          "revenue": 2686.56,
+          "revenue_delta": 410.44,
+          "conversion_rate": "3.86%",
+          "bounce_rate": "39.6%",
+          "new": false
+        },
+        {
+          "query": "query 09",
+          "sessions": 1370,
+          "previous_sessions": 1518,
+          "vs_baseline_pct": -14.86,
+          "trend_score": -5.96,
+          "revenue": 3518.16,
+          "revenue_delta": -16481.84,
+          "conversion_rate": "4.28%",
+          "bounce_rate": "26.3%",
+          "new": false
+        },
+        {
+          "query": "query 04",
+          "sessions": 1720,
+          "previous_sessions": 1851,
+          "vs_baseline_pct": -12.34,
+          "trend_score": -5.46,
+          "revenue": 6026.88,
+          "revenue_delta": 249.08,
+          "conversion_rate": "5.84%",
+          "bounce_rate": "31.5%",
+          "new": false
+        }
+      ],
+      "biggest_revenue_drop": [
+        {
+          "query": "query 09",
+          "sessions": 1370,
+          "previous_sessions": 1518,
+          "vs_baseline_pct": -14.86,
+          "trend_score": -5.96,
+          "revenue": 3518.16,
+          "revenue_delta": -16481.84,
+          "conversion_rate": "4.28%",
+          "bounce_rate": "26.3%",
+          "new": false
+        },
+        {
+          "query": "query 03",
+          "sessions": 1790,
+          "previous_sessions": 1708,
+          "vs_baseline_pct": -1.13,
+          "trend_score": -0.48,
+          "revenue": 300.0,
+          "revenue_delta": -4933.97,
+          "conversion_rate": "0.5%",
+          "bounce_rate": "22.5%",
+          "new": false
+        },
+        {
+          "query": "query 07",
+          "sessions": 1510,
+          "previous_sessions": 1220,
+          "vs_baseline_pct": 16.76,
+          "trend_score": 6.03,
+          "revenue": 0.0,
+          "revenue_delta": -4075.25,
+          "conversion_rate": "0%",
+          "bounce_rate": "32.8%",
+          "new": false
+        },
+        {
+          "query": "gone search",
+          "sessions": 0,
+          "previous_sessions": 400,
+          "vs_baseline_pct": -100.0,
+          "trend_score": -20.59,
+          "revenue": 0.0,
+          "revenue_delta": -2000.0,
+          "conversion_rate": "0%",
+          "bounce_rate": "0%",
+          "new": false
+        },
+        {
+          "query": "query 11",
+          "sessions": 1230,
+          "previous_sessions": 1041,
+          "vs_baseline_pct": 11.47,
+          "trend_score": 3.81,
+          "revenue": 3483.36,
+          "revenue_delta": -522.7,
+          "conversion_rate": "4.72%",
+          "bounce_rate": "95%",
+          "new": false
+        }
+      ],
+      "biggest_revenue_gain": [
+        {
+          "query": "query 02",
+          "sessions": 1860,
+          "previous_sessions": 1343,
+          "vs_baseline_pct": 30.66,
+          "trend_score": 11.57,
+          "revenue": 4798.8,
+          "revenue_delta": 785.63,
+          "conversion_rate": "4.3%",
+          "bounce_rate": "21.4%",
+          "new": false
+        },
+        {
+          "query": "query 00",
+          "sessions": 2000,
+          "previous_sessions": 1788,
+          "vs_baseline_pct": 5.53,
+          "trend_score": 2.41,
+          "revenue": 4140.0,
+          "revenue_delta": 708.05,
+          "conversion_rate": "3.45%",
+          "bounce_rate": "33.0%",
+          "new": false
+        },
+        {
+          "query": "query 12",
+          "sessions": 1160,
+          "previous_sessions": 1319,
+          "vs_baseline_pct": -17.03,
+          "trend_score": -6.37,
+          "revenue": 2686.56,
+          "revenue_delta": 410.44,
+          "conversion_rate": "3.86%",
+          "bounce_rate": "39.6%",
+          "new": false
+        },
+        {
+          "query": "query 08",
+          "sessions": 1440,
+          "previous_sessions": 1481,
+          "vs_baseline_pct": -8.27,
+          "trend_score": -3.28,
+          "revenue": 2756.16,
+          "revenue_delta": 324.17,
+          "conversion_rate": "3.19%",
+          "bounce_rate": "21.2%",
+          "new": false
+        },
+        {
+          "query": "query 05",
+          "sessions": 1650,
+          "previous_sessions": 2121,
+          "vs_baseline_pct": -26.61,
+          "trend_score": -12.62,
+          "revenue": 3108.6,
+          "revenue_delta": 261.61,
+          "conversion_rate": "3.14%",
+          "bounce_rate": "70%",
+          "new": false
+        }
+      ]
+    },
+    "categories": {
+      "considered": 22,
+      "rising": [
+        {
+          "name": "Category 02",
+          "revenue": 7123.2,
+          "previous_quarter_revenue": 5003.74,
+          "delta": 2119.46,
+          "change_pct": 42.36,
+          "visits": 2800,
+          "previous_visits": 2534,
+          "cat_id": "c02"
+        },
+        {
+          "name": "Category 08",
+          "revenue": 4716.8,
+          "previous_quarter_revenue": 3302.42,
+          "delta": 1414.38,
+          "change_pct": 42.83,
+          "visits": 2200,
+          "previous_visits": 1806,
+          "cat_id": "c08"
+        },
+        {
+          "name": "Category 06",
+          "revenue": 5337.6,
+          "previous_quarter_revenue": 4067.9,
+          "delta": 1269.7,
+          "change_pct": 31.21,
+          "visits": 2400,
+          "previous_visits": 2303,
+          "cat_id": "c06"
+        },
+        {
+          "name": "Category 09",
+          "revenue": 3696.0,
+          "previous_quarter_revenue": 2643.75,
+          "delta": 1052.25,
+          "change_pct": 39.8,
+          "visits": 2100,
+          "previous_visits": 1985,
+          "cat_id": "c09"
+        },
+        {
+          "name": "Category 01",
+          "revenue": 5452.0,
+          "previous_quarter_revenue": 4579.69,
+          "delta": 872.31,
+          "change_pct": 19.05,
+          "visits": 2900,
+          "previous_visits": 2589,
+          "cat_id": "c01"
+        }
+      ],
+      "falling": [
+        {
+          "name": "Category 12",
+          "revenue": 4219.2,
+          "previous_quarter_revenue": 30000.0,
+          "delta": -25780.8,
+          "change_pct": -85.94,
+          "visits": 1800,
+          "previous_visits": 1788,
+          "cat_id": "c12"
+        },
+        {
+          "name": "Category 00",
+          "revenue": 6528.0,
+          "previous_quarter_revenue": 8320.84,
+          "delta": -1792.84,
+          "change_pct": -21.55,
+          "visits": 3000,
+          "previous_visits": 3461,
+          "cat_id": "c00"
+        },
+        {
+          "name": "Category 05",
+          "revenue": 7600.0,
+          "previous_quarter_revenue": 9307.78,
+          "delta": -1707.78,
+          "change_pct": -18.35,
+          "visits": 2500,
+          "previous_visits": 2779,
+          "cat_id": "c05"
+        },
+        {
+          "name": "Category 03",
+          "revenue": 5918.4,
+          "previous_quarter_revenue": 7527.37,
+          "delta": -1608.97,
+          "change_pct": -21.37,
+          "visits": 2700,
+          "previous_visits": 2771,
+          "cat_id": "c03"
+        },
+        {
+          "name": "Category 11",
+          "revenue": 4149.6,
+          "previous_quarter_revenue": 5018.37,
+          "delta": -868.77,
+          "change_pct": -17.31,
+          "visits": 1900,
+          "previous_visits": 1613,
+          "cat_id": "c11"
+        }
+      ]
+    },
+    "products": {
+      "considered": 15,
+      "rising": [
+        {
+          "name": "Product 10",
+          "revenue": 5190.0,
+          "previous_quarter_revenue": 3290.0,
+          "delta": 1900.0,
+          "change_pct": 57.75,
+          "visits": 870,
+          "previous_visits": 780,
+          "prod_id": "p10",
+          "brand": "Brand 2"
+        },
+        {
+          "name": "Product 13",
+          "revenue": 3947.0,
+          "previous_quarter_revenue": 2477.0,
+          "delta": 1470.0,
+          "change_pct": 59.35,
+          "visits": 981,
+          "previous_visits": 870,
+          "prod_id": "p13",
+          "brand": "Brand 1"
+        },
+        {
+          "name": "Product 5",
+          "revenue": 5595.0,
+          "previous_quarter_revenue": 4645.0,
+          "delta": 950.0,
+          "change_pct": 20.45,
+          "visits": 685,
+          "previous_visits": 630,
+          "prod_id": "p5",
+          "brand": "Brand 1"
+        },
+        {
+          "name": "Product 8",
+          "revenue": 4352.0,
+          "previous_quarter_revenue": 3832.0,
+          "delta": 520.0,
+          "change_pct": 13.57,
+          "visits": 796,
+          "previous_visits": 720,
+          "prod_id": "p8",
+          "brand": "Brand 0"
+        },
+        {
+          "name": "Product 11",
+          "revenue": 3109.0,
+          "previous_quarter_revenue": 3019.0,
+          "delta": 90.0,
+          "change_pct": 2.98,
+          "visits": 907,
+          "previous_visits": 810,
+          "prod_id": "p11",
+          "brand": "Brand 3"
+        }
+      ],
+      "falling": [
+        {
+          "name": "Product 2",
+          "revenue": 1838.0,
+          "previous_quarter_revenue": 5458.0,
+          "delta": -3620.0,
+          "change_pct": -66.32,
+          "visits": 574,
+          "previous_visits": 540,
+          "prod_id": "p2",
+          "brand": "Brand 2"
+        },
+        {
+          "name": "Product 7",
+          "revenue": 1433.0,
+          "previous_quarter_revenue": 4103.0,
+          "delta": -2670.0,
+          "change_pct": -65.07,
+          "visits": 759,
+          "previous_visits": 690,
+          "prod_id": "p7",
+          "brand": "Brand 3"
+        },
+        {
+          "name": "Product 4",
+          "revenue": 2676.0,
+          "previous_quarter_revenue": 4916.0,
+          "delta": -2240.0,
+          "change_pct": -45.57,
+          "visits": 648,
+          "previous_visits": 600,
+          "prod_id": "p4",
+          "brand": "Brand 0"
+        },
+        {
+          "name": "Product 1",
+          "revenue": 3919.0,
+          "previous_quarter_revenue": 5729.0,
+          "delta": -1810.0,
+          "change_pct": -31.59,
+          "visits": 537,
+          "previous_visits": 510,
+          "prod_id": "p1",
+          "brand": "Brand 1"
+        },
+        {
+          "name": "Product 12",
+          "revenue": 1028.0,
+          "previous_quarter_revenue": 2748.0,
+          "delta": -1720.0,
+          "change_pct": -62.59,
+          "visits": 944,
+          "previous_visits": 840,
+          "prod_id": "p12",
+          "brand": "Brand 0"
+        }
+      ]
+    },
+    "brands": {
+      "considered": 8,
+      "rising": [
+        {
+          "name": "Brand 3",
+          "revenue": 8713.0,
+          "previous_quarter_revenue": 6223.0,
+          "delta": 2490.0,
+          "change_pct": 40.01,
+          "visits": 1300,
+          "previous_visits": 1260
+        },
+        {
+          "name": "Brand 1",
+          "revenue": 8571.0,
+          "previous_quarter_revenue": 7741.0,
+          "delta": 830.0,
+          "change_pct": 10.72,
+          "visits": 1100,
+          "previous_visits": 1020
+        }
+      ],
+      "falling": [
+        {
+          "name": "Brand 2",
+          "revenue": 5142.0,
+          "previous_quarter_revenue": 10482.0,
+          "delta": -5340.0,
+          "change_pct": -50.94,
+          "visits": 1200,
+          "previous_visits": 1140
+        },
+        {
+          "name": "Brand 4",
+          "revenue": 5284.0,
+          "previous_quarter_revenue": 8964.0,
+          "delta": -3680.0,
+          "change_pct": -41.05,
+          "visits": 1400,
+          "previous_visits": 1380
+        },
+        {
+          "name": "Brand 5",
+          "revenue": 8855.0,
+          "previous_quarter_revenue": 11705.0,
+          "delta": -2850.0,
+          "change_pct": -24.35,
+          "visits": 1500,
+          "previous_visits": 1500
+        },
+        {
+          "name": "Brand 6",
+          "revenue": 5426.0,
+          "previous_quarter_revenue": 7446.0,
+          "delta": -2020.0,
+          "change_pct": -27.13,
+          "visits": 1600,
+          "previous_visits": 1620
+        },
+        {
+          "name": "Brand 7",
+          "revenue": 8997.0,
+          "previous_quarter_revenue": 10187.0,
+          "delta": -1190.0,
+          "change_pct": -11.68,
+          "visits": 1700,
+          "previous_visits": 1740
+        }
+      ]
+    }
+  },
+  "work_done": {
+    "quarter": "2025-07-01 to 2025-09-30 (UTC)",
+    "experiments": {
+      "ran_in_quarter": 3,
+      "started_in_quarter": 2,
+      "ended_in_quarter": 2,
+      "still_running": 1,
+      "list": [
+        {
+          "id": 5,
+          "name": "Spanning test",
+          "status": "COMPLETED",
+          "type": "TESTING",
+          "started": "2025-06-01",
+          "ended": "2025-07-09",
+          "started_in_quarter": false,
+          "ended_in_quarter": true
+        },
+        {
+          "id": 1,
+          "name": "Search ranking test: boots",
+          "status": "COMPLETED",
+          "type": "TESTING",
+          "started": "2025-07-16",
+          "ended": "2025-08-06",
+          "started_in_quarter": true,
+          "ended_in_quarter": true
+        },
+        {
+          "id": 2,
+          "name": "Category grid test",
+          "status": "RUNNING",
+          "type": "TESTING",
+          "started": "2025-09-01",
+          "ended": null,
+          "started_in_quarter": true,
+          "ended_in_quarter": false
+        }
+      ],
+      "note": "winners and lift are only in each experiment's detail and report: read them out with discovery-experiment-readout"
+    },
+    "rules": {
+      "search ranking": {
+        "listed": 4,
+        "created_in_quarter": 1,
+        "changed_in_quarter": 1,
+        "enabled_now": 3,
+        "expired_but_enabled": 1
+      },
+      "redirects": {
+        "listed": 1,
+        "created_in_quarter": 1,
+        "changed_in_quarter": 0,
+        "enabled_now": 1,
+        "expired_but_enabled": 0
+      }
+    },
+    "rules_note": "changed_in_quarter counts rules last edited in the quarter and created before it; an edit after the quarter hides an earlier one"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "data": {
+    "_id": "e30000000000000000000001",
+    "name": "Weekly news",
+    "status": "active",
+    "subject": "News from {{ project_variables.brand_name }}",
+    "customer_filter": {
+      "filters": [],
+      "formula": ""
+    },
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "pat.example@example.com"
+  }
+}

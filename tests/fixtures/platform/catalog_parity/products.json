@@ -1,0 +1,6 @@
+{"success": true, "data": {"rows": [
+ {"prod_id": "P100", "product_title": "Trail Runner Shoe", "revenue": "$12000.00", "visits": 900},
+ {"prod_id": "P200", "product_title": "Rain Jacket", "revenue": "$8000.00", "visits": 700},
+ {"prod_id": "P300", "product_title": "Wool Socks", "revenue": "$3000.00", "visits": 400},
+ {"prod_id": "P400", "product_title": "Camp Mug", "revenue": "$500.00", "visits": 120}
+], "total_rows": 4}}

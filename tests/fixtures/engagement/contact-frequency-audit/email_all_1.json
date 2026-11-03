@@ -1,0 +1,1 @@
+{"success": true, "query": "(synthetic)", "analysis_type": "report", "data": {"columns": [[]], "rows": [{"headers": [{"type": "single", "value": null}], "values": [5000]}, {"headers": [{"type": "single", "value": "XX"}], "values": [2500]}, {"headers": [{"type": "other"}], "values": [2500]}], "success": true}, "error": null}

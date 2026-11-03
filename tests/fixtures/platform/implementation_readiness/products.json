@@ -1,0 +1,6 @@
+{"result": {"success": true, "data": [
+ {"id": "A1", "attributes": {"title": "Alpha", "price": 10, "url": "https://shop.example.test/a1", "thumb_image": "https://img.example.test/a1.jpg", "category_paths": [[{"id": "c1", "name": "Tops"}]], "availability": true, "brand": "Acme", "margin": 0.4}},
+ {"id": "A2", "attributes": {"title": "Beta", "price": "", "url": "https://shop.example.test/a2", "thumb_image": "https://img.example.test/a2.jpg", "category_paths": [[{"id": "c1", "name": "Tops"}]], "availability": true, "brand": ""}},
+ {"id": "A3", "attributes": {"title": "Gamma", "price": 12.5, "url": "https://shop.example.test/a3", "thumb_image": "", "category_paths": [[{"id": "c2", "name": "Shoes"}]], "brand": "Acme"}},
+ {"id": "A4", "attributes": {"title": "Delta", "price": 30, "url": "https://shop.example.test/a4", "thumb_image": "https://img.example.test/a4.jpg", "category_paths": [[{"id": "c2", "name": "Shoes"}]], "availability": false, "brand": "Bolt"}}
+], "count": 4}}

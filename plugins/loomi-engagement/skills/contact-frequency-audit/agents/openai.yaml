@@ -1,0 +1,5 @@
+interface:
+  display_name: "Contact Frequency Audit"
+  short_description: "How often customers were really messaged per channel, fatigue by frequency and a cap"
+policy:
+  allow_implicit_invocation: true

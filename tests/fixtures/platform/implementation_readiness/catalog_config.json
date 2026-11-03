@@ -1,0 +1,6 @@
+{"success": true, "data": {"custom_attributes_defaults": {"facetable": "off", "searchable": false},
+ "custom_attributes": {"material": {"level": "product", "facetable": "auto", "searchable": false, "data_type": "text"},
+  "colour_family": {"level": "product", "facetable": "manual", "searchable": true, "data_type": "text"},
+  "margin": {"level": "product", "facetable": "off", "searchable": false, "data_type": "number"}},
+ "core_attribute_searchability": {"category_ids": true, "category_names": false, "product_ids": true},
+ "reserved_attribute_searchability": {"title": true, "description": true, "brand": false}}, "error": null}

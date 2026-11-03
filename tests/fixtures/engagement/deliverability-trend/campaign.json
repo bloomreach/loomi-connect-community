@@ -1,0 +1,153 @@
+{
+"success": true,
+"query": "(synthetic)",
+"analysis_type": "report",
+"data": {
+"columns": [
+[
+{
+"type": "single",
+"value": "clicked"
+}
+],
+[
+{
+"type": "single",
+"value": "complained"
+}
+],
+[
+{
+"type": "single",
+"value": "delivered"
+}
+],
+[
+{
+"type": "single",
+"value": "enqueued"
+}
+],
+[
+{
+"type": "single",
+"value": "hard_bounced"
+}
+],
+[
+{
+"type": "single",
+"value": "opened"
+}
+],
+[
+{
+"type": "single",
+"value": "sent"
+}
+],
+[
+{
+"type": "single",
+"value": "soft_bounced"
+}
+],
+[
+{
+"type": "single",
+"value": "success"
+}
+],
+[
+{
+"type": "single",
+"value": "unsubscribed"
+}
+]
+],
+"rows": [
+{
+"headers": [
+{
+"type": "single",
+"value": "scn-1"
+}
+],
+"values": [
+0,
+20,
+49500,
+50000,
+120,
+0,
+0,
+380,
+0,
+100
+]
+},
+{
+"headers": [
+{
+"type": "single",
+"value": "scn-2"
+}
+],
+"values": [
+0,
+3,
+7900,
+8000,
+40,
+0,
+0,
+60,
+0,
+10
+]
+},
+{
+"headers": [
+{
+"type": "single",
+"value": "cmp-1"
+}
+],
+"values": [
+0,
+70,
+19000,
+20000,
+500,
+0,
+0,
+500,
+0,
+200
+]
+},
+{
+"headers": [
+{
+"type": "single",
+"value": "cmp-2"
+}
+],
+"values": [
+0,
+0,
+200,
+300,
+60,
+0,
+0,
+40,
+0,
+0
+]
+}
+],
+"success": true
+},
+"error": null
+}

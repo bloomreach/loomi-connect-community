@@ -1,0 +1,63 @@
+{
+ "_id": "sc-repl",
+ "name": "Order follow-up",
+ "status": "active",
+ "nodes": [
+  {
+   "id": 1,
+   "type": "on-event-trigger",
+   "event": {
+    "type": "purchase",
+    "filter": []
+   }
+  },
+  {
+   "id": 2,
+   "type": "wait-action",
+   "count": 30,
+   "units": "days"
+  },
+  {
+   "id": 3,
+   "type": "send-email-action",
+   "name": "Time to stock up"
+  },
+  {
+   "id": 4,
+   "type": "push-notification-mobile-action",
+   "name": "Push"
+  }
+ ],
+ "connections": [
+  {
+   "source": {
+    "node_id": 1,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 2,
+    "connector_index": 0
+   }
+  },
+  {
+   "source": {
+    "node_id": 2,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 3,
+    "connector_index": 0
+   }
+  },
+  {
+   "source": {
+    "node_id": 3,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 4,
+    "connector_index": 0
+   }
+  }
+ ]
+}

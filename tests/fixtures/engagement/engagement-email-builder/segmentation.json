@@ -1,0 +1,3 @@
+{"result": {"success": true, "data": {"_id": "seg0000000000000000000001", "name": "Customer value tiers", "archived": false,
+ "segments": [{"name": "VIP", "customer_filter": {"filters": [], "formula": ""}}, {"name": "Lapsed VIP", "customer_filter": {"filters": [], "formula": ""}}],
+ "customer_filter": {"filters": [], "formula": ""}}, "error": null}}

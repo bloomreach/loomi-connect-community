@@ -1,0 +1,48 @@
+{
+ "_id": "sc-browse",
+ "name": "Viewed but left",
+ "status": "draft",
+ "nodes": [
+  {
+   "id": 1,
+   "type": "on-event-trigger",
+   "event": {
+    "type": "view_item",
+    "filter": []
+   }
+  },
+  {
+   "id": 2,
+   "type": "wait-action",
+   "count": 4,
+   "units": "hours"
+  },
+  {
+   "id": 3,
+   "type": "send-sms-action",
+   "name": "Still thinking?"
+  }
+ ],
+ "connections": [
+  {
+   "source": {
+    "node_id": 1,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 2,
+    "connector_index": 0
+   }
+  },
+  {
+   "source": {
+    "node_id": 2,
+    "connector_index": 1
+   },
+   "destination": {
+    "node_id": 3,
+    "connector_index": 0
+   }
+  }
+ ]
+}

@@ -1,0 +1,40 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "770000000000000000000001",
+        "name": "Order shipped",
+        "archived": false,
+        "tags": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "770000000000000000000002",
+        "name": "Untitled API trigger",
+        "archived": false,
+        "tags": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "770000000000000000000003",
+        "name": "Legacy hook",
+        "archived": true,
+        "tags": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      },
+      {
+        "_id": "770000000000000000000004",
+        "name": "Order shipped",
+        "archived": false,
+        "tags": [],
+        "created_by_display_name": "Pat Example",
+        "edited_by_display_name": "pat.example@example.com"
+      }
+    ],
+    "error": null
+  }
+}
