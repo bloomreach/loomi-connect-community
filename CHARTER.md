@@ -43,5 +43,5 @@ Community content isn't an officially supported Bloomreach feature unless it's m
 
 - **Maintainers:** Bloomreach maintains the repository, reviews and merges pull requests, keeps this charter and the standards up to date, and retires outdated content.
 - **Contributions:** they come in only as pull requests from forks, with every commit signed off. See [CONTRIBUTING.md](CONTRIBUTING.md).
-- **Checks:** CI runs the validator and the tests on every pull request. Reviewers check each contribution against this charter as well as for correctness and safety.
+- **Checks:** CI runs the validator and the tests on every pull request, including a scan for anything shaped like a credential and a check that no skill asks the user for a key. Reviewers check each contribution against this charter as well as for correctness and safety.
 - **Changes to this charter:** made by pull request, and approved by a maintainer.
