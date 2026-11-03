@@ -1,6 +1,6 @@
 # Example: Discovery API health
 
-**This example is synthetic.** It's the report for the `broken` test fixtures in `tests/fixtures/discovery/api_health/`, for an invented account `example_store`. No real account, traffic or contract figures are shown.
+**This example is synthetic.** It's the report for the "broken" test data that `tests/discovery/test_discovery_api_health_api_health.py` builds, for an invented account `example_store`. No real account, traffic or contract figures are shown.
 
 **Prompt:** "Category pages and search looked wrong over the weekend. Is the Discovery API OK, and are we within our MUV contract?"
 

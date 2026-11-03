@@ -1,6 +1,7 @@
 {
   "about": "Thresholds for the Discovery API health check. scripts/api_health.py reads this file, so change a rule here and nowhere else. Each key is explained under notes.",
   "baseline_days": 28,
+  "min_baseline_days": 7,
   "recent_days": 3,
   "request_types": ["keyword", "category", "suggest", "bestseller"],
   "min_daily_requests": 100,
@@ -15,13 +16,16 @@
   "min_error_count": 50,
   "staging_share_amber_pct": 10,
   "staging_share_red_pct": 40,
+  "staging_baseline_multiple": 2.0,
   "muv_amber_pct": 90,
   "muv_red_pct": 100,
   "muv_forecast_months": 3,
+  "muv_history_months": 6,
   "notes": {
     "baseline_days": "Days before the recent window that make the baseline. Each recent day is compared with the same weekday in this window, so use a multiple of 7.",
     "recent_days": "The most recent complete days that are checked, each on its own. The current (partial) day is never checked.",
-    "request_types": "Request types fetched one call each with request_type:<type>. The API can't list them, and an unknown type returns zeros, so traffic from types not listed here is shown as 'other' (total minus the listed types).",
+    "min_baseline_days": "With fewer baseline days than this the result carries a note asking for a longer window: a weekday comparison needs at least one of each weekday.",
+    "request_types": "Read by the call plan in SKILL.md, not by the script: one get_discovery_api_requests call per type with request_type:<type>. The script checks every type:<x> series it is given the same way. The API can't list types, and an unknown type returns zeros, so traffic from types not fetched is shown as 'other' (total minus the types given).",
     "min_daily_requests": "A series whose baseline weekday average is below this is too small to judge for drops, surges or a missing type.",
     "volume_amber_drop_pct": "A day at least this many percent below its weekday baseline is amber.",
     "volume_red_drop_pct": "A day at least this many percent below its weekday baseline is red. A day with no requests in a series that has a baseline is red too ('stopped').",
@@ -32,10 +36,12 @@
     "error_4xx_red_pct": "A day whose 4xx share of all requests is at least this percentage is red.",
     "error_spike_ratio": "An error share at this many times its baseline is at least amber, even under the fixed thresholds, when the day has at least min_error_count errors.",
     "min_error_count": "Fewer errors than this in a day never triggers the spike rule (a handful of errors is noise).",
-    "staging_share_amber_pct": "Staging traffic at this percentage of all requests or more, and at least twice its baseline share, is amber: production traffic may be pointed at staging.",
-    "staging_share_red_pct": "Staging traffic at this percentage of all requests or more, and at least twice its baseline share, is red.",
+    "staging_share_amber_pct": "Staging traffic at this percentage of all requests or more, and at least staging_baseline_multiple times its baseline share, is amber: production traffic may be pointed at staging.",
+    "staging_share_red_pct": "Staging traffic at this percentage of all requests or more, and at least staging_baseline_multiple times its baseline share, is red.",
+    "staging_baseline_multiple": "Staging is only flagged when its share is at least this many times its baseline share, so an account that always sends some traffic to staging isn't flagged for it.",
     "muv_amber_pct": "Monthly unique visitors at this percentage of the contracted limit or more (a complete month, or the forecast) is amber.",
     "muv_red_pct": "Monthly unique visitors at this percentage of the contracted limit or more is red.",
-    "muv_forecast_months": "The forecast for the current month is the average of this many most recent complete months."
+    "muv_forecast_months": "The forecast for the current month is the average of this many most recent complete months.",
+    "muv_history_months": "Months of unique visitor history to fetch (read by the call plan in SKILL.md): enough for muv_forecast_months complete months plus a trend."
   }
 }

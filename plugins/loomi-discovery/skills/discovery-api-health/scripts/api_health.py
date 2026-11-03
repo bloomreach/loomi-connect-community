@@ -39,6 +39,16 @@ def fail(msg):
     sys.exit(1)
 
 
+def tool_error(text):
+    """A Loomi Connect error, safe to show: an error about the account name can list every account the user can
+    access (many of them other customers), so it's never repeated."""
+    text = str(text or "no error text")
+    if "account" in text.lower() and text.count(",") >= 3:
+        return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list "
+                "other accounts. Ask the user to check the account name.")
+    return text[:200]
+
+
 def results(path):
     """The results rows of a saved Discovery usage result, after checking it isn't an error returned as data."""
     try:
@@ -48,7 +58,7 @@ def results(path):
         fail(f"{path}: can't read it as JSON ({e}).")
     for d in (data, data.get("result") if isinstance(data, dict) else None):
         if isinstance(d, dict) and d.get("success") is False:
-            fail(f"{path}: Loomi Connect returned an error: {d.get('error') or 'no error text'}. "
+            fail(f"{path}: Loomi Connect returned an error: {tool_error(d.get('error'))} "
                  "This check couldn't run; don't treat it as 'nothing found'.")
     if isinstance(data, dict) and isinstance(data.get("result"), dict):
         data = data["result"]
@@ -59,6 +69,8 @@ def results(path):
     rows = (body or {}).get("results") if isinstance(body, dict) else None
     if not isinstance(rows, list):
         fail(f"{path}: no data.body.results in the file. Pass the whole saved tool result.")
+    if not all(isinstance(r, dict) for r in rows):
+        fail(f"{path}: data.body.results holds something other than result rows.")
     return rows
 
 
@@ -174,9 +186,10 @@ def staging_check(staging, total, recent, baseline):
             continue
         pct = s / t * 100
         text = f"staging is {pct:.1f}% of requests on {d} (usually {base:.1f}%)"
-        if pct >= RULES["staging_share_red_pct"] and pct >= 2 * base:
+        above_base = pct >= RULES["staging_baseline_multiple"] * base
+        if pct >= RULES["staging_share_red_pct"] and above_base:
             flags.append(("RED", d, text))
-        elif pct >= RULES["staging_share_amber_pct"] and pct >= 2 * base:
+        elif pct >= RULES["staging_share_amber_pct"] and above_base:
             flags.append(("AMBER", d, text))
     return result("staging", "env:staging", flags, f"staging share {share(staging, total, recent) or 0:.1f}% (usually {base:.1f}%)")
 
@@ -247,7 +260,7 @@ def main():
         recent = days[-RULES["recent_days"]:]
         start = recent[0] - timedelta(days=RULES["baseline_days"])
         baseline = [d for d in days if start <= d < recent[0]]
-        if len(baseline) < 7:
+        if len(baseline) < RULES["min_baseline_days"]:
             notes.append(f"Only {len(baseline)} baseline day(s); fetch {RULES['baseline_days'] + RULES['recent_days']} days "
                          "for a fair comparison.")
         types = {n: s for n, s in series.items() if n.startswith("type:")}

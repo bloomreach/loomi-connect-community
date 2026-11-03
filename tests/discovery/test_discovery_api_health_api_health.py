@@ -1,5 +1,6 @@
-"""Tests for discovery-api-health's api_health.py. The fixtures are synthetic: 35 days of daily
-get_discovery_api_requests results (healthy and broken), and monthly unique visitor results."""
+"""Tests for discovery-api-health's api_health.py. The data is synthetic: the healthy and broken daily
+get_discovery_api_requests series are built in a temp folder by build_scenarios() below; the monthly unique
+visitor results and the error cases are small committed fixtures."""
 import json
 import subprocess
 import sys
@@ -13,6 +14,54 @@ SKILL = ROOT / "plugins/loomi-discovery/skills/discovery-api-health"
 SCRIPT = SKILL / "scripts/api_health.py"
 FX = ROOT / "tests/fixtures/discovery/api_health"
 TODAY = "2026-11-03"
+SHARES = {"keyword": .30, "category": .40, "suggest": .10, "bestseller": .05}
+
+
+def usage_result(rows):
+    return {"success": True, "data": {"isSuccessful": True, "body": {"group_definitions": [], "results": rows}},
+            "error": None}
+
+
+def daily_result(values):
+    return usage_result([{"groups": [], "total": {"request_count": {"value": str(int(v))}},
+                          "time_period_start": d.isoformat(), "time_period_end": (d + timedelta(days=1)).isoformat()}
+                         for d, v in values])
+
+
+def build_scenarios(folder):
+    """Write 36 days (to the partial "today", 2026-11-03) of each series for a healthy and a broken account.
+
+    Weekdays carry 100,000 requests and weekends 80,000, split across four request types plus 15% 'other'. The
+    broken account has, on purpose: a category drop on 31 Oct, a 5xx spike on 1 Nov, and on 2 Nov keyword search
+    stopping, an autosuggest surge, a 4xx spike under the fixed limit, a staging share jump and a UK site down 60%.
+    """
+    start = date(2026, 9, 29)
+    days = [start + timedelta(days=i) for i in range(36)]
+    for scen in ("healthy", "broken"):
+        series = {name: [] for name in ["total", "5xx", "4xx", "staging", "site_uk"] + [f"type_{k}" for k in SHARES]}
+        for d in days:
+            t = (80000 if d.weekday() >= 5 else 100000) * (1 + (d.day % 3 - 1) * 0.02)
+            p = {k: t * share for k, share in SHARES.items()}
+            e5, e4, staging, uk = 5, 50, t * 0.01, t * 0.2
+            if scen == "broken":
+                if d == date(2026, 10, 31):
+                    p["category"] *= 0.7
+                if d == date(2026, 11, 1):
+                    e5 = t * 0.03
+                if d == date(2026, 11, 2):
+                    p["keyword"] = 0
+                    p["suggest"] *= 2.5
+                    e4 = 400
+                    staging = t * 0.15
+                    uk = t * 0.2 * 0.4
+            t = sum(p.values()) + t * 0.15
+            if d == days[-1]:
+                t *= 0.3  # the partial current day, which must be ignored
+            for name, v in [("total", t), ("5xx", e5), ("4xx", e4), ("staging", staging), ("site_uk", uk)] + \
+                    [(f"type_{k}", p[k]) for k in SHARES]:
+                series[name].append((d, v))
+        for name, values in series.items():
+            (Path(folder) / f"{scen}_{name}.json").write_text(json.dumps(daily_result(values)), encoding="utf-8")
 
 
 def run(*args):
@@ -25,12 +74,13 @@ def run(*args):
     return r.returncode, out, r.stderr, written
 
 
-def scenario(name, muv="muv_within_contract.json"):
-    args = ["--series", f"total={FX / f'{name}_total.json'}"]
-    for t in ("keyword", "category", "suggest", "bestseller"):
-        args += ["--series", f"type:{t}={FX / f'{name}_type_{t}.json'}"]
-    args += ["--series", f"status:5xx={FX / f'{name}_5xx.json'}", "--series", f"status:4xx={FX / f'{name}_4xx.json'}",
-             "--series", f"env:staging={FX / f'{name}_staging.json'}", "--series", f"site:uk={FX / f'{name}_site_uk.json'}",
+def scenario(folder, name, muv="muv_within_contract.json"):
+    f = Path(folder)
+    args = ["--series", f"total={f / f'{name}_total.json'}"]
+    for t in SHARES:
+        args += ["--series", f"type:{t}={f / f'{name}_type_{t}.json'}"]
+    args += ["--series", f"status:5xx={f / f'{name}_5xx.json'}", "--series", f"status:4xx={f / f'{name}_4xx.json'}",
+             "--series", f"env:staging={f / f'{name}_staging.json'}", "--series", f"site:uk={f / f'{name}_site_uk.json'}",
              "--muv", FX / muv, "--today", TODAY]
     return args
 
@@ -49,8 +99,18 @@ def write_series(folder, name, values, start=date(2026, 9, 29)):
 
 
 class ApiHealthTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.data = cls.tmp.name
+        build_scenarios(cls.data)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
     def test_healthy_is_green(self):
-        code, out, err, _ = run(*scenario("healthy"))
+        code, out, err, _ = run(*scenario(self.data, "healthy"))
         self.assertEqual(code, 0, err)
         self.assertEqual(out["overall"], "GREEN", out["checks"])
         # The partial current day is never judged; the baseline is the 28 days before the recent window.
@@ -60,7 +120,7 @@ class ApiHealthTest(unittest.TestCase):
         self.assertEqual(out["notes"], [])
 
     def test_broken_flags_each_problem(self):
-        code, out, _, _ = run(*scenario("broken", "muv_over_contract.json"))
+        code, out, _, _ = run(*scenario(self.data, "broken", "muv_over_contract.json"))
         self.assertEqual(code, 0)
         self.assertEqual(out["overall"], "RED")
         s = by_series(out)
@@ -135,22 +195,48 @@ class ApiHealthTest(unittest.TestCase):
     def test_out_file_and_nothing_else_written(self):
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "health.json"
-            code, out, _, written = run(*scenario("healthy"), "--out", target)
+            code, out, _, written = run(*scenario(self.data, "healthy"), "--out", target)
             self.assertEqual(code, 0)
             self.assertEqual(json.loads(target.read_text(encoding="utf-8")), out)
         self.assertEqual(written, [])
 
+    def test_account_list_errors_are_not_repeated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            leak = Path(tmp) / "leak.json"
+            leak.write_text(json.dumps({"success": False, "error": "Unknown account_name 'acme'. Available accounts: "
+                                        "alpha_shop, beta_store, gamma_retail, delta_outlet"}), encoding="utf-8")
+            plain = Path(tmp) / "plain.json"
+            plain.write_text(json.dumps({"success": False, "error": "x" * 500}), encoding="utf-8")
+            bad_rows = Path(tmp) / "rows.json"
+            bad_rows.write_text(json.dumps(usage_result(["not a row"])), encoding="utf-8")
+            code, out, _, _ = run("--series", f"total={leak}")
+            self.assertEqual(code, 1)
+            self.assertIn("Ask the user to check the account name", out["error"])
+            self.assertNotIn("beta_store", out["error"])
+            code, out, _, _ = run("--series", f"total={plain}")
+            self.assertEqual(code, 1)
+            self.assertNotIn("x" * 201, out["error"])
+            code, out, _, _ = run("--series", f"total={bad_rows}")
+            self.assertEqual(code, 1)
+            self.assertIn("something other than result rows", out["error"])
+
     def test_bad_input(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            healthy_total = write_series(tmp, "total.json", [1000] * 35)
+            healthy_keyword = write_series(tmp, "keyword.json", [300] * 35)
+            self._bad_input(healthy_total, healthy_keyword)
+
+    def _bad_input(self, healthy_total, healthy_keyword):
         for args, text in [(["--series", f"total={FX / 'denied.json'}"], "ACCESS_DENIED"),
                            (["--series", f"total={FX / 'not_successful.json'}"], "reported a failure"),
                            (["--series", f"total={FX / 'no_body.json'}"], "no data.body.results"),
                            (["--series", f"total={FX / 'monthly.json'}"], "granularity 'daily'"),
                            (["--series", f"total={FX / 'missing.json'}"], "can't read it"),
-                           (["--series", f"type:keyword={FX / 'healthy_type_keyword.json'}"], "total=<file> (no filter) is required"),
-                           (["--series", f"total={FX / 'healthy_total.json'}", "--series", f"total={FX / 'healthy_total.json'}"],
+                           (["--series", f"type:keyword={healthy_keyword}"], "total=<file> (no filter) is required"),
+                           (["--series", f"total={healthy_total}", "--series", f"total={healthy_total}"],
                             "only be given once"),
                            ([], "give at least"),
-                           (["--series", f"total={FX / 'healthy_total.json'}", "--today", "2026-09-01"], "no complete days")]:
+                           (["--series", f"total={healthy_total}", "--today", "2026-09-01"], "no complete days")]:
             code, out, _, _ = run(*args)
             self.assertEqual(code, 1, args)
             self.assertIn(text, out["error"])
@@ -164,6 +250,11 @@ class RulesTest(unittest.TestCase):
     def test_every_rule_has_a_note(self):
         rules = json.loads((SKILL / "references/rules.json").read_text(encoding="utf-8"))
         self.assertEqual(set(rules) - {"about", "notes"}, set(rules["notes"]))
+
+    def test_test_data_matches_the_call_plan(self):
+        # The built series use the same request types as the call plan in rules.json.
+        rules = json.loads((SKILL / "references/rules.json").read_text(encoding="utf-8"))
+        self.assertEqual(list(SHARES), rules["request_types"])
 
 
 if __name__ == "__main__":
