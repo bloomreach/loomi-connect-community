@@ -218,6 +218,7 @@ def render(r):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("funnel")
     ap.add_argument("--format", choices=["markdown", "json"], default="markdown")

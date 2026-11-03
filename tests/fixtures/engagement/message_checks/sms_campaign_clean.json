@@ -1,0 +1,44 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "000000000000000000000003",
+   "name": "Weekend SMS",
+   "status": "draft",
+   "schedule": {
+    "active": true,
+    "type": "now"
+   },
+   "silent_hours": {
+    "from": "09:00",
+    "to": "20:00"
+   },
+   "throughput_policy": null,
+   "split": {
+    "type": "off"
+   },
+   "action": {
+    "consent_category": "sms",
+    "general_consent": false,
+    "frequency_policy": "Default",
+    "throughput_policy_id": null,
+    "variants": [
+     {
+      "id": 1,
+      "max_message_parts": 1,
+      "type": "sms",
+      "translations": {
+       "": {
+        "message": "Acme Outdoors: Weekend deals are live! Shop: https://www.acme-outdoors.test/w Reply STOP to opt out, HELP for help.",
+        "sender": {
+         "name": "Acme"
+        }
+       }
+      }
+     }
+    ]
+   }
+  },
+  "error": null
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "type": "ranking",
+ "name": "Global tweak",
+ "queries": [
+  {
+   "query": "*",
+   "queryType": "sitesearch_global"
+  }
+ ],
+ "boost_product_ids": [
+  "p3"
+ ]
+}

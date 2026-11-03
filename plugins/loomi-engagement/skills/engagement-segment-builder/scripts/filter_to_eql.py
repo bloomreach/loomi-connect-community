@@ -357,6 +357,7 @@ def find_filter(obj, node_id=None):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     p = argparse.ArgumentParser(description="Translate a saved Engagement customer filter into EQL.")
     p.add_argument("filter_json", help="saved customer filter, condition node or scenario JSON")
     p.add_argument("--node", help="condition node id, when the file is a whole scenario")

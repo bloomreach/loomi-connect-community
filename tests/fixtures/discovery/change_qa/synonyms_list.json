@@ -1,0 +1,19 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 700002,
+   "sourceSynonym": "frock",
+   "targetSynonym": "dress",
+   "enabled": true,
+   "groupSynonym": false
+  },
+  {
+   "id": 700003,
+   "sourceSynonym": "gown",
+   "targetSynonym": "dress",
+   "enabled": true,
+   "groupSynonym": false
+  }
+ ]
+}

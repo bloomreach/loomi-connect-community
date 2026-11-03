@@ -1,0 +1,57 @@
+{
+ "type": "ranking",
+ "name": "Mechanics test",
+ "queries": [
+  {
+   "query": "dress",
+   "queryType": "sitesearch",
+   "matchType": "EXACT_MATCH"
+  }
+ ],
+ "boost_product_ids": [
+  "p2"
+ ],
+ "bury_product_ids": [
+  "p2"
+ ],
+ "product_slots": [
+  {
+   "product_id": "p3",
+   "slot": 1
+  },
+  {
+   "product_id": "p4",
+   "slot": 1
+  },
+  {
+   "product_id": "p5",
+   "slot": 30
+  }
+ ],
+ "attribute_boost_bury": [
+  {
+   "type": "boost",
+   "name": "color",
+   "values": [
+    "red"
+   ],
+   "strength": 40
+  },
+  {
+   "type": "bury",
+   "name": "brand",
+   "values": [
+    "Nobody "
+   ],
+   "strength": 40
+  },
+  {
+   "type": "boost",
+   "name": "price",
+   "values": [
+    "[40 TO 60]"
+   ],
+   "strength": 20
+  }
+ ]
+}

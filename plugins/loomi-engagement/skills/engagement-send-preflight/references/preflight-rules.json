@@ -1,0 +1,9 @@
+{
+  "about": "The preflight window settings. scripts/send_window.py reads this file. The message check thresholds are in rules.json, which is shared with campaign-qa and scenario-qa. Each key is explained under notes.",
+  "window_days": 7,
+  "edited_days": 7,
+  "notes": {
+    "window_days": "Default length of the preflight window, in days from now.",
+    "edited_days": "A live event-triggered flow edited within this many days is fetched and checked; older ones are listed by name only."
+  }
+}

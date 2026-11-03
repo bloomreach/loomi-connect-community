@@ -1,0 +1,12 @@
+{
+ "type": "redirect",
+ "name": "Returns",
+ "url": "https://shop.example.test/TODO",
+ "queries": [
+  {
+   "query": "returns policy",
+   "queryType": "sitesearch",
+   "matchType": "EXACT_MATCH"
+  }
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "000000000000000000000012",
+    "name": "Welcome flow",
+    "status": "active",
+    "archived": false,
+    "edited": 1793500000
+   },
+   {
+    "_id": "000000000000000000000013",
+    "name": "Cart flow",
+    "status": "active",
+    "archived": false,
+    "edited": 1792000000
+   },
+   {
+    "_id": "000000000000000000000014",
+    "name": "Old draft flow",
+    "status": "draft",
+    "archived": false,
+    "edited": 1793600000
+   }
+  ]
+ }
+}

@@ -108,6 +108,7 @@ def parse(data, metric, series, missing):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("file")
     p.add_argument("--week-start", default="mon", choices=sorted(WEEKDAYS))

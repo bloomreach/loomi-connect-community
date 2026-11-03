@@ -1,0 +1,37 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 51,
+    "name": "Dress ranking test",
+    "status": "RUNNING",
+    "buckets": [
+     {
+      "name": "A",
+      "rules": [
+       {
+        "query": "dress"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 52,
+    "name": "Shoes test",
+    "status": "RUNNING",
+    "buckets": [
+     {
+      "name": "A",
+      "rules": [
+       {
+        "query": "shoes"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,12 @@
+{
+ "type": "redirect",
+ "name": "Gift cards",
+ "url": "shop.example.test/gift-cards",
+ "queries": [
+  {
+   "query": "gift cards",
+   "queryType": "sitesearch",
+   "matchType": "EXACT_MATCH"
+  }
+ ]
+}

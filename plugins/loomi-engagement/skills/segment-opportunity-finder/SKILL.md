@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server with Bloomreach Engagement, and optionally Bloomreach Discovery for trending searches. Python 3 is optional, for the bundled ranking script.
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.1.4"
   products: engagement,discovery
   access: read-only
 ---

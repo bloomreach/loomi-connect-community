@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery; Bloomreach Engagement optional). Python 3 is optional, for the bundled scripts.
 metadata:
   author: bloomreach
-  version: "0.1.4"
+  version: "0.1.5"
   products: discovery,engagement
   access: read-only
 ---

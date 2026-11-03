@@ -114,6 +114,7 @@ def change(cur, prev):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description="Turn campaign event counts into rates, period changes and flags "
                                  "(prints Markdown). Input format is in the script's docstring.")
     ap.add_argument("counts", nargs="?", help="JSON file of counts (read from stdin when left out)")

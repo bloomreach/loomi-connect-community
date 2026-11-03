@@ -215,6 +215,7 @@ def csv_safe(v):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("inputs", nargs="*", default=["-"], help=".jsonl files, or - for stdin (default)")
     ap.add_argument("--out-dir", required=True)

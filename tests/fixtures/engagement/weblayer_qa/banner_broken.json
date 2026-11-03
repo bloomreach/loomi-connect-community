@@ -1,0 +1,111 @@
+{
+  "result": {
+    "success": true,
+    "error": null,
+    "data": {
+      "_id": "000000000000000000000002",
+      "name": "Broken sign-up pop-up",
+      "status": "inactive",
+      "archived": false,
+      "tags": [],
+      "initiative_id": null,
+      "created": 1790000000,
+      "created_by_display_name": "Editor A",
+      "edited": 1790000000,
+      "edited_by_display_name": "Editor A",
+      "variants": [
+        {
+          "id": 0,
+          "name": "Variant A",
+          "enabled": true,
+          "percentage": 60,
+          "is_embedded": false,
+          "type": "medium_rectangle",
+          "source_mode": true,
+          "html": "<body><div class=\"weblayer\" style=\"background:#ff0000; font-family: Comic Sans MS\">\n  <button class=\"close-btn\"><svg width=\"16\" height=\"16\"></svg></button>\n  <img src=\"http://cdn.shop.invalid/hero.png\">\n  <img src=\"[[ {name: 'Hero', tooltip: 'Hero', category: 'Content', orderIndex: '4010', isJsonParam: true} : image ]]\" alt=\"\">\n  <h2>Sign up today</h2>\n  <p>Hi {{ customer.first_name }} {{ customer.last_name | default('') }}</p>\n  {% if customer.vip %}<p>VIP</p>\n  {% for p in aggregates['a1'] %}<span>{{ p.title }}</span>{% endfor %}\n  <a href=\"javascript:alert(1)\">x</a>\n  <a href=\"#\">More</a>\n  <a href=\"www.shop.invalid/missing-scheme\">Shop</a>\n  <a href=\"https://example.com/landing\">Landing</a>\n  <a href=\"https://www.shop.invalid/todo-page\">Offer</a>\n  <span>[[ {name: 'NoJson', category: 'Content'} : string | x ]]</span>\n  <span>[[ {name: 'Link', isJsonParam: true} : url | https://www.shop.invalid ]]</span>\n  <span>[[ {name: 'Count', isJsonParam: true} : number | ten ]]</span>\n  <span>[[ {name: 'Quote', isJsonParam: true} : string | say \"hi\" ]]</span>\n  <span>[[ {name: 'Count', isJsonParam: true} : string | 10 ]]</span>\n  <span>[[ {name: 'Broken', isJsonParam: true} : string | oops\n</div>",
+          "style": "",
+          "script": "var utils = window.utils\nconst PARAM_showAfter = parseInt(\"[[ {name: 'showAfter', tooltip: 'showAfter', category: 'Triggering', orderIndex: '900', isJsonParam: true} : number | 3000 ]]\", 10)\nlet config = {\n  PARAM_parentElement: \"[[ {name: 'ParentElement', tooltip: 'ParentElement', category: 'Layout', orderIndex: '1001', isJsonParam: true} : string | body ]]\",\n  PARAM_removeAfter: parseInt(\"[[ {name: 'AutoRemove', tooltip: 'AutoRemove', category: 'Behavior', orderIndex: '1007', isJsonParam: true} : number | 0 ]]\", 10),\n  PARAM_weblayerType: \"[[ {name: 'WeblayerType', tooltip: 'WeblayerType', category: 'Layout', orderIndex: '1000', isJsonParam: true} : enum(Pop-up,Inline) | Pop-up ]]\"\n}\n\nconst self = (config.self = this)\nconst bannerSemiId = (config.bannerSemiId = Math.random().toString(36).substring(5))\nwindow[\"__exp_triggered-\" + bannerSemiId] = false\n\nlet apiUrl = \"https://api.exponea.com\"\nif (!self.inPreview) {\n  apiUrl = self.sdk.configuration.target\n}\nlet utilsSource = apiUrl + \"/brstatic/utils.js\"\n\nif (self.inPreview) {\n  config.PARAM_parentElement = \"body\"\n}\nconfig.apiBaseURL = apiUrl\n\nwindow[\"__exp_load_init-\" + bannerSemiId] = Promise.all([loadScript(utilsSource)])\n\nfunction loadScript(src) {\n  return new Promise((resolve) => {\n    setTimeout(() => {\n      let el = document.querySelector(`body > script[src='${src}']`)\n      if (el) return el.loaded ? resolve(true) : el.addEventListener(\"load\", () => resolve((el.loaded = true)))\n      el = document.createElement(\"script\")\n      el.src = src\n      el.defer = true\n      el.loaded = false\n      el.addEventListener(\"load\", () => resolve((el.loaded = true)))\n      document.body.appendChild(el)\n    })\n  })\n}\n\nfunction removeBanner() {\n  if (self.banner && self.banner?.parentNode) {\n    self.banner.parentNode.removeChild(self.banner)\n  }\n}\n\nfunction createBanner() {\n  const placeholder = document.createElement(\"div\")\n  placeholder.insertAdjacentHTML(\"afterbegin\", self.html)\n  const banner = placeholder.querySelector(\".popup\")\n  self.banner = banner\n\n  banner.querySelector(\".close-btn\").onclick = removeBanner\n  document.getElementById(\"promo\").innerHTML = window.location.search\n  banner.querySelector(\".cta\").addEventListener(\"click\", function () { self.sdk.track(\"banner\", {action: \"click\"}) })\n\n  if (config.PARAM_weblayerType === \"Inline\") {\n    banner.style.position = \"static\"\n  }\n\n  banner.insertAdjacentHTML(\"afterbegin\", \"<style>\" + self.style + \"</style>\")\n  banner.querySelectorAll(\"a\").forEach((link) => utils.trackLink(link, \"click\", true))\n\n  utils.attachBannerToDom(banner)\n  console.log(\"attached\")\n}\n\nwindow[\"__exp_load_init-\" + bannerSemiId]\n  .then(function () {\n    config.createBannerFunction = createBanner\n    config.removeBannerFunction = removeBanner\n    utils.registerStartTrigger(false)\n  })\n  .catch(function (error) {\n    console.error(\"Error loading resources: \", error)\n  })\n\nfunction capture(email) {\n  self.sdk.identify(email)\n  localStorage.setItem(\"signed_up\", \"1\")\n  fetch(\"https://collector.analytics.invalid/hit?e=1\")\n  eval(\"window.promo = 1\")\n  document.write(\"<p>thanks</p>\")\n  debugger\n}\ndocument.addEventListener(\"mouseout\", function () {})\n",
+          "params": {
+            "showAfter": "3000",
+            "Hero": "",
+            "OldParam": "left over",
+            "ParentElement": "body",
+            "AutoRemove": "0",
+            "WeblayerType": "Pop-up"
+          },
+          "parametrized_parts": {
+            "html": "(filled-in copy omitted in fixture)",
+            "style": "",
+            "script": "",
+            "sdk_object_name": "exponea"
+          }
+        },
+        {
+          "id": 1,
+          "name": "Variant B",
+          "enabled": true,
+          "percentage": 30,
+          "is_embedded": false,
+          "type": "medium_rectangle",
+          "source_mode": true,
+          "html": "<div class=\"promo-bar\"><p>[[ {name: 'Text', tooltip: 'Text', category: 'Content', orderIndex: '1000', isJsonParam: true} : string | Free delivery this weekend ]]</p></div>",
+          "style": ".promo-bar { position: fixed; bottom: 0; width: 100%; }",
+          "script": "var PARAM_trigger = \"On entry\";\nfunction createBanner() {\n  self.banner = document.createElement(\"div\");\n}\ncreateBanner();\nreturn {\n  remove: function () {},\n};\n",
+          "params": {
+            "Text": "Free delivery this weekend"
+          },
+          "parametrized_parts": {
+            "html": "(filled-in copy omitted in fixture)",
+            "style": "",
+            "script": "",
+            "sdk_object_name": "exponea"
+          }
+        },
+        {
+          "id": 2,
+          "name": "Variant C",
+          "enabled": false,
+          "percentage": 10,
+          "is_embedded": false,
+          "type": "medium_rectangle",
+          "source_mode": true,
+          "html": "<div class=\"weblayer\" role=\"dialog\">\n  <button class=\"close-btn\" aria-label=\"Close\">&times;</button>\n  <img class=\"hero\" src=\"[[ {name: 'HeroImage', tooltip: 'HeroImage', category: 'Content', orderIndex: '4010', isJsonParam: true} : image | https://cdn.shop.invalid/hero.png ]]\" alt=\"[[ {name: 'HeroAlt', tooltip: 'HeroAlt', category: 'Content', orderIndex: '4011', isJsonParam: true} : string | Spring collection ]]\">\n  <h2 class=\"heading\">[[ {name: 'Heading', tooltip: 'Heading', category: 'Content', orderIndex: '4000', isJsonParam: true} : string | Join our list ]]</h2>\n  <p class=\"body\">Hi {{ customer.first_name | default('there', true) }}, [[ {name: 'BodyText', tooltip: 'BodyText', category: 'Content', orderIndex: '4001', isJsonParam: true} : text | Get 10% off your first order ]]</p>\n  <a class=\"cta\" href=\"[[ {name: 'CtaUrl', tooltip: 'CtaUrl', category: 'Content', orderIndex: '4020', isJsonParam: true} : string | https://www.shop.invalid/sale ]]\">[[ {name: 'CtaLabel', tooltip: 'CtaLabel', category: 'Content', orderIndex: '4021', isJsonParam: true} : string | Shop now ]]</a>\n</div>",
+          "style": "{% set primaryColor = \"[[ {name: 'PrimaryColor', tooltip: 'PrimaryColor', category: 'Branding', orderIndex: '1000', isJsonParam: true} : color | #E91E8C ]]\" %}\n{% set fontFamily = \"[[ {name: 'FontFamily', tooltip: 'FontFamily', category: 'Branding', orderIndex: '1010', isJsonParam: true} : enum(Arial,Georgia) | Arial ]]\" %}\n.weblayer { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: [[ {name: 'Background', tooltip: 'Background', category: 'Branding', orderIndex: '1001', isJsonParam: true} : color | #ffffff ]]; font-family: {{ fontFamily }}; max-width: [[ {name: 'CardWidth', tooltip: 'CardWidth', category: 'Layout', orderIndex: '2000', isJsonParam: true} : string | 420px ]]; }\n.heading { color: {{ primaryColor }}; font-size: [[ {name: 'HeadingSize', tooltip: 'HeadingSize', category: 'Typography', orderIndex: '3000', isJsonParam: true} : string | 22px ]]; }\n@media (max-width: 480px) { .weblayer { width: 95%; } }",
+          "script": "let config = {\n  PARAM_parentElement: \"[[ {name: 'ParentElement', tooltip: 'ParentElement', category: 'Layout', orderIndex: '1001', isJsonParam: true} : string | body ]]\",\n  PARAM_removeAfter: parseInt(\"[[ {name: 'AutoRemove', tooltip: 'AutoRemove', category: 'Behavior', orderIndex: '1007', isJsonParam: true} : number | 0 ]]\", 10),\n  PARAM_weblayerType: \"[[ {name: 'WeblayerType', tooltip: 'WeblayerType', category: 'Layout', orderIndex: '1000', isJsonParam: true} : enum(Pop-up,Inline) | Pop-up ]]\"\n}\n\nconst self = (config.self = this)\nconst bannerSemiId = (config.bannerSemiId = Math.random().toString(36).substring(5))\nwindow[\"__exp_triggered-\" + bannerSemiId] = false\n\nlet apiUrl = \"https://api.exponea.com\"\nif (!self.inPreview) {\n  apiUrl = self.sdk.configuration.target\n}\nlet utilsSource = apiUrl + \"/brstatic/utils.js\"\n\nif (self.inPreview) {\n  config.PARAM_parentElement = \"body\"\n}\nconfig.apiBaseURL = apiUrl\n\nwindow[\"__exp_load_init-\" + bannerSemiId] = Promise.all([loadScript(utilsSource)])\n\nfunction loadScript(src) {\n  return new Promise((resolve) => {\n    setTimeout(() => {\n      let el = document.querySelector(`body > script[src='${src}']`)\n      if (el) return el.loaded ? resolve(true) : el.addEventListener(\"load\", () => resolve((el.loaded = true)))\n      el = document.createElement(\"script\")\n      el.src = src\n      el.defer = true\n      el.loaded = false\n      el.addEventListener(\"load\", () => resolve((el.loaded = true)))\n      document.body.appendChild(el)\n    })\n  })\n}\n\nfunction removeBanner() {\n  if (self.banner && self.banner?.parentNode) {\n    self.banner.parentNode.removeChild(self.banner)\n  }\n}\n\nfunction createBanner() {\n  const placeholder = document.createElement(\"div\")\n  placeholder.insertAdjacentHTML(\"afterbegin\", self.html)\n  const banner = placeholder.querySelector(\".weblayer\")\n  self.banner = banner\n\n  banner.querySelector(\".close-btn\").onclick = utils.handleCloseButtonClick.bind(utils)\n\n  if (config.PARAM_weblayerType === \"Inline\") {\n    banner.style.position = \"static\"\n  }\n\n  banner.insertAdjacentHTML(\"afterbegin\", \"<style>\" + self.style + \"</style>\")\n  banner.querySelectorAll(\"a\").forEach((link) => utils.trackLink(link, \"click\", true))\n\n  utils.attachBannerToDom(banner)\n}\n\nwindow[\"__exp_load_init-\" + bannerSemiId]\n  .then(function () {\n    config.createBannerFunction = createBanner\n    config.removeBannerFunction = removeBanner\n    utils.setConfig(config)\n    utils.registerStartTrigger(false)\n  })\n  .catch(function (error) {\n    console.error(\"Error loading resources: \", error)\n  })\n\nreturn { remove: removeBanner }\n",
+          "params": {
+            "ParentElement": "body",
+            "AutoRemove": "0",
+            "WeblayerType": "Pop-up",
+            "HeroImage": "https://cdn.shop.invalid/hero.png",
+            "HeroAlt": "Spring collection",
+            "Heading": "Join our list",
+            "BodyText": "Get 10% off your first order",
+            "CtaUrl": "https://www.shop.invalid/sale",
+            "CtaLabel": "Shop now",
+            "PrimaryColor": "#E91E8C",
+            "FontFamily": "Arial",
+            "Background": "#ffffff",
+            "CardWidth": "420px",
+            "HeadingSize": "22px"
+          },
+          "parametrized_parts": {
+            "html": "(filled-in copy omitted in fixture)",
+            "style": "",
+            "script": "",
+            "sdk_object_name": "exponea"
+          }
+        }
+      ],
+      "trigger": {
+        "include_pages": [],
+        "exclude_pages": []
+      },
+      "customer_filter": null,
+      "date_filter": {
+        "enabled": true,
+        "from": 1700000000,
+        "to": 1750000000
+      }
+    }
+  }
+}

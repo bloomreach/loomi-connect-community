@@ -1,0 +1,36 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 3,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "f1",
+     "title": "Cotton Frock Dress",
+     "brand": "Northwind",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "f2",
+     "title": "Smock Frock Dress",
+     "brand": "Contoso",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "f3",
+     "title": "Frock Dress Mini",
+     "brand": "Contoso",
+     "price": 50,
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "customizations.explain": []
+  }
+ },
+ "error": null
+}

@@ -231,6 +231,7 @@ def top_and_issues(rows, label, vol_key, min_vol, top, issue_top, dead_end_names
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names and copy can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--overall", required=True)
     ap.add_argument("--search")

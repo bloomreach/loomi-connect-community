@@ -1,0 +1,20 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 900007,
+   "ruleType": "facet",
+   "name": "Facets raw",
+   "queries": [
+    {
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "customizationItems": {
+    "always_included_facets": "[\"brand\",\"color\"]",
+    "excluded_facets": "[\"color\"]"
+   }
+  }
+ }
+}

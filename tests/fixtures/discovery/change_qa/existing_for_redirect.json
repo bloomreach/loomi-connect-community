@@ -1,0 +1,18 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 800008,
+   "ruleType": "ranking",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "queries": [
+    {
+     "query": "sale",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false
+  }
+ ]
+}

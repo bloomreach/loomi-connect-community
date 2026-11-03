@@ -88,6 +88,10 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - Demo accounts have messy data: raw HTML and boilerplate in descriptions, inconsistent colour values ("grey" vs "gray"), and some AI-generated images (`gen_gptimage` in the path).
 - **Viewing an image in Claude Code:** download it with `curl` to a temporary folder and open it with Read. WebFetch can't describe an image, but it saves the file, which Read then displays. Skill scripts must still never use the network.
 
+- Grid responses are about 65 KB even with `rows=5`, a short `fl` and `facet=false`; about 57 KB of that is `debug["explain.structured"]`.
+- Banner (media rule) rows appear in `response.docs` with `docType: "content"`, no `pid` and a `slots` list. Skip them when ranking products.
+- `customizations.explain` lists every rule that applies to the query (ranking algorithm, facet, banner, personalisation), each with `liveInTest`. A rule passed in `disabled_customization_ids` is still listed there, but its effect is gone from the results, so a grid fetched that way shows the page without the rule.
+
 **Query, product and brand performance**
 - The `no_search_results` preset misses many dead-end queries (0 product views, 100% bounce) that only appear under `no_revenue`. Both presets include rows with 0 current sessions. Use both.
 - Sorting by `change_*` puts tiny queries first. The product table accepts `sort="prev_revenue"`, which catches products that fell out of the top list.
@@ -119,10 +123,11 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 
 **Rules**
 - Rule lists show `audienceName: null` even for rules that target an audience, so personalised rules look like duplicates. **(bug?)**
-- `syncStatus` doesn't reliably show expiry; use `durationTag`. The `duration` filter on rule lists returns HTTP 400. **(bug?)**
+- `syncStatus` doesn't reliably show expiry; use `durationTag`. A site-search ranking rule was seen still `enabled: true` with `durationTag: "expired"`. The `duration` filter on rule lists returns HTTP 400. **(bug?)**
 - `q` on rule lists matches rule names as well as queries.
 - Scheduled rules can start or expire without `lastModifiedAt` changing.
 - `isLive` is false on enabled facet rules.
+- A ranking rule that pins a product not in the query's results also needs it in `add_to_recall`.
 - **`create_ranking_rule` defaults to `enabled=true`.** Always pass `enabled=false` when you create a rule to test.
 - Facet ranges, value merges and renames can't be set through the API; the `create_facet_rule` description says so.
 
@@ -176,6 +181,9 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - There's no tool for campaign stats. Calculate metrics from the `campaign` event.
 - There's no tool for Engagement A/B results either. `search_experiments` returns web experiments only, and it can return an empty list or a wrapped 403. Scenario and email splits have to be read from the `campaign` event (`action_type = "split"`, `variant`) or a saved report.
 - `get_campaign_calendar` lists scenario send steps, including webhooks, and planned times for draft scenarios. It leaves out event-triggered flows.
+  - Each entry's `action_id` is the scenario node's `id`, so an entry can be matched to the step in `search_scenarios`.
+  - `channel` takes more values than email and SMS: `pushmob`, `pushweb`, `appinbox`, `whatsapp`, `rcs` and `webhook` were all seen.
+  - Recurring scenarios list one `times[]` entry per planned run in the window, so a daily flow shows 7 in a week.
 - `search_email_campaigns` returns standalone campaigns only.
 - `create_email_campaign` takes `design.type: "raw"` (HTML) only. It can't create a Visual Builder design.
 - `generate_email_campaign_preview_link`:
@@ -183,7 +191,10 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
   - fails with "Email integration is not set" when the project has no default email integration;
   - never renders `event.*` variables.
 - `import_media_file` takes public URLs only, and images up to 2 MB. Its schema doesn't type `variants.original.dimensions`.
-- Banners have only active and inactive statuses. `search_banners` list mode has no schedule fields, and banner details don't include smart triggering conditions (`trigger` holds page targeting only).
+- An email campaign's detail holds the design twice: in `design` and in each `split.variants[].design`. With an A/B split, read the variants. SMS campaign messages are in `action.variants[].translations`, keyed by language code (`""` is the default).
+- In scenario detail, a mobile push node's `data` is a JSON **string** (`title`, `action` and so on), not an object. An SMS node's message is in `translations` and also in `content`.
+- Banners have only active and inactive statuses. `search_banners` list mode has no schedule fields, and banner details don't include smart triggering conditions (`trigger` holds page targeting only). Banner details had no `date_filter` either, although the list's `serving_status` filter is worked out from a schedule; use `serving_status` to find out whether a banner is scheduled.
+- Weblayers built from the platform's older templates don't use the `utils` skeleton: they define their own `attachBannerToDom()` and may load third-party scripts (intl-tel-input from cdnjs). A `[[ name : image ]]` parameter with no default is valid.
 - `search_banners` list mode returns live banners only, up to 200 per page (`limit`, `offset`). Archived banners need a separate call with `archived=true`. Passing `archived=null` was rejected as a non-boolean in Claude Code. Responses include `archived_items_exists`, but it isn't in the tool's schema, so don't rely on it.
 - In a banner's details, each entry in `variants[]` holds the source code (`html`, `style`, `script`, with `[[ ]]` parameters in place) and a copy with the current values filled in (`parametrized_parts.html`, `.style`, `.script`). Current values are in `params`. Edit the source; the filled-in copy has lost its parameters. Some web layers track a custom event instead of `banner`, and breakdowns of the `banner` event are "very_high" beyond 7 days.
 

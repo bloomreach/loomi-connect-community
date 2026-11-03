@@ -1,0 +1,41 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "000000000000000000000006",
+   "name": "Edge SMS",
+   "schedule": {
+    "type": "now"
+   },
+   "silent_hours": {
+    "from": "09:00",
+    "to": "20:00"
+   },
+   "split": {
+    "type": "off"
+   },
+   "action": {
+    "consent_category": "sms",
+    "general_consent": false,
+    "frequency_policy": "Default",
+    "variants": [
+     {
+      "id": 1,
+      "max_message_parts": 4,
+      "translations": {
+       "": {
+        "message": "",
+        "sender": {}
+       },
+       "fr": {
+        "message": "Acme: Wine and casino night 🎉 Reply STOP to opt out, HELP for help",
+        "sender": {}
+       }
+      }
+     }
+    ]
+   }
+  },
+  "error": null
+ }
+}

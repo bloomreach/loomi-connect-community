@@ -1,0 +1,75 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "000000000000000000000004",
+   "name": "Cart flow",
+   "status": "draft",
+   "trigger": null,
+   "connections": [],
+   "nodes": [
+    {
+     "id": 1,
+     "type": "on-event-trigger",
+     "event": "cart_update"
+    },
+    {
+     "id": 2,
+     "type": "condition"
+    },
+    {
+     "id": 3,
+     "type": "send-email-action",
+     "name": "Cart email",
+     "consent_category": "newsletter",
+     "general_consent": false,
+     "frequency_policy": "Default",
+     "design": {
+      "type": "beefree",
+      "data": {
+       "beefree_template": "{}",
+       "jinja_html": "<html><head><style>@media (max-width:620px){.col{width:100%!important}}</style></head><body><table><tr><td style=\"font-size:0\"><div style=\"font-size:14px\"><a href=\"https://www.acme-outdoors.test/sale\"><img src=\"https://cdn.acme-outdoors.test/hero.png\" alt=\"Autumn sale\"></a><p>You left {{ event.product_name }}, our autumn sale has started. Waterproof jackets, walking boots and tents are reduced for two weeks, while stocks last. Members get early access to new arrivals and free returns on every order.</p>{% set cart = aggregates['aaaaaaaaaaaaaaaaaaaaaaaa'] %}{% if cart and cart != 'None' %}{% for product in cart %}<p>{{ product.title | e }}</p>{% endfor %}{% endif %}<a class=\"button\" style=\"background-color:#0a0\" href=\"https://www.acme-outdoors.test/sale?utm_source=email\">Shop the sale</a><p style=\"font-size:12px\">Acme Outdoors, 1 Harbour Street, Sampletown, CA 94105. <a href=\"{{ email.unsubscribe }}\">Unsubscribe</a> · <a href=\"{{ email.view }}\">View in browser</a> · <a href=\"https://www.acme-outdoors.test/contact\">Contact us</a></p></div></td></tr></table></body></html>",
+       "subject": "Your cart",
+       "preheader": "Still thinking?",
+       "sender_name": "Acme Outdoors",
+       "sender_email": "news@acme-outdoors.test",
+       "reply_to": null,
+       "file_ids": []
+      }
+     }
+    },
+    {
+     "id": 4,
+     "type": "send-sms-action",
+     "name": "Cart SMS",
+     "consent_category": "sms",
+     "general_consent": false,
+     "frequency_policy": "unlimited-policy",
+     "max_message_parts": 2,
+     "translations": {},
+     "content": {
+      "message": "{{ project_variables.brand }}: your cart is waiting https://www.acme-outdoors.test/cart Reply STOP to opt out",
+      "sender": {
+       "name": "Acme"
+      }
+     }
+    },
+    {
+     "id": 5,
+     "type": "push-notification-mobile-action",
+     "name": "Cart push",
+     "consent_category": null,
+     "general_consent": false,
+     "frequency_policy": "Default",
+     "data": "{\"title\": \"Notification title\", \"message\": \"\", \"action\": \"browser\"}"
+    },
+    {
+     "id": 6,
+     "type": "send-whatsapp-action",
+     "name": "Cart WhatsApp"
+    }
+   ]
+  },
+  "error": null
+ }
+}

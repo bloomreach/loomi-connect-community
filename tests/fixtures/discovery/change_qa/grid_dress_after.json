@@ -1,0 +1,87 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 240,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "p1",
+     "title": "Floral Midi Dress",
+     "brand": "Northwind",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "p2",
+     "title": "Black Wrap Dress",
+     "brand": "Northwind",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "p3",
+     "title": "Linen Shirt Dress",
+     "brand": "Contoso",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "p4",
+     "title": "Satin Slip Dress",
+     "brand": "Fabrikam",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "p5",
+     "title": "Knit Sweater Dress",
+     "brand": "Contoso",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "p6",
+     "title": "Acme Party Dress",
+     "brand": "Acme",
+     "price": 50,
+     "docType": "product",
+     "availability": "true"
+    },
+    {
+     "pid": "p7",
+     "title": "Leather Belt",
+     "brand": "Acme",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "p8",
+     "title": "Acme Maxi Dress",
+     "brand": "Acme",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "p9",
+     "title": "Acme Sequin Dress",
+     "brand": "Acme",
+     "price": 50,
+     "docType": "product",
+     "availability": "out of stock"
+    },
+    {
+     "pid": "p10",
+     "title": "Tiered Sun Dress",
+     "brand": "Fabrikam",
+     "price": 50,
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "customizations.explain": []
+  }
+ },
+ "error": null
+}
