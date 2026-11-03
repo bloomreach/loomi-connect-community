@@ -1,0 +1,54 @@
+{
+ "result": {
+  "data": {
+   "currency": "$",
+   "overalldata": {
+    "buckets": {
+     "Control": {
+      "visits": 10000,
+      "orders": 300,
+      "cr": 0.03,
+      "atc_rate": 0.1,
+      "aov": 100,
+      "rpv": 3.0,
+      "lift": {
+       "cr": 0,
+       "rpv": 0,
+       "aov": 0,
+       "atc_rate": 0
+      },
+      "confidenceValues": {
+       "cr": 0.02,
+       "rpv": 0.03,
+       "aov": 0.98,
+       "atc_rate": 0.5
+      }
+     },
+     "Brand boost": {
+      "visits": 10000,
+      "orders": 300,
+      "cr": 0.03,
+      "atc_rate": 0.1,
+      "aov": 100,
+      "rpv": 3.0,
+      "lift": {
+       "cr": 0.2,
+       "rpv": 0.05,
+       "aov": -0.12,
+       "atc_rate": 0
+      },
+      "confidenceValues": {
+       "cr": 0.98,
+       "rpv": 0.97,
+       "aov": 0.02,
+       "atc_rate": 0.5
+      }
+     }
+    }
+   },
+   "dayWisedata": {
+    "dailyMetrics": {}
+   }
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "data": {
+    "id": 9003,
+    "startedAt": 1790000000000,
+    "endedAt": null,
+    "isLive": false,
+    "ruleType": "redirect",
+    "audiences": [
+     {
+      "id": 77,
+      "audienceName": "Mobile"
+     }
+    ],
+    "queries": [
+     {
+      "id": 90030,
+      "query": "return policy",
+      "queryType": "sitesearch",
+      "matchType": "EXACT_MATCH"
+     }
+    ],
+    "customizationItems": {
+     "redirect": {
+      "ruleName": "Returns duplicate",
+      "isKeyword": true,
+      "id": 9003,
+      "isEnabled": true,
+      "matchType": "EXACT_MATCH",
+      "audienceId": -1,
+      "url": "https://www.example-shop.test/returns"
+     }
+    },
+    "name": "Returns duplicate",
+    "enabled": true,
+    "user": "editor@example.test",
+    "syncStatus": "SUCCESS"
+   }
+  },
+  "error": null
+ }
+}

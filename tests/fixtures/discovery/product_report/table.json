@@ -1,0 +1,56 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "prod_id": "p100",
+    "product_title": "Product p100",
+    "brand": "Northwind",
+    "visits": 1000,
+    "prev_visits": 900,
+    "atc_rate": "30.00%",
+    "prev_atc_rate": "29.00%",
+    "conversion_rate": "2.00%",
+    "prev_conversion_rate": "3.00%",
+    "rpv": "$3.00",
+    "prev_rpv": "$2.90",
+    "revenue": "$1,500.00",
+    "prev_revenue": "$2,100.00"
+   },
+   {
+    "prod_id": "p205",
+    "product_title": "Product p205",
+    "brand": "Northwind",
+    "visits": 950,
+    "prev_visits": 850,
+    "atc_rate": "30.00%",
+    "prev_atc_rate": "29.00%",
+    "conversion_rate": "5.20%",
+    "prev_conversion_rate": "5.00%",
+    "rpv": "$3.00",
+    "prev_rpv": "$2.90",
+    "revenue": "$2,900.00",
+    "prev_revenue": "$2,800.00"
+   },
+   {
+    "prod_id": "p999",
+    "product_title": "Product p999",
+    "brand": "Northwind",
+    "visits": 10,
+    "prev_visits": -90,
+    "atc_rate": "30.00%",
+    "prev_atc_rate": "29.00%",
+    "conversion_rate": "1.00%",
+    "prev_conversion_rate": "1.00%",
+    "rpv": "$3.00",
+    "prev_rpv": "$2.90",
+    "revenue": "$10.00",
+    "prev_revenue": "$10.00"
+   }
+  ],
+  "total_rows": 3,
+  "page": 1,
+  "page_size": 3
+ },
+ "error": null
+}

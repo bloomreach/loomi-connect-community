@@ -1,0 +1,21 @@
+{
+  "about": "Limits and warning thresholds for the autosuggest exclusion change plan. scripts/exclusion_plan.py reads this file; SKILL.md names the keys rather than repeating the numbers. Each key is explained under notes.",
+  "max_changes_per_batch": 10,
+  "max_keywords_per_rule": 100,
+  "max_text_chars": 255,
+  "min_keyword_chars": 3,
+  "warn_sessions": 50,
+  "warn_revenue": 100,
+  "word_match_warn_count": 3,
+  "default_rule_name": "Autosuggest exclusions",
+  "notes": {
+    "max_changes_per_batch": "The most changes shown for one yes. Larger plans are split into several batches, each confirmed on its own.",
+    "max_keywords_per_rule": "The most keywords one exclusion rule can hold (the write tools cap the list at this). Larger sets of new keywords are split across several new rules.",
+    "max_text_chars": "The longest rule name or note the write tools accept. Longer ones are cut, with a warning.",
+    "min_keyword_chars": "A keyword shorter than this gets a warning: very short suggestions are often legitimate (sizes, brand initials).",
+    "warn_sessions": "Excluding a keyword that is itself a search with at least this many sessions in the query performance data is a high-priority warning: it hides a query shoppers really use.",
+    "warn_revenue": "Excluding a keyword that is itself a search with at least this much revenue (in the account's currency) is a high-priority warning.",
+    "word_match_warn_count": "A one-word keyword that appears as a word in at least this many top queries or current suggestions gets a warning to check after sync, in case the exclusion hides more than the exact suggestion.",
+    "default_rule_name": "The name given to new exclusion rules when the request doesn't name one. A number is added when the keywords need more than one rule."
+  }
+}

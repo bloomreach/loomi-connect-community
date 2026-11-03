@@ -1,0 +1,122 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 46,
+   "docs": [
+    {
+     "docType": "content",
+     "slots": [
+      {
+       "id": "s1"
+      }
+     ],
+     "title": "Sale banner"
+    },
+    {
+     "pid": "p201",
+     "title": "Product p201"
+    },
+    {
+     "pid": "p202",
+     "title": "Product p202"
+    },
+    {
+     "pid": "p203",
+     "title": "Product p203"
+    },
+    {
+     "pid": "p100",
+     "title": "Product p100"
+    },
+    {
+     "pid": "p204",
+     "title": "Product p204"
+    },
+    {
+     "pid": "p205",
+     "title": "Product p205"
+    }
+   ]
+  },
+  "debug": {
+   "explain.structured": {
+    "p201": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 350,
+      "relevance": 50,
+      "performance": 300,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p202": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 348,
+      "relevance": 49,
+      "performance": 299,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p203": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 346,
+      "relevance": 48,
+      "performance": 298,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p100": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 344,
+      "relevance": 47,
+      "performance": 297,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p204": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 342,
+      "relevance": 46,
+      "performance": 296,
+      "merchandisingRulesApplied": {}
+     }
+    ],
+    "p205": [
+     {
+      "field": "title",
+      "value": 1.0
+     },
+     {
+      "totalNormalizedScore": 340,
+      "relevance": 45,
+      "performance": 295,
+      "merchandisingRulesApplied": {}
+     }
+    ]
+   },
+   "customizations.explain": [],
+   "feUrl": "https://example.invalid/x?auth_key=FAKE"
+  }
+ },
+ "error": null
+}

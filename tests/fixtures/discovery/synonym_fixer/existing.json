@@ -1,0 +1,9 @@
+{"success": true, "environment_used": "staging", "data": [
+  {"id": 101, "sourceSynonym": "long dress", "targetSynonym": "maxi dress,long dress", "enabled": true, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "siteGroupId": null, "deleted": false},
+  {"id": 102, "sourceSynonym": "rain coat", "targetSynonym": "raincoat", "enabled": true, "groupSynonym": false, "synonymType": "User Modified", "lastModifiedBy": "editor@example.test", "siteGroupId": null, "deleted": false},
+  {"id": 103, "sourceSynonym": "sneakers,trainers,runners", "targetSynonym": "", "enabled": false, "groupSynonym": true, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "siteGroupId": null, "deleted": false},
+  {"id": 104, "sourceSynonym": "beanie", "targetSynonym": "lamp,sofa", "enabled": false, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "siteGroupId": null, "deleted": false},
+  {"id": 105, "sourceSynonym": "tshirt", "targetSynonym": "tee", "enabled": true, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "siteGroupId": null, "deleted": false},
+  {"id": 106, "sourceSynonym": "parka", "targetSynonym": "anorak", "enabled": true, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "siteGroupId": null, "deleted": true},
+  {"id": 107, "sourceSynonym": "anorak", "targetSynonym": "windbreaker", "enabled": true, "groupSynonym": false, "synonymType": "User Created", "lastModifiedBy": "editor@example.test", "siteGroupId": null, "deleted": false}
+], "meta": {"pagination": {"total": 7, "limit": 100, "page": 0}}}

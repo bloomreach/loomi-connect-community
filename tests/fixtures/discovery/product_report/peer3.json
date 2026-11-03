@@ -1,0 +1,13 @@
+{
+ "success": true,
+ "data": {
+  "productId": "p203",
+  "currency": "USD",
+  "visits": 1050,
+  "atcRate": 28.0,
+  "cvr": 4.0,
+  "rpv": 3.3,
+  "revenue": 3000
+ },
+ "error": null
+}

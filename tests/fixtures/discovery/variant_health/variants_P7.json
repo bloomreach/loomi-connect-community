@@ -1,0 +1,31 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "P7_0",
+    "attributes": {
+     "skuid": "P7_0",
+     "color": "olive",
+     "price": 80,
+     "sale_price": 70,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P7_0_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P7_0.webp"
+    }
+   },
+   {
+    "id": "P7_1",
+    "attributes": {
+     "skuid": "P7_1",
+     "color": "sand",
+     "price": 80,
+     "sale_price": 70,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P7_1_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P7_1.webp"
+    }
+   }
+  ]
+ }
+}

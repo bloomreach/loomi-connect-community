@@ -1,0 +1,46 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 900006,
+   "experimentName": "Search terms - rain jacket 900006",
+   "experimentStatus": "RUNNING",
+   "trafficPercentage": 100,
+   "startedAt": 1790000000000,
+   "endedAt": null,
+   "user": "editor@example.test",
+   "successMetric": null,
+   "winnerBucketId": null,
+   "buckets": [
+    {
+     "id": 5051,
+     "bucketName": "Control",
+     "trafficPercentage": 50,
+     "control": true,
+     "ruleIdentifierInfo": null
+    },
+    {
+     "id": 5052,
+     "bucketName": "Brand boost",
+     "trafficPercentage": 50,
+     "control": false,
+     "ruleIdentifierInfo": {
+      "id": 7051,
+      "ruleType": "ranking",
+      "variantId": 1,
+      "user": "editor@example.test",
+      "query": [
+       {
+        "id": 1,
+        "query": "rain jacket",
+        "queryType": "sitesearch"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "error": null,
+  "environment_used": "staging"
+ }
+}

@@ -24,6 +24,9 @@ Before you start, [connect Loomi Connect](connecting-loomi-connect.md) and insta
 | "Is our data and tracking OK?" | [data-feed-health](../plugins/loomi-platform/skills/data-feed-health/) (pixel, feeds, Data Hub) and [engagement-tracking-health](../plugins/loomi-engagement/skills/engagement-tracking-health/) (events and properties) |
 | "Why is this search performing badly?" | [discovery-query-diagnosis](../plugins/loomi-discovery/skills/discovery-query-diagnosis/) |
 | "Why isn't this product showing for 'dress'?" | [discovery-product-visibility](../plugins/loomi-discovery/skills/discovery-product-visibility/): where it ranks or why it's missing, and the smallest fix |
+| "How is this product doing?" | [discovery-product-report](../plugins/loomi-discovery/skills/discovery-product-report/): performance against peers, where it ranks, rules and stock, with next actions |
+| "Are any of our top products out of stock but still on page one?" | [discovery-variant-health](../plugins/loomi-discovery/skills/discovery-variant-health/): stock, price, SKU and image problems on page-one products and top sellers |
+| "Is our catalog set up right?" / "Is margin exposed in search?" | [discovery-catalog-config-audit](../plugins/loomi-discovery/skills/discovery-catalog-config-audit/): attribute and index settings, with a prioritised fix list |
 | "Why does searching 'dresses' show different products from the dresses page?" | [discovery-search-category-match](../plugins/loomi-discovery/skills/discovery-search-category-match/): search vs category page one, with a redirect or ranking recommendation |
 | "Is search down?" / "Are we within our MUV contract?" | [discovery-api-health](../plugins/loomi-discovery/skills/discovery-api-health/): API volume, errors and unique visitors against contract |
 | "Where are shoppers dropping out?" | [funnel-leak-finder](../plugins/loomi-engagement/skills/funnel-leak-finder/) |
@@ -55,6 +58,10 @@ Start with the health check, then go deeper where it points you.
 | "Which ranking algorithms are we using, and are any broken?" | [discovery-ranking-algorithm-review](../plugins/loomi-discovery/skills/discovery-ranking-algorithm-review/): where each algorithm is used, status, weights and clean-up, prioritised |
 | "Why do some shoppers see different results?" / "Clean up our audiences" | [discovery-hidden-config-audit](../plugins/loomi-discovery/skills/discovery-hidden-config-audit/): broken or unused audiences, personalised rules, forgotten API parameter overrides |
 | "Which of our banners are unused or broken?" | [discovery-media-asset-cleanup](../plugins/loomi-discovery/skills/discovery-media-asset-cleanup/): asset library against the media rules that use it, with a cleanup list |
+| "Apply the synonym fixes" / "Add a synonym for t-shirt" | [discovery-synonym-fixer](../plugins/loomi-discovery/skills/discovery-synonym-fixer/) (**writes** synonyms, after you confirm) |
+| "Fix the redirects the audit found" / "Add a redirect for 'track order'" | [discovery-redirect-fixer](../plugins/loomi-discovery/skills/discovery-redirect-fixer/) (**writes** redirects, after you confirm) |
+| "Apply the rule audit's clean-up list" | [discovery-rule-cleanup](../plugins/loomi-discovery/skills/discovery-rule-cleanup/) (**writes** rule changes and deletes, after you confirm) |
+| "Stop autosuggest showing 'dress fabric'" / "Apply the autosuggest audit's exclusions" | [discovery-autosuggest-exclusions](../plugins/loomi-discovery/skills/discovery-autosuggest-exclusions/) (**writes** exclusion rules, after you confirm) |
 | "Are our dynamic categories working?" | [discovery-dynamic-category-review](../plugins/loomi-discovery/skills/discovery-dynamic-category-review/) |
 | "Are our product recommendations set up well?" | [recommendation-model-audit](../plugins/loomi-engagement/skills/recommendation-model-audit/) |
 | "Which products have weak data for Google and AI search?" | [product-data-audit](../plugins/loomi-product-data/skills/product-data-audit/) |
@@ -65,7 +72,8 @@ Start with the health check, then go deeper where it points you.
 1. [discovery-experiment-setup](../plugins/loomi-discovery/skills/discovery-experiment-setup/) (**writes**, after you confirm): set up an A/B test for a ranking change, with a preview first.
 2. [discovery-experiment-readout](../plugins/loomi-discovery/skills/discovery-experiment-readout/): what the test showed. Ship it, keep running, or stop.
    For A/B tests in Engagement scenarios and campaigns, use [engagement-experiment-readout](../plugins/loomi-engagement/skills/engagement-experiment-readout/).
-3. [change-impact-tracker](../plugins/loomi-platform/skills/change-impact-tracker/): "Did my change work?" Before vs after, adjusted for the site-wide trend, for changes made outside a test.
+3. [discovery-experiment-close](../plugins/loomi-discovery/skills/discovery-experiment-close/) (**writes**: ends the test and switches rules, after you confirm each step): ship the winner or keep today's behaviour, then archive.
+4. [change-impact-tracker](../plugins/loomi-platform/skills/change-impact-tracker/): "Did my change work?" Before vs after, adjusted for the site-wide trend, for changes made outside a test.
 
 ## Planning marketing
 

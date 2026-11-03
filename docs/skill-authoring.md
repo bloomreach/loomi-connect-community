@@ -164,6 +164,34 @@ If the skill changes anything:
 
 A **read-only** skill never writes, even if the user asks it to fix something it found. It hands the change to the user, or to a skill marked `writes`.
 
+#### Plan files for write skills
+
+A write skill's script turns the request into a **plan file** before anything is written, and checks the read-back afterwards. All write skills use the same plan shape, so a reviewer (or another skill) can read any of them:
+
+```json
+{
+  "ok": true,
+  "account": "<account>", "environment": "staging", "site_group_id": null,
+  "changes": [
+    {"n": 1, "status": "ready", "kind": "update", "target": "<what it changes>",
+     "tool": "update_redirect", "payload": {"...": "..."},
+     "before": {"...": "..."}, "after": {"...": "..."},
+     "undo": [{"tool": "update_redirect", "payload": {"...": "..."}}],
+     "live_impact": "live", "problems": [], "warnings": []}
+  ],
+  "batches": [[1, 2], [3]]
+}
+```
+
+- **`status`** is `ready`, `blocked` (with the reasons in `problems`) or `no_change`. Only `ready` changes go in `batches`, and only they count towards the batch cap.
+- **`kind`** is one of `create`, `update`, `enable`, `disable`, `delete`, `end`, `archive`. `live_impact` is `none` or `live`.
+- **`batches`** are what the user says yes to, one batch at a time. A `delete`, `end`, `archive` or any change that switches something on (`enable`, or an update that sets `enabled: true`) is always a batch of its own.
+- **Required context:** `account` and `environment` are required options with no default (never fall back to production). `site_group_id` is passed into every payload when given.
+- **Creates** pass `enabled: false` and switch on as a separate `enable` change. An **undo** that recreates a deleted item does the same.
+- **Running experiments:** a `running_statuses` rules key, compared case-insensitively. A change whose target is covered by a running test, or by a test whose status is missing, is `blocked`.
+- **`verify`:** a second subcommand takes the plan and the read-back files and reports each change as `in_place`, `not_in_place` or `gone`. A delete needs a read-back; a not-found response counts as `gone`.
+- **Deterministic:** sort anything built from a set, and catch `OSError` on `--out` and on reading files, reporting it with `fail()`.
+
 ### Scripts
 
 - Put scripts in the skill's `scripts/` folder.

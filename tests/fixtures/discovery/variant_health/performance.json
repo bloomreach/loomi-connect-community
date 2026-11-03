@@ -1,0 +1,35 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "total_rows": 4,
+   "rows": [
+    {
+     "prod_id": "P1",
+     "product_title": "Storm rain jacket",
+     "revenue": "$5,000.00"
+    },
+    {
+     "prod_id": "P4",
+     "product_title": "Everyday hoodie",
+     "revenue": "$3,200.00"
+    },
+    {
+     "prod_id": "P3",
+     "product_title": "Trail rain jacket",
+     "revenue": "$900.00"
+    },
+    {
+     "prod_id": "P8",
+     "product_title": "Out of stock tee",
+     "revenue": "$700.00"
+    },
+    {
+     "prod_id": "P9",
+     "product_title": "No data",
+     "revenue": "NA"
+    }
+   ]
+  }
+ }
+}

@@ -38,7 +38,7 @@ def tool_error(err):
     """A Loomi Connect error, safe to repeat: an error about the account can list every account the user can
     access, so it's never echoed; anything else is cut to 200 characters."""
     text = str(err or "no error text")
-    if "account" in text.lower() and text.count(",") >= 3:
+    if "account" in text.lower():  # these errors can list every account the user can access
         return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list "
                 "other accounts. Ask the user to check the account name.")
     return text[:200]

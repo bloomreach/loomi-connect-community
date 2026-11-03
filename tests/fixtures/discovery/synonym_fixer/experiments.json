@@ -1,0 +1,4 @@
+{"result": {"success": true, "data": [
+  {"id": 9001, "name": "Fleece ranking test", "status": "RUNNING", "queries": ["fleece"]},
+  {"id": 9002, "name": "Old jacket test", "status": "COMPLETED", "queries": ["jacket", "kids"]}
+]}}

@@ -1,0 +1,20 @@
+{"success": true, "data": {
+  "feed": {"enable_feed_jobs": true},
+  "index": {"enable_index_jobs": false, "enable_auto_indexing": false, "search_docs_drop_threshold": 100, "search_unavailable_docs": false},
+  "variants": {"sku_select": "on", "enable_filtering": false, "use_unavailable_variant_as_hero": true, "ranking_attributes": ["color"]},
+  "custom_attributes_defaults": {"facetable": "off", "searchable": false},
+  "custom_attributes": {
+    "unit_margin": {"level": "product", "displayable": true, "facetable": "manual", "searchable": false, "multi_valued": false, "data_type": "number"},
+    "supplier_cost": {"level": "product", "displayable": false, "facetable": "off", "searchable": true, "multi_valued": false, "data_type": "text"},
+    "pack_weight": {"level": "product", "displayable": true, "facetable": "auto", "searchable": true, "multi_valued": false, "data_type": "number"},
+    "ean_code": {"level": "product", "displayable": true, "facetable": "off", "searchable": true, "multi_valued": false, "data_type": "text"},
+    "product_brand": {"level": "product", "displayable": false, "facetable": "manual", "searchable": false, "multi_valued": false, "data_type": "text"},
+    "fit": {"level": "variant", "displayable": true, "facetable": "auto", "searchable": true, "multi_valued": false, "data_type": "text"},
+    "fabric": {"level": "product", "displayable": true, "facetable": "auto", "searchable": true, "multi_valued": false, "data_type": "text"},
+    "story": {"level": "product", "displayable": true, "facetable": "off", "searchable": false, "multi_valued": false, "data_type": "text"},
+    "weird": "not an object"
+  },
+  "autosuggest": {"minimum_character_count": 4, "product_autosuggest": true},
+  "core_attribute_searchability": {"category_ids": true, "category_names": false, "product_ids": true, "variant_ids": true},
+  "reserved_attribute_searchability": {"brand": false, "title": true, "description": true, "keywords": true, "price": true, "sale_price": true, "color": true}
+}, "error": null}

@@ -1,0 +1,4 @@
+{"result": {"success": true, "data": [
+  {"name": "acme_store", "language": "en", "environment": "production", "stats": {"last_index_refresh_at": "2026-10-28T03:00:00Z", "product_doc_count": 1200}},
+  {"name": "acme_store", "language": "en", "environment": "staging", "stats": {"last_index_refresh_at": null, "product_doc_count": null}}
+], "error": null}}

@@ -1,0 +1,78 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "P1",
+    "attributes": {
+     "pid": "P1",
+     "title": "Storm rain jacket",
+     "price": 120,
+     "sale_price": 120,
+     "availability": false,
+     "stock_level": "ok",
+     "margin": 42,
+     "thumb_image": "https://cdn.acme.test/img/P1.webp"
+    },
+    "variant_record_count": 2
+   },
+   {
+    "id": "P3",
+    "attributes": {
+     "pid": "P3",
+     "title": "Trail rain jacket",
+     "price": 90,
+     "sale_price": 95,
+     "availability": true,
+     "stock_level": "ok",
+     "margin": 42,
+     "thumb_image": "http://cdn.acme.test/img/P3.webp"
+    },
+    "variant_record_count": 3
+   },
+   {
+    "id": "P4",
+    "attributes": {
+     "pid": "P4",
+     "title": "Everyday hoodie",
+     "price": 40,
+     "sale_price": 40,
+     "availability": null,
+     "stock_level": "unknown",
+     "margin": 42,
+     "thumb_image": "https://cdn.acme.test/img/P4.webp"
+    },
+    "variant_record_count": 7
+   },
+   {
+    "id": "P7",
+    "attributes": {
+     "pid": "P7",
+     "title": "Clean rain jacket",
+     "price": 80,
+     "sale_price": 70,
+     "availability": true,
+     "stock_level": "ok",
+     "margin": 42,
+     "thumb_image": "https://cdn.acme.test/img/P7.webp"
+    },
+    "variant_record_count": 2
+   },
+   {
+    "id": "P8",
+    "attributes": {
+     "pid": "P8",
+     "title": "Out of stock tee",
+     "price": 20,
+     "sale_price": 20,
+     "availability": "out of stock",
+     "stock_level": "ok",
+     "margin": 42,
+     "thumb_image": "https://cdn.acme.test/img/P8.webp"
+    },
+    "variant_record_count": 1
+   }
+  ],
+  "count": 5
+ }
+}

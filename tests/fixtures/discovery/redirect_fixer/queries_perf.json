@@ -1,0 +1,32 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "sale dresses",
+    "visits": 3000,
+    "revenue": "$5,000.00"
+   },
+   {
+    "query": "sale",
+    "visits": 900,
+    "revenue": "$800.00"
+   },
+   {
+    "query": "track order",
+    "visits": 400,
+    "revenue": "$0.00"
+   },
+   {
+    "query": "jackets",
+    "visits": 8000,
+    "revenue": "$20,000.00"
+   },
+   {
+    "query": "boots",
+    "visits": 2000,
+    "revenue": "$9,000.00"
+   }
+  ]
+ }
+}

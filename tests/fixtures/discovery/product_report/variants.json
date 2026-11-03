@@ -1,0 +1,31 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "p100_1",
+    "attributes": {
+     "availability": true,
+     "size": "1",
+     "swatch_image": "https://img.example.test/p100_1.webp"
+    }
+   },
+   {
+    "id": "p100_2",
+    "attributes": {
+     "availability": false,
+     "size": "2",
+     "swatch_image": "https://img.example.test/p100_2.webp"
+    }
+   },
+   {
+    "id": "p100_3",
+    "attributes": {
+     "availability": true,
+     "size": "3"
+    }
+   }
+  ],
+  "count": 3
+ }
+}

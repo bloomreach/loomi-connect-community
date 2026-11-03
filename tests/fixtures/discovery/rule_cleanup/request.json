@@ -1,0 +1,100 @@
+{
+ "changes": [
+  {
+   "rule_id": 101,
+   "action": "disable",
+   "priority": "high",
+   "reason": "Expired but still enabled"
+  },
+  {
+   "rule_id": 102,
+   "action": "delete",
+   "priority": "low",
+   "reason": "Disabled and expired"
+  },
+  {
+   "rule_id": 103,
+   "action": "delete",
+   "priority": "medium",
+   "reason": "No traffic"
+  },
+  {
+   "rule_id": 104,
+   "action": "delete",
+   "priority": "low",
+   "reason": "Disabled"
+  },
+  {
+   "rule_id": 105,
+   "action": "disable",
+   "priority": "high",
+   "reason": "Duplicate"
+  },
+  {
+   "rule_id": 106,
+   "action": "disable",
+   "priority": "medium",
+   "reason": "Duplicate"
+  },
+  {
+   "rule_id": 107,
+   "action": "set_end_date",
+   "end_date": "2026-12-31",
+   "priority": "medium",
+   "reason": "Seasonal, no end date"
+  },
+  {
+   "rule_id": 108,
+   "action": "set_end_date",
+   "end_date": "2026-11-30",
+   "priority": "low",
+   "reason": "Extend"
+  },
+  {
+   "rule_id": 109,
+   "action": "set_queries",
+   "priority": "medium",
+   "reason": "Shoppers type backpacks",
+   "queries": [
+    {
+     "query": "backpacks",
+     "queryType": "sitesearch"
+    }
+   ]
+  },
+  {
+   "rule_id": 110,
+   "action": "disable",
+   "priority": "high",
+   "reason": "Expired banner"
+  },
+  {
+   "rule_id": 111,
+   "action": "disable",
+   "priority": "medium",
+   "reason": "Duplicate"
+  },
+  {
+   "rule_id": 112,
+   "action": "disable",
+   "priority": "low",
+   "reason": "Duplicate"
+  },
+  {
+   "rule_id": 113,
+   "action": "disable",
+   "priority": "low",
+   "reason": "Duplicate"
+  },
+  {
+   "rule_id": 101,
+   "action": "enable",
+   "reason": "should be refused"
+  },
+  {
+   "rule_id": 999,
+   "action": "disable",
+   "reason": "no detail"
+  }
+ ]
+}

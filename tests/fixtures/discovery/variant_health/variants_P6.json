@@ -1,0 +1,19 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": "SHARED-1",
+    "attributes": {
+     "skuid": "SHARED-1",
+     "color": "grey",
+     "price": 200,
+     "sale_price": 180,
+     "availability": true,
+     "swatch_image": "https://cdn.acme.test/img/P6_0_sw.webp",
+     "thumb_image": "https://cdn.acme.test/img/P6_0.webp"
+    }
+   }
+  ]
+ }
+}

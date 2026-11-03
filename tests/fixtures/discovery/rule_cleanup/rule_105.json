@@ -1,0 +1,29 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 105,
+   "ruleType": "ranking",
+   "name": "Boots test rule",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "startedAt": null,
+   "endedAt": null,
+   "modifiedAt": 1785110400000,
+   "isLive": true,
+   "isEditable": true,
+   "user": "editor@example.test",
+   "audiences": [],
+   "queries": [
+    {
+     "query": "jeans",
+     "queryType": "sitesearch",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "freeze_products": false
+   }
+  }
+ }
+}

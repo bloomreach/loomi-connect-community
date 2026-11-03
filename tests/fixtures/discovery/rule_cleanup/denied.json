@@ -1,0 +1,7 @@
+{
+ "result": {
+  "success": false,
+  "data": [],
+  "error": "[ACCESS_DENIED] account not found; available: acct_a, acct_b, acct_c, acct_d"
+ }
+}

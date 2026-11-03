@@ -1,0 +1,32 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": "p100",
+   "attributes": {
+    "availability": true,
+    "brand": "Northwind",
+    "title": "Rain jacket",
+    "price": 120,
+    "sale_price": 99,
+    "stock_level": "low",
+    "thumb_image": "https://img.example.test/p100.webp",
+    "margin": 42,
+    "cost": 55,
+    "category_paths": [
+     [
+      {
+       "id": "c1",
+       "name": "women"
+      },
+      {
+       "id": "c10",
+       "name": "jackets"
+      }
+     ]
+    ]
+   },
+   "variant_record_count": 3
+  }
+ }
+}

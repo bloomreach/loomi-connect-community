@@ -44,7 +44,7 @@ def tool_error(text):
     """A Loomi Connect error that's safe to repeat. An unknown account name can make a Discovery tool list every
     account the user can access, many of them other customers, so that kind of error is never echoed."""
     text = str(text or "no error text")
-    if "account" in text.lower() and text.count(",") >= 3:
+    if "account" in text.lower():  # these errors can list every account the user can access
         return ("Loomi Connect returned an error about the account name; it isn't repeated because it can list other "
                 "accounts. Ask the user to check the account name.")
     return text[:200]

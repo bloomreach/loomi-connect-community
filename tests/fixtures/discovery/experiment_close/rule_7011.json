@@ -1,0 +1,21 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 7011,
+   "enabled": true,
+   "isLive": true,
+   "syncStatus": "SUCCESS",
+   "audiences": [],
+   "queries": [
+    {
+     "query": "rain jacket",
+     "queryType": "sitesearch",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "user": "editor@example.test"
+  }
+ },
+ "environment_used": "staging"
+}

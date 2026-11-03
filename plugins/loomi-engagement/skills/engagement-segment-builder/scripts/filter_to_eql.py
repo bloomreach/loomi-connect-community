@@ -56,7 +56,7 @@ DEFAULT_BY = "country"
 
 # JavaScript's whitespace (String.prototype.trim and \s), so odd values give the app's text.
 JS_SPACE = "\t\n\v\f\r              " \
-           "    　﻿"
+           "    　\ufeff"
 FORMULA_OK = re.compile("[F0-9&|!()" + JS_SPACE + "]+")
 ATOM_REF = re.compile(r"F([0-9]+)")
 DECIMAL = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?")

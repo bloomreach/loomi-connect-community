@@ -1,0 +1,7 @@
+{"result": {"success": true, "data": [
+ {"id": 106, "name": "Autosuggest clean-up", "keywords": ["dress fabric", "dress color", "dress", "xs", "sale*"], "enabled": true, "domainKey": null, "note": "", "syncStatus": "SYNCED"},
+ {"id": 101, "name": "Competitors", "keywords": ["northwind outlet", "fake brand"], "enabled": false, "domainKey": null, "note": "", "syncStatus": "SYNCED"},
+ {"id": 102, "name": "Old promo", "keywords": ["old promo"], "enabled": true, "domainKey": null, "note": "", "syncStatus": "SYNCED"},
+ {"id": 103, "name": "Brands", "keywords": ["Scharf"], "enabled": false, "domainKey": "acme_store", "note": "", "syncStatus": "PENDING"},
+ {"id": 104, "name": "Junk", "keywords": ["diameter", "zz top"], "enabled": true, "domainKey": null, "note": "junk terms", "syncStatus": "SYNCED"}
+], "meta": {"pagination": {"total": 5, "limit": 50, "page": 0}}, "error": null, "environment_used": "staging"}}

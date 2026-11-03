@@ -1,0 +1,41 @@
+{
+  "about": "The redirect fixer's limits and word lists. scripts/redirect_plan.py reads this file, so change a rule here and nowhere else. Each key is explained under notes; SKILL.md says how the plan's checks stop or warn.",
+  "max_changes_per_batch": 10,
+  "redirect_min_revenue": 1000,
+  "broad_query_max_words": 1,
+  "max_query_chars": 255,
+  "sync_checks": 3,
+  "placeholder_url_words": [
+    "todo",
+    "tbd",
+    "test",
+    "placeholder",
+    "xxx",
+    "changeme",
+    "undefined",
+    "null",
+    "{",
+    "}",
+    "%7b"
+  ],
+  "placeholder_hosts": [
+    "example.com",
+    "example.org",
+    "example.net",
+    "localhost"
+  ],
+  "running_statuses": [
+    "running",
+    "live"
+  ],
+  "notes": {
+    "max_changes_per_batch": "At most this many ready changes go into one plan; blocked and unchanged ones do not count. The rest are listed in deferred, for the next plan.",
+    "redirect_min_revenue": "A redirect on a search (or, for a phrase match, on a longer search it would catch) that earned at least this much revenue in the performance window takes those shoppers away from products: warning. Same value as discovery-change-qa.",
+    "broad_query_max_words": "A phrase-match redirect on a keyword with this many words or fewer catches many longer searches: warning. Same value as discovery-change-qa.",
+    "max_query_chars": "Discovery rejects redirect keywords longer than this many characters: blocker.",
+    "sync_checks": "After each write, read the redirect back up to this many times (a few seconds apart) until syncStatus is SUCCESS, then run verify.",
+    "placeholder_url_words": "Text in a destination URL's path or query that suggests it isn't finished (compared lower-case): blocker. Same list as discovery-change-qa.",
+    "placeholder_hosts": "Destination hosts that are never a real page: blocker.",
+    "running_statuses": "Experiment statuses that count as running, compared case-insensitively. A test with no status at all also counts as running, so the change is blocked."
+  }
+}

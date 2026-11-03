@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Discovery Rule Cleanup"
+  short_description: "Disable, redate, retarget or delete stale Bloomreach Discovery rules, after confirmation"
+policy:
+  # This skill writes live Discovery changes (and can delete rules), so it only runs when called by name.
+  allow_implicit_invocation: false

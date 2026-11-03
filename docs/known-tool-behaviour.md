@@ -146,6 +146,15 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - **Media rules and assets:** media rule lists don't say which assets a rule uses; only `get_discovery_media_rule` does, through `customizationItems.campaign.bannerId` and `content_in_grid[].bannerId`, with each placement's `slots`, `slotType`, `dimension` and `pcs` (`sharedId` is only the top banner). `search_discovery_assets` list pages already include each asset's `sharedData` as a JSON string, plus `user` (an editor's email). For `html` and `banner_url` banners, `image_url.imageUrl` holds HTML or text, not a URL. `get_discovery_multi_slot_customizations` returns only each rule's `id`, `name` and `queries`. `matchType` comes back as `EXACT_MATCH` or `exact_match` depending on the call. Uploaded image URLs can contain unencoded spaces.
 - **Account names leak in errors:** `list_api_params` (and likely other Discovery tools) called with an unknown `account_name` returns an error listing every account the user can access, many of them real customers. Never repeat it; ask the user for the account name instead.
 
+- **Write tools that default to live:** `create_ranking_rule`, `create_facet_rule`, `create_redirect` and `create_autosuggest_exclusion_rule` all default to `enabled: true`. Always pass `enabled: false` and switch on as a separate step.
+- **Updates merge and can't clear:** `update_ranking_rule`, `update_facet_rule` and `update_redirect` merge on the server, and an omitted or `null` field keeps its value, so an end date, schedule or audience can't be cleared once set. `update_autosuggest_exclusion_rule` is a PATCH in which `keywords` replaces the whole list.
+- **Deletes during a test:** `delete_ranking_rule`, `delete_facet_rule` and `delete_redirect` return 400 "Customization is live" while the item is in a running test. Deletes are permanent.
+- **No media-rule write tools:** media rules can only be changed in the dashboard.
+- `create_redirect` silently ignores a keyword already used by another redirect (from its own description). Redirect detail carries the URL in `customizationItems.redirect.url`.
+- Rule lists and details carry `isEditable`.
+- **Synonyms:** `update_synonym` defaults `group_synonym` to `false` and `enabled` to `true`, so a partial update makes a two-way synonym one-way or re-enables a disabled one; always send every field. `delete_synonym` on a "User Modified" synonym re-enables the Bloomreach-generated original instead of deleting it. The `discovery-synonyms` guide says `delete_synonym` needs `confirmed=True`, but the schema has no such parameter. Bloomreach-generated synonym IDs can't be updated. Changes sync hourly, and staging and production keep separate sets.
+- **Experiments:** records carry editors' emails (`user`) on the experiment and each bucket's `ruleIdentifierInfo`. The control bucket can hold the rule while the test bucket is default behaviour. Ending with `winner_bucket_id` keeps that bucket's behaviour; a dashboard-ended test recorded the default bucket as the winner. `archive_discovery_experiment` says archives "can be unarchived", but Loomi Connect has no unarchive tool. Experiments are scoped to an environment.
+
 **Facets and autosuggest**
 - `list_facet_attributes` can only be reached through `search_tools` / `call_tool`, and it marks internal fields (e.g. `margin`) as facetable. `only_facetable=false` still returns only facetable attributes.
 - `get_autosuggest_results` returns only bare strings, and prefixes with punctuation ("t-") return nothing.
@@ -158,6 +167,12 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
   - can start later than the requested start date without saying so;
   - shows confidence as 0 for every variant when it wasn't calculated;
   - returns the currency symbol as the character code ("36" for "$").
+
+**Catalog configuration and variants**
+- `get_discovery_catalog_config`, `get_discovery_catalog_reserved_attributes` and `search_discovery_catalog_product_variants` are reached only through `search_tools` / `call_tool`; the first two require `catalog_name`. The reserved-attributes tool returns names only, not mappings. `custom_attributes_defaults` gives the settings for unconfigured feed attributes.
+- An internal attribute such as `margin` can be `displayable: true`, so it's returned in API responses: check it.
+- The grid silently drops `availability`, `stock_level` and `sku_color_group` from `fl`; read stock from catalog records (`availability`, `stock_level`, `variant_record_count`) or variant records (10 per page, each with its own `availability`). The grid's performance score already multiplies by an availability factor.
+- `get_discovery_product_performance` returns 30-day totals only (`visits`, `atcRate`, `cvr` in percent, `rpv`, `revenue`), with no previous period; the product performance table row carries `prev_*`. No tool breaks one product's performance down by query.
 
 **Catalog and pixel**
 - Discovery catalog jobs come from `search_discovery_catalog_jobs`, which you reach through `search_tools` / `call_tool`. `list_catalog_jobs` covers Engagement v2 catalogs only.

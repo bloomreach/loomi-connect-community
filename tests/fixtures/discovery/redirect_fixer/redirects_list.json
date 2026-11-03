@@ -1,0 +1,115 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 9001,
+    "name": "Returns",
+    "ruleType": "redirect",
+    "enabled": true,
+    "syncStatus": "SUCCESS",
+    "durationTag": "unscheduled",
+    "startedAt": null,
+    "endedAt": null,
+    "lastModifiedBy": "editor@example.test",
+    "queries": [
+     {
+      "id": 90010,
+      "query": "returns",
+      "queryType": "sitesearch"
+     }
+    ],
+    "isAbTestLive": false,
+    "audienceName": null
+   },
+   {
+    "id": 9002,
+    "name": "Sale",
+    "ruleType": "redirect",
+    "enabled": true,
+    "syncStatus": "SUCCESS",
+    "durationTag": "unscheduled",
+    "startedAt": null,
+    "endedAt": null,
+    "lastModifiedBy": "editor@example.test",
+    "queries": [
+     {
+      "id": 90020,
+      "query": "sale",
+      "queryType": "sitesearch"
+     }
+    ],
+    "isAbTestLive": false,
+    "audienceName": null
+   },
+   {
+    "id": 9003,
+    "name": "Returns duplicate",
+    "ruleType": "redirect",
+    "enabled": true,
+    "syncStatus": "SUCCESS",
+    "durationTag": "unscheduled",
+    "startedAt": null,
+    "endedAt": null,
+    "lastModifiedBy": "editor@example.test",
+    "queries": [
+     {
+      "id": 90030,
+      "query": "return policy",
+      "queryType": "sitesearch"
+     }
+    ],
+    "isAbTestLive": false,
+    "audienceName": null
+   },
+   {
+    "id": 9004,
+    "name": "Gift cards",
+    "ruleType": "redirect",
+    "enabled": true,
+    "syncStatus": "SUCCESS",
+    "durationTag": "unscheduled",
+    "startedAt": null,
+    "endedAt": null,
+    "lastModifiedBy": "editor@example.test",
+    "queries": [
+     {
+      "id": 90040,
+      "query": "gift card",
+      "queryType": "sitesearch"
+     }
+    ],
+    "isAbTestLive": true,
+    "audienceName": null
+   },
+   {
+    "id": 9005,
+    "name": "Careers",
+    "ruleType": "redirect",
+    "enabled": false,
+    "syncStatus": "SUCCESS",
+    "durationTag": "unscheduled",
+    "startedAt": null,
+    "endedAt": null,
+    "lastModifiedBy": "editor@example.test",
+    "queries": [
+     {
+      "id": 90050,
+      "query": "careers",
+      "queryType": "sitesearch"
+     }
+    ],
+    "isAbTestLive": false,
+    "audienceName": null
+   }
+  ],
+  "meta": {
+   "pagination": {
+    "total": 5,
+    "limit": 100,
+    "page": 0
+   }
+  },
+  "error": null
+ }
+}

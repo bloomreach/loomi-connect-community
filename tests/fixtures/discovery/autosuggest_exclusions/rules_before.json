@@ -1,0 +1,7 @@
+{"result": {"success": true, "data": [
+ {"id": 101, "name": "Competitors", "keywords": ["northwind outlet", "fake brand"], "enabled": true, "domainKey": null, "note": "", "syncStatus": "SYNCED", "user": "editor@example.test"},
+ {"id": 102, "name": "Old promo", "keywords": ["old promo"], "enabled": false, "domainKey": null, "note": "", "syncStatus": "SYNCED"},
+ {"id": 103, "name": "Brands", "keywords": ["Scharf"], "enabled": true, "domainKey": "acme_store", "note": "", "syncStatus": "SYNCED"},
+ {"id": 104, "name": "Junk", "keywords": ["diameter", "zz top"], "enabled": true, "domainKey": null, "note": "junk terms", "syncStatus": "SYNCED"},
+ {"id": 105, "name": "Test rule", "keywords": ["test rule"], "enabled": false, "domainKey": null, "note": "", "syncStatus": "SYNCED"}
+], "meta": {"pagination": {"total": 5, "limit": 50, "page": 0}}, "error": null, "environment_used": "staging"}}

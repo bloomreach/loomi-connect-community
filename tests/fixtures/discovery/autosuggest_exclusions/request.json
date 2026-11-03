@@ -1,0 +1,18 @@
+{"rule_name": "Autosuggest clean-up", "changes": [
+ {"action": "exclude", "keyword": "dress fabric", "reason": "product + attribute suggestion"},
+ {"action": "exclude", "keyword": "Dress Fabric", "reason": "duplicate in the request"},
+ {"action": "exclude", "keyword": "dress color", "reason": "product + attribute suggestion"},
+ {"action": "exclude", "keyword": "dress", "reason": "testing the top-query warning"},
+ {"action": "exclude", "keyword": "xs", "reason": "testing the short-keyword warning"},
+ {"action": "exclude", "keyword": "sale*", "reason": "testing the wildcard warning"},
+ {"action": "exclude", "keyword": "fake brand", "reason": "already excluded"},
+ {"action": "exclude", "keyword": "old promo", "reason": "in a disabled rule"},
+ {"action": "unexclude", "keyword": "scharf", "reason": "a brand the catalog carries"},
+ {"action": "unexclude", "keyword": "zz top", "reason": "a band tee line the catalog carries"},
+ {"action": "unexclude", "keyword": "nothing here", "reason": "not excluded anywhere"},
+ {"action": "disable", "rule_id": 101, "reason": "review the competitors list"},
+ {"action": "enable", "rule_id": 102, "reason": "the promo is back"},
+ {"action": "enable", "rule_id": 104, "reason": "already enabled"},
+ {"action": "delete", "rule_id": 105, "reason": "leftover test rule"},
+ {"action": "disable", "rule_id": 999, "reason": "unknown rule"}
+]}

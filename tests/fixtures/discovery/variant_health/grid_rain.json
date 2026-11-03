@@ -1,0 +1,544 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 26,
+   "docs": [
+    {
+     "pid": "P1",
+     "title": "Storm rain jacket",
+     "price": 120,
+     "sale_price": 120,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/P1.webp",
+     "variants": [
+      {
+       "skuid": "P1_0",
+       "sku_price": 120,
+       "sku_sale_price": 120,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/P1_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/P1_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "docType": "content",
+     "slots": [
+      {
+       "id": "s1"
+      }
+     ],
+     "title": "Autumn sale banner"
+    },
+    {
+     "pid": "P2",
+     "title": "Packable rain shell",
+     "price": 0,
+     "sale_price": 0,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/P2.webp",
+     "variants": [
+      {
+       "skuid": "P2_0",
+       "sku_price": 0,
+       "sku_sale_price": 0,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/P2_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/P2_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "P3",
+     "title": "Trail rain jacket",
+     "price": 90,
+     "sale_price": 95,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/P3.webp",
+     "variants": [
+      {
+       "skuid": "P3_0",
+       "sku_price": 90,
+       "sku_sale_price": 95,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/P3_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/P3_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "P7",
+     "title": "Clean rain jacket",
+     "price": 80,
+     "sale_price": 70,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/P7.webp",
+     "variants": [
+      {
+       "skuid": "P7_0",
+       "sku_price": 80,
+       "sku_sale_price": 70,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/P7_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/P7_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F01",
+     "title": "Filler jacket 1",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F01.webp",
+     "variants": [
+      {
+       "skuid": "F01_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F01_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F01_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F02",
+     "title": "Filler jacket 2",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F02.webp",
+     "variants": [
+      {
+       "skuid": "F02_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F02_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F02_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F03",
+     "title": "Filler jacket 3",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F03.webp",
+     "variants": [
+      {
+       "skuid": "F03_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F03_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F03_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F04",
+     "title": "Filler jacket 4",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F04.webp",
+     "variants": [
+      {
+       "skuid": "F04_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F04_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F04_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F05",
+     "title": "Filler jacket 5",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F05.webp",
+     "variants": [
+      {
+       "skuid": "F05_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F05_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F05_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F06",
+     "title": "Filler jacket 6",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F06.webp",
+     "variants": [
+      {
+       "skuid": "F06_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F06_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F06_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F07",
+     "title": "Filler jacket 7",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F07.webp",
+     "variants": [
+      {
+       "skuid": "F07_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F07_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F07_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F08",
+     "title": "Filler jacket 8",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F08.webp",
+     "variants": [
+      {
+       "skuid": "F08_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F08_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F08_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F09",
+     "title": "Filler jacket 9",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F09.webp",
+     "variants": [
+      {
+       "skuid": "F09_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F09_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F09_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F10",
+     "title": "Filler jacket 10",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F10.webp",
+     "variants": [
+      {
+       "skuid": "F10_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F10_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F10_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F11",
+     "title": "Filler jacket 11",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F11.webp",
+     "variants": [
+      {
+       "skuid": "F11_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F11_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F11_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F12",
+     "title": "Filler jacket 12",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F12.webp",
+     "variants": [
+      {
+       "skuid": "F12_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F12_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F12_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F13",
+     "title": "Filler jacket 13",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F13.webp",
+     "variants": [
+      {
+       "skuid": "F13_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F13_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F13_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F14",
+     "title": "Filler jacket 14",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F14.webp",
+     "variants": [
+      {
+       "skuid": "F14_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F14_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F14_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F15",
+     "title": "Filler jacket 15",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F15.webp",
+     "variants": [
+      {
+       "skuid": "F15_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F15_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F15_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F16",
+     "title": "Filler jacket 16",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F16.webp",
+     "variants": [
+      {
+       "skuid": "F16_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F16_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F16_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F17",
+     "title": "Filler jacket 17",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F17.webp",
+     "variants": [
+      {
+       "skuid": "F17_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F17_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F17_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F18",
+     "title": "Filler jacket 18",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F18.webp",
+     "variants": [
+      {
+       "skuid": "F18_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F18_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F18_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F19",
+     "title": "Filler jacket 19",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F19.webp",
+     "variants": [
+      {
+       "skuid": "F19_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F19_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F19_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "F20",
+     "title": "Filler jacket 20",
+     "price": 50,
+     "sale_price": 50,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/F20.webp",
+     "variants": [
+      {
+       "skuid": "F20_0",
+       "sku_price": 50,
+       "sku_sale_price": 50,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/F20_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/F20_0.webp"
+       ]
+      }
+     ]
+    },
+    {
+     "pid": "P5",
+     "title": "Beyond page one jacket",
+     "price": 60,
+     "sale_price": 60,
+     "docType": "product",
+     "thumb_image": "https://cdn.acme.test/img/P5.webp",
+     "variants": [
+      {
+       "skuid": "P5_0",
+       "sku_price": 60,
+       "sku_sale_price": 60,
+       "sku_swatch_images": [
+        "https://cdn.acme.test/img/P5_0.webp"
+       ],
+       "sku_thumb_images": [
+        "https://cdn.acme.test/img/P5_0.webp"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

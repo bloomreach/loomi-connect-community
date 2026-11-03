@@ -1,0 +1,14 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "rows": [
+    {
+     "query": "rain jacket",
+     "visits": 900,
+     "revenue": "$12,000.00"
+    }
+   ]
+  }
+ }
+}

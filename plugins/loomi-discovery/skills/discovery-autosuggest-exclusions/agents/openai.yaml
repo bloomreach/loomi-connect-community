@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Discovery Autosuggest Exclusions"
+  short_description: "Hide or restore Bloomreach Discovery autosuggest suggestions, with a plan, preview and undo"
+policy:
+  # This skill writes to live Discovery configuration, so it only runs when called by name.
+  allow_implicit_invocation: false

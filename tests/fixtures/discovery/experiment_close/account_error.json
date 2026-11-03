@@ -1,0 +1,4 @@
+{
+ "success": false,
+ "error": "Unknown account 'acme'. Available accounts: alpha_shop, beta_store, gamma_outlet, delta_home, epsilon_wear"
+}
