@@ -115,13 +115,7 @@ The channel checks in [references/message-checks.md](references/message-checks.m
 
 **Links.** Work through every link in two passes. The full rules are in the Links section of [references/message-checks.md](references/message-checks.md).
 
-1. **Static checks first (no web access needed).** The script has done these: missing schemes, `http://`, placeholder destinations and words, near-miss hosts and public shorteners. They catch some broken links even when nothing can be loaded.
-2. **Then load each link, trying every method this client offers, in order:**
-   1. A web-fetch tool, if there is one.
-   2. If that tool is missing, or refuses the URL (for example "not on allowlist" or a blocked domain), a browser tool if the client has one: for example Claude in Chrome, the built-in browser in the Claude desktop app, or another client's browser tool. Open each link in a new tab and read the real HTTP status with a one-line script where the tool allows it. Check other links on the same host from that page. Never click, sign in, solve a CAPTCHA or submit anything.
-   3. Only when no method can load a link, mark it **not checked**.
-
-   A tool that refuses one domain doesn't prove the others will fail, so keep trying the next method for each link.
+The script has done the static checks (missing schemes, `http://`, placeholder destinations and words, near-miss hosts, public shorteners). Render `links_needing_render` with dummy values in place of personal data, then load every link following "Loading links" in that file: web-fetch tool first, then a browser tool, and only then **not checked**.
 
 **Unchecked links are findings, not footnotes.** Every primary call-to-action or hero link that couldn't be checked gets its own **warning** row in the triage table ("Not checked: click before launch"). Group the remaining unchecked links into one warning row. Never leave an unchecked primary link only in "couldn't verify".
 

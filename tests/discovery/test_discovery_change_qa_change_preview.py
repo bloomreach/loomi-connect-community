@@ -16,7 +16,7 @@ def run(*args):
     """Run the script by its full path from a fresh working folder, as an assistant would."""
     with tempfile.TemporaryDirectory() as tmp:
         return subprocess.run([sys.executable, str(SCRIPT), *map(str, args)], cwd=tmp,
-                              capture_output=True, text=True, timeout=60)
+                              capture_output=True, text=True, encoding="utf-8", timeout=60)
 
 
 def preview(change, *args):
@@ -200,6 +200,17 @@ class ChangePreviewTest(unittest.TestCase):
     def test_grid_as_plain_list(self):
         r = preview("change_ranking_clean.json", *grid("dress", "grid_list.json"), "--page-size", 5)
         self.assertEqual(r["previews"][0]["results"], 2)
+
+    def test_missing_revenue_is_not_zero(self):
+        data = json.loads((FIX / "queries_perf.json").read_text(encoding="utf-8"))
+        data["data"]["rows"][0]["revenue"] = "NA"
+        with tempfile.TemporaryDirectory() as tmp:
+            q = Path(tmp) / "queries.json"
+            q.write_text(json.dumps(data), encoding="utf-8")
+            r = preview("change_ranking_raw.json", *grid("dress", "grid_dress.json"), "--queries", q, "--page-size", 5)
+        self.assertEqual(r["affected"]["revenue_missing"], 1)
+        self.assertIsNone(r["affected"]["rows"][0]["revenue"])
+        self.assertEqual(r["affected"]["revenue"], 0)
 
     def test_out_file(self):
         with tempfile.TemporaryDirectory() as tmp:

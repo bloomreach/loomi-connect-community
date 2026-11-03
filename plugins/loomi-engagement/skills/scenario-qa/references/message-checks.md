@@ -11,7 +11,7 @@ Checks marked **(script)** are done by `message_checks.py`, with thresholds from
 - **Never send a customer's data to a website.** Before loading a rendered URL, replace any personal value in it (email, name, phone, customer ID, address) with a dummy such as `test@example.invalid`, and show rendered URLs in the report with personal values masked.
 - **Don't trigger actions.** Load unsubscribe, confirm, verify, opt-in and other links carrying a token with `HEAD` only (web-fetch tool), never in a browser; if `HEAD` isn't possible, mark them **not checked**.
 - **(script)** `javascript:`, `data:`, `file:` and app links are never loaded: they're reported as findings and left out of `links_to_load`.
-- Check at most about 150 unique URLs per run, primary links first, and say so if you hit the cap.
+- **(script)** `links_to_load` holds at most `max_links_to_load` unique URLs, primary first; the rest are in `links_over_cap`. Report those as not checked, and say the cap was hit.
 
 ### Static checks (script)
 
@@ -19,7 +19,7 @@ Checks marked **(script)** are done by `message_checks.py`, with thresholds from
 - **No TLS:** an `http://` link or image = **warning**.
 - **Placeholder destination:** `example.com`, `#`, an empty href or another tool's merge tag (`*|UNSUB|*`) = **blocker** on a primary link, **warning** elsewhere (merge tags are always a blocker).
 - **Placeholder words** in the path or query (`test`, `todo`, `dummy` and the others in `rules.json`) = **warning**: "looks like a placeholder; confirm the real URL".
-- **Near-miss host:** a host one or two characters, or only a top-level domain, away from a host used elsewhere in the same message (for example `brxcdn.co` where every other image uses `brxcdn.com`) = **blocker** on a primary link or image, **warning** elsewhere. Also compare by hand with hosts in other messages of the same campaign or scenario, and with project variables.
+- **Near-miss host:** a host up to `near_miss_max_edits` characters, or only a top-level domain, away from a host used elsewhere in the same message (for example `brxcdn.co` where every other image uses `brxcdn.com`) = **blocker** on a primary link or image, **warning** elsewhere. Also compare by hand with hosts in other messages of the same campaign or scenario, and with project variables.
 - **Public shortener in SMS** (bit.ly, tinyurl and similar) = **warning**: carriers filter them. A brand-owned domain is fine.
 - **Tracking-path consistency (by hand):** if most links use one tracking path pattern and a few use another (for example `/?qs=` against `/u/?qs=`) = **warning** ("confirm this is intentional").
 
@@ -80,13 +80,13 @@ A tool that refuses one domain doesn't prove the others will fail, so keep tryin
 - **(script)** Preheader empty = **warning**. Too long, or the same as the subject = **nitpick**.
 - **(script)** Alt text on images. Missing on a linked or hero image = **warning**, elsewhere **nitpick**.
 - **(script)** Image-only or nearly image-only email = **warning**.
-- **(script)** HTML larger than about 102 KB (Gmail clips it, which can hide the unsubscribe link) = **warning**. Over about 90 KB = **nitpick**.
+- **(script)** HTML at or over `email_size_warning_kb` (Gmail clips it, which can hide the unsubscribe link) = **warning**. At or over `email_size_nitpick_kb` = **nitpick**.
 - **(script)** Sender name or email not set on the message = **warning** (confirm whether the project default applies).
 - **By hand:** dark mode problems, such as dark text on transparent backgrounds or logos with no padding = **nitpick**.
 
 ## Email: spam risk
 
-**(script)** The script scores all-caps words, repeated `!` or `$` and trigger phrases in the subject, trigger phrases in the body, heavy emoji, text hidden with font size 0, and link text that shows one domain but points to another. It rates the risk low, medium or high (`stats.spam`) with its reasons; high = **warning**. More than about 50 unique links = **nitpick**.
+**(script)** The script scores all-caps words, repeated `!` or `$` and trigger phrases in the subject, trigger phrases in the body, heavy emoji, text hidden with font size 0, and link text that shows one domain but points to another. It rates the risk low, medium or high (`stats.spam`) with its reasons; high = **warning**. More than `max_unique_links` unique links = **nitpick**.
 
 **By hand:** a subject or sender that misrepresents the content = **blocker**.
 
@@ -150,6 +150,11 @@ Pass the result to the script as `--regions`, for example `--regions US,US-TX,CA
 ## Other channels
 
 WhatsApp, RCS, web push, app inbox and webhook steps aren't checked by the script (`not_checked`). Check them by hand where you can (links, Jinja, consent), and list them under "couldn't verify" otherwise. Never repeat webhook headers or payloads: they often hold API tokens.
+
+## A/B splits (email campaigns)
+
+- **(script)** Variant percentages that don't add up to 100 = **blocker** (`campaign_findings`).
+- **(script)** Two variants with the same subject, preheader and HTML = **warning**: the test can't find a winner.
 
 ## Send configuration (all channels)
 

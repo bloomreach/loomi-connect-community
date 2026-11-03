@@ -132,5 +132,5 @@ Results: 404, 410 or 5xx on the main call-to-action or hero image = **blocker**,
 
 | Check | Severity |
 |---|---|
-| An inline `data:` URI over 50 KB | Warning: it loads on every page the weblayer runs on |
-| Code over 150 KB in total | Nitpick |
+| An inline `data:` URI over `max_data_uri_kb` | Warning: it loads on every page the weblayer runs on |
+| Code over `max_source_kb` in total | Nitpick |

@@ -83,7 +83,7 @@ Print a short banner before each step, for example `━━━ STEP 2 / SCOPE ━
 
 1. **Searches:** `get_discovery_query_performance` with `sort="revenue"` and `days=30`. For an exact-match rule, use `search=<query>` and keep the exact row (`search` is a substring match). For phrase match or a global rule, fetch the top 2–3 pages by revenue so the script can find every search the phrase catches. Save each page.
 2. **Categories:** for a category rule, `get_discovery_category_performance_table` and save it. The rule's query is the category ID (`cat_id`).
-3. **Top sellers:** `get_discovery_product_performance_table` with `sort="revenue"`, one page of 50. Save it. These are site-wide figures, not per search.
+3. **Top sellers:** `get_discovery_product_performance_table` with `sort="revenue"`, one page of `top_seller_rank` rows (in `references/rules.json`). Save it. These are site-wide figures, not per search.
 
 ### 3. Clashes
 
@@ -104,7 +104,7 @@ Rule lists show `audienceName: null` even for audience-targeted rules. When the 
 - If the change **edits or removes an existing rule**, also fetch the same grid with that rule's ID in `disabled_customization_ids`. That's the real grid without it: pass it as `--grid-after` for a removal. For an edit, pass the disabled grid as `--grid` so the simulation starts from no rule.
 - Otherwise the after grid is simulated. It's the **strongest possible** version of the rule (a hard sort): a real attribute boost blends with relevance by its strength, so the real effect is milder. Say so.
 
-**Synonym.** Fetch the grid for the source term and for each target term (`rows=24`, `fl=pid,title,brand`). Pass the source with `--grid` and each target with `--target-grid`.
+**Synonym.** Fetch the grid for the source term and for each target term (`rows` set to `synonym_sample` from `references/rules.json`, `fl=pid,title,brand`). Pass the source with `--grid` and each target with `--target-grid`.
 
 **Redirect.** No grid preview is needed; the scope tables are what matter. If the user wants to see what shoppers lose, show the source query's grid.
 

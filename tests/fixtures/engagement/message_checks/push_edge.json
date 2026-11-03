@@ -1,0 +1,21 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "000000000000000000000007",
+   "name": "Push flow",
+   "nodes": [
+    {
+     "id": 2,
+     "type": "push-notification-mobile-action",
+     "name": "Long push",
+     "consent_category": "push",
+     "general_consent": false,
+     "frequency_policy": "Default",
+     "data": "{\"title\": \"TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\", \"message\": \"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"action\": \"app\"}"
+    }
+   ]
+  },
+  "error": null
+ }
+}

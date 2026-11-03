@@ -15,7 +15,7 @@ NOW = "2026-11-03T00:00:00Z"
 def run(path, *args):
     with tempfile.TemporaryDirectory() as tmp:
         return subprocess.run([sys.executable, str(SCRIPT), str(path), "--now", NOW, *args],
-                              cwd=tmp, capture_output=True, text=True)
+                              cwd=tmp, capture_output=True, text=True, encoding="utf-8")
 
 
 def check(data):
@@ -23,7 +23,7 @@ def check(data):
     with tempfile.TemporaryDirectory() as tmp:
         p = Path(tmp) / "banner.json"
         p.write_text(json.dumps(data), encoding="utf-8")
-        r = subprocess.run([sys.executable, str(SCRIPT), str(p), "--now", NOW], cwd=tmp, capture_output=True, text=True)
+        r = subprocess.run([sys.executable, str(SCRIPT), str(p), "--now", NOW], cwd=tmp, capture_output=True, text=True, encoding="utf-8")
     assert r.returncode == 0, r.stderr + r.stdout
     return json.loads(r.stdout)
 
@@ -50,7 +50,7 @@ class WeblayerChecksTest(unittest.TestCase):
         cls.broken = check(fixture("banner_broken.json"))
 
     def test_help(self):
-        r = subprocess.run([sys.executable, str(SCRIPT), "--help"], capture_output=True, text=True)
+        r = subprocess.run([sys.executable, str(SCRIPT), "--help"], capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(r.returncode, 0)
         self.assertIn("search_banners", r.stdout)
 
@@ -68,7 +68,7 @@ class WeblayerChecksTest(unittest.TestCase):
     def test_out_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             r = subprocess.run([sys.executable, str(SCRIPT), str(FX / "banner_broken.json"), "--now", NOW, "--out", "qa.json"],
-                               cwd=tmp, capture_output=True, text=True)
+                               cwd=tmp, capture_output=True, text=True, encoding="utf-8")
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertEqual(json.loads(r.stdout)["verdict"], "NO-GO")
             self.assertEqual(json.loads((Path(tmp) / "qa.json").read_text(encoding="utf-8"))["verdict"], "NO-GO")
@@ -219,12 +219,26 @@ class WeblayerChecksTest(unittest.TestCase):
         self.assertEqual(keys, set(rules["notes"]))
 
 
-class ExpectedLoadTest(unittest.TestCase):
+def load_module():
+    import importlib.util
+    sys.dont_write_bytecode = True  # no __pycache__ in the skill folder
+    spec = importlib.util.spec_from_file_location("weblayer_checks", SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class HelperTest(unittest.TestCase):
+    def test_aggregate_loop_guard(self):
+        mod = load_module()
+        self.assertTrue(mod.unguarded_aggregate_loop("{% set c = aggregates['a'] %}{% for i in c %}{% endfor %}"))
+        self.assertTrue(mod.unguarded_aggregate_loop("{{ 'None' }}" + "x" * 500 + "{% for i in aggregates['a'] %}"))
+        self.assertFalse(mod.unguarded_aggregate_loop(
+            "{% set c = aggregates['a'] %}{% if c and c != 'None' %}{% for i in c %}{% endfor %}{% endif %}"))
+        self.assertFalse(mod.unguarded_aggregate_loop("{% for i in items %}{% endfor %}"))
+
     def test_allowlist_matches_hosts_not_substrings(self):
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("weblayer_checks", SCRIPT)
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
+        mod = load_module()
         for target in ["/brstatic/utils.js", "https://api.exponea.com", "https://api.exponea.com/track",
                        "https://cdn.jsdelivr.net/npm/intl-tel-input@17/build/js/utils.js"]:
             self.assertTrue(mod.expected_load(target), target)

@@ -3,7 +3,7 @@
 
 Usage:
   python3 preflight_report.py --calendar week1.json [--calendar week2.json ...] --findings findings.json
-         [--extra-findings extra.json ...] [--from 2026-11-03T00:00:00Z] [--to 2026-11-10T00:00:00Z]
+         [--findings more.json ...] [--from 2026-11-03T00:00:00Z] [--to 2026-11-10T00:00:00Z]
          [--include-drafts] [--include-webhooks] [--out preflight.json]
 
 --calendar is a saved get_campaign_calendar result (one per week; the same format engagement-send-collision-check
@@ -33,8 +33,11 @@ def fail(msg):
 
 
 def read_json(path):
-    with open(path, encoding="utf-8") as f:
-        data = json.load(f)
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError) as e:
+        fail(f"{path}: can't read it as JSON ({e}).")
     for d in (data, data.get("result") if isinstance(data, dict) else None):
         if isinstance(d, dict) and d.get("success") is False:
             fail(f"{path}: Loomi Connect returned an error: {d.get('error') or 'no error text'}. "
@@ -54,9 +57,13 @@ def calendar_entries(path):
 
 
 def ts(v):
+    """ISO date or time as Unix seconds; no offset means UTC."""
     if v is None:
         return None
-    t = datetime.fromisoformat(str(v).strip().replace("Z", "+00:00"))
+    try:
+        t = datetime.fromisoformat(str(v).strip().replace("Z", "+00:00"))
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"not an ISO date or time: {v!r}")
     return (t if t.tzinfo else t.replace(tzinfo=timezone.utc)).timestamp()
 
 
@@ -71,16 +78,17 @@ def verdict(counts):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # names can hold emoji; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--calendar", action="append", required=True, help="saved get_campaign_calendar result (repeat per week)")
     ap.add_argument("--findings", action="append", required=True, help="message_checks.py output (repeat for several runs)")
-    ap.add_argument("--from", dest="start", help="ISO start of the window (default: no lower limit)")
-    ap.add_argument("--to", dest="end", help="ISO end of the window (default: no upper limit)")
+    ap.add_argument("--from", dest="start", type=ts, help="ISO start of the window (default: no lower limit)")
+    ap.add_argument("--to", dest="end", type=ts, help="ISO end of the window (default: no upper limit)")
     ap.add_argument("--include-drafts", action="store_true", help="keep draft, inactive and finished campaigns")
     ap.add_argument("--include-webhooks", action="store_true", help="keep webhook steps (they're never checked)")
     ap.add_argument("--out", help="also write the JSON result to this file")
     a = ap.parse_args()
-    start, end = ts(a.start), ts(a.end)
+    start, end = a.start, a.end
 
     by_step, by_campaign, skipped_steps = {}, {}, {}
     for path in a.findings:
@@ -138,7 +146,7 @@ def main():
     totals = Counter(r["verdict"] for r in out_rows)
     overall = ("NO-GO" if totals["NO-GO"] else "GO WITH CAUTION" if totals["GO WITH CAUTION"] or totals["NOT CHECKED"]
                else "GO" if out_rows else "NOTHING SCHEDULED")
-    out = {"ok": True, "window": {"from": a.start, "to": a.end}, "overall": overall,
+    out = {"ok": True, "window": {"from": iso(start) if start is not None else None, "to": iso(end) if end is not None else None}, "overall": overall,
            "totals": {k: totals[k] for k in ("NO-GO", "GO WITH CAUTION", "GO", "NOT CHECKED")},
            "left_out": dict(left_out), "sends": out_rows}
     text = json.dumps(out, indent=2, ensure_ascii=False)

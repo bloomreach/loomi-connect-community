@@ -11,7 +11,7 @@ One pre-send check of everything a Bloomreach Engagement project is about to sen
 | **Tested with** | Claude Code |
 | **Maintainer** | @bloomreach |
 
-`scripts/message_checks.py`, `references/rules.json` and `references/message-checks.md` are identical copies of the files in `campaign-qa` and `scenario-qa`, and `scripts/find_collisions.py` of the one in `engagement-send-collision-check`; change them together. `scripts/preflight_report.py` joins the calendar with the findings.
+`scripts/message_checks.py`, `references/rules.json` and `references/message-checks.md` are identical copies of the files in `campaign-qa` and `scenario-qa`, and `scripts/find_collisions.py` of the one in `engagement-send-collision-check`; change them together. `scripts/send_window.py` works out the calendar weeks and recently edited live flows (`references/preflight-rules.json`), and `scripts/preflight_report.py` joins the calendar with the findings.
 
 ## Example prompts
 

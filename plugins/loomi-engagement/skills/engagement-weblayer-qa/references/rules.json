@@ -1,7 +1,7 @@
 {
   "about": "The weblayer QA rules. scripts/weblayer_checks.py reads this file, so change a word list or threshold here and nowhere else. Each key is explained under notes; references/check-catalog.md says what each check means and its severity.",
   "placeholder_hosts": ["example.com", "example.org", "example.net", "test.com", "domain.com", "yourdomain.com", "yoursite.com", "localhost"],
-  "placeholder_words": ["test", "placeholder", "todo", "tbd", "example", "dummy", "lorem", "changeme", "xxx", "fixme"],
+  "placeholder_words": ["test", "placeholder", "todo", "tbd", "example", "dummy", "lorem", "changeme", "xxx", "broken", "wontwork", "fixme"],
   "allowed_loads": {"relative_paths": ["/brstatic/"], "hosts": ["api.exponea.com", "cdn.jsdelivr.net/npm/intl-tel-input@"]},
   "timing_param_patterns": ["^trigger$", "showafter", "exitintent", "scrolldistance", "scrollspeed", "inactivitydelay"],
   "timing_listener_events": ["scroll", "mouseout", "mouseleave", "visibilitychange"],

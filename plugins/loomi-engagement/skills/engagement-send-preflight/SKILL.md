@@ -31,7 +31,7 @@ You need:
 | Input | Required | Notes |
 |---|---|---|
 | Project | yes | Confirm it on every run. |
-| Window | no | Default: now until 7 days from now. Say which window you used. |
+| Window | no | Default: now until `window_days` (7) days from now. Say which window you used. |
 | Brand name | no | What each SMS should open with. Ask only if the window has SMS and it isn't obvious from the copy. |
 | Recipient locations | no | Countries and US states the project sends to. Ask once if the window has SMS; otherwise assume every US state plus Canada and say so. |
 
@@ -51,7 +51,7 @@ Make Loomi Connect calls one at a time. Organisation and project lookups allow a
 
 ### Running the scripts
 
-Run each script as one plain command from your own working folder, giving the script's full path: `python3 <this skill's folder>/scripts/message_checks.py`, `python3 <this skill's folder>/scripts/preflight_report.py` or `python3 <this skill's folder>/scripts/find_collisions.py` and its arguments. Pass saved tool results, and any files a script writes (`--out`, `--jsonl`, `--out-dir`), by paths in your working folder, never inside the skill's folder; a bare file name lands in the folder you run from. Don't `cd` into the skill's folder, and don't add `-I`, shell variables, `;`, redirects (`>`), `$(...)` or line breaks: some apps only allow plain commands, refuse the rest and keep skill folders read-only, and then the sums have to be done by hand. Piping the output to `jq` or `head` is fine. Some apps run no scripts at all, so the steps still work by hand.
+Run each script as one plain command from your own working folder, giving the script's full path: `python3 <this skill's folder>/scripts/send_window.py`, `python3 <this skill's folder>/scripts/message_checks.py`, `python3 <this skill's folder>/scripts/preflight_report.py` or `python3 <this skill's folder>/scripts/find_collisions.py` and its arguments. Pass saved tool results, and any files a script writes (`--out`, `--jsonl`, `--out-dir`), by paths in your working folder, never inside the skill's folder; a bare file name lands in the folder you run from. Don't `cd` into the skill's folder, and don't add `-I`, shell variables, `;`, redirects (`>`), `$(...)` or line breaks: some apps only allow plain commands, refuse the rest and keep skill folders read-only, and then the sums have to be done by hand. Piping the output to `jq` or `head` is fine. Some apps run no scripts at all, so the steps still work by hand.
 
 ## Steps
 
@@ -61,13 +61,25 @@ Call `list_cloud_organizations`, then `list_projects`. If there's more than one 
 
 ### 2. Read the calendar
 
-Call `get_campaign_calendar` with `from_ts` and `to_ts` (Unix seconds, UTC) for **one week at a time**; wide windows can time out (`error='timeout'`), so halve the window if one does. Save each week to its own file in your working folder (`<work>/calendar-1.json`, ...).
+Work out the window:
+
+```bash
+python3 <this skill's folder>/scripts/send_window.py --days <7> --out <work>/window.json
+```
+
+It returns `from` and `to` (ISO, for step 5) and `calendar_calls`: one `from_ts` / `to_ts` pair per week. Call `get_campaign_calendar` once per pair; wide windows can time out (`error='timeout'`), so halve a pair if one does. Save each week to its own file in your working folder (`<work>/calendar-1.json`, ...). Without scripts, use Unix seconds (UTC) a week apart.
 
 Each entry is one send: a standalone campaign, or one step of a scenario (`action_id` is the step's node ID). The calendar includes drafts and inactive campaigns with planned times; they won't send, and the report leaves them out. It lists webhook steps; the report leaves those out too. It **leaves out event-triggered flows**: step 3 covers them.
 
 ### 3. Find live flows changed recently
 
-Call `search_scenarios` with `status="active"` and `trigger_types=["onevent", "onapi", "ondateattribute"]`. Keep those whose `edited` time is within the last 7 days: they're live, send all the time, and changed recently, so they're worth checking. List the others by name only, as "live, not changed recently, not checked". If the user asks for every live flow, include them all, but warn that it can take a long time on a big project.
+Call `search_scenarios` with `status="active"` and `trigger_types=["onevent", "onapi", "ondateattribute"]`, save the result, and pass it to the window script:
+
+```bash
+python3 <this skill's folder>/scripts/send_window.py --days <7> --scenarios <work>/live-flows.json --out <work>/window.json
+```
+
+`recently_edited` lists the flows edited within `edited_days` (in `references/preflight-rules.json`): they're live, send all the time, and changed recently, so check them. `not_recent` lists the others by name only; report them as "live, not changed recently, not checked". If the user asks for every live flow, include them all, but warn that it can take a long time on a big project.
 
 ### 4. Fetch each send
 
@@ -92,14 +104,14 @@ Leave out `--brand` or `--regions` if you don't know them. If it stops with `"ok
 Then join it to the calendar:
 
 ```bash
-python3 <this skill's folder>/scripts/preflight_report.py --calendar <work>/calendar-1.json --calendar <work>/calendar-2.json --findings <work>/findings.json --from <ISO start> --to <ISO end> --out <work>/preflight.json
+python3 <this skill's folder>/scripts/preflight_report.py --calendar <work>/calendar-1.json --calendar <work>/calendar-2.json --findings <work>/findings.json --from <from in window.json> --to <to in window.json> --out <work>/preflight.json
 ```
 
 It returns one row per upcoming send, soonest first: `first_send` (UTC), `sends_in_window`, the worst `verdict` across its variants, `counts`, up to five `top_findings`, and `not_checked_reason` for sends it couldn't cover (WhatsApp, RCS, web push, app inbox, or a send you didn't fetch). `overall` is the verdict for the whole window. Live flows from step 3 aren't on the calendar, so report their findings from `findings.json` in a separate section.
 
 ### 6. Load the links
 
-Load the URLs in `findings.json` → `links_to_load` (unique across every send, primary first), following "Loading links" in [references/message-checks.md](references/message-checks.md). Check at most about 150 per run, primary links first, and say so if you hit the cap. A broken primary link makes that send NO-GO; a link you couldn't check caps it at GO WITH CAUTION. Skip `links_needing_render` here (they need a customer profile) and say they weren't checked; `campaign-qa` and `scenario-qa` render them.
+Load the URLs in `findings.json` → `links_to_load` (unique across every send, primary first), following "Loading links" in [references/message-checks.md](references/message-checks.md). The script caps the list at `max_links_to_load` in `references/rules.json`; report `links_over_cap` as not checked. A broken primary link makes that send NO-GO; a link you couldn't check caps it at GO WITH CAUTION. Skip `links_needing_render` here (they need a customer profile) and say they weren't checked; `campaign-qa` and `scenario-qa` render them.
 
 ### 7. Collisions and busy days
 

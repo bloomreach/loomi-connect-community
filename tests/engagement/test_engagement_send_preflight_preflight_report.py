@@ -13,9 +13,11 @@ FX = ROOT / "tests/fixtures/engagement/message_checks"
 
 
 def run(script, *args):
-    r = subprocess.run([sys.executable, str(SCRIPTS / script), *map(str, args)], capture_output=True, text=True,
-                       encoding="utf-8")
-    return r.returncode, json.loads(r.stdout)
+    with tempfile.TemporaryDirectory() as tmp:
+        r = subprocess.run([sys.executable, str(SCRIPTS / script), *map(str, args)], capture_output=True, text=True,
+                           encoding="utf-8", cwd=tmp)
+        assert not any(Path(tmp).iterdir()), "the script wrote to the working folder"
+    return r.returncode, json.loads(r.stdout) if r.stdout else None
 
 
 class PreflightReportTest(unittest.TestCase):
@@ -95,6 +97,40 @@ class PreflightReportTest(unittest.TestCase):
             code, out = run("preflight_report.py", "--calendar", FX / "preflight_calendar.json", "--findings", bad)
             self.assertEqual(code, 1)
             self.assertIn("message checks failed", out["error"])
+
+
+    def test_bad_date(self):
+        code, _ = run("preflight_report.py", "--calendar", FX / "preflight_calendar.json", "--findings", self.findings,
+                      "--from", "notadate")
+        self.assertEqual(code, 2)
+
+
+class SendWindowTest(unittest.TestCase):
+    def test_weeks(self):
+        _, out = run("send_window.py", "--now", "2026-11-03T09:00:00Z", "--days", "10")
+        self.assertEqual((out["from"], out["to"]), ("2026-11-03T09:00:00Z", "2026-11-13T09:00:00Z"))
+        self.assertEqual([(c["from"], c["to"]) for c in out["calendar_calls"]],
+                         [("2026-11-03T09:00:00Z", "2026-11-10T09:00:00Z"), ("2026-11-10T09:00:00Z", "2026-11-13T09:00:00Z")])
+        self.assertEqual(out["calendar_calls"][0]["from_ts"], 1793696400)
+
+    def test_default_days_from_rules(self):
+        rules = json.loads((SCRIPTS.parent / "references/preflight-rules.json").read_text(encoding="utf-8"))
+        _, out = run("send_window.py", "--now", "2026-11-03T00:00:00Z")
+        self.assertEqual(len(out["calendar_calls"]), -(-rules["window_days"] // 7))
+        self.assertEqual(set(rules) - {"about", "notes"}, set(rules["notes"]))
+
+    def test_recently_edited_live_flows(self):
+        # 2026-11-03T09:00Z is 1793696400; Welcome was edited 2.3 days before, Cart 19.7 days before.
+        _, out = run("send_window.py", "--now", "2026-11-03T09:00:00Z", "--scenarios", FX / "scenarios_list.json")
+        self.assertEqual([s["name"] for s in out["recently_edited"]], ["Welcome flow"])
+        self.assertEqual(out["not_recent"], ["Cart flow"])
+
+    def test_bad_input(self):
+        code, out = run("send_window.py", "--days", "0")
+        self.assertEqual(code, 1)
+        code, out = run("send_window.py", "--scenarios", FX / "error.json")
+        self.assertEqual(code, 1)
+        self.assertIn("ACCESS_DENIED", out["error"])
 
 
 if __name__ == "__main__":

@@ -93,7 +93,7 @@ From the definition, note: `schedule` (type and time), `customer_filter`, `split
 python3 <this skill's folder>/scripts/message_checks.py <work>/campaign.json --regions <US,US-TX,CA> --brand <brand name> --out <work>/findings.json
 ```
 
-`<work>/campaign.json` is the saved step 1 result (if the client didn't save it, write the result to that file first). Leave out `--brand` or `--regions` if you don't know them. The output has, per variant and translation (`messages[]`), the findings with severity, plus `links_to_load` (unique URLs, primary first), `links_needing_render` and `stats` (text length, HTML size, spam score, SMS segments). If it returns `"ok": false`, read the error: a stripped design means step 1 needs `include_design=true`.
+`<work>/campaign.json` is the saved step 1 result (if the client didn't save it, write the result to that file first). Leave out `--brand` or `--regions` if you don't know them. The output has, per variant and translation (`messages[]`), the findings with severity; `campaign_findings` for the A/B split (percentages, identical variants); `links_to_load` (unique URLs, primary first, capped at `max_links_to_load` with the rest in `links_over_cap`), `links_needing_render` and `stats` (text length, HTML size, spam score, SMS segments). If it returns `"ok": false`, read the error: a stripped design means step 1 needs `include_design=true`.
 
 If scripts can't run here, do every check in [references/message-checks.md](references/message-checks.md) by hand.
 
@@ -110,8 +110,7 @@ Work through the parts of [references/message-checks.md](references/message-chec
 
 | Check | Severity |
 |---|---|
-| A/B split: variant percentages plus control group don't total 100 | **blocker** |
-| A/B split: variants identical (same subject and body) | **warning** |
+| A/B split: a control group configured, but variant percentages already total 100 with no room for it (the script checks variants only, in `campaign_findings`) | **warning** |
 | A/B split with no optimisation goal or winner rule, when the user expects a winner | **nitpick** |
 | Schedule `now`: it sends as soon as it's started; say so | note |
 | Schedule time already in the past | **blocker** |

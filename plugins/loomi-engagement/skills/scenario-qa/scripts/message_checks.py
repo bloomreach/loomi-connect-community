@@ -53,8 +53,11 @@ def fail(msg):
 
 
 def load(path):
-    with open(path, encoding="utf-8") as f:
-        data = json.load(f)
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError) as e:
+        fail(f"{path}: can't read it as JSON ({e}).")
     for d in (data, data.get("result") if isinstance(data, dict) else None):
         if isinstance(d, dict) and d.get("success") is False:
             fail(f"{path}: Loomi Connect returned an error: {d.get('error') or 'no error text'}. "
@@ -150,6 +153,25 @@ def extract(data, node_ids):
             msgs.append(email_message(base, data.get("design")))
         return "email_campaign", msgs, skipped
     fail("Not a campaign, scenario or scenario node detail result.")
+
+
+def split_checks(data):
+    """Campaign-level A/B split findings for an email campaign: percentages and identical variants."""
+    rep = Report()
+    variants = ((data.get("split") or {}).get("variants")) or []
+    if len(variants) > 1:
+        total = sum(v.get("percentage") or 0 for v in variants)
+        if total != 100:
+            rep.add("blocker", "split_total", f"A/B variant percentages add up to {total}, not 100", "split")
+        seen = {}
+        for v in variants:
+            d = (v.get("design") or {}).get("data") or {}
+            sig = (d.get("subject"), d.get("preheader"), d.get("jinja_html"))
+            if sig in seen:
+                rep.add("warning", "split_identical", f"Variants '{seen[sig]}' and '{v.get('name')}' are identical, so the "
+                        "test can't find a winner", "split")
+            seen.setdefault(sig, v.get("name"))
+    return rep.findings
 
 
 # ----------------------------------------------------------------------------------------------
@@ -449,9 +471,10 @@ def check_email(rep, m, regions):
                 "land in spam more often", "body")
     kb = len(html.encode("utf-8")) / 1024
     if kb >= RULES["email_size_warning_kb"]:
-        rep.add("warning", "size", f"HTML is {kb:.0f} KB; Gmail clips emails over about 102 KB, which can hide the unsubscribe link", "body")
+        rep.add("warning", "size", f"HTML is {kb:.0f} KB; Gmail clips emails over about {RULES['email_size_warning_kb']} KB, "
+                "which can hide the unsubscribe link", "body")
     elif kb >= RULES["email_size_nitpick_kb"]:
-        rep.add("nitpick", "size", f"HTML is {kb:.0f} KB, close to Gmail's 102 KB clipping limit", "body")
+        rep.add("nitpick", "size", f"HTML is {kb:.0f} KB, close to Gmail's {RULES['email_size_warning_kb']} KB clipping limit", "body")
     hrefs = {l["href"] for l in p.links if l.get("href")}
     if len(hrefs) > RULES["max_unique_links"]:
         rep.add("nitpick", "many_links", f"{len(hrefs)} unique links", "body")
@@ -588,22 +611,34 @@ def verdict(counts):
     return "NO-GO" if counts["blocker"] else "GO WITH CAUTION" if counts["warning"] else "GO"
 
 
+def node_id_list(text):
+    try:
+        return {int(x) for x in text.split(",") if x.strip()}
+    except ValueError:
+        raise argparse.ArgumentTypeError("use comma-separated numbers, e.g. 12,15")
+
+
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # copy can hold emoji; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("inputs", nargs="+", help="saved campaign, scenario or scenario node detail results")
-    ap.add_argument("--node-ids", help="comma-separated scenario node IDs to check (default: every send step)")
+    ap.add_argument("--node-ids", type=node_id_list, help="comma-separated scenario node IDs to check (default: every send step)")
     ap.add_argument("--brand", help="brand name each SMS should open with")
     ap.add_argument("--regions", default="", help="comma-separated places recipients can be, e.g. US,US-TX,CA")
     ap.add_argument("--out", help="also write the JSON result to this file")
     a = ap.parse_args()
-    node_ids = {int(x) for x in a.node_ids.split(",") if x.strip()} if a.node_ids else None
+    node_ids = a.node_ids or None
     regions = {r.strip().upper() for r in a.regions.split(",") if r.strip()}
-    results, not_checked, loads, renders = [], [], {}, set()
+    results, not_checked, loads, renders, campaign = [], [], {}, set(), []
     counts = Counter({s: 0 for s in SEVERITIES})
     for path in a.inputs:
         data = load(path)
         source, msgs, skipped = extract(data, node_ids)
         not_checked += [dict(s, source=source, parent_id=data.get("_id")) for s in skipped]
+        if source == "email_campaign":
+            for f in split_checks(data):
+                campaign.append(dict(f, campaign=data.get("name") or data.get("_id"), parent_id=data.get("_id")))
+                counts[f["severity"]] += 1
         for m in msgs:
             findings, to_load, need_render, stats = check_message(m, regions, a.brand, message_hosts(m))
             key = " / ".join(str(x) for x in (m["name"] or m["id"], m.get("variant"), m.get("language")) if x)
@@ -619,8 +654,10 @@ def main():
                             "variant": m.get("variant"), "language": m.get("language"),
                             "counts": {s: sum(f["severity"] == s for f in findings) for s in SEVERITIES},
                             "findings": findings, "stats": stats})
-    out = {"ok": True, "messages": results, "not_checked": not_checked,
-           "links_to_load": sorted(loads.values(), key=lambda e: (not e["primary"], e["url"])),
+    ordered = sorted(loads.values(), key=lambda e: (not e["primary"], e["url"]))
+    cap = RULES["max_links_to_load"]
+    out = {"ok": True, "messages": results, "campaign_findings": campaign, "not_checked": not_checked,
+           "links_to_load": ordered[:cap], "links_over_cap": ordered[cap:],
            "links_needing_render": sorted(renders), "counts": dict(counts),
            "verdict_before_link_checks": verdict(counts)}
     text = json.dumps(out, indent=2, ensure_ascii=False)

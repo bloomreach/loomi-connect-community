@@ -1,0 +1,62 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "000000000000000000000005",
+   "name": "Split email",
+   "schedule": {
+    "type": "now"
+   },
+   "consent_category": "newsletter",
+   "general_consent": false,
+   "frequency_policy": "Default",
+   "silent_hours": null,
+   "split": {
+    "type": "manual",
+    "variants": [
+     {
+      "id": 0,
+      "name": "A",
+      "percentage": 40,
+      "design": {
+       "type": "beefree",
+       "data": {
+        "jinja_html": "<html><body><p>Acme Outdoors, 1 Harbour Street, Sampletown, CA 94105. <a href=\"{{ email.unsubscribe }}\">Unsubscribe</a> <a href=\"{{ email.view }}\">View in browser</a></p><p>Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. </p></body></html>",
+        "subject": "Same subject",
+        "preheader": "Same preheader",
+        "sender_name": "Acme",
+        "sender_email": "news@acme-outdoors.test"
+       }
+      }
+     },
+     {
+      "id": 1,
+      "name": "B",
+      "percentage": 40,
+      "design": {
+       "type": "beefree",
+       "data": {
+        "jinja_html": "<html><body><p>Acme Outdoors, 1 Harbour Street, Sampletown, CA 94105. <a href=\"{{ email.unsubscribe }}\">Unsubscribe</a> <a href=\"{{ email.view }}\">View in browser</a></p><p>Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. </p></body></html>",
+        "subject": "Same subject",
+        "preheader": "Same preheader",
+        "sender_name": "Acme",
+        "sender_email": "news@acme-outdoors.test"
+       }
+      }
+     }
+    ]
+   },
+   "design": {
+    "type": "beefree",
+    "data": {
+     "jinja_html": "<html><body><p>Acme Outdoors, 1 Harbour Street, Sampletown, CA 94105. <a href=\"{{ email.unsubscribe }}\">Unsubscribe</a> <a href=\"{{ email.view }}\">View in browser</a></p><p>Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. Plenty of ordinary copy about jackets and boots. </p></body></html>",
+     "subject": "Same subject",
+     "preheader": "Same preheader",
+     "sender_name": "Acme",
+     "sender_email": "news@acme-outdoors.test"
+    }
+   }
+  },
+  "error": null
+ }
+}

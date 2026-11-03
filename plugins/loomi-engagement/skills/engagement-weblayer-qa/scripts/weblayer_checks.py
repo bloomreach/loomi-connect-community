@@ -74,6 +74,18 @@ def expected_load(target):
     return False
 
 
+def unguarded_aggregate_loop(code):
+    """True if a {% for %} runs over an aggregate (directly or through {% set x = aggregates[...] %}) with no
+    != 'None' guard in the 400 characters before it. Same rule as message_checks.py in campaign-qa."""
+    for m in re.finditer(r"\{%-?\s*for\s+\w+\s+in\s+([\w.]+(?:\[[^\]]+\])?)", code):
+        src, before = m.group(1), code[max(0, m.start() - 400):m.start()]
+        agg = src.startswith("aggregates") or bool(
+            re.search(r"\{%-?\s*set\s+" + re.escape(src) + r"\s*=\s*aggregates\[", code[:m.start()]))
+        if agg and "'None'" not in before and '"None"' not in before:
+            return True
+    return False
+
+
 def excerpt(s):
     s = EMAIL.sub("<email>", " ".join(str(s).split()))
     n = RULES["excerpt_chars"]
@@ -425,7 +437,7 @@ def check_variant(v):
         elif re.search(r"default\(\s*[^,()]+\s*\)", expr):
             add("warning", "jinja", f"{excerpt(expr)} uses default() without true, which doesn't replace None or ''",
                 "Use | default('…', true)")
-    if re.search(r"\{%\s*for\s+\w+\s+in\s+aggregates\[", allcode) and "'None'" not in allcode and '"None"' not in allcode:
+    if unguarded_aggregate_loop(allcode):
         add("warning", "jinja", "A loop over an aggregate has no guard; an empty aggregate renders as the string 'None' and loops over its letters",
             "Wrap it: {% set x = aggregates['<id>'] %}{% if x and x != 'None' %}…{% endif %}")
 
@@ -538,6 +550,7 @@ def check_banner(b, now):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("banner", help="saved search_banners detail result (one banner_id)")
     ap.add_argument("--now", help="ISO time to judge schedules against (default: current UTC time)")
@@ -557,7 +570,8 @@ def main():
               "banner_findings": banner_findings, "variants": variants, "not_checked": not_checked}
     out = json.dumps(result, indent=2, ensure_ascii=False)
     if a.out:
-        Path(a.out).write_text(out + "\n", encoding="utf-8")
+        with open(a.out, "w", encoding="utf-8", newline="\n") as f:
+            f.write(out + "\n")
         print(json.dumps({"ok": True, "out": a.out, "verdict": verdict, "counts": counts}))
     else:
         print(out)

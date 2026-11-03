@@ -92,12 +92,13 @@ def overlaps(a, b):
 
 
 def money(v):
+    """A number from 1234.5, "$1,234.50" and the like; None when missing or unreadable, so it isn't counted as 0."""
     if v in (None, ""):
-        return 0.0
+        return None
     try:
-        return float(re.sub(r"[^0-9.\-]", "", str(v)) or 0)
+        return float(re.sub(r"[^0-9.\-]", "", str(v)))
     except ValueError:
-        return 0.0
+        return None
 
 
 def ts(v):
@@ -286,12 +287,26 @@ def out_of_stock(doc):
 
 # ---------------------------------------------------------------------------------------------
 
+INPUTS = {
+    "grid": "saved product grid for a targeted query or category, before the change (repeat per query)",
+    "grid-after": "saved product grid fetched with the rule in disabled_customization_ids (removing a rule)",
+    "target-grid": "saved product grid for a synonym's target term (repeat per term)",
+    "queries": "saved query performance table (get_discovery_query_performance)",
+    "categories": "saved category performance table",
+    "products": "saved product performance table sorted by revenue",
+    "existing": "saved rule, redirect or synonym list to check for clashes (repeat per list)",
+    "experiments": "saved search_discovery_experiments result with status RUNNING",
+    "synonyms": "saved list_synonyms_user result",
+}
+
+
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # titles can hold any character; Windows consoles default to cp1252
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--change", required=True)
-    for flag in ("grid", "grid-after", "target-grid", "queries", "categories", "products", "existing",
-                 "experiments", "synonyms"):
-        ap.add_argument("--" + flag, action="append", default=[])
+    ap.add_argument("--change", required=True, help="saved rule, redirect or synonym detail, or a hand-written change "
+                    "(references/change-format.md)")
+    for flag, text in INPUTS.items():
+        ap.add_argument("--" + flag, action="append", default=[], help=text)
     ap.add_argument("--now", help="ISO time to judge schedules against (default: current UTC time)")
     ap.add_argument("--page-size", type=int, default=RULES["page_size"],
                     help="products on the first page (default: references/rules.json)")
@@ -320,7 +335,7 @@ def main():
             add("warning", "scope", f"Applies to every {'category' if 'category' in qt else 'search'} (global).",
                 "Confirm it should apply everywhere; scope it to the queries or categories it's for if not.", qn)
         elif "phrase" in mt and len(qn.split()) <= RULES["broad_query_max_words"]:
-            add("warning", "scope", f"Phrase match on the one-word query '{qn}' also fires on every longer search containing it.",
+            add("warning", "scope", f"Phrase match on the short query '{qn}' also fires on every longer search containing it.",
                 "Use exact match unless the longer searches should get it too.", qn)
 
     # ---- schedule
@@ -399,9 +414,9 @@ def main():
         if any(touches(r, q) for q in queries):
             affected[(r["_kind"], r["_name"])] = {
                 "kind": r["_kind"], "key": r["_name"], "name": r.get("query") or r.get("category") or r.get("cat_id"),
-                "visits": int(money(r.get("visits"))), "revenue": round(money(r.get("revenue")), 2),
+                "visits": int(money(r.get("visits")) or 0), "revenue": money(r.get("revenue")),
                 "conversion_rate": r.get("conversion_rate")}
-    affected = sorted(affected.values(), key=lambda r: (-r["revenue"], -r["visits"]))
+    affected = sorted(affected.values(), key=lambda r: (-(r["revenue"] or 0), -r["visits"]))
     if not rows:
         not_checked.append("Traffic and revenue: no query or category performance table was given.")
     elif not affected and kind != "facet":
@@ -412,7 +427,7 @@ def main():
     prows = []
     for p in a.products:
         prows += records(p)
-    prows.sort(key=lambda r: -money(r.get("revenue")))
+    prows.sort(key=lambda r: -(money(r.get("revenue")) or 0))
     seller = {str(r.get("prod_id") or r.get("pid")): (i, money(r.get("revenue")))
               for i, r in enumerate(prows, 1)}
 
@@ -444,7 +459,7 @@ def main():
         if hurt:
             add("warning", "top sellers", f"{len(hurt)} top-selling product(s) pushed off page one for '{qn}'.",
                 "Lower the strength, or pin the top sellers you want to keep.", qn,
-                [{"pid": str(d.get("pid")), "title": d.get("title"), "revenue_rank": r, "revenue": round(v, 2)}
+                [{"pid": str(d.get("pid")), "title": d.get("title"), "revenue_rank": r, "revenue": None if v is None else round(v, 2)}
                  for d, (r, v) in hurt])
         if kind == "ranking":
             moved = {**{p: "boosted" for p in change["boost_product_ids"]},
@@ -626,8 +641,11 @@ def main():
     result = {"ok": True, "verdict": verdict, "counts": counts, "page_size": n,
               "change": {k: change.get(k) for k in ("type", "id", "name", "queries", "startedAt", "endedAt", "url",
                                                     "source", "targets", "two_way") if change.get(k) not in (None, [])},
-              "affected": {"rows": affected[:RULES["top_queries"]], "count": len(affected),
-                           "revenue": round(sum(r["revenue"] for r in affected), 2),
+              "affected": {"rows": [dict(r, revenue=None if r["revenue"] is None else round(r["revenue"], 2))
+                                    for r in affected[:RULES["top_queries"]]], "count": len(affected),
+                           # summed unrounded; rows with no revenue figure are counted, not treated as 0
+                           "revenue": round(sum(r["revenue"] for r in affected if r["revenue"] is not None), 2),
+                           "revenue_missing": sum(1 for r in affected if r["revenue"] is None),
                            "visits": sum(r["visits"] for r in affected)},
               "previews": previews, "findings": findings, "not_checked": not_checked}
     text = json.dumps(result, indent=2, ensure_ascii=False)
