@@ -1,0 +1,21 @@
+{
+ "type": "ranking",
+ "name": "Add the new arrival",
+ "endedAt": "2026-12-01T00:00:00Z",
+ "queries": [
+  {
+   "query": "cat-dresses",
+   "queryType": "category",
+   "matchType": "EXACT_MATCH"
+  }
+ ],
+ "add_to_recall": [
+  "p50"
+ ],
+ "product_slots": [
+  {
+   "product_id": "p50",
+   "slot": 1
+  }
+ ]
+}

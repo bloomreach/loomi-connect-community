@@ -1,0 +1,68 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 900001,
+   "ruleType": "ranking",
+   "name": "Holiday sale dress boost",
+   "enabled": false,
+   "startedAt": null,
+   "endedAt": null,
+   "audiences": [],
+   "queries": [
+    {
+     "id": 1,
+     "query": "dress",
+     "queryType": "sitesearch",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "boost_top_products": [
+     {
+      "product_id": "p7",
+      "product_name": "Leather Belt"
+     },
+     {
+      "product_id": "p9",
+      "product_name": "Acme Sequin Dress"
+     }
+    ],
+    "buried_products": [
+     {
+      "product_id": "p1",
+      "product_name": "Floral Midi Dress"
+     }
+    ],
+    "product_slots": [
+     {
+      "product_id": "p99",
+      "slot": 2
+     }
+    ],
+    "add_to_recall": [],
+    "attribute_boost_bury": [
+     {
+      "type": "boost",
+      "rule": {
+       "type": "clause",
+       "operator": "AND",
+       "strength": 90,
+       "operands": [
+        {
+         "type": "attribute",
+         "operator": "OR",
+         "name": "brand",
+         "operands": [
+          "Acme"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "error": null
+}

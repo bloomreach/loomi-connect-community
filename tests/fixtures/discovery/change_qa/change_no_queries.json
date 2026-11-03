@@ -1,0 +1,10 @@
+{
+ "type": "media",
+ "name": "Banner",
+ "queries": [],
+ "slots": [
+  3,
+  3
+ ],
+ "image_url": "http://cdn.example.test/b.png"
+}

@@ -1,0 +1,18 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 800005,
+   "ruleType": "ranking",
+   "enabled": true,
+   "durationTag": "unscheduled",
+   "queries": [
+    {
+     "query": "dress",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": true
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "type": "media",
+ "name": "Remove dress banner",
+ "id": 900005,
+ "queries": [
+  {
+   "query": "dress",
+   "queryType": "sitesearch",
+   "matchType": "EXACT_MATCH"
+  }
+ ]
+}

@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Bloomreach Weblayer QA"
+  short_description: "Pre-launch GO / NO-GO check of one Bloomreach Engagement weblayer"
+policy:
+  # Read-only: it reads one weblayer's definition and reports fixes.
+  allow_implicit_invocation: true

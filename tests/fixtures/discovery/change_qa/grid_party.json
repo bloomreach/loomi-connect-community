@@ -1,0 +1,43 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 40,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "x1",
+     "title": "Party Balloons",
+     "brand": "Acme",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "x2",
+     "title": "Party Hats",
+     "brand": "Acme",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "x3",
+     "title": "Party Plates",
+     "brand": "Acme",
+     "price": 50,
+     "docType": "product"
+    },
+    {
+     "pid": "x4",
+     "title": "Acme Party Dress",
+     "brand": "Acme",
+     "price": 50,
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "customizations.explain": []
+  }
+ },
+ "error": null
+}

@@ -1,0 +1,17 @@
+{
+ "type": "facet",
+ "name": "Facets",
+ "queries": [
+  {
+   "query": "dress",
+   "queryType": "sitesearch"
+  }
+ ],
+ "always_included": [
+  "brand",
+  "size"
+ ],
+ "excluded": [
+  "size"
+ ]
+}

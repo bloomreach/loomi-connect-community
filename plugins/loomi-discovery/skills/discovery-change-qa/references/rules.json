@@ -1,0 +1,33 @@
+{
+  "about": "The discovery change QA thresholds and word lists. scripts/change_preview.py reads this file, so change a rule here and nowhere else. Each key is explained under notes; SKILL.md says how the findings turn into a verdict.",
+  "page_size": 24,
+  "top_queries": 10,
+  "top_seller_rank": 50,
+  "brand_share_warning": 0.6,
+  "hard_sort_strength": 80,
+  "synonym_overlap_warning": 0.3,
+  "synonym_sample": 24,
+  "broad_query_max_words": 1,
+  "redirect_min_revenue": 1000,
+  "stock_fields": ["availability", "in_stock", "inStock", "stock_status", "stock_level", "inventory"],
+  "out_of_stock_values": ["false", "0", "out of stock", "outofstock", "out_of_stock", "unavailable", "no"],
+  "promo_words": ["sale", "promo", "promotion", "black friday", "cyber", "holiday", "christmas", "xmas", "clearance", "event", "launch", "seasonal", "% off", "deal"],
+  "placeholder_url_words": ["todo", "tbd", "test", "placeholder", "xxx", "changeme", "undefined", "null", "{", "}", "%7b"],
+  "stop_words": ["a", "an", "and", "for", "in", "of", "on", "the", "to", "with", "mens", "men", "womens", "women", "kids", "s"],
+  "notes": {
+    "page_size": "Products on the first page. The preview compares the first page before and after the change, and 'pushed off page one' means out of this many.",
+    "top_queries": "How many of the affected queries (by revenue, then visits) get a grid preview and are listed in the report.",
+    "top_seller_rank": "A product in the top this-many rows of the product performance table (sorted by revenue) counts as a top seller; pushing one off page one is a warning.",
+    "brand_share_warning": "After a boost, a single brand holding at least this share of the first page is a warning (shoppers lose choice).",
+    "hard_sort_strength": "An attribute boost or bury at or above this strength (0-100) behaves like a hard sort; it's a nitpick, worth a second look.",
+    "synonym_overlap_warning": "For a synonym, the share of the target term's first results whose title shares a word with what the source term finds today (words in at least two of its titles). Below this, the expansion probably brings in different products: warning. When the source finds nothing, this can't be checked.",
+    "synonym_sample": "How many of the source and target terms' first results the synonym overlap check reads.",
+    "broad_query_max_words": "A phrase-match rule or redirect on a query with this many words or fewer matches many longer searches: warning.",
+    "redirect_min_revenue": "A redirect on a search, or that a phrase match would catch, earning at least this much revenue in the period takes those shoppers away from products: warning.",
+    "stock_fields": "Grid fields that may carry stock status. Ask for them in fl; fields the catalog doesn't have are dropped silently, and then stock isn't checked.",
+    "out_of_stock_values": "Values of a stock field that mean out of stock (compared lower-case). Boosting or pinning such a product onto page one is a warning.",
+    "promo_words": "Words in a rule's name that mark it as promotional. A promotional rule with no end date is a warning.",
+    "placeholder_url_words": "Text in a redirect URL's path or query that suggests it isn't finished (compared lower-case): blocker. The host is only checked for example.com.",
+    "stop_words": "Words ignored when comparing a query with product titles (relevance of pinned and boosted products, synonym overlap)."
+  }
+}

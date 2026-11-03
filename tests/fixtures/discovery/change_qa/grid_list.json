@@ -1,0 +1,16 @@
+[
+ {
+  "pid": "p1",
+  "title": "Floral Midi Dress",
+  "brand": "Northwind",
+  "price": 50,
+  "docType": "product"
+ },
+ {
+  "pid": "p2",
+  "title": "Black Wrap Dress",
+  "brand": "Northwind",
+  "price": 50,
+  "docType": "product"
+ }
+]

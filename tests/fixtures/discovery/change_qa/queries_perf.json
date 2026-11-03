@@ -1,0 +1,57 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "dress",
+    "visits": 9000,
+    "revenue": "$52000.00",
+    "conversion_rate": "10.00%"
+   },
+   {
+    "query": "black dress",
+    "visits": 4000,
+    "revenue": "$21000.00",
+    "conversion_rate": "10.00%"
+   },
+   {
+    "query": "sale",
+    "visits": 800,
+    "revenue": "$4000.00",
+    "conversion_rate": "10.00%"
+   },
+   {
+    "query": "sale dresses",
+    "visits": 1200,
+    "revenue": "$15000.00",
+    "conversion_rate": "10.00%"
+   },
+   {
+    "query": "summer sale",
+    "visits": 300,
+    "revenue": "$400.00",
+    "conversion_rate": "10.00%"
+   },
+   {
+    "query": "shoes",
+    "visits": 7000,
+    "revenue": "$30000.00",
+    "conversion_rate": "10.00%"
+   },
+   {
+    "query": "gift cards",
+    "visits": 100,
+    "revenue": "$0.00",
+    "conversion_rate": "10.00%"
+   },
+   {
+    "query": "returns policy",
+    "visits": 50,
+    "revenue": "$0.00",
+    "conversion_rate": "10.00%"
+   }
+  ],
+  "total_rows": 8
+ },
+ "error": null
+}
