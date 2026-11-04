@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement). Python 3 is optional, for the bundled check script.
 metadata:
   author: bloomreach
-  version: "0.1.5"
+  version: "0.1.6"
   products: engagement
   access: read-only
 ---
@@ -111,6 +111,11 @@ Then look at the **ratios between related events**, which reveal partial breakag
 - `view_item` → `cart_update` → `purchase` should keep similar ratios;
 - if purchases are silent while sessions are healthy, purchase tracking or the order import has probably stopped.
 
+Finally, check the **purchase history** with two queries (each scored `high`, about 56–59, on a project with 23 million events; ask first):
+
+1. **History depth and future dates:** `select count event purchase by event purchase timestamp format year since 2015-01-01T00:00:00Z until 2030-01-01T00:00:00Z`. The first year with purchases is where history starts: a "first-time buyer" or a year-on-year comparison before it is wrong, so say so. Any purchases in a year after the current one are **future-dated** (bad timestamps in an import). If the first year matters, rerun that year with `format year month`.
+2. **Duplicate orders:** `select count event purchase by event purchase.<order ID property> grouping top 5 with null since 2015-01-01T00:00:00Z until 2030-01-01T00:00:00Z`, using the order ID property from the schema (often `purchase_id`). `grouping top 5` returns the IDs with the most events, sorted by ID, not by count. Any count above 1 means one order is tracked several times, so counting `purchase` events overstates orders and revenue. In testing, two order IDs had over 1,100 events each. Report how many IDs repeat and the surplus events, **never the IDs themselves**. If many repeat, the project may track one `purchase` event per order status: then orders = distinct IDs with the success status.
+
 ### 4. Check fill rates and value drift (selectively)
 
 These queries cost more, so pick **3–6 properties that matter**: for example, product ID, price and category on product events; total price and currency on purchases; and email or phone and country on customers. Ask the user if they have priorities.
@@ -131,7 +136,7 @@ In the top values, look for **drift**: values in the wrong format (postal or reg
 Rank the findings by impact:
 
 1. **Critical:** revenue or identity events stopped or dropped (purchase, session, identify or merge); junk event types arriving now.
-2. **High:** key properties under about 80% filled; type conflicts on fields used in campaigns or reports.
+2. **High:** key properties under about 80% filled; type conflicts on fields used in campaigns or reports; duplicate or future-dated purchases.
 3. **Medium:** misspelt duplicates; silent event types cluttering the schema; numbers stored as strings.
 4. **Low:** cosmetic issues.
 
@@ -148,6 +153,9 @@ For each finding, say **what to check next** and **who usually owns it**: the we
 | Event type | Last 7d | Prev 7d | Change | 90-day weekly avg | Status |
 |---|---|---|---|---|---|
 ...  (problems first; collapse the healthy rows into "N others healthy")
+
+### Purchase history
+- History starts: <year>; future-dated purchases: <count or none>; repeated order IDs: <count> (<surplus> extra events)
 
 ### Unexpected event types
 - <count> junk or look-alike types (e.g. <family prefix>…): <likely cause>

@@ -7,7 +7,7 @@ Turns a plain-English audience description, such as "customers who bought in the
 | **Products** | Engagement |
 | **Access** | **Writes**: can create one customer filter (`create_customer_filter`) or one segmentation (`create_segmentation`), only after explicit confirmation. It never updates or deletes anything |
 | **Loomi Connect tools** | `list_cloud_organizations`, `list_projects`, `get_customer_property_schema`, `get_event_schema`, `get_customer_schema`, `get_consent_settings`*, `search_segmentations`, `search_customer_filters`, `search_aggregates`, `search_predictions`, `estimate_eql_cost`, `execute_analytics_eql`, `create_customer_filter`*, `create_segmentation`* (* found with `search_tools` and run with `call_tool`) |
-| **Tested with** | Claude Code: live, read-only run against a sandbox project (schema mapping, consent lookup, reuse search, EQL parsing and cost checks, aggregate counts). The create tools were **not** called in testing. Not yet tested in an OpenAI client |
+| **Tested with** | Claude Code: live, read-only run against a sandbox project (schema mapping, consent lookup, reuse search, EQL parsing and cost checks, aggregate counts). The create tools were **not** called in testing. Not yet tested in an OpenAI client. Version 0.3.3 adds guidance from a separate sandbox test: consent-like properties against consent categories, and first-match segments |
 | **Maintainer** | Bloomreach |
 
 ## Example prompts

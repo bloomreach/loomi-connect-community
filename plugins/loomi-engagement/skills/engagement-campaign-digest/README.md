@@ -7,7 +7,7 @@ Builds a weekly (or any period) digest of email and SMS campaign performance in 
 | **Products** | Engagement |
 | **Access** | Read-only |
 | **Loomi Connect tools** | `list_cloud_organizations`, `list_projects`, `get_campaign_calendar`, `search_email_campaigns`, `search_sms_campaigns`, `search_scenarios`, `search_reports`, `calculate_report`, `get_event_schema`, `estimate_eql_cost`, `execute_analytics_eql` |
-| **Tested with** | Claude Code: each step run by hand against a live sandbox and a production project. Those projects had very few email or SMS sends, so the full digest has not yet been checked on a high-volume project. |
+| **Tested with** | Claude Code: each step run by hand against a live sandbox and a production project. Those projects had very few email or SMS sends, so the full digest has not yet been checked on a high-volume project. Version 0.1.7: the report-level filter (patterns B, C) and unique counts (pattern E) were run against a sandbox with about 37,000 email deliveries a month; pattern E's unique counts were cross-checked against a month of opens and clicks. |
 | **Maintainer** | Bloomreach |
 
 ## Example prompts

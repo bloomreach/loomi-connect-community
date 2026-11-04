@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.1.6"
+  version: "0.1.7"
   products: engagement
   access: read-only
 ---
@@ -69,7 +69,8 @@ Read [references/eql-campaign-metrics.md](references/eql-campaign-metrics.md) be
 1. **Check saved reports first.** Call `search_reports` and look for names mentioning campaign, email, SMS or channel performance. If one fits, run it with `calculate_report`, passing the period through `global_filters.date_filter`. Cached reports are cheaper than EQL. Use them as-is; don't build new ones.
 2. **Check the data model once.** In `get_event_schema`, confirm the `campaign` event exists and has `status`, `action_type` and `campaign_name`.
 3. **Status mix.** Estimate, then run, the status breakdown for each channel and period (pattern A in the reference). This gives totals and shows which status values the project actually uses.
-4. **Per campaign.** Run the per-campaign breakdown (pattern B) for the current period, and for the previous period if the cost allows. If the cross-tab scores `very_high`, run pattern C instead: one query per key status (`delivered`, `opened`, `clicked`, plus bounces and unsubscribes if they appear).
+4. **Per campaign.** Run the per-campaign breakdown (pattern B) for the current period, and for the previous period if the cost allows. If the cross-tab scores `very_high`, run pattern C instead: one query per key status (`delivered`, `opened`, `clicked`, plus bounces and unsubscribes if they appear). Keep the email or SMS filter at report level, after the `by` clauses, as the patterns show: with the filter on the metric, weblayers can take the top slots.
+   If the user wants unique rates (how many people opened or clicked), or is comparing with a tool that reports them, add pattern E.
 5. **Revenue (optional).** Engagement's campaign revenue attribution lives in the UI's campaign evaluation dashboards, not in the `campaign` event. Report revenue only if a saved report provides it, or the purchase event carries a campaign or UTM property you can group by (pattern D). Otherwise write "Revenue: not available from Loomi Connect for this project".
 
 If you prefer, put the counts into JSON and run `python3 <this skill's folder>/scripts/summarise_campaign_counts.py counts.json` to compute rates, period changes and flags consistently. See the script's docstring for the input format.
@@ -101,7 +102,7 @@ Rank campaigns by click rate among those with enough volume. Name the top three 
 | Email | ... | ... | ... | ... | ... | ... | ... | ... | ... |
 | SMS | ... | ... | ... | — | ... | ... | ... | — | ... |
 
-*Event counts, not unique customers.
+*Event counts, not unique customers (unique rates, if run: <unique open %> / <unique click %>).
 
 **Best campaigns:** 1. <name>: <click %> on <delivered> delivered ... (up to 3)
 **Worst campaigns:** 1. <name>: <metric and why it matters> ... (up to 3)

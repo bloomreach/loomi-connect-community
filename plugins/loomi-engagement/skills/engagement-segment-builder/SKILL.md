@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.3.2"
+  version: "0.3.3"
   products: engagement
   access: writes
 ---
@@ -82,7 +82,7 @@ Write down anything vague ("recently", "active", "high value") and ask the user 
 
 1. Call `get_customer_property_schema`. Match properties by name and `type`. Prefer properties with `used: true`.
 2. Call `get_event_schema`. Use each event's `type` as its name, and its `properties.default_group.properties` for event-property filters. A purchase event is usually `purchase`, but check: some projects use custom names, or have an item-level event such as `purchase_item` as well.
-3. For consent, call `get_consent_settings` (via `call_tool`) and use the `id` of the matching entry in `categories`. Also check whether the project tracks a `consent` event in `get_event_schema`. If the category doesn't exist, or there's no consent data, **say so**. Don't swap in a lookalike (such as "has an email address") without labelling it clearly as **not** consent.
+3. For consent, call `get_consent_settings` (via `call_tool`) and use the `id` of the matching entry in `categories`. Also check whether the project tracks a `consent` event in `get_event_schema`. If the category doesn't exist, or there's no consent data, **say so**. Don't swap in a lookalike (such as "has an email address") without labelling it clearly as **not** consent. Customer properties named like consent (`email_subscribe`, `newsletter_optin` and similar) are lookalikes too: they can disagree with the consent category by a lot (12,646 with valid newsletter consent against 6,129 with `email_subscribe = "subscribed"` in one test). Shop integrations can hold real consent in properties (`accepts_marketing`, `*_marketing_consent`): use one only when no consent category covers the channel, and say which you used. For an audience that will be messaged, also require the contact (`customer.email has value`): consent alone doesn't mean there's an address to send to.
 4. If two candidates fit equally well (for example `country` and `country_code`), ask.
 
 Never invent a name. The EQL cost estimator does **not** check that properties or events exist, so a typo only shows up as a wrong count.
@@ -151,7 +151,7 @@ Give numbered steps for building it in Bloomreach Engagement. Menu labels can va
 
 Only if the customer filter JSON was built from real templates (step 5):
 
-1. Ask whether they want a **customer filter** (one reusable audience) or a **segmentation** (named buckets).
+1. Ask whether they want a **customer filter** (one reusable audience) or a **segmentation** (named buckets). In a segmentation, **the first matching segment wins**: each customer lands in the first segment whose condition they meet, so order the segments from most to least specific, and a later segment that repeats an earlier condition stays empty. Size each segment as "its condition and not any earlier one". A last segment with no condition (catch-all) holds everyone left over, but `list_customers_in_segment` on it returned every customer in the project in testing, so size it with EQL.
 2. Show the exact payload from [references/filter-definitions.md](references/filter-definitions.md): project, name, `filters`, `formula`, and the segment names for a segmentation.
 3. Wait for an explicit "yes". Then call `create_customer_filter` or `create_segmentation` through `call_tool`, once.
 4. Report the returned `id`, or the `error` exactly as returned. Don't retry with guessed changes. Suggest opening it in the UI to check the count.

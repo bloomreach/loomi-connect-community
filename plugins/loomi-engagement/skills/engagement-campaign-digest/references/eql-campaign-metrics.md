@@ -34,16 +34,18 @@ select count event campaign where .action_type = "email" by event campaign.statu
 
 The response has `data.rows[]`, each with `headers[0].value` (the status) and `values[0]` (the count). An empty `rows` list means no campaign events in that period.
 
-**B. Status by campaign (cross-tab)** (cost: often `very_high`; estimate first)
+**Filter by campaign at report level.** `grouping top N` picks its top values by all `campaign` events in the window, including weblayer and other non-email events, before a metric's `where` applies. With the filter on the metric (`count event campaign where .action_type = "email" … by event campaign.campaign_name grouping top 3`), a weblayer took one of the three slots and showed 0. Put the filter after the `by` clauses instead, as in B and C below. The first condition needs the full `event campaign.` prefix; conditions after `and` use the `.property` shorthand. Then the top values are emails only.
+
+**B. Status by campaign (cross-tab)** (cost: `high` in testing; estimate first)
 
 ```
-select count event campaign where .action_type = "email" by row event campaign.campaign_name grouping top 20 by column event campaign.status grouping top 12 since <start>Z until <end>Z
+select count event campaign by row event campaign.campaign_name grouping top 20 by column event campaign.status grouping top 12 where event campaign.action_type = "email" since <start>Z until <end>Z
 ```
 
 **C. One status by campaign** (use instead of B when B is `very_high`; one query per status)
 
 ```
-select count event campaign where .action_type = "email" and .status = "delivered" by event campaign.campaign_name grouping top 25 since <start>Z until <end>Z
+select count event campaign by event campaign.campaign_name grouping top 25 where event campaign.action_type = "email" and .status = "delivered" since <start>Z until <end>Z
 ```
 
 Run it for `delivered`, `clicked` and, if they appeared in pattern A, the bounce and unsubscribe statuses, spelled as pattern A returned them. Skip `opened` if you're short on budget: opens are inflated by mail privacy features and are the least reliable signal.
@@ -57,6 +59,16 @@ select sum event purchase.total_price by event purchase.utm_campaign grouping to
 ```
 
 Label it "purchases tagged with the campaign's UTM", not "attributed revenue".
+
+**E. Unique customers by campaign** (cost: same as C)
+
+`count first event campaign` counts each customer once per row, so it gives unique openers, clickers or delivered customers next to the event count:
+
+```
+select count event campaign, count first event campaign by event campaign.campaign_name grouping top 25 where event campaign.action_type = "email" and .status = "opened" since <start>Z until <end>Z
+```
+
+Run it for `delivered`, `opened` and `clicked`. Unique open rate = unique openers ÷ unique delivered customers. Use it when the user compares with a tool that reports unique rates, or asks "how many people opened". Event-based and unique rates can differ a lot: for one month of email in testing, the open rate was 57.5% counting events and 69.5% counting customers.
 
 ## Rate definitions
 
@@ -73,7 +85,7 @@ Use whichever send count exists: `sent` if present, otherwise `enqueued`, otherw
 | Complaint rate | complained ÷ delivered |
 | Failure rate | failed ÷ sends |
 
-Counts are events, not unique customers, so a customer who opens three times counts three times. Say so in the output.
+Counts are events, not unique customers, so a customer who opens three times counts three times. Say so in the output. For unique rates, use pattern E and label them "unique".
 
 ## Budgeting queries
 
