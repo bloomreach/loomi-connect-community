@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery). Python 3 is optional, for the bundled breakdown script.
 metadata:
   author: bloomreach
-  version: "0.1.6"
+  version: "0.1.7"
   products: discovery
   access: read-only
 ---
@@ -14,7 +14,7 @@ metadata:
 
 ## What this does
 
-Answers "why did revenue (or conversion, or order value) change?" for one Bloomreach Discovery account or site, comparing a period with the one before it. It does two things:
+Answers "why did revenue (or conversion, or order value) change?" for one Bloomreach Discovery account or site, comparing a period with the one before it. (For a change in Engagement purchase data, such as buyers, new vs returning customers or campaigns, use `engagement-revenue-change-explainer` instead.) It does two things:
 
 1. **Breaks the change down with maths that adds up.** Every split (traffic × conversion × order value; search, category and other; device; top queries, categories, products and brands) accounts for 100% of the change, so you can say "traffic explains $231k of the $297k drop".
 2. **Checks the usual suspects.** Merchandising rules changed or scheduled in the window, A/B tests started or stopped, tracking pixel problems, catalog feed or index failures, and the day the change started.

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.1.4"
+  version: "0.1.5"
   products: engagement
   access: read-only
 ---
@@ -21,7 +21,7 @@ Takes one scenario and a period (default: the last 30 days) and reports, for eac
 
 and, for each A/B split, how many customers were assigned to each variant. It ends with the two or three steps most worth fixing, and why.
 
-This is a descriptive readout. To decide whether a split's variants differ significantly, hand off to `engagement-experiment-readout`. To explain what the flow does, hand off to `engagement-scenario-explainer`. For all campaigns in a period, use `engagement-campaign-digest`. For funnel drop-off and missing recovery flows, use `funnel-leak-finder`.
+This is a descriptive readout. To decide whether a split's variants differ significantly, hand off to `engagement-experiment-readout`. To explain what the flow does, hand off to `engagement-scenario-explainer`. For all campaigns in a period, use `engagement-campaign-digest`. For funnel drop-off and missing recovery flows, use `funnel-leak-finder`. To check every live flow at once for steps that send nothing, are suppressed or fail, use `engagement-journey-health`.
 
 ## Before you start
 

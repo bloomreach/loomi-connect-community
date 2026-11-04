@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement). Python 3 is optional, for the bundled calculation script.
 metadata:
   author: bloomreach
-  version: "0.1.5"
+  version: "0.1.6"
   products: engagement
   access: read-only
 ---
@@ -20,7 +20,7 @@ Answers "how much revenue are we losing to customers who stopped buying, and wha
 2. the average historical value of each band and the **revenue at stake**, with every assumption shown;
 3. which at-risk groups are **already covered** by a win-back or re-engagement scenario or campaign, and which are **not**;
 4. a recommended **win-back programme**: timing, channel and offer depth by value tier;
-5. a hand-off to `engagement-segment-builder` (to build the audiences) and `campaign-planner` (to plan the sends), if those skills are installed.
+5. a hand-off to `engagement-segment-builder` (to build the audiences) and `campaign-planner` (to plan the sends), if those skills are installed. For when first-time buyers normally come back, which sets the lapse windows, use `engagement-repeat-purchase-cohorts`.
 
 It uses **aggregate counts only**. It never reads individual customers and never changes anything.
 

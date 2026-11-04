@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.2.6"
+  version: "0.2.7"
   products: engagement
   access: read-only
 ---
@@ -18,6 +18,8 @@ Two modes:
 
 - **Explain:** takes one scenario and describes it in plain English: how customers enter, who qualifies, what happens to them step by step, which channels it uses, and anything that looks wrong.
 - **Audit:** looks at every scenario in a project and lists the ones that are stale, inactive, disconnected or that point at objects that no longer exist, with a suggested action for each.
+
+For live flows that look fine but aren't sending (silent, suppressed or failing steps), use `engagement-journey-health`, which reads what actually happened after sending.
 
 This skill only reads. It never starts, stops, edits or deletes a scenario.
 

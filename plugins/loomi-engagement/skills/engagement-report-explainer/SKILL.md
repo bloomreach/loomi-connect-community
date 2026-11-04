@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement). Python 3 is optional, for the bundled summary script.
 metadata:
   author: bloomreach
-  version: "0.1.6"
+  version: "0.1.7"
   products: engagement
   access: read-only
 ---
@@ -191,7 +191,7 @@ Sort by severity, then by last-edited date (oldest first).
 
 ### Follow-up questions
 
-For questions the saved analysis doesn't answer ("what about last quarter?", "split it by country"), hand off to the `ask-your-data` skill if it's installed, passing the definition you've just explained (events, filters, window) so it starts from the same meaning.
+For questions the saved analysis doesn't answer ("what about last quarter?", "split it by country"), hand off to the `ask-your-data` skill if it's installed, passing the definition you've just explained (events, filters, window) so it starts from the same meaning. If the saved number disagrees with another number the user trusts, hand off to `engagement-number-reconciliation`.
 
 ## Safety
 
