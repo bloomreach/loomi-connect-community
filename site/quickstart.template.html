@@ -32,12 +32,14 @@ a:hover{text-decoration-thickness:3px}
 .logo-icon{width:30px;height:30px}
 .logo-text{height:15px;width:auto}
 .tag{display:inline-flex;align-items:center;height:22px;padding:1px 9px 0;position:relative;top:2px;font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
-.bar nav{margin-left:auto;display:flex;gap:18px;font-size:15px}
+.bar nav{margin-left:auto;display:flex;gap:18px;font-size:15px;flex-wrap:wrap}
 .theme{margin-left:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
 .theme:hover{border-color:var(--ink)}
 .theme svg{width:18px;height:18px}
 .theme:focus-visible{outline:3px solid var(--arctic-bright);outline-offset:2px}
 .bar nav a{color:var(--ink);text-decoration:none}
+.bar nav a:hover{text-decoration:underline}
+.bar nav a[aria-current]{font-weight:600}
 main{max-width:720px;margin:0 auto;padding-block:48px 72px;display:grid;grid-template-columns:minmax(0,1fr);gap:32px}
 h1{margin:0;font:500 clamp(32px,5vw,48px)/1.08 var(--sans);text-wrap:balance}
 .lede{margin:10px 0 0;color:var(--muted);font-size:19px}
@@ -62,7 +64,8 @@ ol.steps>li::before{content:counter(step);grid-row:span 2;width:44px;height:44px
 .note{color:var(--muted);font-size:15px}
 .panel[hidden]{display:none}
 footer{max-width:720px;margin:0 auto;padding-block:24px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:15px}
-@media (max-width:600px){.bar nav{display:none}.theme{margin-left:auto}ol.steps>li{grid-template-columns:36px minmax(0,1fr)}ol.steps>li::before{width:36px;height:36px;line-height:36px;font-size:17px}.steps h2{line-height:36px}}
+@media (max-width:600px){ol.steps>li{grid-template-columns:36px minmax(0,1fr)}ol.steps>li::before{width:36px;height:36px;line-height:36px;font-size:17px}.steps h2{line-height:36px}}
+@media (max-width:640px){.bar nav{display:none}.theme{margin-left:auto}}
 </style>
 <script src="assets/theme.js"></script>
 </head>
@@ -70,7 +73,7 @@ footer{max-width:720px;margin:0 auto;padding-block:24px 48px;border-top:1px soli
 <header class="bar gutter"><div class="wrap">
   <a class="logo" href="./" aria-label="loomi-connect-community home">__LOGO__</a>
   <span class="tag">Community</span>
-  <nav aria-label="Site"><a href="./">Home</a><a href="skills.html">Skills</a><a href="tools.html">Tools</a><a id="gh-repo" href="#">GitHub</a></nav>
+  __NAV__
   <button class="theme" id="theme" type="button" aria-label="Switch theme"></button>
 </div></header>
 
@@ -172,7 +175,7 @@ codex mcp login loomi-connect</pre><button class="copy" type="button">Copy</butt
 <script>
 const D=__DATA__;
 const $=id=>document.getElementById(id);
-$("gh-repo").href=D.repo; $("gh-connect").href=D.repo+"/blob/main/docs/connecting-loomi-connect.md";
+$("gh-connect").href=D.repo+"/blob/main/docs/connecting-loomi-connect.md";
 const tabs=[...document.querySelectorAll(".tab")];
 function pick(id,focus){tabs.forEach(t=>{const on=t.getAttribute("aria-controls")===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;$(t.getAttribute("aria-controls")).hidden=!on;if(on&&focus)t.focus();});
   try{history.replaceState(null,"","#"+id)}catch(e){}}

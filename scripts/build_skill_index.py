@@ -207,6 +207,18 @@ def inline_svg(path, extra_attrs=""):
     return svg.replace("<svg ", f"<svg {extra_attrs} ", 1)
 
 
+NAV = [("Quickstart", "quickstart.html"), ("Skills", "skills.html"), ("Tools", "tools.html"),
+       ("Start here", REPO_URL + "/blob/main/docs/start-here.md"), ("Charter", REPO_URL + "/blob/main/CHARTER.md"),
+       ("GitHub", REPO_URL)]
+
+
+def render_nav(page):
+    """The same menu on every page, so the pages can't drift apart; the current page is marked."""
+    links = "".join(f'<a href="{href}"' + (' aria-current="page"' if href == f"{page}.html" else "") + f">{label}</a>"
+                    for label, href in NAV)
+    return f'<nav aria-label="Site">{links}</nav>'
+
+
 def render_site(root, data, outdir):
     site = root / "site"
     counts = plugin_counts(data)
@@ -230,7 +242,7 @@ def render_site(root, data, outdir):
             tpl = (site / f"{name}.template.html").read_text(encoding="utf-8")
         except OSError as e:
             fail(f"Can't read site/{name}.template.html: {e}")
-        page = tpl.replace("__DATA__", blob).replace("__LOGO__", logo)
+        page = tpl.replace("__DATA__", blob).replace("__LOGO__", logo).replace("__NAV__", render_nav(name))
         (outdir / f"{name}.html").write_text(page, encoding="utf-8", newline="\n")
     shutil.copytree(site / "assets", outdir / "assets", dirs_exist_ok=True)
     zip_skills(root, outdir / "downloads")
