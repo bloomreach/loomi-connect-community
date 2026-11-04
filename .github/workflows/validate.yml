@@ -17,6 +17,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 scripts/validate_skills.py
+      - run: python3 scripts/build_skill_index.py --check
       # The Klaviyo converter's build tests need beautifulsoup4 and jinja2, in the venv its own setup creates.
       - run: python3 plugins/loomi-engagement/skills/convert-klaviyo-email-to-bloomreach/scripts/klaviyo_to_bloomreach.py setup --venv "$RUNNER_TEMP/klaviyo-venv"
       - run: '"$RUNNER_TEMP/klaviyo-venv/bin/pip" install beautifulsoup4 jinja2'

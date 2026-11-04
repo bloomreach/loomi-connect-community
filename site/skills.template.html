@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skills · loomi-connect-community</title>
+<meta name="description" content="Every skill in loomi-connect-community, by plugin, with a search and filters.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<!-- Generated from site/skills.template.html by scripts/build_skill_index.py. Edit the template, not this file. -->
+<style>
+/* Layout: brand bar, totals, one bar per plugin, then the full index with search and filters. */
+:root{
+  --bg:#ffffff; --surface:#f6f6f4; --ink:#000000; --muted:#5b5b57; --line:#e3e3df;
+  --spark:#fee31b; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
+  --write:#c2410c; --write-bg:#fff1e8;
+  --eng:#019ace; --disc:#8873ff; --plat:#04a072; --prod:#ee6c2b;
+  --sans:"Bloomreach Sans","Instrument Sans",Arial,Helvetica,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26;
+  --arctic:#55bbde; --write:#fb8a4c; --write-bg:#3a2216; color-scheme:dark}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans)}
+a{color:var(--arctic)}
+.gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto}
+.bar{border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:14px;padding-block:14px}
+.logo{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
+.logo-icon{width:30px;height:30px}
+.logo-text{height:15px;width:auto}
+.tag{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:var(--muted)}
+.bar nav{margin-left:auto;display:flex;gap:18px;font-size:15px}
+.bar nav a{color:var(--ink);text-decoration:none}
+main .wrap{padding-block:40px 64px;display:flex;flex-direction:column;gap:36px}
+h1{margin:0;font:500 clamp(30px,5vw,52px)/1.05 var(--sans);text-wrap:balance}
+h1 em{font-style:normal;background:var(--spark);color:var(--spark-ink);padding:0 .12em}
+.lede{color:var(--muted);max-width:62ch;margin:8px 0 0}
+h2{font:500 22px/1.2 var(--sans);margin:0 0 14px}
+.plugins{display:flex;flex-direction:column;gap:14px}
+.prow{display:grid;grid-template-columns:170px 1fr 70px;gap:14px;align-items:center}
+.pname{font:600 14px var(--mono)}
+.barc{height:22px;background:var(--line);border-radius:4px;overflow:hidden;display:flex}
+.barc i{display:block;height:100%}
+.barc i.w{background:repeating-linear-gradient(135deg,var(--write) 0 4px,transparent 4px 7px),var(--write-bg)}
+.pcount{font:600 15px var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:14px;margin-top:8px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:6px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.chip{font:600 13px var(--mono);padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--arctic-bright);outline-offset:2px}
+.count{color:var(--muted);font:14px var(--mono);margin-left:auto}
+.list{border-top:1px solid var(--line)}
+.sk{display:grid;grid-template-columns:130px minmax(0,1fr);gap:4px 16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.sk .pl{font:600 12px/1.7 var(--mono);text-transform:uppercase;letter-spacing:.05em}
+.sk h3{margin:0;font:600 15px var(--mono);display:flex;gap:8px;align-items:center;flex-wrap:wrap;word-break:break-word}
+.sk h3 a{color:var(--ink);text-decoration:none}
+.sk h3 a:hover{text-decoration:underline}
+.sk p{margin:2px 0 0;color:var(--muted);font-size:15px;grid-column:2}
+.wtag{font:600 11px/1 var(--mono);padding:4px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;color:var(--write);background:var(--write-bg)}
+footer .wrap{padding-block:24px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+@media (max-width:600px){.bar nav{display:none}.prow{grid-template-columns:1fr 54px}.pname{grid-column:1/-1}.sk{grid-template-columns:1fr}.sk p{grid-column:1}}
+</style>
+</head>
+<body>
+<header class="bar gutter"><div class="wrap">
+  <a class="logo" href="./" aria-label="loomi-connect-community home">__LOGO__</a>
+  <span class="tag">Community</span>
+  <nav aria-label="Site"><a href="./">Home</a><a id="gh-start" href="#">Start here</a><a id="gh-repo" href="#">GitHub</a></nav>
+</div></header>
+<main class="gutter"><div class="wrap">
+  <div>
+    <h1 id="title">Skills</h1>
+    <p class="lede" id="lede"></p>
+  </div>
+  <section>
+    <h2>By plugin</h2>
+    <div class="plugins" id="plugins"></div>
+    <div class="legend"><span><i class="sw" style="background:var(--muted)"></i>read-only</span><span><i class="sw" style="background:repeating-linear-gradient(135deg,var(--write) 0 3px,var(--write-bg) 3px 5px)"></i>writes, after you confirm</span></div>
+  </section>
+  <section>
+    <h2>All skills</h2>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Search names and descriptions" aria-label="Search skills">
+      <div id="chips" role="group" aria-label="Filter by plugin" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      <button class="chip" id="wonly" type="button" aria-pressed="false">writes only</button>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="list" id="list"></div>
+  </section>
+</div></main>
+<footer class="gutter"><div class="wrap" id="foot"></div></footer>
+<script>
+const D=__DATA__;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const COLORS={"loomi-engagement":"var(--eng)","loomi-discovery":"var(--disc)","loomi-platform":"var(--plat)","loomi-product-data":"var(--prod)"};
+$("gh-repo").href=D.repo; $("gh-start").href=D.repo+"/blob/main/docs/start-here.md";
+const W=D.skills.filter(s=>s.writes).length;
+$("title").innerHTML=`<em>${D.skills.length}</em> skills across ${D.plugins.length} plugins`;
+$("lede").textContent=`${D.skills.length-W} only read. ${W} can change something, and each of those shows exactly what it will change and waits for a yes.`;
+$("foot").textContent=`Generated from each skill's SKILL.md. Tool list checked ${D.toolsChecked}.`;
+const max=Math.max(...D.plugins.map(p=>p.skills));
+$("plugins").innerHTML=D.plugins.map(p=>{const r=p.skills-p.writes;
+  return `<div class="prow"><div class="pname" style="color:${COLORS[p.name]}">${esc(p.name)}</div><div class="barc" role="img" aria-label="${r} read-only, ${p.writes} writes"><i style="width:${r/max*100}%;background:${COLORS[p.name]}"></i><i class="w" style="width:${p.writes/max*100}%"></i></div><div class="pcount">${p.skills}</div></div>`;}).join("");
+let plugin="all",wonly=false;
+const chips=$("chips");
+["all",...D.plugins.map(p=>p.name)].forEach(p=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=p.replace("loomi-","");b.setAttribute("aria-pressed",p==="all");
+  b.onclick=()=>{plugin=p;[...chips.children].forEach(c=>c.setAttribute("aria-pressed",c===b));render();};chips.appendChild(b);});
+$("wonly").onclick=e=>{wonly=!wonly;e.currentTarget.setAttribute("aria-pressed",wonly);render();};
+$("q").oninput=render;
+function render(){const t=$("q").value.trim().toLowerCase();
+  const rows=D.skills.filter(s=>(plugin==="all"||s.plugin===plugin)&&(!wonly||s.writes)&&(!t||s.name.includes(t)||s.summary.toLowerCase().includes(t)));
+  $("count").textContent=rows.length+" of "+D.skills.length;
+  $("list").innerHTML=rows.map(s=>`<div class="sk"><div class="pl" style="color:${COLORS[s.plugin]}">${esc(s.plugin.replace("loomi-",""))}</div><h3><a href="${D.repo}/tree/main/plugins/${esc(s.plugin)}/skills/${esc(s.name)}">${esc(s.name)}</a>${s.writes?'<span class="wtag">writes</span>':''}</h3><p>${esc(s.summary)}</p></div>`).join("")
+    ||'<p style="color:var(--muted);padding:12px 0">No skills match. Clear the search or pick another plugin.</p>';}
+render();
+</script>
+</body>
+</html>
