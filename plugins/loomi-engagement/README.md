@@ -11,6 +11,7 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [ask-your-data](skills/ask-your-data/) | Answers plain-English analytics questions with cost-checked EQL, showing the query and assumptions | Read-only |
 | [engagement-report-explainer](skills/engagement-report-explainer/) | Explains an inherited dashboard, report, funnel or segment in plain English; audits saved analyses | Read-only |
 | [customer-360-lookup](skills/customer-360-lookup/) | Privacy-first summary of one named customer: profile, timeline, scores, recommendations and support flags | Read-only |
+| [engagement-number-reconciliation](skills/engagement-number-reconciliation/) | Why two numbers that should match don't (AI answer vs report, segment vs filter, Bloomreach vs BI or ESP), and which one to use | Read-only |
 | [portfolio-overview](skills/portfolio-overview/) | One health table across every Engagement project in an organisation, with flags and hand-offs | Read-only |
 | [engagement-catalog-fixer](skills/engagement-catalog-fixer/) | Fixes Engagement catalog items (price, sale price, stock, URL, image, title) from catalog-parity-check findings or your list, with full-item undo; deletes only items you name | **Writes** |
 
@@ -29,6 +30,7 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [engagement-email-builder](skills/engagement-email-builder/) | Turns a brief into an email campaign draft (subject, preheader, responsive HTML, personalization, existing sender and segment), linted, created after confirmation and never sent | **Writes** |
 | [engagement-sms-builder](skills/engagement-sms-builder/) | Turns a brief into an SMS campaign draft, linted for segments, STOP/HELP, links, consent and quiet hours; can revise its own draft; never started or deleted | **Writes** |
 | [engagement-scenario-performance](skills/engagement-scenario-performance/) | Step-by-step results for one scenario: sends, clicks, purchases after, split assignments | Read-only |
+| [engagement-journey-health](skills/engagement-journey-health/) | All live flows at once: broken, not sending or suppressed (silent flows, steps mostly suppressed or failing, delivery drops, leftover conditions), one fix each | Read-only |
 | [lifecycle-coverage-map](skills/lifecycle-coverage-map/) | Which of eight standard lifecycle flows are live, weak, stopped, draft or missing, with the monthly revenue at stake for each gap | Read-only |
 | [engagement-jinja-writer](skills/engagement-jinja-writer/) | Writes and fixes Bloomreach Jinja for weblayers, emails and scenarios, checked against the rules that break templates, with real asset IDs looked up | Read-only |
 | [engagement-weblayer-builder](skills/engagement-weblayer-builder/) | Builds, edits and fixes weblayer HTML, CSS and JavaScript on the platform skeleton, fully parameterised, reading the existing weblayer first | Read-only |
@@ -48,6 +50,8 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [engagement-segment-builder](skills/engagement-segment-builder/) | Plain-English audience description to segment definition and size; can create it after confirmation | **Writes** |
 | [funnel-leak-finder](skills/funnel-leak-finder/) | Where shoppers drop out between product view and purchase, abandoned-cart value, missing recovery flows | Read-only |
 | [winback-opportunity](skills/winback-opportunity/) | Revenue at risk from lapsing customers, coverage gaps, and a win-back programme | Read-only |
+| [engagement-revenue-change-explainer](skills/engagement-revenue-change-explainer/) | Why Engagement purchase revenue, orders or AOV changed between two periods: buyers (new vs returning) × orders per buyer × order value, then campaign drivers | Read-only |
+| [engagement-repeat-purchase-cohorts](skills/engagement-repeat-purchase-cohorts/) | Repeat purchase rate by first-purchase month, time to second order, and when to send the second-purchase nudge | Read-only |
 | [segment-opportunity-finder](skills/segment-opportunity-finder/) | Finds valuable audiences you haven't targeted yet, ranked by value and how many can be reached | Read-only |
 | [contactability-audit](skills/contactability-audit/) | Share of customers reachable by email, SMS and push, consent trend, unreachable high-value customers and unused consent categories | Read-only |
 | [ad-audience-sync-health](skills/ad-audience-sync-health/) | Ad-platform audience steps, external segments and autosegments that are stale, failing, tiny, duplicated, built on archived segments or missing advertising consent | Read-only |

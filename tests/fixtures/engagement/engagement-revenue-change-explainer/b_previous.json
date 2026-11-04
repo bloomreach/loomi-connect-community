@@ -1,0 +1,8 @@
+{
+ "success": true,
+ "data": {"rows": [
+  {"headers": [{"type": "single", "value": null}], "values": ["200,000", 600, 560]},
+  {"headers": [{"type": "single", "value": "Newsletter"}], "values": [50000, 150, 140]},
+  {"headers": [{"type": "single", "value": "Spring sale"}], "values": [30000, 120, 115]}
+ ]}
+}

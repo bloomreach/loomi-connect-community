@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "synthetic cohort matrix: count customers, then repeaters by 2025-02-01, 2025-03-01, 2025-04-01, 2025-04-15",
+  "analysis_type": "report",
+  "data": {
+    "columns": [[]],
+    "rows": [
+      {"headers": [{"type": "single", "value": null}], "values": [0, 0, 0, 0, 0]},
+      {"headers": [{"type": "single", "value": 1735689600}], "values": [1000, 80, 200, 260, 280]},
+      {"headers": [{"type": "single", "value": 1738368000}], "values": ["500", 0, 40, 100, 115]},
+      {"headers": [{"type": "single", "value": 1740787200}], "values": [50, 0, 0, 5, 6]}
+    ],
+    "success": true,
+    "valid": true
+  }
+}

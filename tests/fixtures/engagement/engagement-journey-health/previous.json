@@ -1,0 +1,7 @@
+{"success": true, "query": "synthetic", "analysis_type": "report", "data": {
+  "columns": [[{"type": "single", "value": "delivered"}], [{"type": "single", "value": "enqueued"}], [{"type": "single", "value": "suppressed"}]],
+  "rows": [
+    {"headers": [{"type": "single", "value": "aaaaaaaaaaaaaaaaaaaaaaaa"}, {"type": "single", "value": 1}], "values": [2000, 2000, 0]},
+    {"headers": [{"type": "single", "value": "aaaaaaaaaaaaaaaaaaaaaaaa"}, {"type": "single", "value": 2}], "values": [900, 900, 100]},
+    {"headers": [{"type": "single", "value": "cccccccccccccccccccccccc"}, {"type": "single", "value": 5}], "values": [400, 400, 0]}
+  ]}}

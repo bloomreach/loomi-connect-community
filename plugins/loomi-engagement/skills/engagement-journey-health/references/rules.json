@@ -1,0 +1,33 @@
+{
+  "about": "Thresholds and status groups for scripts/journey_flags.py, which turns the scenario x step x status cross-tab of the campaign event into per-step numbers and flags. Each key is explained under notes.",
+  "delivered_statuses": ["delivered"],
+  "enqueued_statuses": ["enqueued", "sent"],
+  "held_back_statuses": ["suppressed", "aborted"],
+  "not_queued_statuses": ["enqueue_failed"],
+  "bounce_statuses": ["hard_bounced", "soft_bounced", "hard_bounce", "soft_bounce", "failed"],
+  "engagement_statuses": ["opened", "clicked", "unsubscribed", "unsubscribe", "complained", "spam", "serve", "show", "click", "close"],
+  "min_reached": 100,
+  "lost_share_high": 0.5,
+  "lost_share_medium": 0.2,
+  "error_share_medium": 0.02,
+  "drop_ratio": 0.5,
+  "drop_min_previous": 100,
+  "lost_share_rise_points": 20,
+  "top": 15,
+  "notes": {
+    "delivered_statuses": "Statuses that mean the message reached the inbox or phone.",
+    "enqueued_statuses": "Statuses that mean the message was handed to the sending provider. Email records enqueued; SMS and push record sent, with no delivered. The script takes the largest of them per step, so a step that records both isn't counted twice.",
+    "held_back_statuses": "Statuses where Bloomreach chose not to send: no consent, frequency policy, or an abort in the template.",
+    "not_queued_statuses": "Statuses where the message failed before it reached the provider, usually a template rendering error.",
+    "bounce_statuses": "Statuses where the provider tried and failed. Live projects use hard_bounced and soft_bounced; the older spellings are kept.",
+    "engagement_statuses": "Statuses recorded after delivery (opens, clicks, unsubscribes) or by weblayers. They are not part of reached or lost, and are not listed as unknown.",
+    "min_reached": "Steps that reached fewer customers' messages than this are listed but never flagged: their shares are noisy.",
+    "lost_share_high": "A step whose lost share (reached minus delivered, over reached) is at or above this is a high-severity flag.",
+    "lost_share_medium": "A step whose lost share is at or above this (but under lost_share_high) is a medium-severity flag.",
+    "error_share_medium": "A step whose errors (not queued plus bounces) are at or above this share of reached gets a medium flag, even when the lost share is low.",
+    "drop_ratio": "A step whose delivered count in the current period is at or below this fraction of the previous period's is flagged as a drop.",
+    "drop_min_previous": "The drop check only applies when the previous period delivered at least this many.",
+    "lost_share_rise_points": "A step whose lost share rose by at least this many percentage points against the previous period is flagged.",
+    "top": "How many flagged steps to list in the Markdown output; the rest are counted."
+  }
+}

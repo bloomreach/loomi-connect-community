@@ -1,0 +1,11 @@
+{
+  "about": "Thresholds for the repeat-purchase cohort summary. scripts/cohort_matrix.py reads this file (its CLI defaults come from it), so change a rule here and nowhere else. Each key is explained under notes.",
+  "min_cohort_size": 100,
+  "drop_share_of_peak": 0.5,
+  "days_per_month": 30.44,
+  "notes": {
+    "min_cohort_size": "A cohort with fewer first-time buyers than this is marked small: its rates are shown but too noisy to compare. A pooled bucket whose cohorts add up to fewer customers than this is marked thin and isn't used to find the peak or the drop.",
+    "drop_share_of_peak": "Second orders 'drop off' from the first bucket after the peak whose rate (second orders per month, or per week for weekly cohorts) is at or below this share of the peak rate. 0.5 means 'half the peak rate or less'.",
+    "days_per_month": "Average length of a month in days (365.25 / 12). Month k after the first order ends on average (k + 0.5) x days_per_month days after it; the quartiles of time to second order are read on that scale."
+  }
+}

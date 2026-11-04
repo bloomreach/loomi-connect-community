@@ -1,0 +1,6 @@
+{"result": {"success": true, "data": [
+  {"_id": "aaaaaaaaaaaaaaaaaaaaaaaa", "name": "Welcome series", "status": "active"},
+  {"_id": "bbbbbbbbbbbbbbbbbbbbbbbb", "name": "Cart reminder SMS", "status": "active"},
+  {"_id": "cccccccccccccccccccccccc", "name": "Birthday offer", "status": "active"},
+  {"_id": "ffffffffffffffffffffffff", "name": "Old draft", "status": "draft"}
+], "error": null}}

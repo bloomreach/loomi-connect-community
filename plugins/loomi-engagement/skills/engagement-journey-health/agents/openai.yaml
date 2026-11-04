@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Engagement Journey Health"
+  short_description: "Which live Bloomreach flows aren't working now, with evidence and one fix each"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true
