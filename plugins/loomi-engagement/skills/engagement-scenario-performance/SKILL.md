@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.1.4"
   products: engagement
   access: read-only
 ---
@@ -57,8 +57,8 @@ Every message a scenario sends records a `campaign` event with `campaign_id` (th
 
 ### 4. Read the numbers
 
-- `sent` is the larger of `enqueued` and `delivered + bounced`: Loomi's counts can disagree by a few.
-- Rates: delivered / sent, opened and clicked / delivered, bought / reached. Opens are unreliable on some mail clients: lean on clicks and purchases.
+- `sent` is the largest of `sent`, `enqueued` and `delivered + bounced`: Loomi's counts can disagree by a few. Email records `enqueued` and `delivered`; SMS and push record `sent` and no `delivered`, so their delivered column is blank (—), never 0.
+- Rates: delivered / sent, opened and clicked / delivered, bought / reached. For SMS and push steps there is no delivery rate; base clicks on sent. Opens are unreliable on some mail clients: lean on clicks and purchases.
 - Flag a step when, compared with the flow's other steps or the usual levels: delivery is under 90%, bounces are over 5%, unsubscribes are over 1% of delivered, or clicks are far below the rest. Only judge steps with at least a few hundred deliveries; say so for smaller ones.
 - "Bought after" is not proof the message caused the purchase. Call it "bought within N days of getting it".
 
