@@ -50,3 +50,8 @@ To be asked before any write tool runs, set `default_tools_approval_mode = "writ
 ## Check that it works
 
 Ask the assistant: *"Using Loomi Connect, list my Bloomreach organisations and projects."* It should call `list_cloud_organizations` and `list_projects`.
+
+## If a project doesn't work
+
+- **"Project … not found in any organization":** each Loomi Connect server URL covers one region. A project in another region needs that region's server, added as a second connection.
+- **HTTP 401 on one project while others work:** your account isn't a member of that project. A workspace role doesn't always include it; ask your Bloomreach admin to add you to the project.

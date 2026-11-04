@@ -9,11 +9,14 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - **Rate limits are per user and shared across everything you run.**
   - Discovery: 3 requests per second.
   - Engagement: 3 requests per second.
-  - EQL (`execute_analytics_eql` and `estimate_eql_cost`): about **1 query every 3 seconds**. This limit is shared across the whole Engagement instance, so other users' queries count too, and cost estimates count towards it. The 429 names the key `loomi:imf:<instance>:global`, and it can fire even with 4 seconds between calls.
+  - EQL (`execute_analytics_eql` and `estimate_eql_cost`): about **1 query every 3 seconds**. This limit is shared across the whole Engagement instance, so other users' queries count too, and cost estimates count towards it. The 429 names the key `loomi:imf:<instance>:global`, and it can fire even with 4–6 seconds between calls; under load, waits of 15–20 seconds were needed.
   - Navigation (`list_cloud_organizations`, `get_cloud_organization_details`, `list_projects`, `list_workspaces`): about **1 request per second**, on its own "bootstrap" key. Under load, repeated 429s needed waits of 8–15 seconds.
   - Deletes (`delete_email_campaign`, `delete_scenario`): **1 every 10 seconds**.
+  - Other writes: about **1 every 5 seconds per tool**.
 
   Make calls one at a time, and wait and retry after an HTTP 429. Resolve the organisation and project once per session and reuse them.
+- **Each Loomi Connect server sees one region.** A project from another region fails with "Project '…' not found in any organization", the same error as a mistyped ID. When the user is sure of the ID, ask whether the project lives in another region and needs that region's server.
+- **HTTP 401 on one project means no access to that project, not bad credentials.** It can happen while `list_cloud_organizations` and `list_projects` work and list the project. Workspace-level roles don't always include project membership; the user's admin has to add them to the project. Call `get_project_overview` on each project to find the blocked ones, and carry on with the rest.
 - **Some tools have been renamed, and the old names fail.**
   - `list_aggregates` → `search_aggregates`
   - `list_recommendations` and `get_recommendation` → `search_recommendations`
@@ -206,6 +209,24 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - In event-count queries `customers matching` must come before `since … until …`. A window inside `count event X where … since … until … >= K` is applied, even though `estimate_eql_cost` still lists "lifetime date range".
 - `not (A and has consent X)` parses and runs inside `customers matching`.
 - Don't use a personal property (such as `customer.email`) for a `grouping top 1` total: it returns a real value. Use a low-cardinality, non-personal one.
+- No tool returns the project's time zone. Read it from the day or month buckets of a breakdown.
+- `get_project_overview` returns `oldest_timestamp`, a cheap check of how far back the data goes.
+- EQL has no `count distinct`. `count first event` per breakdown row counts each customer once.
+- `has consent <category>` respects `execution_time`, so it gives the consent state as it was at a past date.
+- A breakdown `by customer id <identifier>` silently drops customers who don't have that identifier: one cohort returned 0 of 36 customers by `id registered` and all 36 by `id cookie`. Check identifier coverage first.
+- **Queries above the project's cost limit are rejected**, for example "cost score 79 (very_high) exceeds project limit of 70". A date window (`in last N days` or `since … until …`) and `grouping top N` bring most queries under it.
+- **`matches regex` must match the whole value.** `customer.email matches regex "gmail"` returned 0 customers; `".*gmail.*"` returned 11,329. Use `contains` for a substring, or wrap the pattern in `.*`.
+- **Silent wrong results:**
+  - A breakdown leaves out rows where any breakdown property is empty, unless you add `with null`. In a multi-column breakdown one product disappeared because a single column was empty.
+  - `grouping top N` picks the top values by the event count, not by a filtered metric. With a metric-level `where` (for example email opens only), other values can take the top slots and show 0; with several breakdowns every value comes back, mostly zeros. Put the filter at report level instead, after the `by` clauses: `select count event campaign by event campaign.campaign_name grouping top 3 where event campaign.action_type = "email" and .status = "delivered" since …Z until …Z`. The first condition needs the full `event campaign.` prefix; the ones after `and` use `.property`.
+  - A breakdown by a list property groups by the whole list, not by each item.
+  - A report stops at about **10,000 rows**. Row 10,001 comes back with `success: true` but `valid: false`. Check `valid`, and narrow the window or use `grouping top N`.
+- **Funnels and time between events:**
+  - `within N days` counts any two matching events within N days, not the first and the next one. "Bought again within 30 days" gave 8,754 customers this way, against 6,147 counted from each customer's first and second purchase.
+  - The funnel's mean time between steps comes back in **seconds**.
+  - A funnel step filtered with `where .timestamp >= …` returned 0 without an error. Use `since … until …` on the funnel instead.
+  - A step on an event type with no data in the window returns 0 without a warning. Check the event exists in the window first.
+- `by customer min[event purchase.timestamp ...]` returns no rows and no error: it looks for a property called `timestamp`. `by customer first event purchase timestamp` works, but only for the lifetime first purchase.
 - **Date windows:**
   - A trailing `in last N days` after `customers matching exists[...]` doesn't limit the events; the result is a lifetime count. Put the window inside the brackets, after `where`.
   - In `select`, `customers matching` must come before a trailing `in last`.
@@ -225,6 +246,10 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - Category values can differ between events, e.g. slugs on `view_item` and display names on `purchase_item`. A "viewed X but never bought X" query then matches everyone. Check the values first.
 - `count event X where … in last N days >= K`, `is in` and `has value` all work inside `customers matching`.
 - Before you call something a funnel leak, check purchasers against the total number of purchasers. Identity or import gaps can make most purchasers invisible to the funnel.
+- **Count what the user means:**
+  - **Consent** is `has consent <category>`. Customer properties that look like consent (`email_subscribe` and similar) can disagree with it: July buyers with valid newsletter consent were 12,646, and with `email_subscribe = "subscribed"` 6,129. Shop integrations can hold real consent in properties (`accepts_marketing`, `*_marketing_consent`), so check which one the project's campaigns use.
+  - **Orders:** some projects track one `purchase` event per order status change. Count distinct order IDs with the success status, not `purchase` events.
+  - **First-time buyers:** "first purchase ever" and "bought in the period" give very different numbers (36 against 8,429 in one test month). Check the oldest purchase first: if history starts after the customer's real first order, "first ever" is wrong.
 
 **Campaigns and on-site**
 - There's no tool for campaign stats. Calculate metrics from the `campaign` event.
@@ -251,6 +276,13 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
   - works on email campaigns only;
   - fails with "Email integration is not set" when the project has no default email integration;
   - never renders `event.*` variables.
+- `update_email_campaign` rejected 5 of 5 updates to a campaign the same user had just created, with HTTP 400 "Cannot modify asset ownership", also with the `include_design=True` round-trip. To change a draft, create a new one. **(bug?)**
+- `create_email_campaign` and `create_scenario` save some settings silently:
+  - the frequency policy is set to `Default`, not the project's own default policy;
+  - email nodes in scenarios get `transfer_user_identity: "disabled"`;
+  - the unsubscribe link isn't checked, so a template with `href="#"` saves without a warning.
+
+  Read the draft back and show these to the user before they activate it.
 - `import_media_file` takes public URLs only, and images up to 2 MB. Its schema doesn't type `variants.original.dimensions`.
 - An email campaign's detail holds the design twice: in `design` and in each `split.variants[].design`. With an A/B split, read the variants. SMS campaign messages are in `action.variants[].translations`, keyed by language code (`""` is the default).
 - In scenario detail, a mobile push node's `data` is a JSON **string** (`title`, `action` and so on), not an object. An SMS node's message is in `translations` and also in `content`.
@@ -264,6 +296,7 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - A segmentation's `used_by` lists `campaign_design_<scenarioId>`, a cheap way to see which scenarios use a segment. It also lists `report_`, `metric_`, `segmentation_`, `funnel_`, `dashboard_`, `banner_` and `managed_tag_` entries; only `campaign_design_` means a scenario.
 - Segmentation and scenario lists include editors' names and email addresses. Never repeat them.
 - Segmentations don't carry their sizes. Count them with EQL.
+- A segmentation's segments are first match wins: a customer lands in the first segment whose condition they meet, so a later segment that repeats an earlier condition is always empty. `list_customers_in_segment` on a catch-all segment (no condition) returned every customer in the project, not only those left over (75,016 instead of 40).
 - Event schemas can contain junk event types from security scanners.
 - Scenario list records have no `triggers_used` field, although the `trigger_types` filter uses it.
 - Birthday flows can use `trigger_types=["ondateattribute"]` or a `repeated-trigger` with a "date is today" condition, so the filter alone misses some.
@@ -331,6 +364,7 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - `search_dashboards` detail returns `components` out of display order, although its description says otherwise. Sort by `position.y`, then `position.x`. **(bug?)**
 - Blank `text` components (a single space) are layout spacers. `metric` components (KPI tiles) can't be read, because there's no tool for saved metrics.
 - `calculate_report` returns `as_dict` keyed by row value. Time buckets are Unix seconds at local midnight in the project's time zone. Each value is a list with one number per metric, in `server.metrics[]` order, with no headers. Zero buckets came back even with `hide_null: true`.
+- Without `parameter_values`, `calculate_report` returns Engagement's cached result, which can be hours or days older than a live EQL query on the same definition.
 - A date filter with `enabled: false` still carries a `duration`, so a report or funnel can look windowed when it covers all time. A funnel with `duration_filter.enabled: false` has no conversion window.
 
 **Data Hub and retention**
