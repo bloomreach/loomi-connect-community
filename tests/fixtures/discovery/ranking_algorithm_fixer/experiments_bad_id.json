@@ -1,0 +1,22 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 5,
+    "experimentName": "Bad id",
+    "experimentStatus": "RUNNING",
+    "buckets": [
+     {
+      "id": 51,
+      "ruleIdentifierInfo": {
+       "id": "abc",
+       "ruleType": "ranking",
+       "query": []
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

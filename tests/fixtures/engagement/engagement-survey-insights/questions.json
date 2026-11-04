@@ -1,0 +1,70 @@
+{
+ "success": true,
+ "query": "select ...",
+ "analysis_type": "report",
+ "data": {
+  "columns": [
+   []
+  ],
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 0
+     }
+    ],
+    "values": [
+     200
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1
+     }
+    ],
+    "values": [
+     200
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 2
+     }
+    ],
+    "values": [
+     150
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 3
+     }
+    ],
+    "values": [
+     60
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 4
+     }
+    ],
+    "values": [
+     20
+    ]
+   }
+  ],
+  "success": true,
+  "valid": true
+ },
+ "error": null
+}

@@ -186,7 +186,7 @@ A write skill's script turns the request into a **plan file** before anything is
 - **`status`** is `ready`, `blocked` (with the reasons in `problems`) or `no_change`. Only `ready` changes go in `batches`, and only they count towards the batch cap.
 - **`kind`** is one of `create`, `update`, `enable`, `disable`, `delete`, `end`, `archive`. `live_impact` is `none` or `live`.
 - **`batches`** are what the user says yes to, one batch at a time. A `delete`, `end`, `archive` or any change that switches something on (`enable`, or an update that sets `enabled: true`) is always a batch of its own.
-- **Required context:** `account` and `environment` are required options with no default (never fall back to production). `site_group_id` is passed into every payload when given.
+- **Required context:** `account` and `environment` are required options with no default (never fall back to production). `site_group_id` is passed into every payload when given. A write that isn't tied to an account or project (for example `loomi-connect-feedback`, which sends a report to the Loomi Connect team) keeps `environment` for the record and leaves the account out.
 - **Creates** pass `enabled: false` and switch on as a separate `enable` change. An **undo** that recreates a deleted item does the same.
 - **Running experiments:** a `running_statuses` rules key, compared case-insensitively. A change whose target is covered by a running test, or by a test whose status is missing, is `blocked`.
 - **`verify`:** a second subcommand takes the plan and the read-back files and reports each change as `in_place`, `not_in_place` or `gone`. A delete needs a read-back; a not-found response counts as `gone`.

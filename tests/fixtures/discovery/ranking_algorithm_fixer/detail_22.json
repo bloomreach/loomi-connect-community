@@ -1,0 +1,52 @@
+{
+ "result": {
+  "success": true,
+  "error": null,
+  "data": {
+   "id": 22,
+   "algoId": "br-iii22222",
+   "name": "Gross margin cat",
+   "type": "ML_LINEAR_CUSTOM",
+   "status": "Available",
+   "searchType": "CATEGORY",
+   "catalog": null,
+   "domainKey": "acme_shop",
+   "signals": [
+    "gm_pct"
+   ],
+   "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1735689600000,
+   "createdBy": "editor@example.com",
+   "lastModifiedAt": 1735689600000,
+   "lastModifiedBy": "editor@example.com",
+   "description": "",
+   "baseAlgoId": null,
+   "weights": null,
+   "modelMetaData": {
+    "text": null,
+    "combined": {
+     "gm_pct": {
+      "weight": 10.004,
+      "min": 3.25,
+      "max": 61.75,
+      "featureType": "CUSTOM"
+     },
+     "raw_qd_revenue_category": {
+      "weight": 59.987,
+      "min": 0,
+      "max": 700.5,
+      "featureType": "PERF"
+     },
+     "raw_qd_views_category": {
+      "weight": 29.989,
+      "min": 0,
+      "max": 250.5,
+      "featureType": "PERF"
+     }
+    }
+   }
+  }
+ }
+}

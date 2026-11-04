@@ -1,0 +1,8 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Ranking Algorithm Fixer"
+  short_description: "Re-weight, copy, rename or retire Bloomreach Discovery ranking algorithms, after you confirm"
+policy:
+  # Writes live Discovery ranking algorithms (weight changes rank pages at once; deletes are permanent),
+  # so it only runs when called by name.
+  allow_implicit_invocation: false

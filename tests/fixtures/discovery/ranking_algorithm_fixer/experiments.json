@@ -1,0 +1,50 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 1,
+    "experimentName": "Algo test",
+    "experimentStatus": "RUNNING",
+    "user": "editor@example.com",
+    "buckets": [
+     {
+      "id": 11,
+      "control": true,
+      "ruleIdentifierInfo": null
+     },
+     {
+      "id": 12,
+      "control": false,
+      "ruleIdentifierInfo": {
+       "id": 7001,
+       "ruleType": "ranking_algo",
+       "user": "editor@example.com",
+       "query": [
+        {
+         "query": "pants",
+         "queryType": "sitesearch"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "id": 2,
+    "experimentName": "Old test",
+    "experimentStatus": "COMPLETED",
+    "buckets": [
+     {
+      "id": 21,
+      "ruleIdentifierInfo": {
+       "id": 7002,
+       "ruleType": "ranking",
+       "query": []
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

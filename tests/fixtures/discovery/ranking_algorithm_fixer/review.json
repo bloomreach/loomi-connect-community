@@ -1,0 +1,106 @@
+{
+ "ok": true,
+ "summary": {
+  "algorithms": 10,
+  "sampled_queries": 3,
+  "sampled_categories": 2
+ },
+ "algorithms": [
+  {
+   "id": 1,
+   "used_on": [
+    {
+     "scope": "jeans",
+     "scope_kind": "KEYWORD",
+     "rule_id": null,
+     "rule_type": "default",
+     "query_type": "sitesearch",
+     "audiences": [],
+     "in_test": false,
+     "effective": true
+    }
+   ],
+   "visits_served": 3000
+  },
+  {
+   "id": 11,
+   "used_on": [
+    {
+     "scope": "dress",
+     "scope_kind": "KEYWORD",
+     "rule_id": 501,
+     "rule_type": "ranking_algo",
+     "query_type": "sitesearch",
+     "audiences": [],
+     "in_test": false,
+     "effective": true
+    }
+   ],
+   "visits_served": 2000
+  },
+  {
+   "id": 12,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 13,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 16,
+   "used_on": [
+    {
+     "scope": "shirt",
+     "scope_kind": "KEYWORD",
+     "rule_id": 502,
+     "rule_type": "ranking_algo",
+     "query_type": "sitesearch",
+     "audiences": [],
+     "in_test": false,
+     "effective": true
+    }
+   ],
+   "visits_served": 9000
+  },
+  {
+   "id": 17,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 2,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 14,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 15,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 21,
+   "used_on": [
+    {
+     "scope": "100",
+     "scope_kind": "CATEGORY",
+     "rule_id": 601,
+     "rule_type": "ranking_algo",
+     "query_type": "category",
+     "audiences": [],
+     "in_test": false,
+     "effective": true
+    }
+   ],
+   "visits_served": 1500
+  }
+ ],
+ "findings": [],
+ "not_checked": []
+}

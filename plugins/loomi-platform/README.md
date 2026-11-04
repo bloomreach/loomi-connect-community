@@ -25,6 +25,12 @@ Skills that span Bloomreach products (Discovery, Engagement, Data Hub) and use L
 | [collection-suggester](skills/collection-suggester/) | New rule-based collections from search demand and selling products, with live previews | Read-only |
 | [search-demand-to-campaign](skills/search-demand-to-campaign/) | Turns Discovery search demand into an Engagement audience and draft campaign | **Writes** |
 
+### Working with Loomi Connect
+
+| Skill | What it does | Access |
+|---|---|---|
+| [loomi-connect-feedback](skills/loomi-connect-feedback/) | Turns a Loomi Connect tool problem, or a known (bug?) item, into one privacy-safe report for the Loomi Connect team, one per yes | **Writes** |
+
 Skills marked **Writes** only run when you call them by name, and ask for confirmation before every change.
 
 To add a skill, see [CONTRIBUTING.md](../../CONTRIBUTING.md).

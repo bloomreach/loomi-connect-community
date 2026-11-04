@@ -1,0 +1,64 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 11,
+   "algoId": "br-aaa11111",
+   "name": "Text relevance",
+   "type": "MANUAL",
+   "status": "Available",
+   "searchType": "KEYWORD",
+   "catalog": null,
+   "domainKey": "acme_shop",
+   "signals": null,
+   "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1735689600000,
+   "createdBy": "editor@example.com",
+   "lastModifiedAt": 1735689600000,
+   "lastModifiedBy": "editor@example.com",
+   "description": "",
+   "baseAlgoId": null,
+   "weights": null,
+   "modelMetaData": {
+    "text": {
+     "unigram_product_name_tf": {
+      "weight": 0.5,
+      "min": 0,
+      "max": 2,
+      "featureType": "TEXT"
+     }
+    },
+    "combined": {
+     "text_score_keyword": {
+      "weight": 50,
+      "min": 0,
+      "max": 0.5,
+      "featureType": "TEXT_SCORE"
+     },
+     "raw_qd_revenue_keyword": {
+      "weight": 20,
+      "min": 0,
+      "max": 900.5,
+      "featureType": "PERF"
+     },
+     "raw_qd_conversions_keyword": {
+      "weight": 20,
+      "min": 0,
+      "max": 40.25,
+      "featureType": "PERF"
+     },
+     "raw_qd_views_keyword": {
+      "weight": 10,
+      "min": 0,
+      "max": 300.75,
+      "featureType": "PERF"
+     }
+    }
+   }
+  },
+  "error": null,
+  "environment_used": "production"
+ }
+}

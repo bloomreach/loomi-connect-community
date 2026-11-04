@@ -1,0 +1,6 @@
+get_discovery_category_performance_table	discovery
+get_discovery_query_performance	discovery
+get_discovery_trend	discovery
+create_email_campaign	engagement
+search_scenarios	engagement
+submit_llm_feedback	engagement

@@ -1,0 +1,30 @@
+{
+  "tool": "search_discovery_product_grid_insights",
+  "product": "discovery",
+  "summary": "Acme Outdoor grid errors on www.acme-shop.com/p/1 for account 6012345 project acme-prod",
+  "gap_type": "OTHER",
+  "completion_estimate": 2,
+  "expected": "Results for //cdn.acme-shop.test/img and shop.acme-demo.test/search?account_id=6013",
+  "actual": "500 with token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJGQUtFIn0.FAKEsig and X-Api-Key: AKIAFAKE00FAKE00FAKE0, call 020 7946 0958 or 555-123-4567, Basic RkFLRTpGQUtF, Bearer FAKEbearer, token: abcdef12, created by Jane Doe at 203.0.113.7, ya29.FAKEgoogle, sk-FAKEopenai123, GOCSPX-FAKE, xoxb-FAKE, ghp_FAKEgithub, glpat-FAKEgitlab",
+  "arguments": {
+    "account_id": 6012,
+    "domain_key": "acme_demo_test",
+    "auth_key": "FAKEauthkey",
+    "q": "jane doe size 12 dress",
+    "name": "Acme Outdoor",
+    "campaign_name": "Acme BF",
+    "segment": "VIP Jane",
+    "query": "jane",
+    "search_query": "doe",
+    "search_by": "query",
+    "filter_preset": "lowest_converting",
+    "rows": 24,
+    "start_date": "2026-10-01",
+    "accountId": "6012",
+    "fl": "pid,brand",
+    "sort": "price desc"
+  },
+  "response_excerpt": "{\"success\": false, \"error\": \"User Jane Doe cannot read account 6012345 via shop.acme-demo.test/search?account_id=6013&q=x from 203.0.113.7\", \"lastModifiedBy\": \"Jane Doe\", \"accountId\": 6012, \"domainKey\": \"acme_demo_test\", \"accessToken\": \"FAKEaccess9token\", \"client_secret\": \"FAKEclientsecret\", \"queries\": {\"jane doe size 12 dress\": 3}, \"rows\": []}",
+  "what_i_tried": "Sent api-key: FAKEapikey123 and refresh_token=FAKErefresh; customer Jane Doe",
+  "suggestion": "Check user_ids 98765."
+}

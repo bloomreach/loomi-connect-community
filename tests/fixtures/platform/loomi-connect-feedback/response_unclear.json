@@ -1,0 +1,4 @@
+{
+  "success": false,
+  "error": "Upstream timeout after 30s, see https://internal.demo.test/trace?id=FAKE"
+}

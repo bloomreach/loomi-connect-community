@@ -1,0 +1,22 @@
+{
+  "tool": "get_discovery_category_performance_table",
+  "product": "discovery",
+  "summary": "filter_preset=lowest_converting returns 0 rows",
+  "gap_type": "INCOMPLETE_DATA",
+  "completion_estimate": 3,
+  "expected": "The lowest-converting categories with enough traffic, as the description says.",
+  "actual": "success: true with total_rows 0, while the same call without filter_preset returns rows.",
+  "arguments": {
+    "account_id": "9999",
+    "auth_key": "FAKEauthkey123",
+    "domain_key": "demo_store_test",
+    "days": 30,
+    "filter_preset": "lowest_converting",
+    "page_url": "https://shop.demo.test/c/dresses?utm_source=x&sid=FAKE",
+    "note": "contact ops@example.com, session 5f2b9c8e1a4d7f3b6c0e9a21"
+  },
+  "response_excerpt": "{\"success\": true, \"data\": {\"total_rows\": 0, \"debug\": \"https://api.demo.test/v1?auth_key=FAKEsecret999\", \"request_id\": \"123e4567-e89b-12d3-a456-426614174000\"}}",
+  "what_i_tried": "Called it with days 7 and 30, with and without filter_preset.",
+  "suggestion": "Apply the preset.",
+  "known_line": 10
+}

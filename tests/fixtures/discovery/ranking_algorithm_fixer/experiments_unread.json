@@ -1,0 +1,22 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 3,
+    "experimentName": "Unread test",
+    "experimentStatus": "running",
+    "buckets": [
+     {
+      "id": 31,
+      "ruleIdentifierInfo": {
+       "id": 7003,
+       "ruleType": "ranking",
+       "query": []
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

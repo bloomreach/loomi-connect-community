@@ -1,0 +1,4 @@
+{
+  "success": false,
+  "error": "HTTP 429 Too Many Requests: rate limit 1 per 10 seconds"
+}

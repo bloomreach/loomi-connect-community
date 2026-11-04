@@ -67,6 +67,7 @@ Start with the health check, then go deeper where it points you.
 | "Clean up our merchandising rules" | [discovery-rule-audit](../plugins/loomi-discovery/skills/discovery-rule-audit/) |
 | "Is this ranking rule / synonym / redirect safe to switch on?" | [discovery-change-qa](../plugins/loomi-discovery/skills/discovery-change-qa/): before/after preview, revenue at stake and clashes, with a go/no-go verdict |
 | "Which ranking algorithms are we using, and are any broken?" | [discovery-ranking-algorithm-review](../plugins/loomi-discovery/skills/discovery-ranking-algorithm-review/): where each algorithm is used, status, weights and clean-up, prioritised |
+| "Retire the unused ranking algorithm" / "Lower the margin weight on our algorithm" | [discovery-ranking-algorithm-fixer](../plugins/loomi-discovery/skills/discovery-ranking-algorithm-fixer/) (**writes** algorithms, after you confirm): re-weights, copies, renames or retires Ranking Studio algorithms |
 | "Why do some shoppers see different results?" / "Clean up our audiences" | [discovery-hidden-config-audit](../plugins/loomi-discovery/skills/discovery-hidden-config-audit/): broken or unused audiences, personalised rules, forgotten API parameter overrides |
 | "Which of our banners are unused or broken?" | [discovery-media-asset-cleanup](../plugins/loomi-discovery/skills/discovery-media-asset-cleanup/): asset library against the media rules that use it, with a cleanup list |
 | "Apply the synonym fixes" / "Add a synonym for t-shirt" | [discovery-synonym-fixer](../plugins/loomi-discovery/skills/discovery-synonym-fixer/) (**writes** synonyms, after you confirm) |
@@ -115,6 +116,7 @@ Start with the health check, then go deeper where it points you.
 | "Turn what people search for into a campaign" | [search-demand-to-campaign](../plugins/loomi-platform/skills/search-demand-to-campaign/) (**writes** a draft, after you confirm) |
 | "Are we sending too much to the same people?" | [engagement-send-collision-check](../plugins/loomi-engagement/skills/engagement-send-collision-check/) |
 | "Are customers getting too many emails or texts?" | [contact-frequency-audit](../plugins/loomi-engagement/skills/contact-frequency-audit/): messages actually received per customer, fatigue by frequency and a recommended cap |
+| "How is our NPS survey doing?" | [engagement-survey-insights](../plugins/loomi-engagement/skills/engagement-survey-insights/): survey answers, NPS and CSAT with confidence, trends and flags |
 | "Will our voucher codes run out before Black Friday?" | [voucher-pool-health](../plugins/loomi-engagement/skills/voucher-pool-health/): days of cover per pool, empty or expiring pools still in use |
 | "Are our Facebook and Google audiences healthy?" | [ad-audience-sync-health](../plugins/loomi-engagement/skills/ad-audience-sync-health/): stale, tiny, duplicated or unconsented ad audiences, and failed or unused autosegments |
 | "Are we using our predictions?" | [prediction-activation-check](../plugins/loomi-engagement/skills/prediction-activation-check/) |
@@ -151,6 +153,10 @@ Run it again a few days before the event.
 ## Any other question
 
 Ask it in your own words, for example *"how many people bought twice last month?"*. [ask-your-data](../plugins/loomi-engagement/skills/ask-your-data/) turns it into a query, checks the cost first, and shows you the query and assumptions with the answer.
+
+## When a Loomi Connect tool misbehaves
+
+[loomi-connect-feedback](../plugins/loomi-platform/skills/loomi-connect-feedback/) (**writes** one report, after you confirm) turns the problem, or a "(bug?)" item in [known-tool-behaviour.md](known-tool-behaviour.md), into one redacted report for the Loomi Connect team.
 
 ## Good to know
 

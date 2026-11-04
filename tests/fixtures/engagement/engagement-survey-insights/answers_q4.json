@@ -1,0 +1,48 @@
+{
+ "success": true,
+ "query": "select ...",
+ "analysis_type": "report",
+ "data": {
+  "columns": [
+   []
+  ],
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "Price, Delivery"
+     }
+    ],
+    "values": [
+     8
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "Range"
+     }
+    ],
+    "values": [
+     6
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "Price"
+     }
+    ],
+    "values": [
+     6
+    ]
+   }
+  ],
+  "success": true,
+  "valid": true
+ },
+ "error": null
+}

@@ -1,0 +1,136 @@
+{
+ "success": true,
+ "query": "select ...",
+ "analysis_type": "report",
+ "data": {
+  "columns": [
+   [
+    {
+     "type": "single",
+     "value": "1"
+    }
+   ],
+   [
+    {
+     "type": "single",
+     "value": "10"
+    }
+   ],
+   [
+    {
+     "type": "single",
+     "value": "6"
+    }
+   ],
+   [
+    {
+     "type": "single",
+     "value": "9"
+    }
+   ]
+  ],
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1788732000
+     }
+    ],
+    "values": [
+     2,
+     10,
+     3,
+     5
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1789423200
+     }
+    ],
+    "values": [
+     1,
+     12,
+     2,
+     5
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1790028000
+     }
+    ],
+    "values": [
+     3,
+     9,
+     2,
+     6
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1790632800
+     }
+    ],
+    "values": [
+     2,
+     11,
+     1,
+     6
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1791237600
+     }
+    ],
+    "values": [
+     1,
+     2,
+     1,
+     1
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1792969200
+     }
+    ],
+    "values": [
+     0,
+     1,
+     0,
+     0
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": 1788040800
+     }
+    ],
+    "values": [
+     5,
+     5,
+     5,
+     5
+    ]
+   }
+  ],
+  "success": true,
+  "valid": true
+ },
+ "error": null
+}

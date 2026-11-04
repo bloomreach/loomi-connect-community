@@ -1,0 +1,70 @@
+{
+ "success": true,
+ "query": "select ...",
+ "analysis_type": "report",
+ "data": {
+  "columns": [
+   []
+  ],
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "Search"
+     }
+    ],
+    "values": [
+     90
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "Friend"
+     }
+    ],
+    "values": [
+     40
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "Advert"
+     }
+    ],
+    "values": [
+     20
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "my email is someone@example.com"
+     }
+    ],
+    "values": [
+     30
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "Other thing"
+     }
+    ],
+    "values": [
+     20
+    ]
+   }
+  ],
+  "success": true,
+  "valid": true
+ },
+ "error": null
+}

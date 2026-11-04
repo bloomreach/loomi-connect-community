@@ -1,0 +1,60 @@
+{
+  "about": "Limits and word lists for discovery-ranking-algorithm-fixer. scripts/algorithm_fix_plan.py reads this file, so change a rule here and nowhere else. Each key is explained under notes; SKILL.md and references/change-format.md say how the plan's checks block or warn.",
+  "max_changes_per_batch": 10,
+  "weight_min": 0,
+  "weight_max": 100,
+  "weight_total": 100,
+  "weight_sum_tolerance": 0.05,
+  "weight_decimals": 2,
+  "high_traffic_visits": 5000,
+  "max_custom_per_catalog": 5,
+  "custom_types": [
+    "MANUAL",
+    "ML_LINEAR_CUSTOM",
+    "ABR_MANUAL",
+    "ABR_CATALOG"
+  ],
+  "protected_types": [
+    "CLASSIC",
+    "ML_LINEAR_GLOBAL",
+    "ML_NON_LINEAR_GLOBAL",
+    "ABR_MERCHANT"
+  ],
+  "trained_abr_types": [
+    "ABR_MERCHANT",
+    "ABR_CATALOG"
+  ],
+  "sensitive_signal_words": [
+    "margin",
+    "cost",
+    "profit",
+    "cogs",
+    "markup",
+    "wholesale"
+  ],
+  "finished_statuses": [
+    "completed",
+    "ended",
+    "archived",
+    "draft"
+  ],
+  "verify_tolerance": 0.005,
+  "max_listed": 5,
+  "notes": {
+    "max_changes_per_batch": "At most this many ready creates and renames go into one batch, with one yes; more go into further batches. Each live weight change and each delete is always a batch of its own and doesn't count here.",
+    "weight_min": "The lowest weight a signal may have, given or after rebalancing and rounding: blocker below it. Ranking Studio's top-level (combined) weights are shares of weight_total.",
+    "weight_max": "The highest weight a signal may have, given or after rebalancing and rounding: blocker above it.",
+    "weight_total": "The top-level weights must add up to this: create_ranking_algorithm documents MANUAL weights summing to 100, and saved algorithms add up to it (trained ones to within rounding).",
+    "weight_sum_tolerance": "How far the new weights may add up from weight_total before the change is blocked (trained weights are unrounded, so they rarely add up to exactly 100).",
+    "weight_decimals": "Every weight sent is rounded to this many decimal places, and the rounding remainder goes on the biggest weight so the total is exactly weight_total (MANUAL algorithms need it exact). Signals moved only by rounding are listed in the plan's signals.",
+    "high_traffic_visits": "An algorithm that is the Default, or whose sampled pages had at least this many visits in the review, is high-traffic: changing its weights in place is blocked unless the user chooses to skip the A/B test (skip_test); the plan suggests a corrected copy and discovery-experiment-setup instead.",
+    "max_custom_per_catalog": "create_abr_algorithm documents at most this many custom algorithms per catalog. The plan counts custom_types per catalog and page type, and blocks a copy at the limit.",
+    "custom_types": "Algorithm types that count as custom for max_custom_per_catalog.",
+    "protected_types": "Bloomreach's own rankers: a delete is blocked, because they can't be recreated as they were.",
+    "trained_abr_types": "Trained ABR models: update_ranking_algorithm with weights turns them into ABR_MANUAL for good, so in-place weight changes are blocked; the plan makes a corrected copy instead.",
+    "sensitive_signal_words": "A signal whose name contains one of these (compared lower-case), or any signal with featureType CUSTOM, is a margin or cost-type signal: a change to its weight gets a warning. The script never prints any signal's min, max or other values, only names, types and weights.",
+    "verify_tolerance": "verify accepts a read-back weight within this much of the planned one (Discovery may store weights with different rounding).",
+    "max_listed": "How many pages to name when saying where an algorithm is in use.",
+    "finished_statuses": "Experiment statuses known not to be running, compared case-insensitively. Every other experiment, including one with no status or an unknown one (ACTIVE, PAUSED), counts as possibly running: a change to or delete of an algorithm one of its bucket rules uses is blocked, and so is one while such a test's bucket rule hasn't been read."
+  }
+}

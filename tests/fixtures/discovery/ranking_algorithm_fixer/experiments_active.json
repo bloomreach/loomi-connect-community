@@ -1,0 +1,23 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 4,
+    "experimentName": "Active test",
+    "experimentStatus": "ACTIVE",
+    "user": "editor@example.com",
+    "buckets": [
+     {
+      "id": 41,
+      "ruleIdentifierInfo": {
+       "id": "7001",
+       "ruleType": "ranking_algo",
+       "query": []
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Engagement Survey Insights"
+  short_description: "Survey results, NPS and CSAT with confidence, trends and flags from Bloomreach Engagement"
+policy:
+  allow_implicit_invocation: true
