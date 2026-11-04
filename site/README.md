@@ -7,4 +7,6 @@ The source for the skill index website, published to GitHub Pages by [.github/wo
 
 The build also puts a ready-to-upload zip of every skill in `downloads/`, for claude.ai and ChatGPT.
 
+`assets/theme.js` is the light/dark toggle in every page header. Pages follow the system setting until the visitor picks one, which is kept in their browser.
+
 Build it locally with `python3 scripts/build_skill_index.py --site _site`, then open `_site/index.html`.
