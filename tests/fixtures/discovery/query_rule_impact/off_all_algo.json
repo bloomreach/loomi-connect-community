@@ -6,29 +6,8 @@
    "start": 0,
    "docs": [
     {
-     "pid": "A",
-     "title": "Silk evening gown A",
-     "price": 100.0,
-     "score": null,
-     "docType": "product"
-    },
-    {
-     "pid": "B",
-     "title": "Velvet gown B",
-     "price": 100.0,
-     "score": null,
-     "docType": "product"
-    },
-    {
      "pid": "X1",
      "title": "Pinned satin gown X1",
-     "price": 100.0,
-     "score": null,
-     "docType": "product"
-    },
-    {
-     "pid": "C",
-     "title": "Chiffon gown C",
      "price": 100.0,
      "score": null,
      "docType": "product"
@@ -46,11 +25,93 @@
      "price": 100.0,
      "score": null,
      "docType": "product"
+    },
+    {
+     "pid": "A",
+     "title": "Silk evening gown A",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "B",
+     "title": "Velvet gown B",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "C",
+     "title": "Chiffon gown C",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
     }
    ]
   },
   "debug": {
    "explain.structured": {
+    "X1": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 60,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3,
+      "merchandisingRulesApplied": {
+       "hardBoost": [
+        "parent_product_id:X1"
+       ]
+      }
+     }
+    ],
+    "X2": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 60,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3,
+      "merchandisingRulesApplied": {
+       "hardBoost": [
+        "parent_product_id:X2"
+       ]
+      }
+     }
+    ],
+    "D": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 60,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
     "A": [
      {
       "match": true,
@@ -62,7 +123,7 @@
      {
       "totalNormalizedScore": 400,
       "relevance": 80,
-      "performance": 500,
+      "performance": 60,
       "keyword_score": 7.5,
       "vector_score": 0.4,
       "semantic_weight": 0.3
@@ -79,24 +140,7 @@
      {
       "totalNormalizedScore": 400,
       "relevance": 80,
-      "performance": 500,
-      "keyword_score": 7.5,
-      "vector_score": 0.4,
-      "semantic_weight": 0.3
-     }
-    ],
-    "X1": [
-     {
-      "match": true,
-      "value": 1,
-      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
-      "term": "gown",
-      "boost": 1
-     },
-     {
-      "totalNormalizedScore": 400,
-      "relevance": 80,
-      "performance": 500,
+      "performance": 60,
       "keyword_score": 7.5,
       "vector_score": 0.4,
       "semantic_weight": 0.3
@@ -113,41 +157,7 @@
      {
       "totalNormalizedScore": 400,
       "relevance": 80,
-      "performance": 500,
-      "keyword_score": 7.5,
-      "vector_score": 0.4,
-      "semantic_weight": 0.3
-     }
-    ],
-    "X2": [
-     {
-      "match": true,
-      "value": 1,
-      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
-      "term": "gown",
-      "boost": 1
-     },
-     {
-      "totalNormalizedScore": 400,
-      "relevance": 80,
-      "performance": 500,
-      "keyword_score": 7.5,
-      "vector_score": 0.4,
-      "semantic_weight": 0.3
-     }
-    ],
-    "D": [
-     {
-      "match": true,
-      "value": 1,
-      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
-      "term": "gown",
-      "boost": 1
-     },
-     {
-      "totalNormalizedScore": 400,
-      "relevance": 80,
-      "performance": 500,
+      "performance": 60,
       "keyword_score": 7.5,
       "vector_score": 0.4,
       "semantic_weight": 0.3
@@ -187,9 +197,10 @@
     }
    ],
    "disabled_customizations.ids": [
-    "900001"
+    "800001"
    ],
-   "feUrl": "https://search.example.test/api?auth_key=FAKEKEY"
+   "feUrl": "https://search.example.test/api?auth_key=FAKEKEY",
+   "sqApiUrl": "https://sq.example.test/api/v1/core/?auth_key=FAKEKEY2&q=gown"
   }
  }
 }

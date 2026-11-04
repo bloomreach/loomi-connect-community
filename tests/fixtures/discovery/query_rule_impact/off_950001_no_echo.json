@@ -205,7 +205,8 @@
     }
    ],
    "disabled_customizations.ids": [],
-   "feUrl": "https://search.example.test/api?auth_key=FAKEKEY"
+   "feUrl": "https://search.example.test/api?auth_key=FAKEKEY",
+   "sqApiUrl": "https://sq.example.test/api/v1/core/?auth_key=FAKEKEY2&q=gown"
   }
  }
 }

@@ -162,6 +162,25 @@ class VisibilityExplainTest(unittest.TestCase):
         self.assertTrue(out["ok"])
 
 
+class QueryFileTest(unittest.TestCase):
+    def test_query_file_round_trips_exactly(self):
+        q = 'rain jacket $(x) `y` "z" \'w\''
+        with tempfile.TemporaryDirectory() as tmp:
+            qf = Path(tmp) / "query.txt"
+            qf.write_text(q + "\n", encoding="utf-8", newline="")
+            code, out, err = run("--pid", "P10", "--grid", FX / "grid_page1.json", "--query-file", qf)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(out["query"], q)
+
+    def test_query_and_query_file_together_fail(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            qf = Path(tmp) / "query.txt"
+            qf.write_text("rain jacket", encoding="utf-8")
+            code, out, _ = run("--pid", "P10", "--grid", FX / "grid_page1.json", "--query", "rain jacket", "--query-file", qf)
+        self.assertEqual(code, 1)
+        self.assertIn("at most one of --query and --query-file", out["error"])
+
+
 class RulesTest(unittest.TestCase):
     def test_every_rule_has_a_note(self):
         rules = json.loads((SKILL / "references/rules.json").read_text(encoding="utf-8"))

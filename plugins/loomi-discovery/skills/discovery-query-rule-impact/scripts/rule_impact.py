@@ -3,8 +3,8 @@
 
 Usage:
   python3 rule_impact.py --baseline base.json --toggled 900001=off_900001.json [--toggled all_algo=off_algo.json]
-         [--toggled all=off_all.json] --query-perf query.json --query "dress"
-         [--product-rpv rpv_table.json] [--product-rpv P1=rpv_P1.json ...] [--presence-check present.json]
+         [--toggled all=off_all.json] --query-perf query.json (--query-file query.txt | --query 'dress')
+         [--product-rpv rpv_table.json] [--product-rpv P1=rpv-1.json ...] [--presence-check H1,H2=present.json]
          [--page-size 24] [--out impact.json]
 
 Inputs are saved Loomi Connect results:
@@ -12,11 +12,14 @@ Inputs are saved Loomi Connect results:
   --toggled         NAME=FILE, the same call with rules in disabled_customization_ids. NAME is the one rule ID
                     disabled, "all_algo" (every ranking algorithm rule disabled together) or "all" (every rule).
   --query-perf      get_discovery_query_performance (or get_discovery_category_performance_table); the row whose
-                    query (or cat_id / category) equals --query exactly, ignoring case, is used.
+                    query (or cat_id / category) equals the query exactly, ignoring case, is used.
+  --query-file      a text file holding the query exactly as typed (one trailing newline is stripped). Use it for
+                    any query that isn't only letters, digits, spaces and hyphens; --query is for those.
   --product-rpv     get_discovery_product_performance (one product; PID=FILE lets a not-found error count as
                     missing) or get_discovery_product_performance_table rows. Repeat as needed.
-  --presence-check  optional: the baseline call (rules on) with fq='pid:"A" OR pid:"B"' for the products that appear
-                    only with a rule off. A product it doesn't return is confirmed hidden by the rules.
+  --presence-check  optional, PIDS=FILE: the baseline call (rules on) with fq='pid:"A" OR pid:"B"' for the products
+                    that appear only with a rule off; PIDS lists them, comma-separated. A listed product it doesn't
+                    return is confirmed hidden by the rules. The file must hold every result (numFound fetched).
 
 With no --toggled grids it lists the rules on the baseline and which grids to fetch (to_toggle).
 For each toggled grid it reports what the rule(s) pin, boost or bury (merchandisingRulesApplied), the page-one
@@ -42,6 +45,7 @@ from pathlib import Path
 RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
 MISSING = {"", "na", "n/a", "-", "−", "—", "–", "null", "none", "nan"}
 URL = re.compile(r"\b(?:https?|ftp)://\S+", re.I)
+EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 CONTEXT_ERROR = re.compile(r"project|organi[sz]ation|account|access|denied|forbidden|unauthori[sz]ed|\b40[13]\b|\b429\b", re.I)
 NOT_FOUND = re.compile(r"not.?found|\b404\b|no such product|unknown product", re.I)
 
@@ -52,7 +56,7 @@ def fail(msg):
 
 
 def redact(text):
-    return URL.sub("[url removed]", str(text or "no error text"))[:200]
+    return EMAIL.sub("[email removed]", URL.sub("[url removed]", str(text or "no error text")))[:200]
 
 
 def number(v):
@@ -226,14 +230,29 @@ def main():
     ap.add_argument("--baseline", required=True, help="saved grid with no rules disabled")
     ap.add_argument("--toggled", action="append", default=[], help="NAME=FILE: grid with rule NAME disabled (a rule ID, all_algo or all); repeat")
     ap.add_argument("--query-perf", help="saved get_discovery_query_performance (or category performance table) result")
-    ap.add_argument("--query", required=True, help="the search query (or category ID) exactly as the shopper typed it")
+    ap.add_argument("--query", help="the search query (or category ID), only if it is letters, digits, spaces and hyphens")
+    ap.add_argument("--query-file", help="a text file holding the search query (or category ID) exactly as typed")
     ap.add_argument("--product-rpv", action="append", default=[], help="saved product performance result, FILE or PID=FILE; repeat")
-    ap.add_argument("--presence-check", action="append", default=[], help="saved baseline grid filtered by fq to the products seen only with a rule off; repeat")
+    ap.add_argument("--presence-check", action="append", default=[], help="PIDS=FILE: saved baseline grid filtered by fq to these comma-separated products; repeat")
     ap.add_argument("--page-size", type=int, default=RULES["page_size"], help="products on page one (default: rules.json page_size)")
     ap.add_argument("--out", help="also write the JSON result to this file")
     a = ap.parse_args()
     if a.page_size < 1:
         fail("--page-size must be at least 1.")
+    if (a.query is None) == (a.query_file is None):
+        fail("Give exactly one of --query and --query-file.")
+    if a.query_file is not None:
+        try:
+            with open(a.query_file, encoding="utf-8", newline="") as f:
+                a.query = f.read()
+        except (OSError, UnicodeDecodeError) as e:
+            fail(f"{a.query_file}: can't read the query ({e}).")
+        if a.query.endswith("\r\n"):
+            a.query = a.query[:-2]
+        elif a.query.endswith("\n"):
+            a.query = a.query[:-1]
+    if not a.query.strip():
+        fail("The query is empty.")
 
     base = Grid(a.baseline)
     toggled = []
@@ -252,12 +271,25 @@ def main():
     rpv, currency, rpv_not_found = {}, set(), set()
     for spec in a.product_rpv:
         load_rpv(spec, rpv, currency, rpv_not_found)
-    present = set()
-    for path in a.presence_check:
-        present |= set(Grid(path).pos)
-    presence_given = bool(a.presence_check)
+    present, checked = set(), set()
+    for spec in a.presence_check:
+        if "=" not in spec:
+            fail(f"--presence-check {spec!r}: expected PIDS=FILE (the comma-separated product IDs the fq asked for).")
+        pids, path = spec.split("=", 1)
+        pids = {p.strip() for p in pids.split(",") if p.strip()}
+        if not pids:
+            fail(f"--presence-check {spec!r}: no product IDs before '='.")
+        grid = Grid(path)
+        if not grid.complete:
+            fail(f"{path}: the presence check holds {len(grid.pos)} of {grid.num_found} results; fetch it with rows "
+                 "at least the number of products asked for.")
+        checked |= pids
+        present |= set(grid.pos)
 
     warnings, not_checked = [], []
+    if a.page_size > len(RULES["position_weights"]):
+        warnings.append(f"page_size ({a.page_size}) is longer than position_weights ({len(RULES['position_weights'])} "
+                        "positions): products below the end of the curve weigh 0.")
     row = load_query_row(a.query_perf, a.query) if a.query_perf else None
     if a.query_perf and row is None:
         not_checked.append(f"No row in the query performance file matches {a.query!r} exactly, so there's no revenue estimate "
@@ -270,6 +302,17 @@ def main():
     views = dec(row.get("product_page_views")) if row else None
     if q_revenue is None and visits is not None and q_rpv is not None:
         q_revenue = visits * q_rpv
+    if row is not None and not visits:
+        not_checked.append("The query's row has no visits, so there's no revenue estimate.")
+        visits = None
+    elif row is not None and not q_revenue:
+        not_checked.append("The query's row has no revenue, so the effect can't be set against it and the verdicts are unknown.")
+    if row is not None and row.get("currency"):
+        currency.add(str(row["currency"]))
+    mixed_currency = len(currency) > 1
+    if mixed_currency:
+        warnings.append("The RPV files and query row are in different currencies (" + ", ".join(sorted(currency))
+                        + "); no estimates or RPV comparisons are made. Fetch them all for one site.")
     if visits is not None and visits < RULES["min_query_visits"]:
         warnings.append("Low traffic: fewer than min_query_visits visits in the period, so the estimates are fragile.")
 
@@ -287,7 +330,7 @@ def main():
 
     page = [p for p, i in sorted(base.pos.items(), key=lambda x: x[1]) if i <= a.page_size]
     page_rpvs = sorted(rpv[p] for p in page if p in rpv)
-    median_rpv = statistics.median(page_rpvs) if page_rpvs else None
+    median_rpv = statistics.median(page_rpvs) if page_rpvs and not mixed_currency else None
 
     base_ids = {r["id"]: r for r in base.rules}
     ranking_ids = sorted(i for i, r in base_ids.items() if r["type"] in RULES["ranking_rule_types"])
@@ -328,10 +371,10 @@ def main():
             hidden_count = max(0, int(off.num_found - base.num_found))
         hidden = []
         for pid in sorted((p for p in off.pos if p not in base.pos), key=lambda p: off.pos[p]):
-            if base.complete or (presence_given and pid not in present):
-                status = "confirmed"
-            elif presence_given and pid in present:
+            if pid in checked and pid in present:
                 continue  # it's in the results with the rules on, just deeper than the page fetched
+            if base.complete or pid in checked:
+                status = "confirmed"
             else:
                 status = "not_confirmed"
             hidden.append({"pid": pid, "title": off.title.get(pid), "position_without": off.pos[pid],
@@ -357,7 +400,7 @@ def main():
         missing_rpv = sorted(m["pid"] for m in moves if m["rpv"] is None)
         known_w = sum(abs(m["weight_change"]) for m in known)
         estimate = None
-        if visits is not None and known:
+        if visits is not None and known and not mixed_currency:
             estimate = sum(m["weight_change"] * m["rpv"] * visits for m in known)
         coverage = (known_w / total_w) if total_w else None
         if coverage is not None and coverage < Decimal(str(RULES["min_rpv_coverage"])):
@@ -365,21 +408,20 @@ def main():
                           "products with no RPV are left out, not counted as 0.")
         share = (estimate / q_revenue) if estimate is not None and q_revenue else None
 
-        flags = []
+        flags, sellers = [], []
         if median_rpv is not None:
             low_pins = [x["pid"] for x in applied if set(x["kinds"]) & {"pin", "boost"}
-                        and x["rpv"] is not None and Decimal(x["rpv"]) < median_rpv]
+                        and rpv.get(x["pid"]) is not None and rpv[x["pid"]] < median_rpv]
             if low_pins:
                 flags.append({"flag": "pins_below_median_rpv", "pids": low_pins,
                               "detail": "Products this rule pins or boosts earn less per visit than the page's median product."})
-            sellers = [h for h in hidden if h["rpv"] is not None and Decimal(h["rpv"]) > median_rpv]
+            sellers = [h for h in hidden if rpv.get(h["pid"]) is not None and rpv[h["pid"]] > median_rpv]
             if sellers:
                 flags.append({"flag": "hides_above_median_rpv", "pids": [h["pid"] for h in sellers],
                               "confirmed": all(h["status"] == "confirmed" for h in sellers),
                               "detail": "This rule hides products that earn more per visit than the page's median product."})
-        hides_confirmed_seller = any(f["flag"] == "hides_above_median_rpv" and
-                                     any(h["status"] == "confirmed" and h["pid"] in f["pids"] for h in hidden) for f in flags)
-        if any(f["flag"] == "hides_above_median_rpv" for f in flags) and not hides_confirmed_seller:
+        hides_confirmed_seller = any(h["status"] == "confirmed" for h in sellers)
+        if sellers and not hides_confirmed_seller:
             r_warn.append("It may hide an above-median seller: confirm with a --presence-check grid before acting.")
 
         band = Decimal(str(RULES["neutral_band_share"]))
@@ -433,6 +475,7 @@ def main():
             "visits": None if visits is None else int(visits), "revenue": money(q_revenue), "rpv": money(q_rpv),
             "product_views_per_visit": money(views / visits) if views is not None and visits else None},
         "currency": sorted(currency)[0] if len(currency) == 1 else None,
+        "mixed_currency": mixed_currency,
         "page_median_rpv": money(median_rpv),
         "rules_found": sorted(base.rules, key=lambda r: r["id"]),
         "to_toggle": {"one_at_a_time": ranking_ids, "all_algo": algo_ids, "all": sorted(base_ids)},
@@ -442,7 +485,8 @@ def main():
         "not_checked": not_checked, "warnings": warnings,
         "assumptions": [
             "Product RPV is across all of the product's traffic over the period, not this query: no tool gives a product's RPV for one query.",
-            "The position-weight curve (position_weights in references/rules.json) is an assumption, not measured. " + scale_note,
+            "The position-weight curve (position_weights in references/rules.json) is an assumption, not measured. " + scale_note
+            + " Product views from deeper pages are attributed to page one when scaling.",
             "The estimate assumes a product earns its usual RPV wherever it sits, and ignores what shoppers would have bought instead.",
             "The grid shows a default shopper: audience-targeted rules, personalisation and A/B test buckets differ for real shoppers.",
             "Only ranking and ranking algorithm rules are removed by disabled_customization_ids; synonyms, redirects and facet rules aren't measured.",

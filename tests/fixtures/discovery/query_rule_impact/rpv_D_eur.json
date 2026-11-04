@@ -1,0 +1,10 @@
+{
+ "success": true,
+ "data": {
+  "productId": "D",
+  "currency": "EUR",
+  "visits": 100,
+  "rpv": 6.0,
+  "revenue": 600
+ }
+}

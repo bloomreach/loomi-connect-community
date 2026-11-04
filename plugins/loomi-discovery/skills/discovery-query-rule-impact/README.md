@@ -1,12 +1,12 @@
 # Discovery query rule impact
 
-Shows what each merchandising rule does to one Bloomreach Discovery search query or category page, and estimates whether it helps or hurts revenue. It compares the live product grid with the same grid with each ranking rule switched off, with all ranking algorithm rules off, and with every rule off, then reports per rule the products it pins or boosts, moves and hides, an estimated revenue effect and a verdict (helps, neutral, hurts, hides sellers). It never changes a rule.
+Shows what each merchandising rule does to one Bloomreach Discovery search query or category page, and estimates whether it helps or hurts revenue. It compares the live product grid with previews of the same grid with each ranking rule left out, with all ranking algorithm rules left out, and with every rule left out (`disabled_customization_ids` is a preview only; nothing changes for shoppers), then reports per rule the products it pins or boosts, moves and hides, an estimated revenue effect and a verdict (helps, neutral, hurts, hides sellers). It never changes a rule.
 
 | | |
 |---|---|
 | **Products** | Discovery |
 | **Access** | Read-only |
-| **Loomi Connect tools** | `list_discovery_sites`, `get_discovery_query_performance`, `get_discovery_category_performance_table`, `search_discovery_product_grid_insights`, `get_discovery_product_performance_table`, `get_discovery_product_performance`, `get_ranking_rule` (optional) |
+| **Loomi Connect tools** | `list_discovery_sites`, `get_discovery_query_performance`, `get_discovery_category_performance_table`, `search_discovery_product_grid_insights`, `get_discovery_product_performance_table`, `get_discovery_product_performance`, `get_ranking_rule` (optional); any your client doesn't list, through `search_tools` / `call_tool` |
 | **Other requirements** | Python 3 for `scripts/rule_impact.py` (standard library only); the comparison also works by hand |
 | **Tested with** | Claude Code, against a Bloomreach demo Discovery account |
 | **Maintainer** | @bloomreach |
@@ -22,7 +22,7 @@ Shows what each merchandising rule does to one Bloomreach Discovery search query
 1. Takes the query's visits, revenue and product views per visit from the query performance table (the exact row; `search=` is a substring match).
 2. Fetches the baseline grid, then one grid per ranking rule with that rule in `disabled_customization_ids`, one with all ranking algorithm rules off and one with everything off. Every response is saved to a file and parsed by `scripts/rule_impact.py`, never read into the conversation.
 3. Fetches revenue per visit for the products that move.
-4. The script compares positions, reads `merchandisingRulesApplied` from the score breakdown, compares `numFound` and product IDs to find hidden products, and estimates each rule's effect: Σ (position weight with the rule − weight without) × product RPV × query visits, using the curve in `references/rules.json`.
+4. The script compares positions, reads `merchandisingRulesApplied` from the score breakdown, compares `numFound` and product IDs to find hidden products, and estimates each rule's effect from product revenue per visit and a position-weight curve in `references/rules.json` (the formula is in [SKILL.md](SKILL.md), step 7).
 
 See [examples/pin-rule-on-gown.md](examples/pin-rule-on-gown.md).
 

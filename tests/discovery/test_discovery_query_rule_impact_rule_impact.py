@@ -1,5 +1,5 @@
 """Tests for discovery-query-rule-impact's rule_impact.py. The fixtures in
-tests/fixtures/discovery/discovery-query-rule-impact/ are synthetic (made-up products and rule IDs)."""
+tests/fixtures/discovery/query_rule_impact/ are synthetic (made-up products and rule IDs)."""
 import json
 import subprocess
 import sys
@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SKILL = ROOT / "plugins/loomi-discovery/skills/discovery-query-rule-impact"
 SCRIPT = SKILL / "scripts/rule_impact.py"
-FX = ROOT / "tests/fixtures/discovery/discovery-query-rule-impact"
+FX = ROOT / "tests/fixtures/discovery/query_rule_impact"
 RULES = json.loads((SKILL / "references/rules.json").read_text(encoding="utf-8"))
 
 
@@ -24,13 +24,13 @@ def run(*args):
     return r.returncode, (json.loads(r.stdout) if r.stdout.strip() else None), r.stderr
 
 
-def full(*extra, query="query_perf.json"):
+def full(*extra, query="query_perf.json", rpv_table="rpv_table.json"):
     return run("--baseline", FX / "baseline.json",
                "--toggled", f"900001={FX / 'off_900001.json'}", "--toggled", f"900002={FX / 'off_900002.json'}",
                "--toggled", f"950001={FX / 'off_950001_no_echo.json'}", "--toggled", f"all_algo={FX / 'off_all_algo.json'}",
                "--toggled", f"all={FX / 'off_all.json'}",
                "--query-perf", FX / query, "--query", "gown", "--page-size", "5",
-               "--product-rpv", FX / "rpv_table.json", "--product-rpv", f"H1={FX / 'rpv_H1.json'}",
+               "--product-rpv", FX / rpv_table, "--product-rpv", f"H1={FX / 'rpv_H1.json'}",
                "--product-rpv", f"D={FX / 'rpv_D_not_found.json'}", *extra)
 
 
@@ -81,14 +81,14 @@ class RuleImpactTest(unittest.TestCase):
         self.assertEqual(r["verdict"], "hurts")  # unconfirmed: not yet "hides sellers"
 
     def test_presence_check_confirms_hidden_seller(self):
-        _, out, _ = full("--presence-check", FX / "presence_empty.json")
+        _, out, _ = full("--presence-check", f"H1={FX / 'presence_empty.json'}")
         r = result(out, "900002")
         self.assertEqual(r["hidden"][0]["status"], "confirmed")
         self.assertEqual((r["verdict"], r["priority"]), ("hides sellers", "high"))
         self.assertEqual(out["results"][0]["priority"], "high")
 
     def test_presence_check_shows_it_was_only_deeper(self):
-        _, out, _ = full("--presence-check", FX / "presence_found.json")
+        _, out, _ = full("--presence-check", f"H1={FX / 'presence_found.json'}")
         self.assertEqual(result(out, "900002")["hidden"], [])
 
     def test_missing_rpv_is_missing_not_zero(self):
@@ -152,6 +152,78 @@ class RuleImpactTest(unittest.TestCase):
         text = json.dumps(out)
         self.assertNotIn("auth_key", text)
         self.assertNotIn("FAKE", text)
+        self.assertNotIn("sq.example.test", text)
+        self.assertNotIn("search.example.test", text)
+
+    def test_presence_check_for_other_pids_confirms_nothing(self):
+        _, out, _ = full("--presence-check", f"Z9={FX / 'presence_empty.json'}")
+        r = result(out, "900002")
+        self.assertEqual(r["hidden"][0]["status"], "not_confirmed")
+        self.assertEqual(r["verdict"], "hurts")
+
+    def test_incomplete_presence_check_fails(self):
+        code, out, _ = full("--presence-check", f"H1={FX / 'presence_incomplete.json'}")
+        self.assertEqual(code, 1)
+        self.assertIn("presence check holds 1 of 2", out["error"])
+
+    def test_presence_check_needs_pids(self):
+        code, out, _ = full("--presence-check", str(FX / "presence_empty.json"))
+        self.assertEqual(code, 1)
+        self.assertIn("PIDS=FILE", out["error"])
+
+    def test_median_compares_exact_values(self):
+        _, out, _ = full(rpv_table="rpv_table_4999.json")  # 4.999 would display as 5.00, the median
+        flag = next(f for f in result(out, "900001")["flags"] if f["flag"] == "pins_below_median_rpv")
+        self.assertEqual(flag["pids"], ["X1", "X2"])
+
+    def test_mixed_currency_gives_no_estimates(self):
+        _, out, _ = full("--product-rpv", f"D={FX / 'rpv_D_eur.json'}")
+        self.assertTrue(out["mixed_currency"])
+        self.assertTrue(any("different currencies" in w for w in out["warnings"]))
+        self.assertIsNone(out["page_median_rpv"])
+        for r in out["results"]:
+            self.assertIsNone(r["estimated_effect"])
+            self.assertIn(r["verdict"], ("unknown", "no visible effect"))
+
+    def test_row_without_visits(self):
+        _, out, _ = full(query="query_perf_novisits.json")
+        self.assertTrue(any("no visits" in n for n in out["not_checked"]))
+        self.assertIsNone(result(out, "900001")["estimated_effect"])
+
+    def test_long_page_size_warns(self):
+        _, out, _ = run("--baseline", FX / "baseline.json", "--query", "gown", "--page-size", "30")
+        self.assertTrue(any("position_weights" in w and "page_size" in w for w in out["warnings"]))
+
+    def test_query_file_round_trips_exactly(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            qf = Path(tmp) / "query.txt"
+            q = 'gown $(x) `y` "z" \'w\''
+            qf.write_text(q + "\n", encoding="utf-8", newline="")
+            code, out, _ = run("--baseline", FX / "baseline.json", "--query-file", qf)
+            self.assertEqual(code, 0)
+            self.assertEqual(out["query"], q)
+            qf.write_text("Gown\n", encoding="utf-8", newline="")
+            _, out, _ = run("--baseline", FX / "baseline.json", "--toggled", f"900001={FX / 'off_900001.json'}",
+                            "--query-perf", FX / "query_perf.json", "--query-file", qf, "--page-size", "5",
+                            "--product-rpv", FX / "rpv_table.json")
+            self.assertEqual(out["query_metrics"]["visits"], 1000)
+
+    def test_exactly_one_query_option(self):
+        code, out, _ = run("--baseline", FX / "baseline.json")
+        self.assertEqual(code, 1)
+        self.assertIn("exactly one of --query and --query-file", out["error"])
+        with tempfile.TemporaryDirectory() as tmp:
+            qf = Path(tmp) / "q.txt"
+            qf.write_text("gown", encoding="utf-8")
+            code, out, _ = run("--baseline", FX / "baseline.json", "--query", "gown", "--query-file", qf)
+        self.assertEqual(code, 1)
+
+    def test_error_text_is_redacted(self):
+        code, out, _ = run("--baseline", FX / "error_email.json", "--query", "gown")
+        self.assertEqual(code, 1)
+        self.assertNotIn("ops@example.com", out["error"])
+        self.assertNotIn("status.example.test", out["error"])
+        self.assertIn("[email removed]", out["error"])
 
     def test_context_error_stops_and_is_not_echoed(self):
         code, out, _ = run("--baseline", FX / "denied.json", "--toggled", f"all={FX / 'off_all.json'}", "--query", "gown")

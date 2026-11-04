@@ -2,30 +2,9 @@
  "success": true,
  "data": {
   "response": {
-   "numFound": 11,
+   "numFound": 10,
    "start": 0,
    "docs": [
-    {
-     "pid": "X1",
-     "title": "Pinned satin gown X1",
-     "price": 100.0,
-     "score": null,
-     "docType": "product"
-    },
-    {
-     "pid": "X2",
-     "title": "Pinned lace gown X2",
-     "price": 100.0,
-     "score": null,
-     "docType": "product"
-    },
-    {
-     "pid": "H1",
-     "title": "Beaded gown H1",
-     "price": 100.0,
-     "score": null,
-     "docType": "product"
-    },
     {
      "pid": "A",
      "title": "Silk evening gown A",
@@ -41,8 +20,29 @@
      "docType": "product"
     },
     {
+     "pid": "X1",
+     "title": "Pinned satin gown X1",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
      "pid": "C",
      "title": "Chiffon gown C",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "X2",
+     "title": "Pinned lace gown X2",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "D",
+     "title": "Sequin gown D",
      "price": 100.0,
      "score": null,
      "docType": "product"
@@ -51,67 +51,6 @@
   },
   "debug": {
    "explain.structured": {
-    "X1": [
-     {
-      "match": true,
-      "value": 1,
-      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
-      "term": "gown",
-      "boost": 1
-     },
-     {
-      "totalNormalizedScore": 400,
-      "relevance": 80,
-      "performance": 500,
-      "keyword_score": 7.5,
-      "vector_score": 0.4,
-      "semantic_weight": 0.3,
-      "merchandisingRulesApplied": {
-       "hardBoost": [
-        "parent_product_id:X1"
-       ]
-      }
-     }
-    ],
-    "X2": [
-     {
-      "match": true,
-      "value": 1,
-      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
-      "term": "gown",
-      "boost": 1
-     },
-     {
-      "totalNormalizedScore": 400,
-      "relevance": 80,
-      "performance": 500,
-      "keyword_score": 7.5,
-      "vector_score": 0.4,
-      "semantic_weight": 0.3,
-      "merchandisingRulesApplied": {
-       "hardBoost": [
-        "parent_product_id:X2"
-       ]
-      }
-     }
-    ],
-    "H1": [
-     {
-      "match": true,
-      "value": 1,
-      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
-      "term": "gown",
-      "boost": 1
-     },
-     {
-      "totalNormalizedScore": 400,
-      "relevance": 80,
-      "performance": 500,
-      "keyword_score": 7.5,
-      "vector_score": 0.4,
-      "semantic_weight": 0.3
-     }
-    ],
     "A": [
      {
       "match": true,
@@ -146,7 +85,58 @@
       "semantic_weight": 0.3
      }
     ],
+    "X1": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
     "C": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
+    "X2": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
+    "D": [
      {
       "match": true,
       "value": 1,
@@ -197,9 +187,10 @@
     }
    ],
    "disabled_customizations.ids": [
-    "900002"
+    "900001"
    ],
-   "feUrl": "https://search.example.test/api?auth_key=FAKEKEY"
+   "feUrl": "https://search.example.test/api?auth_key=FAKEKEY",
+   "sqApiUrl": "https://sq.example.test/api/v1/core/?auth_key=FAKEKEY2&q=gown"
   }
  }
 }
