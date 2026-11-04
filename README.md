@@ -14,7 +14,7 @@ Skills here follow the open [Agent Skills](https://agentskills.io/specification)
 
 ## What's here
 
-**New here? Read [docs/start-here.md](docs/start-here.md).** It lists the skills by job: what to run every Monday, when something looks wrong, before a big event, and so on. For every skill in one list, see [SKILLS.md](SKILLS.md), or browse and search them on the [website](https://bloomreach.github.io/loomi-connect-community/).
+**New here? Read [docs/skills-by-task.md](docs/skills-by-task.md).** It lists the skills by job: what to run every Monday, when something looks wrong, before a big event, and so on. For every skill in one list, see [SKILLS.md](SKILLS.md), or browse and search them on the [website](https://bloomreach.github.io/loomi-connect-community/).
 
 | Plugin | What it covers |
 |---|---|

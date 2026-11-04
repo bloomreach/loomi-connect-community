@@ -231,7 +231,7 @@ A write skill's script turns the request into a **plan file** before anything is
 
 As well as the frontmatter [rules](#rules), `scripts/validate_skills.py` checks that:
 
-- every skill is listed in its plugin's README and in [start-here.md](start-here.md);
+- every skill is listed in its plugin's README and in [skills-by-task.md](skills-by-task.md);
 - the README **Access** row matches `metadata.access`;
 - `writes` skills set `allow_implicit_invocation: false` in `agents/openai.yaml`;
 - each plugin's `.claude-plugin` and `.codex-plugin` manifests agree on name, version and description;
@@ -251,7 +251,7 @@ As well as the frontmatter [rules](#rules), `scripts/validate_skills.py` checks 
 - [ ] Project or workspace ID resolution asks the user when there's more than one
 - [ ] Writes are confirmed before they run (if any), and every write tool is declared in **Safety** and the README
 - [ ] `writes` skills set `allow_implicit_invocation: false` in `agents/openai.yaml`, with a comment saying why
-- [ ] Listed in `plugins/<plugin>/README.md` with the right **Access**, and in `docs/start-here.md` (marked "(**writes** …, after you confirm)" if it writes)
+- [ ] Listed in `plugins/<plugin>/README.md` with the right **Access**, and in `docs/skills-by-task.md` (marked "(**writes** …, after you confirm)" if it writes)
 - [ ] Scripts (if any) are called as one plain command, with a `### Running the scripts` subsection
 - [ ] Scripts (if any) have tests in `tests/<area>/`
 - [ ] `SKILL.md` is under 500 lines

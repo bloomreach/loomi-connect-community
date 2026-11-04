@@ -33,7 +33,7 @@ You find what in **loomi-connect-community** could break without a test noticing
 3. **Parsing large or odd responses.** `grid_positions.py` and `grid_summary.py` (copied into several skills), `scenario_graph.py`, `analysis_summary.py`, `summarise_eql.py`: the wrappers, `success: false` errors returned as data, empty `rows` vs a row with 0, days missing from trends.
 4. **Scripts that write files or handle untrusted input.** `convert-klaviyo-email-to-bloomreach/scripts/klaviyo_to_bloomreach.py` (sandboxed render, `--venv` setup, lint for untranslated tags), `product-data-enhancer/scripts/suggestions_to_files.py`: output only under `--out` / `--out-dir`, and hostile input (quotes, very long text, template syntax).
 5. **Copies that should match.** A test that the copies of shared scripts are byte-identical, or a validator check for it.
-6. **Repo rules the validator doesn't enforce yet.** Each skill listed in its plugin README and `docs/start-here.md`; the README **Access** label matching `metadata.access`; `allow_implicit_invocation: false` for `writes` skills; `.claude-plugin` and `.codex-plugin` manifests agreeing on version; every documented script command naming a script that exists, with arguments its `argparse` accepts; relative links resolving.
+6. **Repo rules the validator doesn't enforce yet.** Each skill listed in its plugin README and `docs/skills-by-task.md`; the README **Access** label matching `metadata.access`; `allow_implicit_invocation: false` for `writes` skills; `.claude-plugin` and `.codex-plugin` manifests agreeing on version; every documented script command naming a script that exists, with arguments its `argparse` accepts; relative links resolving.
 
 ## How to work
 

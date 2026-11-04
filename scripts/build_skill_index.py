@@ -138,7 +138,7 @@ def render_markdown(data):
         "",
         f"**{len(skills)} skills** in **{len(PLUGIN_ORDER)} plugins**. {len(skills) - writes} only read; "
         f"{writes} can change something, and only after you confirm. For skills grouped by the job you're doing, "
-        "see [docs/start-here.md](docs/start-here.md).",
+        "see [docs/skills-by-task.md](docs/skills-by-task.md).",
         "",
         "| Plugin | Skills | Read-only | Writes |",
         "|---|---:|---:|---:|",
@@ -208,7 +208,7 @@ def inline_svg(path, extra_attrs=""):
 
 
 NAV = [("Quickstart", "quickstart.html"), ("Skills", "skills.html"), ("Tools", "tools.html"),
-       ("Start here", REPO_URL + "/blob/main/docs/start-here.md"), ("Charter", REPO_URL + "/blob/main/CHARTER.md"),
+       ("Skills by task", REPO_URL + "/blob/main/docs/skills-by-task.md"), ("Charter", REPO_URL + "/blob/main/CHARTER.md"),
        ("GitHub", REPO_URL)]
 
 

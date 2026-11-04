@@ -233,9 +233,9 @@ def read_text(rel):
 
 
 def check_listings():
-    """Every plugin skill is linked from its plugin README and docs/start-here.md, with the right Access label."""
+    """Every plugin skill is linked from its plugin README and docs/skills-by-task.md, with the right Access label."""
     errors = []
-    start = read_text("docs/start-here.md")
+    start = read_text("docs/skills-by-task.md")
     for skill_md in sorted(ROOT.glob("plugins/*/skills/*/SKILL.md")):
         skill, plugin = skill_md.parent.name, skill_md.parent.parent.parent.name
         link = f"skills/{skill}/"
@@ -244,7 +244,7 @@ def check_listings():
         if link not in readme:
             errors.append(f"{readme_rel}: does not link to skill {skill!r} ({link}); see CONTRIBUTING.md")
         if link not in start:
-            errors.append(f"docs/start-here.md: does not link to skill {skill!r} ({link}); see CONTRIBUTING.md")
+            errors.append(f"docs/skills-by-task.md: does not link to skill {skill!r} ({link}); see CONTRIBUTING.md")
         try:
             fm, _ = parse_frontmatter(skill_md.read_text(encoding="utf-8"))
         except ValueError:

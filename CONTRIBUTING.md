@@ -27,7 +27,7 @@ If you're not sure something fits, [open an issue](../../issues/new/choose) befo
    ```
 2. **Copy the template.** Copy [templates/skill-template/](templates/skill-template/) to `plugins/<plugin>/skills/<skill-name>/`. Choose `loomi-engagement`, `loomi-discovery`, `loomi-platform` (skills that span products) or `loomi-product-data`. If your skill fits none of them, propose a new plugin in an issue first.
 3. **Write the skill**, following [docs/skill-authoring.md](docs/skill-authoring.md).
-4. **List it** in `plugins/<plugin>/README.md` with the right **Access**, and in [docs/start-here.md](docs/start-here.md). Then regenerate [SKILLS.md](SKILLS.md) with `python3 scripts/build_skill_index.py` (never edit it by hand; CI fails if it is out of date).
+4. **List it** in `plugins/<plugin>/README.md` with the right **Access**, and in [docs/skills-by-task.md](docs/skills-by-task.md). Then regenerate [SKILLS.md](SKILLS.md) with `python3 scripts/build_skill_index.py` (never edit it by hand; CI fails if it is out of date).
 5. **Validate it locally**, and run the unit tests:
    ```bash
    python3 scripts/validate_skills.py
@@ -37,7 +37,7 @@ If you're not sure something fits, [open an issue](../../issues/new/choose) befo
 6. **Test it** against a real or sandbox Bloomreach project, in at least one Claude client and one OpenAI client if you can. Say which ones you used in the PR.
 7. **Commit and push** to your fork, signing off every commit with `-s` (see [Sign-off](#sign-off)). Add `tests/` as well if you added or changed scripts:
    ```bash
-   git add plugins/<plugin>/skills/<skill-name> plugins/<plugin>/README.md docs/start-here.md SKILLS.md
+   git add plugins/<plugin>/skills/<skill-name> plugins/<plugin>/README.md docs/skills-by-task.md SKILLS.md
    git commit -s -m "Add <skill-name> skill"
    git push origin skill/campaign-digest
    ```
