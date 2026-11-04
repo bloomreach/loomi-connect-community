@@ -1,0 +1,15 @@
+{
+  "about": "Thresholds for the revenue change explainer. scripts/revenue_split.py reads this file and its CLI defaults come from it. Each key is explained under notes.",
+  "completed_statuses": ["success", "completed", "complete", "paid", "fulfilled"],
+  "per_day_tolerance": 0.03,
+  "max_breakdowns": 4,
+  "ratio_check_tolerance": 0.0005,
+  "add_up_tolerance": 0.01,
+  "notes": {
+    "completed_statuses": "Status values that count as a completed order when --status isn't given (compared without case). Pass --status with the project's own value when it differs.",
+    "per_day_tolerance": "When the periods differ in length and revenue per day changed by less than this share (0.03 = 3%), the change in totals is put down to the extra days, not a real change.",
+    "max_breakdowns": "Breakdowns (--breakdown) to run before asking the user for more. The script reads at most this many and says when more were given.",
+    "ratio_check_tolerance": "The buyers, orders-per-buyer and AOV ratios multiplied back must match the revenue ratio within this relative difference. With raw counts they match exactly; a bigger gap means an input is wrong.",
+    "add_up_tolerance": "Money that may be left over (in the project's currency) when segment changes or money parts are added up and compared with the total change. Bigger gaps are reported."
+  }
+}

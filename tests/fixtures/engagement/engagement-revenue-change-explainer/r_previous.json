@@ -1,0 +1,7 @@
+{
+ "success": true,
+ "data": {"rows": [
+  {"headers": [{"type": "single", "value": null}], "values": [100, 20, 400]},
+  {"headers": [{"type": "single", "value": "en"}], "values": [50, 10, 230]}
+ ]}
+}

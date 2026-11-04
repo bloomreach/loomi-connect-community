@@ -1,0 +1,5 @@
+interface:
+  display_name: "Repeat Purchase Cohorts"
+  short_description: "How many first-time buyers order again in Bloomreach Engagement, how fast, and when to nudge them"
+policy:
+  allow_implicit_invocation: true

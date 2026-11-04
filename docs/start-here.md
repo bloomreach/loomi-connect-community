@@ -23,6 +23,7 @@ Before you start, [connect Loomi Connect](connecting-loomi-connect.md) and insta
 | Ask | Skill |
 |---|---|
 | "Why did revenue drop yesterday or last week?" | [revenue-anomaly-explainer](../plugins/loomi-platform/skills/revenue-anomaly-explainer/): a breakdown that adds up, with causes ranked by evidence |
+| "Why did Engagement revenue double in July?" | [engagement-revenue-change-explainer](../plugins/loomi-engagement/skills/engagement-revenue-change-explainer/): Engagement purchase events split into buyers (new vs returning), orders per buyer and order value, with campaign drivers |
 | "Is our data and tracking OK?" | [data-feed-health](../plugins/loomi-platform/skills/data-feed-health/) (pixel, feeds, Data Hub) and [engagement-tracking-health](../plugins/loomi-engagement/skills/engagement-tracking-health/) (events and properties) |
 | "Why is this search performing badly?" | [discovery-query-diagnosis](../plugins/loomi-discovery/skills/discovery-query-diagnosis/) |
 | "Why isn't this product showing for 'dress'?" | [discovery-product-visibility](../plugins/loomi-discovery/skills/discovery-product-visibility/): where it ranks or why it's missing, and the smallest fix |
@@ -38,6 +39,7 @@ Before you start, [connect Loomi Connect](connecting-loomi-connect.md) and insta
 | "Audit our Data Hub item collections" | [datahub-collection-audit](../plugins/loomi-platform/skills/datahub-collection-audit/): collection drift, field fill rates, type mismatches and stale jobs, with an owner per fix |
 | "Do our retention rules break any segments or reports?" | [data-retention-review](../plugins/loomi-platform/skills/data-retention-review/): windows longer than retention, over-kept events, personal properties |
 | "A customer has a problem. What do we know about them?" | [customer-360-lookup](../plugins/loomi-engagement/skills/customer-360-lookup/): one customer's profile, recent activity and support flags, with personal data kept to a minimum |
+| "Why does the AI say 12,000 and our report 6,000? Which is right?" | [engagement-number-reconciliation](../plugins/loomi-engagement/skills/engagement-number-reconciliation/): both definitions side by side, the cause, and which number answers your question |
 
 ## Improving search
 
@@ -95,12 +97,14 @@ Start with the health check, then go deeper where it points you.
 | "Which lifecycle flows are we missing?" | [lifecycle-coverage-map](../plugins/loomi-engagement/skills/lifecycle-coverage-map/): which standard flows exist and are live, and what each gap is worth |
 | "Copy the browse abandonment flow from our other project" | [scenario-template-launcher](../plugins/loomi-engagement/skills/scenario-template-launcher/) (**writes** a draft, after you confirm): clones a proven scenario and lists what to fix |
 | "How much revenue are we losing from lapsed customers?" | [winback-opportunity](../plugins/loomi-engagement/skills/winback-opportunity/) |
+| "How many first-time buyers come back, and when?" | [engagement-repeat-purchase-cohorts](../plugins/loomi-engagement/skills/engagement-repeat-purchase-cohorts/) |
 | "Build me a segment of…" | [engagement-segment-builder](../plugins/loomi-engagement/skills/engagement-segment-builder/) (**writes**, after you confirm) |
 | "Set up a flow that…" / "Change the wait in our welcome series" | [engagement-scenario-builder](../plugins/loomi-engagement/skills/engagement-scenario-builder/) (**writes** a draft, after you confirm) |
 | "Move our Klaviyo emails into Bloomreach" | [convert-klaviyo-email-to-bloomreach](../plugins/loomi-engagement/skills/convert-klaviyo-email-to-bloomreach/) (**writes** drafts and uploads images, after you confirm) |
 | "Write a Black Friday email for our lapsed VIPs" | [engagement-email-builder](../plugins/loomi-engagement/skills/engagement-email-builder/) (**writes** a draft, after you confirm) |
 | "Write a text for our lapsed VIPs: 20% off boots this weekend" | [engagement-sms-builder](../plugins/loomi-engagement/skills/engagement-sms-builder/) (**writes** a draft, or revises its own, after you confirm) |
 | "How is our abandoned cart flow doing?" | [engagement-scenario-performance](../plugins/loomi-engagement/skills/engagement-scenario-performance/) |
+| "Which of our live journeys are broken right now?" | [engagement-journey-health](../plugins/loomi-engagement/skills/engagement-journey-health/): all live flows at once: broken, not sending, suppressed |
 | "Write the Jinja for a recommendations block" / "Why won't this Jinja save?" | [engagement-jinja-writer](../plugins/loomi-engagement/skills/engagement-jinja-writer/): personalization, recommendations, cart items and social proof for weblayers, emails and scenarios |
 | "Build me a newsletter pop-up" / "Why isn't our weblayer showing?" | [engagement-weblayer-builder](../plugins/loomi-engagement/skills/engagement-weblayer-builder/): pop-ups, banners and inline weblayers, with dynamic data from engagement-jinja-writer |
 | "Is our new pop-up ready to go live?" | [engagement-weblayer-qa](../plugins/loomi-engagement/skills/engagement-weblayer-qa/): skeleton, tracking, triggering code, links and accessibility for one weblayer, with a go/no-go verdict |
