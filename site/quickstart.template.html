@@ -12,18 +12,19 @@
 /* Layout: one narrow column. Pick your app, then three numbered steps. Nothing else. */
 :root{
   --bg:#ffffff; --surface:#f6f6f4; --ink:#000000; --muted:#5b5b57; --line:#e3e3df;
-  --spark:#fee31b; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
+  --spark:#fee31b; --link-line:#b4a813; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
   --sans:"Bloomreach Sans","Instrument Sans",Arial,Helvetica,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26; --arctic:#55bbde; color-scheme:dark}}
+  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26; --arctic:#55bbde; --link-line:#fee31b; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26; --arctic:#55bbde; color-scheme:dark}
+  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26; --arctic:#55bbde; --link-line:#fee31b; color-scheme:dark}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans)}
-a{color:var(--arctic)}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--link-line);text-decoration-thickness:1.5px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:3px}
 .gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .bar{border-bottom:1px solid var(--line)}
 .bar .wrap{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:14px;padding-block:14px}
