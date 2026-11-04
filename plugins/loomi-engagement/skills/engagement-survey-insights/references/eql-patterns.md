@@ -45,12 +45,18 @@ select count event survey by event survey.question_index grouping top 30 where e
 
 ## S3. Answer distribution for one question
 
+Single-choice questions: keep typed-in Other answers out of the result by listing the choices (names from the survey detail, `\` and `"` escaped):
+
 ```
-select count event survey by event survey.answer grouping top <max_answer_values> where event survey.survey_id = "<survey id>" and .question_index = <n> in last 90 days
+select count event survey by event survey.answer grouping top <max_answer_values> where event survey.survey_id = "<survey id>" and .question_index = <n> and .answer is in ["<choice 1>", "<choice 2>"] in last 90 days
 ```
 
-- **Ran** with `where event survey.question = "<wording>"`: `high` (score 49). The first condition needs the full `event survey.` prefix; later ones after `and` use `.property`. The filter goes after the `by` clause, at report level, so `grouping top N` ranks the right values.
-- Only for **choice and rating** questions. For a text-field question, use S2's count; don't run S3 unless the user asks for themes (S7).
+Other is then the question's S2 count minus the sum of the rows; the script does this when given `--questions`. With a single choice, use `.answer = "<choice>"` (`is in` needs two values). Rating questions use the same query without the `is in` condition.
+
+Multiple-choice questions: drop the `is in` condition (an answer can hold several choices joined together) and keep `grouping top <max_answer_values>`. Typed-in Other values can then appear in the raw result and the saved file: never repeat them; the script counts them as Other without printing them.
+
+- **Ran** with `where event survey.question = "<wording>"` in place of the ID filters: `high` (score 49). The `is in` condition is **Parsed** only. The first condition needs the full `event survey.` prefix; later ones after `and` use `.property`. The filter goes after the `by` clause, at report level, so `grouping top N` ranks the right values.
+- Shape **Ran** without the `is in` condition. Only for **choice and rating** questions. For a text-field question, use S2's count; don't run S3 unless the user asks for themes (S7).
 - Matrix questions: add `by event survey.sub_question_index` only if the user asks; the script counts matrix answers without a distribution.
 - `grouping top N` comes back with rows sorted by the answer, not by count.
 
@@ -62,7 +68,7 @@ select count event survey by row event survey timestamp grouping top 84 format y
 
 - **Ran** over 14 days with a wording filter: `high` (score 47). The single-column version (drop the `by column` part) over 84 days also **Ran**, `high` (score 49).
 - `format year week` doesn't parse, so ask for days and let the script add them up into weeks counted from the window's first day.
-- Days are Unix seconds at **local midnight** in the project's time zone (a UTC+1 project returned 23:00 UTC, and 22:00 UTC in summer time); days with no answers are left out. Read the offset from the buckets and pass it to the script as `--utc-offset-minutes`.
+- Days are Unix seconds at **local midnight** in the project's time zone (a UTC+1 project returned 23:00 UTC, and 22:00 UTC in summer time); days with no answers are left out. How the script dates them is in [scoring.md](scoring.md), under the weekly trend.
 - For the response count only, drop the `.question_index` condition and the `by column` part (it then counts answers to every question; divide by nothing, just compare weeks).
 
 ## S5. Split by a non-personal property
@@ -74,7 +80,7 @@ select count customers by customer.<property> grouping top 10 with null customer
 ```
 
 - **Ran** with a wording filter: `medium` (score 34).
-- NPS-style: three queries (promoters `["9", "10"]`, passives `["7", "8"]`, detractors every lower value, including `"0"` if the scale has it). CSAT: two (satisfied, the rest).
+- NPS-style: three queries: promoters (every answer from `nps_promoter_min` up to the top of the scale), passives (from `nps_passive_min` up to below `nps_promoter_min`) and detractors (every lower value, including `"0"` if the scale has it), each written as a list of strings. CSAT: two (the top `csat_top_box` answers, and the rest).
 - Only low-cardinality, non-personal properties: device, country, language, customer type, page type. Never email, phone, name, city or an ID.
 - A customer property shows the customer's current value, not the value when they answered. Say so.
 

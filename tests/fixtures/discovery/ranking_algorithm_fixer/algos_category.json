@@ -75,6 +75,26 @@
     "createdBy": "editor@example.com",
     "lastModifiedAt": 1735689600000,
     "lastModifiedBy": "editor@example.com"
+   },
+   {
+    "id": 22,
+    "algoId": "br-iii22222",
+    "name": "Gross margin cat",
+    "type": "ML_LINEAR_CUSTOM",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "catalog": null,
+    "domainKey": "acme_shop",
+    "signals": [
+     "gm_pct"
+    ],
+    "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1735689600000,
+    "createdBy": "editor@example.com",
+    "lastModifiedAt": 1735689600000,
+    "lastModifiedBy": "editor@example.com"
    }
   ],
   "meta": {

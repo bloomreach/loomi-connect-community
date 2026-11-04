@@ -29,26 +29,27 @@ Example:
 
 ## Weights
 
-- Legacy algorithms keep weights in `modelMetaData.combined` (one entry per signal: `weight`, `min`, `max`, `featureType`), shares of 100. `modelMetaData.text` holds the text-matching signals that make up `text_score`; this skill doesn't change them. The update and the undo send the whole `modelMetaData` back, with only the changed weights rewritten.
+- Legacy algorithms keep weights in `modelMetaData.combined` (one entry per signal: `weight`, `min`, `max`, `featureType`), shares of `weight_total` in references/rules.json. `modelMetaData.text` holds the text-matching signals that make up `text_score`; this skill doesn't change them. The update and the undo send the whole `modelMetaData` back. The update and any `MANUAL` create round every top-level weight to `weight_decimals` and put the remainder on the biggest, so they add up to exactly `weight_total`; a signal moved only by rounding is listed in `signals` with its `why`.
 - ABR models keep a `weights` list (`feature_key`, `display_weight`). The plan applies the same range and total; Discovery has the final say.
-- `min` and `max` are the signal's range in the catalog. For a margin or cost-type signal (`sensitive_signal_words`) they are commercial values: the script hides them in what it prints, and they're never shown to the user.
+- `min` and `max` are the signal's range in the catalog. For a margin or cost-type signal (named like `sensitive_signal_words`, or any `CUSTOM` signal) they are commercial values. The script prints no signal's `min` or `max`; they stay in the `--out` file for the payloads and undo, and are never shown to the user.
 - Signals can't be added or removed here; a different set of signals is a new algorithm, built in Ranking Studio.
 
 ## What the plan checks
 
 | Check | Result |
 |---|---|
-| weight not a number, outside the range, or total off | blocked |
+| weight not a number, outside the range (given, or after rebalancing and rounding), or total off by more than `weight_sum_tolerance` | blocked |
 | signal not in the algorithm, or a text-matching signal | blocked |
 | trained ABR model (`trained_abr_types`) given weights | blocked: `update_ranking_algorithm` would make it `ABR_MANUAL` for good. Copy it instead |
 | classic or non-linear ranker given weights | blocked: no editable weights |
 | weight change on the Default, or on an algorithm whose sampled pages had `high_traffic_visits` or more | blocked unless `skip_test`: copy and A/B test it |
 | weight change or delete with no usage check (no review with sampled pages, no grids) | blocked |
-| weight change or delete of an algorithm a running test's bucket rule uses, or while a running test's bucket rule wasn't read | blocked |
+| delete checked by product grids only, with no review | warning saying how many pages were checked |
+| any update (a rename too) or delete of an algorithm a bucket rule of a test that isn't finished (`finished_statuses`) uses, or while such a bucket rule wasn't read | blocked |
 | delete of an algorithm seen in use (review, grids, rules), the Default, or one of `protected_types` | blocked |
 | create at `max_custom_per_catalog` custom algorithms for the catalog and page type | blocked |
 | name already used on the same page type | blocked |
-| change touching a margin or cost-type signal | warning |
+| change touching a margin or cost-type signal, or any `CUSTOM` signal | warning |
 | hand-set weights on a trained `ML_*` model | warning |
 
 ## Undo

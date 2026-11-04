@@ -28,17 +28,17 @@
 | `completion_estimate` | yes | How close the user got to what they asked for, on the tool's scale: 0 nothing useful, 1 found the problem but couldn't act, 2 context only, 3 partial with big gaps, 4 almost done, 5 fully done (rare in a problem report). The tool's description asks for it every time. |
 | `expected` | yes | What the tool's description or schema led you to expect. |
 | `actual` | yes | What came back, in your words. No customer data, names or URLs. |
-| `arguments` | yes | The arguments as sent (`{}` if none). The script replaces IDs, account and project names, emails, URLs, `auth_key`, tokens and other secrets with placeholders such as `<project_id>`. Keep the other values (dates, presets, page sizes): they reproduce the problem. |
-| `response_excerpt` | no | The smallest part of the response that shows the problem. URLs, emails, secrets and IDs are replaced; product, query and customer text isn't, so leave it out. |
+| `arguments` | yes | The arguments as sent (`{}` if none). The script keeps only numbers, booleans, ISO dates and plain values of enum-like keys (`allowed_arg_keys` in [rules.json](rules.json), such as `filter_preset` or `sort`); every other value becomes a placeholder named after its key, lower case without `_` or `-` (`account_id` and `accountId` both become `<accountid>`). |
+| `response_excerpt` | no | The smallest part of the response that shows the problem. If it's JSON, the script keeps numbers, booleans, dates and error or message text (redacted) and replaces every other string; otherwise it redacts it as free text. Leave out product, query and customer text anyway. |
 | `what_i_tried` | no | The calls and workarounds tried. A default is written if empty. |
 | `suggestion` | no | What would fix it: a parameter, a field, a description change. |
 | `product` | no | `discovery`, `engagement` or `datahub`. |
 | `known_line` | no | The line number from `list-known` when the problem is an item in docs/known-tool-behaviour.md. Needs `--known-doc`. |
 | `client`, `model` | no | The tool detects both itself; give them only if detection is known to fail. |
 
-Placeholders are `<name>` in angle brackets: `<project_id>`, `<account_id>`, `<auth_key>`, `<email>`, `<url>`, `<id>`. Use the same form in `summary`, `expected`, `actual` and the other free text: the script lints them and **blocks** anything personal or secret-shaped it finds there, rather than rewriting your words.
+Placeholders are `<name>` in angle brackets: `<project_id>`, `<account_id>`, `<auth_key>`, `<email>`, `<url>`, `<id>`. Use them in `summary`, `expected`, `actual` and the other free text from the start. The script also redacts free text (URLs and hosts, emails, tokens and secret pairs, IDs, IP addresses, phone numbers, names after "user", "by" and similar), then lints it with stricter patterns and **blocks** anything it can still detect. This is best effort: it can't recognise every name, ID or business figure, so you and the user read the whole report before it's sent.
 
-**Private terms.** If the user names a customer, brand, site or person who must not appear, write them one per line to `<work>/private-terms.txt` with your file-writing tool and pass `--private-terms`. Any of them left in the free text blocks the plan; in `arguments` and `response_excerpt` they're replaced with `<name>`.
+**Private terms.** Always write `<work>/private-terms.txt` with your file-writing tool, one per line: the organisation, project, account, catalog and site names used in this session, and any customer, brand, site or person the user says must not appear. Pass it with `--private-terms` (required). The script replaces them everywhere and blocks the plan if any are left.
 
 ## What the feedback text looks like
 

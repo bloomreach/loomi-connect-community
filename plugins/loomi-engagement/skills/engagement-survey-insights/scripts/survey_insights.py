@@ -42,6 +42,7 @@ from pathlib import Path
 RULES_PATH = Path(__file__).resolve().parent.parent / "references" / "rules.json"
 MISSING = {"", "na", "n/a", "-", "−", "—", "–", "null", "none", "nan"}
 PRIORITY = {"high": 0, "medium": 1, "low": 2}
+NULL_CELLS = {"count": 0}  # count cells that came back empty or not a number (treated as 0, and reported)
 URL = re.compile(r"(?i)\b(?:https?|wss?|ftp)://[^\s'\"<>]+")
 CHOICE_TYPES = {"single-choice", "multiple-choice", "multiple-choices", "multi-choice"}
 TEXT_TYPES = {"textfield", "text-field", "textarea", "text"}
@@ -160,7 +161,13 @@ def rows_of(path):
     out = []
     for r in rep["rows"]:
         if isinstance(r, dict):
-            out.append((first_header(r), [number(v) or 0.0 for v in (r.get("values") or [])]))
+            vals = []
+            for v in r.get("values") or []:
+                x = number(v)
+                if x is None:
+                    NULL_CELLS["count"] += 1
+                vals.append(x or 0.0)
+            out.append((first_header(r), vals))
     cols = []
     for c in rep.get("columns") or []:
         if isinstance(c, list) and c:
@@ -190,7 +197,7 @@ def z_value(confidence):
 
 
 def wilson(k, n, z):
-    if not n:
+    if not n or k > n or k < 0:
         return None
     p = k / n
     d = 1 + z * z / n
@@ -231,6 +238,19 @@ def nps_score(promoters, passives, detractors, rules, z):
     return {"kind": "nps", "score": round(v, 1), "interval": [round(max(-100.0, v - z * se), 1), round(min(100.0, v + z * se), 1)],
             "n": int(n), "promoters": int(promoters), "passives": int(passives), "detractors": int(detractors),
             "sample": sample_label(n, rules), "note": sample_note(n, rules)}
+
+
+def nps_from_counts(counts, rules, z):
+    """NPS from {score: count}: promoters at or above nps_promoter_min, passives at or above nps_passive_min."""
+    hi, mid = rules["nps_promoter_min"], rules["nps_passive_min"]
+    return nps_score(sum(v for k, v in counts.items() if k >= hi), sum(v for k, v in counts.items() if mid <= k < hi),
+                     sum(v for k, v in counts.items() if k < mid), rules, z)
+
+
+def csat_from_counts(counts, stars, rules, z):
+    """CSAT from {score: count}: the share in the top csat_top_box boxes for this star count."""
+    top = int(rules["csat_top_box"][str(stars)])
+    return csat_score(sum(v for k, v in counts.items() if k > stars - top), sum(counts.values()), rules, z)
 
 
 def csat_score(satisfied, n, rules, z):
@@ -297,8 +317,11 @@ def answer_items(value, choices):
     return [s]
 
 
-def distribution(q, kind, stars, path, rules, z):
-    """Answer counts and score for one question, never echoing free text."""
+def distribution(q, kind, stars, path, rules, z, q_total=None):
+    """Answer counts and score for one question, never echoing free text.
+
+    q_total is the question's answer count from --questions. A single-choice distribution queried with
+    `.answer is in [choices]` holds no typed-in Other rows, so Other is q_total minus what the result holds."""
     rows, _ = rows_of(path)
     total = sum(sum(v) for _, v in rows)
     out = {"answers_counted": int(total)}
@@ -310,7 +333,7 @@ def distribution(q, kind, stars, path, rules, z):
                       "unknown": "question type not recognised, so its answers may be free text; counted only"}[kind]
         return out, None
     counts, other, unreadable = {}, 0.0, 0.0
-    choices, _ = choices_of(q) if kind == "choice" else ([], False)
+    choices, has_other = choices_of(q) if kind == "choice" else ([], False)
     for value, vals in rows:
         c = sum(vals)
         if kind == "choice":
@@ -326,6 +349,12 @@ def distribution(q, kind, stars, path, rules, z):
             else:
                 counts[int(x)] = counts.get(int(x), 0.0) + c
     multi = kind == "choice" and "multi" in str(q.get("type") or "").lower()
+    other_known = True
+    if kind == "choice" and not multi:
+        if q_total is not None:
+            other += max(q_total - total, 0.0)
+        elif has_other and not other:
+            other_known = False
     # A multiple-choice response can hold several answers, so its shares are of responses, not of answers.
     answered = total if multi else sum(counts.values()) + other
     if kind == "choice":
@@ -343,17 +372,19 @@ def distribution(q, kind, stars, path, rules, z):
     if rest:
         out["rest"] = {"count": int(rest), "share": ratio(rest, answered)}
     if kind == "choice":
-        out["other_typed_in"] = {"count": int(other), "share": ratio(other, answered), "values_listed": False}
+        if other_known:
+            out["other_typed_in"] = {"count": int(other), "share": ratio(other, answered), "values_listed": False}
+        else:
+            out["other_typed_in"] = {"count": None, "share": None, "values_listed": False,
+                                     "why": "pass --questions so Other can be worked out as the question's answers minus the choices"}
         if multi:
-            out["note"] = "Several answers per response are possible, so shares can add up to more than 100%."
+            out["note"] = ("Several answers per response are possible, so shares can add up to more than 100%. "
+                           "Typed-in Other values can appear in the raw query result: never repeat them.")
     if unreadable:
         out["unreadable"] = int(unreadable)
     score = None
     if kind == "nps":
-        pro = sum(v for k, v in counts.items() if k >= rules["nps_promoter_min"])
-        pas = sum(v for k, v in counts.items() if rules["nps_passive_min"] <= k < rules["nps_promoter_min"])
-        det = sum(v for k, v in counts.items() if k < rules["nps_passive_min"])
-        score = nps_score(pro, pas, det, rules, z)
+        score = nps_from_counts(counts, rules, z)
         if score:
             lo = 0 if 0 in counts else 1
             score["scale"] = f"{lo} to {stars}"
@@ -364,9 +395,7 @@ def distribution(q, kind, stars, path, rules, z):
                 score["label"] = "Net Promoter Score (0 to 10)"
     elif kind == "csat":
         top = int(rules["csat_top_box"][str(stars)])
-        n = sum(counts.values())
-        sat = sum(v for k, v in counts.items() if k > stars - top)
-        score = csat_score(sat, n, rules, z)
+        score = csat_from_counts(counts, stars, rules, z)
         if score:
             score["label"] = f"CSAT: share answering {stars - top + 1} or more out of {stars}"
     if kind in ("nps", "csat", "rating"):
@@ -377,28 +406,39 @@ def distribution(q, kind, stars, path, rules, z):
     return out, score
 
 
-def bucket_date(raw, offset_minutes):
+def text_day(raw):
     if isinstance(raw, str) and re.match(r"^\d{4}-\d{2}-\d{2}", raw):
         try:
             return datetime.date.fromisoformat(raw[:10])
         except ValueError:
             return None
-    x = number(raw)
-    if x is None or x < 10**8:
-        return None
-    # Buckets start at local midnight. Adding the offset and rounding to the nearest midnight
-    # absorbs a daylight-saving hour either way.
-    day = math.floor((x + offset_minutes * 60 + 43200) / 86400)
-    return datetime.date(1970, 1, 1) + datetime.timedelta(days=day)
+    return None
+
+
+def place_days(stamps, since, offset_minutes):
+    """Days for numeric buckets: Unix seconds at local midnight in the project's time zone.
+
+    No rule on the timestamps alone works for every offset (UTC-12 to UTC+14 spans 26 hours), so the day comes
+    from the project's UTC offset when given, and otherwise by counting whole days from the first bucket, which
+    is taken to be --since. Rounding to whole days absorbs 23- and 25-hour daylight-saving days."""
+    if not stamps:
+        return {}
+    if offset_minutes is not None:
+        return {t: datetime.date(1970, 1, 1) + datetime.timedelta(days=math.floor((t + offset_minutes * 60 + 43200) / 86400))
+                for t in stamps}
+    first = min(stamps)
+    return {t: since + datetime.timedelta(days=round((t - first) / 86400)) for t in stamps}
 
 
 def weekly(a, rules, z, kinds, today):
-    if not a.since or a.utc_offset_minutes is None:
-        fail("--trend needs --since (the window's first day, in the project's time zone) and --utc-offset-minutes "
-             "(read it from the buckets: a bucket at 23:00 UTC is local midnight in a UTC+1 project, so 60).")
+    if not a.since:
+        fail("--trend needs --since (the window's first day, in the project's time zone); see references/scoring.md.")
+    if a.utc_offset_minutes is not None and not -720 <= a.utc_offset_minutes <= 840:
+        fail("--utc-offset-minutes must be between -720 and 840 (UTC-12 to UTC+14).")
     try:
         since = datetime.date.fromisoformat(a.since)
-        until = datetime.date.fromisoformat(a.until) if a.until else today
+        # The day containing today is still collecting answers, so the default window ends yesterday.
+        until = datetime.date.fromisoformat(a.until) if a.until else today - datetime.timedelta(days=1)
     except ValueError:
         fail("--since and --until must be dates as YYYY-MM-DD.")
     if until < since:
@@ -409,9 +449,18 @@ def weekly(a, rules, z, kinds, today):
         kind, stars = kinds.get(a.trend_question, (None, None))
         if kind not in ("nps", "csat"):
             fail(f"--trend-question {a.trend_question} isn't an NPS or CSAT question in this survey.")
+    stamps = []
+    for raw, _ in rows:
+        x = None if text_day(raw) or isinstance(raw, bool) else number(raw)
+        if x is not None and x >= 10**8:
+            stamps.append(int(x))
+    days = place_days(sorted(set(stamps)), since, a.utc_offset_minutes)
     weeks, outside = {}, 0.0
     for raw, vals in rows:
-        d = bucket_date(raw, a.utc_offset_minutes)
+        d = text_day(raw)
+        if d is None:
+            x = None if isinstance(raw, bool) else number(raw)
+            d = days.get(int(x)) if x is not None and x >= 10**8 else None
         if d is None or d < since or d > until:
             outside += sum(vals)
             continue
@@ -432,20 +481,18 @@ def weekly(a, rules, z, kinds, today):
         row = {"week_start": start.isoformat(), "week_end": end.isoformat(), "full_week": (end - start).days == 6,
                "responses": int(wk["responses"])}
         if kind == "nps":
-            ans = wk["answers"]
-            s = nps_score(sum(v for k, v in ans.items() if k >= rules["nps_promoter_min"]),
-                          sum(v for k, v in ans.items() if rules["nps_passive_min"] <= k < rules["nps_promoter_min"]),
-                          sum(v for k, v in ans.items() if k < rules["nps_passive_min"]), rules, z)
+            s = nps_from_counts(wk["answers"], rules, z)
             row["nps"] = None if not s else {"score": s["score"], "interval": s["interval"], "n": s["n"], "sample": s["sample"]}
         elif kind == "csat":
-            ans = wk["answers"]
-            top = int(rules["csat_top_box"][str(stars)])
-            n = sum(ans.values())
-            s = csat_score(sum(v for k, v in ans.items() if k > stars - top), n, rules, z)
+            s = csat_from_counts(wk["answers"], stars, rules, z)
             row["csat"] = None if not s else {"score": s["score"], "interval": s["interval"], "n": s["n"], "sample": s["sample"]}
         out.append(row)
-    return {"since": since.isoformat(), "until": until.isoformat(), "utc_offset_minutes": a.utc_offset_minutes,
-            "question": a.trend_question, "weeks": out, "outside_window": int(outside)}
+    res = {"since": since.isoformat(), "until": until.isoformat(), "utc_offset_minutes": a.utc_offset_minutes,
+           "question": a.trend_question, "weeks": out, "outside_window": int(outside)}
+    if a.utc_offset_minutes is None and stamps:
+        res["dating"] = ("No UTC offset given: the first day bucket was taken to be --since. If that day had no answers, "
+                         "pass --utc-offset-minutes from the project's time zone.")
+    return res
 
 
 def splits(a, rules, z, kinds):
@@ -488,7 +535,7 @@ def splits(a, rules, z, kinds):
 def build(a, rules):
     z = z_value(rules["confidence"])
     try:
-        today = datetime.date.fromisoformat(a.today) if a.today else datetime.date.today()
+        today = datetime.date.fromisoformat(a.today)
     except ValueError:
         fail("--today must be a date as YYYY-MM-DD.")
     survey = survey_body(load(a.survey), a.survey)
@@ -540,7 +587,7 @@ def build(a, rules):
             row["answered"] = int(q_counts[i])
             row["answered_share"] = ratio(q_counts[i], base) if base else None
         if i in answers:
-            dist, score = distribution(q, kind, stars, answers[i], rules, z)
+            dist, score = distribution(q, kind, stars, answers[i], rules, z, q_counts.get(i))
             row.update(dist)
             if score:
                 row["score"] = score
@@ -551,13 +598,17 @@ def build(a, rules):
     status = str(survey.get("status") or "").lower()
     response = {"respondents": None if respondents is None else int(respondents), "shown": None if shown is None else int(shown),
                 "closed": None if closed is None else int(closed)}
-    if shown:
+    mismatch = shown is not None and ((respondents or 0) > shown or (closed or 0) > shown)
+    if shown and not mismatch:
         if respondents is not None:
             response["response_rate"] = ratio(respondents, shown)
             response["response_rate_interval"] = wilson(respondents, shown, z)
         if closed is not None:
             response["close_rate"] = ratio(closed, shown)
             response["close_rate_interval"] = wilson(closed, shown, z)
+    if mismatch:
+        response["rate_note"] = ("More respondents (or closers) than customers shown: no rate worked out. Check the denominator "
+                                 "covers the same window and the same survey.")
     if q_counts and respondents and max(q_counts.values()) > respondents:
         response["note"] = ("Some questions have more answers than respondents: the survey is probably recurrent, or customers "
                             "answered more than once in the window. Rates use customers.")
@@ -580,7 +631,7 @@ def build(a, rules):
         age = (today - datetime.datetime.fromtimestamp(edited, datetime.timezone.utc).date()).days
         if age >= rules["stale_edit_days"]:
             add("low", "not_edited_recently", f"Active and not edited for {age} days: check it still asks the right questions.", days=age)
-    if shown and respondents is not None and respondents / shown < rules["low_response_rate"]:
+    if shown and not mismatch and respondents is not None and respondents / shown < rules["low_response_rate"]:
         add("medium", "low_response_rate", "Few of the people shown or sent the survey answered it: shorten it, move it, or "
             "reconsider the timing.", response_rate=ratio(respondents, shown))
     if base:
@@ -599,8 +650,8 @@ def build(a, rules):
         if s["kind"] == "nps" and s["detractors"] > s["promoters"] and s["sample"] != "too_few":
             add("medium", "detractors_outnumber_promoters", "Detractors outnumber promoters: worth a follow-up flow for detractors.",
                 question=i, score=s["score"])
-        if s["kind"] == "csat" and s["sample"] != "too_few" and s["interval"] and s["interval"][1] < 0.5:
-            add("medium", "low_satisfaction", "Fewer than half are satisfied, even at the top of the interval.", question=i, score=s["score"])
+        if s["kind"] == "csat" and s["sample"] != "too_few" and s["interval"] and s["interval"][1] < rules["csat_low_share"]:
+            add("medium", "low_satisfaction", "Few are satisfied, even at the top of the interval.", question=i, score=s["score"])
     for row in out_q:
         o = row.get("other_typed_in")
         if o and o["share"] is not None and o["share"] >= rules["other_flag_share"] and o["count"]:
@@ -619,7 +670,7 @@ def build(a, rules):
         t = weekly(a, rules, z, kinds, today)
         result["trend"] = t
         full = [w for w in t["weeks"] if w["full_week"]]
-        if len(full) >= 3:
+        if len(full) >= rules["trend_min_full_weeks"]:
             earlier = statistics.median(w["responses"] for w in full[:-1])
             latest = full[-1]["responses"]
             if earlier >= rules["trend_min_weekly"] and latest < rules["trend_drop_share"] * earlier:
@@ -628,6 +679,9 @@ def build(a, rules):
                     latest=latest, earlier_median=earlier)
     if a.split:
         result["split"] = splits(a, rules, z, kinds)
+    if NULL_CELLS["count"]:
+        result["null_count_cells"] = NULL_CELLS["count"]
+        result["null_count_note"] = "Some count cells were empty or not numbers; they were treated as 0. Check the saved results."
     findings.sort(key=lambda f: (PRIORITY[f["priority"]], f["kind"], f.get("question", -1)))
     result["findings"] = findings
     result["summary"] = {"respondents": response["respondents"], "scores": {str(i): {"kind": s["kind"], "score": s["score"], "n": s["n"]}
@@ -649,14 +703,16 @@ def main():
     ap.add_argument("--trend", help="saved EQL: survey events by day, or a day-by-answer cross-tab for --trend-question")
     ap.add_argument("--trend-question", type=int, help="question position whose answers are the --trend columns (NPS or CSAT)")
     ap.add_argument("--since", help="first day of the trend window, YYYY-MM-DD in the project's time zone")
-    ap.add_argument("--until", help="last day of the trend window, YYYY-MM-DD (default: --today)")
-    ap.add_argument("--utc-offset-minutes", type=int, help="the project's UTC offset in minutes, read from the day buckets (UTC+1 is 60)")
+    ap.add_argument("--until", help="last day of the trend window, YYYY-MM-DD (default: the day before --today)")
+    ap.add_argument("--utc-offset-minutes", type=int, help="the project's UTC offset in minutes, from its time zone (UTC+1 is 60); leave out to anchor the first day bucket on --since")
     ap.add_argument("--split-question", type=int, help="question position the --split groups come from")
     ap.add_argument("--split", action="append", type=pair, default=[], help="LABEL=FILE: customers by a non-personal property for one answer group; repeat")
     ap.add_argument("--today", help="today's date as YYYY-MM-DD (default: the system date)")
     ap.add_argument("--rules", default=rules_default, help="rules file (default: this skill's references/rules.json)")
     ap.add_argument("--out", help="write the JSON here (a path in your working folder) instead of printing it")
     a = ap.parse_args()
+    if not a.today:
+        a.today = datetime.date.today().isoformat()
 
     rules = load_rules(a.rules)
     result = build(a, rules)

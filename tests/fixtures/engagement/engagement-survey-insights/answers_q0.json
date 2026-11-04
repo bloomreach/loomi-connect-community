@@ -1,6 +1,6 @@
 {
  "success": true,
- "query": "select ...",
+ "query": "select count event survey by event survey.answer grouping top 20 where ... and .answer is in [choices]",
  "analysis_type": "report",
  "data": {
   "columns": [
@@ -34,28 +34,6 @@
      {
       "type": "single",
       "value": "Advert"
-     }
-    ],
-    "values": [
-     20
-    ]
-   },
-   {
-    "headers": [
-     {
-      "type": "single",
-      "value": "my email is someone@example.com"
-     }
-    ],
-    "values": [
-     30
-    ]
-   },
-   {
-    "headers": [
-     {
-      "type": "single",
-      "value": "Other thing"
      }
     ],
     "values": [

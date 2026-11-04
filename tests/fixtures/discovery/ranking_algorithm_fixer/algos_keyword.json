@@ -109,6 +109,24 @@
     "createdBy": "editor@example.com",
     "lastModifiedAt": 1735689600000,
     "lastModifiedBy": "editor@example.com"
+   },
+   {
+    "id": 18,
+    "algoId": "br-jjj18888",
+    "name": "Lowercase default",
+    "type": "MANUAL",
+    "status": "default",
+    "searchType": "KEYWORD",
+    "catalog": null,
+    "domainKey": "acme_shop",
+    "signals": null,
+    "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1735689600000,
+    "createdBy": "editor@example.com",
+    "lastModifiedAt": 1735689600000,
+    "lastModifiedBy": "editor@example.com"
    }
   ],
   "meta": {

@@ -29,7 +29,7 @@ Rules for every write:
 - **Show the plan, then wait for an explicit "yes" that names what will change.** A yes covers one batch of the plan's `batches`, not the whole session. **Each delete needs its own yes**, naming the algorithm. **Each live weight change is a batch of its own**, with its own yes that names the pages it ranks.
 - **Never touch an algorithm in use by a running A/B test**, and never delete one a page uses or the default. The plan blocks these. Assigning an algorithm to a page (a `ranking_algo` rule) is out of scope.
 - **A/B test before changing a busy algorithm.** For the default, or one that ranks high-traffic pages, the plan blocks an in-place weight change and proposes a corrected copy, tested against the current one with `discovery-experiment-setup`. Only if the user, told this, still chooses the in-place change, add `skip_test` and re-plan.
-- **Margin and cost:** warn on any change touching a margin or cost-type signal, and never print that signal's values (`min`, `max`); its name and weight are fine. The script hides them in what it prints.
+- **Margin and cost:** warn on any change touching a margin or cost-type signal (one named like `sensitive_signal_words` in [references/rules.json](references/rules.json), or any `CUSTOM` signal), and never print a signal's values (`min`, `max`); its name and weight are fine. The script prints no signal's `min` or `max`.
 - **Save the undo before writing** (the plan file holds it, including the full definition of anything deleted). After each write, read the algorithm back and verify it. If a write fails, stop at once: say what was and wasn't changed, and give the undo.
 - **Only write what's in the saved plan.** If the user picks an alternative, change the change file and build the plan again.
 - Use only the write tools in the table, with only the plan's arguments. **Never** pass `model_training_status` (it restarts training), never call `create_abr_algorithm` with `ABR_MERCHANT` or `ABR_CATALOG` (they start 24–48 hours of training, and only one algorithm can train at a time), and never pass `weights` to `update_ranking_algorithm` for a trained ABR model (it turns it into `ABR_MANUAL` for good).
@@ -93,15 +93,15 @@ Write a change file in your working folder with your file-writing tool, in the f
 1. `search_ranking_algorithms` with `search_type="KEYWORD"` and again with `"CATEGORY"` (plus `domain_key` if the account has several catalogs), saved.
 2. `search_ranking_algorithms` with `algorithm_id` and `family` for **every** algorithm the plan touches or copies, saved. The list has no weights, so without the detail neither the change nor its undo can be planned.
 3. **Usage:** the review's `--out` file from `discovery-ranking-algorithm-review` if it ran in this session for this account and environment; otherwise run that skill's steps 4–6 first (top queries and categories, a product grid for each, `algorithm_review.py`). For a delete, also `get_ranking_rule` for any `ranking_algo` rule the user or the review names.
-4. **Running tests:** `search_discovery_experiments`, every page, saved. For each experiment whose status is running or missing, `get_ranking_rule` for each bucket's `ruleIdentifierInfo.id`, saved: the listing doesn't say which algorithm a bucket uses.
+4. **Running tests:** `search_discovery_experiments`, every page, saved. For each experiment that isn't finished (status not in `finished_statuses` in [references/rules.json](references/rules.json), or missing), `get_ranking_rule` for each bucket's `ruleIdentifierInfo.id`, saved: the listing doesn't say which algorithm a bucket uses.
 
 ### 4. Build the plan
 
 ```bash
-python3 <this skill's folder>/scripts/algorithm_fix_plan.py plan --changes <work>/changes.json --algorithms <work>/algos_keyword.json --algorithms <work>/algos_category.json --detail <work>/algo_11.json --review <work>/review.json --rule 7001=<work>/rule_7001.json --experiments <work>/experiments.json --account <account name> --environment staging --out <work>/plan-staging.json
+python3 <this skill's folder>/scripts/algorithm_fix_plan.py plan --changes <work>/changes.json --algorithms <work>/algos_keyword.json --algorithms <work>/algos_category.json --detail <work>/algo_11.json --review <work>/review.json --rule 7001=<work>/rule_7001.json --experiments <work>/experiments.json --account-file <work>/account.txt --environment staging --out <work>/plan-staging.json
 ```
 
-Repeat `--detail` and `--rule` once per file; `--grid <file>` adds saved product grids. Add `--site-group-id <id>` for a site. `--account`, `--environment` and `--out` are required. The `--out` file holds every payload and undo: keep it. What the script prints hides margin and cost values; take payloads from the `--out` file (`jq '.changes[] | select(.n == 1) | .payload' <work>/plan-staging.json`) and never show them to the user.
+Write the confirmed account name to `<work>/account.txt` with your file-writing tool first; never put it in the command. Repeat `--detail` and `--rule` once per file; `--grid <file>` adds saved product grids (with no `--review`, a delete gets a warning saying how few pages were checked). Add `--site-group-id <id>` for a site. `--account-file`, `--environment` and `--out` are required. The `--out` file holds every payload and undo: keep it. What the script prints leaves out every signal's `min` and `max`, and is what you show. The payloads in the `--out` file carry them (the write needs them): when you make a write, pass that change's `payload` from the file to the tool as it is, and never print it, quote it in a reply or table, or put it in a command.
 
 Each change has a `status`:
 
@@ -109,7 +109,7 @@ Each change has a `status`:
 - `blocked`: `problems` say why (weight outside the allowed range or not adding up, unknown signal, trained ABR model, busy algorithm without a test, in use, in a running test or a test whose rule wasn't read, default or Bloomreach's own ranker, name taken, custom-algorithm limit, missing detail or usage check). Fix the change and plan again, or drop it;
 - `no_change`: it already has those values.
 
-Weights are the top-level (combined) signals, shares of 100. Give the new value for the signals to change; `"rebalance": true` scales the others so the total stays 100. `batches` lists what to confirm, in order: creates and renames together, then each live weight change, then each delete, each on its own. Without scripts, apply the same checks by hand from [references/change-format.md](references/change-format.md) and the rules file.
+Weights are the top-level (combined) signals, shares of `weight_total` in [references/rules.json](references/rules.json). Give the new value for the signals to change; `"rebalance": true` scales the others so the total stays `weight_total`. Every weight sent is rounded to `weight_decimals` and adds up to exactly `weight_total`; `signals` lists each changed signal with `why` (requested, rebalanced, or moved by rounding). `batches` lists what to confirm, in order: creates and renames together, then each live weight change, then each delete, each on its own. Without scripts, apply the same checks by hand from [references/change-format.md](references/change-format.md) and the rules file.
 
 ### 5. Show the plan and confirm, one batch at a time
 
@@ -129,7 +129,7 @@ Ask for each batch: "Make changes 6 and 11 in staging? They create an untested c
 
 For each confirmed change, in plan order:
 
-1. Make the call with the `payload` from the plan file exactly, with `call_tool` if needed. Check `success`.
+1. Make the call with the `payload` from the plan file exactly, with `call_tool` if needed, without printing it. Check `success`.
 2. For a create, note the new `id` and `algoId` from the response; the id replaces `<id returned by change N>` in its undo. If a create's response is lost, **search for it by name** in a fresh list before trying again; never create twice.
 3. Read it back with `search_ranking_algorithms` and `algorithm_id` (the new ID for a create, the deleted one's for a delete) and save it (a tool error as its text).
 4. Check the batch:
@@ -165,7 +165,7 @@ A corrected copy ranks nothing yet. To find out whether it's better, hand it to 
 | Passing weights to a trained ABR model | It becomes `ABR_MANUAL` for good; copy it instead |
 | Deleting because the review didn't see it in use | The sample covers the top pages only; check rules too. Discovery refuses if a rule uses it |
 | Matching `br-standard` by `algoId` alone | Match by `algoId` and page type |
-| Sending weights that don't add up to 100 | Use `rebalance`, or give every weight |
+| Sending weights that don't add up to `weight_total` | Use `rebalance`, or give every weight |
 | Showing a margin signal's `min` and `max` | Show its name and weight only |
 | Retrying a create after a timeout | Search for it by name first |
 | Assigning the copy to a page | Out of scope: `discovery-experiment-setup` does it as a test |

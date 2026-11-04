@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import subprocess
@@ -98,12 +99,29 @@ class SurveyInsightsTest(unittest.TestCase):
         self.assertNotIn("distribution", q3)
         self.assertEqual(q3["answers_counted"], 60)
 
+    def test_single_choice_other_from_question_total(self):
+        out, raw = full()
+        self.assertEqual(out["questions"][0]["other_typed_in"]["count"], 50)  # 200 answers minus 150 on the choices
+        self.assertEqual(out["questions"][0]["distribution"][0]["share"], 0.45)
+        # An unfiltered result that still holds typed-in values: counted once, never printed
+        code, out2, raw2 = run("--survey", f("survey.json"), "--questions", f("questions.json"),
+                               "--answers", f"0={f('answers_q0_unfiltered.json')}", "--today", "2026-11-04")
+        self.assertEqual(code, 0, raw2)
+        self.assertEqual(out2["questions"][0]["other_typed_in"]["count"], 50)
+        for secret in ("someone@example.com", "Other thing"):
+            self.assertNotIn(secret, raw2)
+        # Without --questions, Other can't be worked out from a filtered result
+        code, out3, raw3 = run("--survey", f("survey.json"), "--answers", f"0={f('answers_q0.json')}", "--today", "2026-11-04")
+        self.assertEqual(code, 0, raw3)
+        self.assertIsNone(out3["questions"][0]["other_typed_in"]["count"])
+
     def test_multiple_choice_shares_are_of_responses(self):
         out, _ = full()
         d = {x["answer"]: x for x in out["questions"][4]["distribution"]}
         self.assertEqual(d["Price"]["count"], 14)  # "Price, Delivery" split into choices
         self.assertEqual(d["Price"]["share"], 0.7)
         self.assertIn("more than 100%", out["questions"][4]["note"])
+        self.assertIn("never repeat them", out["questions"][4]["note"])
 
     def test_weekly_trend_with_dst_buckets(self):
         out, _ = full()
@@ -208,6 +226,71 @@ class SurveyInsightsTest(unittest.TestCase):
 
     def test_deterministic(self):
         self.assertEqual(full()[1], full()[1])
+
+
+def local_midnight(day, offset_minutes):
+    d = datetime.datetime.fromisoformat(day + "T00:00:00").replace(tzinfo=datetime.timezone.utc)
+    return int((d - datetime.timedelta(minutes=offset_minutes)).timestamp())
+
+
+class SurveyInsightsMoreTest(unittest.TestCase):
+    def trend(self, offset, pass_offset=True, until="2026-09-20"):
+        days = ["2026-09-07", "2026-09-13", "2026-09-14", "2026-09-20"]
+        with tempfile.TemporaryDirectory() as tmp:
+            t = write(tmp, "t.json", eql([(local_midnight(d, offset), 1 + i) for i, d in enumerate(days)]))
+            args = ["--survey", f("survey.json"), "--trend", t, "--since", "2026-09-07", "--until", until, "--today", "2026-11-04"]
+            if pass_offset:
+                args += ["--utc-offset-minutes", str(offset)]
+            code, out, raw = run(*args)
+        self.assertEqual(code, 0, raw)
+        return out["trend"]
+
+    def test_far_east_and_west_offsets(self):
+        for off in (13 * 60, 14 * 60, -10 * 60):
+            for given in (True, False):
+                t = self.trend(off, given)
+                self.assertEqual([w["responses"] for w in t["weeks"]], [3, 7], (off, given))
+                self.assertEqual(t["outside_window"], 0)
+                self.assertEqual("dating" in t, not given)
+
+    def test_offset_out_of_range(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            t = write(tmp, "t.json", eql([(local_midnight("2026-09-07", 0), 1)]))
+            code, out, _ = run("--survey", f("survey.json"), "--trend", t, "--since", "2026-09-07", "--utc-offset-minutes", "900")
+        self.assertEqual(code, 1)
+        self.assertIn("-720", out["error"])
+
+    def test_default_until_is_yesterday(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            t = write(tmp, "t.json", eql([(local_midnight("2026-09-07", 0), 1)]))
+            code, out, raw = run("--survey", f("survey.json"), "--trend", t, "--since", "2026-09-07", "--today", "2026-09-14")
+        self.assertEqual(code, 0, raw)
+        self.assertEqual(out["trend"]["until"], "2026-09-13")
+        self.assertEqual(len(out["trend"]["weeks"]), 1)
+        self.assertTrue(out["trend"]["weeks"][0]["full_week"])
+
+    def test_more_respondents_than_shown(self):
+        code, out, raw = run("--survey", f("survey.json"), "--respondents", "120", "--shown", "100", "--today", "2026-11-04")
+        self.assertEqual(code, 0, raw)
+        r = out["response"]
+        self.assertNotIn("response_rate", r)
+        self.assertIn("same window", r["rate_note"])
+        self.assertNotIn(("low_response_rate", None), kinds(out))
+
+    def test_null_cells_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = write(tmp, "r.json", eql([("en", None), ("de", "n/a"), (None, 40)]))
+            code, out, raw = run("--survey", f("survey.json"), "--respondents", p, "--today", "2026-11-04")
+        self.assertEqual(code, 0, raw)
+        self.assertEqual(out["response"]["respondents"], 40)
+        self.assertEqual(out["null_count_cells"], 2)
+
+    def test_low_csat_flag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            a = write(tmp, "a.json", eql([("1", 60), ("2", 40), ("5", 20)]))
+            code, out, raw = run("--survey", f("survey.json"), "--answers", f"2={a}", "--today", "2026-11-04")
+        self.assertEqual(code, 0, raw)
+        self.assertEqual(kinds(out)[("low_satisfaction", 2)], "medium")
 
 
 if __name__ == "__main__":

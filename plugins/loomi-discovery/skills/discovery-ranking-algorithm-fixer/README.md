@@ -27,6 +27,6 @@ See [examples/fix-algorithm-review-findings.md](examples/fix-algorithm-review-fi
 - It never assigns an algorithm to a page (`ranking_algo` rules), never retrains, and never creates trained ABR models.
 - "Not in use" comes from the review's sample of top pages and any rules given; Discovery also refuses to delete an algorithm a rule still uses.
 - Passing weights to a trained ABR model would turn it into `ABR_MANUAL` for good, so the skill copies it instead.
-- Margin and cost-type signals: changes are flagged, and their values are never printed.
+- Margin, cost and custom signals: changes are flagged, and no signal's `min` or `max` is printed. They stay in the plan file, and the write call itself carries them to Discovery (with the undo), so they do pass through the assistant's tool call, though never into its replies.
 - Deletes are permanent: the undo recreates the algorithm from the saved definition with a new ID, and trained ABR models can only be rebuilt in Ranking Studio.
 - The write payloads follow the tools' published schemas; they haven't been run against a live account while building the skill. ABR weights were checked against the tool's example only, as the demo account has no ABR models.

@@ -46,7 +46,7 @@ ACCOUNT_ERROR = ("Loomi Connect returned an error about the account, site, envir
                  "because it can list other accounts. Check the account name and access, then read again.")
 ACTIONS = ("update", "create", "delete")
 EDITOR_KEYS = {"createdBy", "lastModifiedBy", "modifiedBy", "user", "userEmail", "email"}
-HIDDEN = "<hidden: margin or cost value>"
+HIDDEN = "<hidden: in the plan file>"
 SCOPE_OF = {"sitesearch": "KEYWORD", "sitesearch_global": "KEYWORD", "category": "CATEGORY",
             "category_global": "CATEGORY", "global": None}
 
@@ -147,6 +147,11 @@ def sensitive(name):
     return any(w in low for w in RULES["sensitive_signal_words"])
 
 
+def commercial(name, feature_type=None):
+    """A margin or cost-type signal: its name says so, or it's a custom catalog attribute (featureType CUSTOM)."""
+    return sensitive(name) or str(feature_type or "").upper() == "CUSTOM"
+
+
 def strip_editors(obj):
     """A copy without editor names or emails (createdBy, lastModifiedBy, user)."""
     if isinstance(obj, dict):
@@ -156,27 +161,29 @@ def strip_editors(obj):
     return obj
 
 
+SIGNAL_KEEP = ("feature_key", "display_weight", "weight", "featureType", "type")
+
+
 def mask(obj):
-    """The plan as printed: a margin or cost-type signal keeps its name and weight; its min, max and any other
-    values are hidden (they are the catalog's margin or cost values). The --out file keeps them for the undo."""
+    """The plan as printed: every signal keeps its name, type and weight; its min, max and any other values are
+    hidden (for a margin or cost signal they are the catalog's commercial values, and they're never needed for
+    display). The --out file keeps them for the undo."""
     if isinstance(obj, list):
         return [mask(v) for v in obj]
     if not isinstance(obj, dict):
         return obj
-    if "feature_key" in obj and sensitive(obj.get("feature_key")):  # an ABR weight entry
-        return {k: (v if k in ("feature_key", "display_weight", "weight", "featureType", "type") else HIDDEN)
-                for k, v in obj.items()}
-    out = {}
-    for k, v in obj.items():
-        if isinstance(v, dict) and sensitive(k) and ("weight" in v or "min" in v or "max" in v):
-            out[k] = {kk: (vv if kk in ("weight", "featureType") else HIDDEN) for kk, vv in v.items()}
-        else:
-            out[k] = mask(v)
-    return out
+    if "feature_key" in obj or (("weight" in obj or "featureType" in obj) and ("min" in obj or "max" in obj)):
+        return {k: (v if k in SIGNAL_KEEP else HIDDEN) for k, v in obj.items()}
+    return {k: mask(v) for k, v in obj.items()}
 
 
 # ---------------------------------------------------------------------------------------------
 # Inputs
+
+def default_status(alg):
+    """Whether an algorithm is the default for its page type (status compared case-insensitively)."""
+    return norm(alg.get("status")) == "default"
+
 
 def family_of(alg):
     return "abr" if str(alg.get("type") or "").upper().startswith("ABR_") else "legacy"
@@ -298,18 +305,22 @@ def review_usage(path):
 
 
 def running_experiments(path):
-    """Experiments that may be running (status in running_statuses, or missing): [{name, rule_ids}]."""
+    """Experiments that aren't known to be finished (status missing, or not in finished_statuses):
+    [{name, rule_ids}]."""
     if not path:
         return None
-    running = {norm(x) for x in RULES["running_statuses"]}
+    finished = {norm(x) for x in RULES["finished_statuses"]}
     out = []
     for e in rows(path):
         status = norm(e.get("experimentStatus") or e.get("status"))
-        if status and status not in running:
-            continue
-        ids = sorted({int(b["ruleIdentifierInfo"]["id"]) for b in e.get("buckets") or []
-                      if isinstance(b, dict) and isinstance(b.get("ruleIdentifierInfo"), dict)
-                      and isinstance(b["ruleIdentifierInfo"].get("id"), int)})
+        if status and status in finished:
+            continue  # anything else, or no status at all, may be running
+        ids = set()
+        for b in e.get("buckets") or []:
+            info = (b or {}).get("ruleIdentifierInfo") if isinstance(b, dict) else None
+            if isinstance(info, dict) and info.get("id") not in (None, ""):
+                ids.add(as_id(info["id"], path))
+        ids = sorted(ids)
         out.append({"name": str(e.get("experimentName") or e.get("name") or e.get("id")), "rule_ids": ids})
     return sorted(out, key=lambda x: x["name"])
 
@@ -391,21 +402,24 @@ def blocked(r, kind, target, tool):
 
 
 def new_weights(r, table, text_signals, edits, rebalance):
-    """The full weight table after the edits ({signal: Decimal}) and the signals that changed, or (None, [])."""
-    if not isinstance(edits, dict) or not edits:
+    """The full weight table to send ({signal: Decimal}, every weight rounded to weight_decimals and adding up to
+    exactly weight_total) and why each signal changed ({signal: reason}), or (None, {})."""
+    if edits is not None and (not isinstance(edits, dict) or not edits):
         r.block("weights must be an object of {signal: new weight}.")
-        return None, []
+        return None, {}
     lo, hi = Decimal(str(RULES["weight_min"])), Decimal(str(RULES["weight_max"]))
     total, tol = Decimal(str(RULES["weight_total"])), Decimal(str(RULES["weight_sum_tolerance"]))
+    q = Decimal(1).scaleb(-RULES["weight_decimals"])
+    n = RULES["max_listed"]
     want = {}
-    for sig in sorted(edits):
+    for sig in sorted(edits or {}):
         if sig not in table:
             if sig in text_signals:
                 r.block(f"'{sig}' is a text-matching signal inside text_score; only the top-level (combined) weights "
                         "can be changed here. Change text matching in Ranking Studio.")
             else:
-                r.block(f"'{sig}' isn't a signal of this algorithm (its signals: {', '.join(sorted(table)[:8])}"
-                        f"{'…' if len(table) > 8 else ''}). Adding a signal means a new algorithm, built in Ranking Studio.")
+                r.block(f"'{sig}' isn't a signal of this algorithm (its signals: {', '.join(sorted(table)[:n])}"
+                        f"{'…' if len(table) > n else ''}). Adding a signal means a new algorithm, built in Ranking Studio.")
             continue
         v = dec(edits[sig])
         if v is None:
@@ -416,62 +430,103 @@ def new_weights(r, table, text_signals, edits, rebalance):
         else:
             want[sig] = v
     if r.problems:
-        return None, []
-    if any(table[s] is None for s in table):
+        return None, {}
+    if not table or any(table[s] is None for s in table):
         r.block("Some of this algorithm's saved weights aren't numbers, so the change can't be checked.")
-        return None, []
+        return None, {}
     after = dict(table, **want)
-    if rebalance:
+    if rebalance and want:
         others = sorted(s for s in table if s not in want)
         rest, old_rest = total - sum(want.values(), Decimal(0)), sum((table[s] for s in others), Decimal(0))
         if rest < 0:
-            r.block(f"The new weights add up to {sum(want.values())}, more than {RULES['weight_total']}.")
-            return None, []
+            r.block(f"The new weights add up to {sum(want.values())}, more than weight_total ({RULES['weight_total']}).")
+            return None, {}
         if not others or old_rest == 0:
             r.block("There are no other weighted signals to rebalance: give every weight.")
-            return None, []
-        q = Decimal(1).scaleb(-RULES["weight_decimals"])
+            return None, {}
         for s in others:
-            after[s] = (table[s] * rest / old_rest).quantize(q, ROUND_HALF_UP)
-        biggest = max(others, key=lambda s: (after[s], s))
-        after[biggest] += rest - sum((after[s] for s in others), Decimal(0))  # rounding remainder on the biggest
-        if after[biggest] < 0:
-            r.block("Rebalancing leaves a negative weight; give the weights in full instead.")
-            return None, []
-    s = sum(after.values(), Decimal(0))
-    if abs(s - total) > tol:
-        r.block(f"The weights would add up to {show(s)}, not {RULES['weight_total']}. Set \"rebalance\": true to scale "
-                "the other signals to fit, or give every weight.")
-        return None, []
-    changed = sorted(k for k in after if after[k] != table[k])
-    return after, changed
+            after[s] = table[s] * rest / old_rest
+    elif abs(sum(after.values(), Decimal(0)) - total) > tol:
+        r.block(f"The weights would add up to {show(sum(after.values(), Decimal(0)))}, not weight_total "
+                f"({RULES['weight_total']}). Set \"rebalance\": true to scale the other signals to fit, or give "
+                "every weight.")
+        return None, {}
+    # Round every weight and put the remainder on the biggest, so the total is exactly weight_total.
+    after = {s: v.quantize(q, ROUND_HALF_UP) for s, v in after.items()}
+    biggest = max(after, key=lambda s: (after[s], s))
+    after[biggest] += total - sum(after.values(), Decimal(0))
+    bad = sorted(s for s, v in after.items() if not lo <= v <= hi)
+    if bad:
+        r.block(f"After rebalancing and rounding, {', '.join(bad[:n])} would be outside the allowed range "
+                f"{RULES['weight_min']} to {RULES['weight_max']}: give the weights in full instead.")
+        return None, {}
+    why = {}
+    for s in sorted(after):
+        if after[s] != table[s]:
+            why[s] = ("requested" if s in want and after[s] == want[s] else
+                      "rebalanced" if rebalance and want and s not in want else
+                      "rounded so the weights add up to exactly weight_total")
+    return after, why
 
 
-def apply_weights(alg, kind, after, changed):
-    """The model_metadata (legacy) or weights list (ABR) with only the changed signals rewritten."""
+def float_weights(after, order):
+    """{signal: float} in payload order whose plain left-to-right float sum is exactly weight_total: the Decimal
+    values add up exactly, but their floats may not, so the biggest takes the float difference."""
+    out = {s: float(after[s]) for s in order}
+    if not order:
+        return out
+    target = float(RULES["weight_total"])
+    biggest = max(order, key=lambda s: (after[s], s))
+    for _ in range(4):
+        running = 0.0
+        for s in order:  # plain left-to-right addition, as a server would; sum() compensates on Python 3.12+
+            running += out[s]
+        if running == target:
+            break
+        out[biggest] = math.nextafter(out[biggest], math.inf if running < target else -math.inf)
+    return out
+
+
+def apply_weights(alg, kind, after):
+    """The model_metadata (legacy) or weights list (ABR) with every top-level weight rewritten from `after`."""
     if kind == "abr":
         out = copy.deepcopy(alg.get("weights") or [])
-        for w in out:
-            if isinstance(w, dict) and w.get("feature_key") in changed:
-                w["display_weight" if "display_weight" in w or "weight" not in w else "weight"] = float(after[w["feature_key"]])
+        entries = [w for w in out if isinstance(w, dict) and w.get("feature_key") in after]
+        floats = float_weights(after, [w["feature_key"] for w in entries])
+        for w in entries:
+            w["display_weight" if "display_weight" in w or "weight" not in w else "weight"] = floats[w["feature_key"]]
         return out
     meta = copy.deepcopy(alg.get("modelMetaData") or {})
-    for sig in changed:
-        meta["combined"][sig]["weight"] = float(after[sig])
+    combined = meta["combined"]
+    floats = float_weights(after, [s for s in combined if s in after])
+    for sig, v in floats.items():
+        combined[sig]["weight"] = v
     return meta
 
 
-def weight_rows(table, after, changed):
-    return [{"signal": s, "before": show(table[s]), "after": show(after[s]),
-             "margin_or_cost": sensitive(s)} for s in changed]
+def signal_types(alg):
+    """{signal: featureType} for the top-level signals."""
+    if family_of(alg) == "abr":
+        return {str(w.get("feature_key")): str(w.get("featureType") or w.get("type") or "")
+                for w in alg.get("weights") or [] if isinstance(w, dict)}
+    combined = (alg.get("modelMetaData") or {}).get("combined") or {}
+    return {str(k): str(v.get("featureType") or "") for k, v in combined.items() if isinstance(v, dict)}
 
 
-def weight_warnings(r, alg, changed):
-    touched = sorted(s for s in changed if sensitive(s))
+def weight_rows(alg, table, after, why):
+    types = signal_types(alg)
+    return [{"signal": s, "before": show(table[s]), "after": show(after[s]), "why": why[s],
+             "margin_or_cost": commercial(s, types.get(s))} for s in sorted(why)]
+
+
+def weight_warnings(r, alg, why, trained=True):
+    types = signal_types(alg)
+    touched = sorted(s for s in why if commercial(s, types.get(s)))
     if touched:
-        r.warn(f"This changes the weight of margin or cost-type signal(s) {', '.join(touched)}: how much commercial "
-               "data drives the order. A/B test it before it ranks for everyone; the signal's values are never shown.")
-    if str(alg.get("type") or "").upper().startswith("ML_"):
+        r.warn(f"This changes the weight of margin, cost or custom catalog signal(s) {', '.join(touched)}: how much "
+               "commercial data drives the order. A/B test it before it ranks for everyone; the signals' values are "
+               "never shown.")
+    if trained and str(alg.get("type") or "").upper().startswith("ML_") and why:
         r.warn("This is a trained model: hand-set weights replace what training learned. A corrected MANUAL copy "
                "keeps the original to compare against.")
 
@@ -534,20 +589,21 @@ def plan_update(r, ctx):
         elif kind is None:
             r.block(f"{typ or 'This algorithm'} has no editable weights (classic and non-linear rankers don't).")
         else:
-            after, changed = new_weights(r, table, text, weights, bool(r.raw.get("rebalance")))
+            after, why = new_weights(r, table, text, weights, bool(r.raw.get("rebalance")))
+            changed = sorted(why)
             if after is not None and changed:
-                new = apply_weights(alg, kind, after, changed)
+                new = apply_weights(alg, kind, after)
                 old = copy.deepcopy(alg.get("weights") if kind == "abr" else alg.get("modelMetaData"))
                 payload["weights" if kind == "abr" else "model_metadata"] = new
                 undo["weights" if kind == "abr" else "model_metadata"] = old
                 before["weights"] = {s: show(table[s]) for s in changed}
                 after_shown["weights"] = {s: show(after[s]) for s in changed}
-                extra["signals"] = weight_rows(table, after, changed)
+                extra["signals"] = weight_rows(alg, table, after, why)
                 extra["expected_weights"] = expected(after)
-                weight_warnings(r, alg, changed)
+                weight_warnings(r, alg, why)
                 hits = ctx.seen_in_use(aid)
                 usage = (ctx.usage or {}).get(aid, {})
-                is_default = alg.get("status") == "Default"
+                is_default = default_status(alg)
                 busy = is_default or usage.get("visits", Decimal(0)) >= RULES["high_traffic_visits"]
                 if not ctx.has_usage:
                     r.block("No usage check: pass the review (--review) or product grids (--grid), so the plan knows "
@@ -560,7 +616,6 @@ def plan_update(r, ctx):
                             "user chooses to change it in place anyway.")
                 elif busy:
                     r.warn("Changed in place on high-traffic pages without an A/B test, as the user chose.")
-                r.problems.extend(p for p in ctx.test_problems(aid) if p not in r.problems)
                 live = "live"
                 where = ", ".join(sorted({h["where"] for h in hits})[:RULES["max_listed"]])
                 note = ((f"Live at once on every page this algorithm ranks ({'the default; ' if is_default else ''}"
@@ -569,7 +624,10 @@ def plan_update(r, ctx):
                         (". Legacy weights re-sync, so its status shows Syncing for about 20 minutes." if kind != "abr" else "."))
             elif after is not None:
                 r.warn("The weights already have these values.")
-    if len(payload) == len(dict(ctx.base(), algorithm_id=aid, family=fam)):
+    if len(payload) > len(dict(ctx.base(), algorithm_id=aid, family=fam)):
+        # Any change, a rename included, waits for a running test that uses the algorithm to end.
+        r.problems.extend(p for p in ctx.test_problems(aid) if p not in r.problems)
+    else:
         if not r.problems:
             return [change(r, "update", target, "update_ranking_algorithm", None, None, None, [], "none", None,
                            no_change=True)]
@@ -601,14 +659,11 @@ def plan_create(r, ctx):
                 f"{RULES['max_custom_per_catalog']}: delete one first (its own plan), then plan this copy.")
     if not domain:
         r.block(f"Algorithm {src_id} has no domainKey or catalog, so the copy's catalog is unknown.")
-    after, changed = (new_weights(r, table, text, r.raw["weights"], bool(r.raw.get("rebalance")))
-                      if r.raw.get("weights") is not None else (dict(table), []))
+    # A manual copy's weights must add up to exactly weight_total, so they're always rounded and normalised.
+    after, why = new_weights(r, table, text, r.raw.get("weights"), bool(r.raw.get("rebalance")))
     if after is None or r.problems:
         return blocked(r, "create", f"new algorithm '{name}'", None)
-    if any(v is None for v in after.values()):
-        r.block("Some of the source's weights aren't numbers, so the copy can't be planned.")
-        return blocked(r, "create", f"new algorithm '{name}'", None)
-    weight_warnings(r, {"type": "MANUAL"}, changed)
+    weight_warnings(r, src, why, trained=False)
     payload = dict(ctx.base(), name=name, search_type=st)
     if r.raw.get("description"):
         payload["description"] = str(r.raw["description"])
@@ -617,20 +672,20 @@ def plan_create(r, ctx):
             r.block(f"Algorithm {src_id} has no algoId to clone from.")
         tool, fam, new_type = "create_abr_algorithm", "abr", "ABR_MANUAL"
         payload.update(type=new_type, catalog=domain, base_algo_id=src.get("algoId"),
-                       weights=apply_weights(src, kind, after, changed))
+                       weights=apply_weights(src, kind, after))
     else:
         tool, fam, new_type = "create_ranking_algorithm", "legacy", "MANUAL"
-        payload.update(type=new_type, domain_key=domain, model_metadata=apply_weights(src, kind, after, changed))
+        payload.update(type=new_type, domain_key=domain, model_metadata=apply_weights(src, kind, after))
     target = f"new algorithm '{name}' ({str(st).lower()}, copy of {ctx.label(src)})"
     return [change(r, "create", target, tool, payload, None,
                    {"name": name, "type": new_type, "search_type": st,
-                    "weights": {s: show(after[s]) for s in changed}},
+                    "weights": {s: show(after[s]) for s in sorted(why)}},
                    [{"tool": "delete_ranking_algorithm",
                      "payload": dict(ctx.base(), algorithm_id="<id returned by the create>", family=fam),
                      "note": "Deleting the copy removes it; nothing points at it."}],
                    "none", "None: a new algorithm ranks nothing until a ranking_algo rule assigns it (that is "
                    "discovery-experiment-setup's job, as an A/B test).",
-                   signals=weight_rows(table, after, changed), expected_weights=expected(after),
+                   signals=weight_rows(src, table, after, why), expected_weights=expected(after),
                    expected_type=new_type, expected_search_type=st, copy_of=src_id)]
 
 
@@ -644,9 +699,18 @@ def recreate(ctx, alg):
     note = ("Recreated with a new id and algoId and no edit history. Nothing was assigned to the old one, so "
             "nothing needs repointing.")
     if fam == "legacy" and (alg.get("modelMetaData") or {}).get("combined"):
-        payload = dict(base, type="MANUAL", domain_key=domain, model_metadata=copy.deepcopy(alg["modelMetaData"]))
+        kind, table, text = weight_table(alg)
+        probe = Req(0, {})
+        after, why = new_weights(probe, table, text, None, False)
+        meta = apply_weights(alg, kind, after) if after is not None else copy.deepcopy(alg["modelMetaData"])
+        payload = dict(base, type="MANUAL", domain_key=domain, model_metadata=meta)
         extra = "" if typ == "MANUAL" else (f" It comes back as MANUAL with the saved weights; as {typ} it would "
                                             "retrain and learn new ones.")
+        if why:
+            extra += (" Its weights are rounded so they add up to exactly weight_total, as a MANUAL algorithm needs "
+                      f"({len(why)} signal(s) moved by rounding).")
+        elif after is None:
+            extra += " Its saved weights don't add up to weight_total, so Discovery may refuse the recreate."
         return [{"tool": "create_ranking_algorithm", "payload": payload, "note": note + extra}], None
     if typ == "ABR_MANUAL" and alg.get("baseAlgoId"):
         payload = dict(base, type="ABR_MANUAL", catalog=domain, base_algo_id=alg["baseAlgoId"],
@@ -662,7 +726,7 @@ def plan_delete(r, ctx):
     if alg is None or r.problems:
         return blocked(r, "delete", f"algorithm {aid}" if alg is None else ctx.label(alg), "delete_ranking_algorithm")
     target, typ = ctx.label(alg), str(alg.get("type") or "").upper()
-    if alg.get("status") == "Default":
+    if default_status(alg):
         r.block("It's the default algorithm for its page type: everything without an assignment uses it.")
     if typ in [t.upper() for t in RULES["protected_types"]] or alg.get("algoId") == "br-standard":
         r.block(f"{typ} is one of Bloomreach's own rankers; it can't be recreated as it was.")
@@ -677,9 +741,13 @@ def plan_delete(r, ctx):
     r.problems[:] = sorted(set(r.problems), key=r.problems.index)
     undo, undo_note = recreate(ctx, alg)
     r.warn("Deletes can't be reversed in Discovery. The undo recreates it from the saved definition, with a new ID.")
-    if ctx.has_usage and ctx.usage is not None:
+    if ctx.usage is not None and ctx.sampled:
         r.warn(f"'Not in use' covers the review's {ctx.sampled} sampled pages and the rules given; Discovery itself "
                "refuses to delete an algorithm a rule still uses.")
+    elif ctx.has_usage:
+        r.warn(f"Only {len(ctx.a.grid)} product grid(s) and the rules given were checked, not the review's sample of "
+               "top pages: run discovery-ranking-algorithm-review and pass --review before deleting, unless the user "
+               "accepts this. Discovery itself refuses to delete an algorithm a rule still uses.")
     definition = strip_editors({k: v for k, v in alg.items() if not k.startswith("_")})
     before = {"id": aid, "algoId": alg.get("algoId"), "name": alg.get("name"), "type": alg.get("type"),
               "status": alg.get("status"), "search_type": alg.get("searchType"), "definition": definition}
@@ -736,12 +804,12 @@ def cmd_plan(a):
             for u in c["undo"]:
                 u["payload"]["algorithm_id"] = f"<id returned by change {n}>"
     changes = [dict({k: c.get(k) for k in ORDER}, **{k: v for k, v in c.items() if k not in ORDER}) for c in changes]
-    needs_tests = any(c["status"] == "ready" and (c["kind"] == "delete" or c["live_impact"] == "live") for c in changes)
-    if ctx.exps is None and needs_tests:
+    if ctx.exps is None and any(c["kind"] in ("update", "delete") for c in changes):
         fail("No --experiments file: read search_discovery_experiments (every page), save it and pass it with "
-             "--experiments. A plan with weight changes or deletes needs it.")
+             "--experiments. A plan that changes or deletes an algorithm needs it.")
     return {"ok": True, "account": a.account, "environment": a.environment, "site_group_id": a.site_group_id,
-            "usage_checked": ctx.has_usage, "experiments_checked": ctx.exps is not None,
+            "usage_checked": ctx.has_usage, "usage_pages_checked": ctx.sampled + len(a.grid),
+            "experiments_checked": ctx.exps is not None,
             "counts": {s: sum(1 for c in changes if c["status"] == s) for s in ("ready", "blocked", "no_change")},
             "changes": changes, "batches": build_batches(changes)}
 
@@ -824,7 +892,7 @@ def cmd_verify(a):
                 bad.append("type")
             if rec.get("searchType") != c.get("expected_search_type"):
                 bad.append("search type")
-            if rec.get("status") == "Default":
+            if default_status(rec):
                 bad.append("status (the copy became the Default)")
         res = dict(row, result="not_in_place" if bad else "in_place", ok=not bad, status=rec.get("status"),
                    weights_synced=rec.get("weightFileStatus"),
@@ -846,6 +914,23 @@ def numbered_file(text):
         return int(n), path.strip()
     except ValueError:
         raise argparse.ArgumentTypeError(f"{n!r} isn't a number")
+
+
+def account_name(a):
+    """The account name from --account-file (written by the assistant), or a plain --account."""
+    if a.account_file:
+        try:
+            name = Path(a.account_file).read_text(encoding="utf-8").strip()
+        except OSError as e:
+            fail(f"{a.account_file}: can't read it ({type(e).__name__}).")
+    else:
+        name = a.account.strip()
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", name):
+            fail("--account takes only letters, digits, hyphens and underscores; write the name to a file and pass "
+                 "--account-file instead.")
+    if not name or "\n" in name:
+        fail("The account name is empty or spans several lines.")
+    return name
 
 
 def write_out(path, obj):
@@ -871,7 +956,9 @@ def main():
     p.add_argument("--rule", action="append", default=[], type=numbered_file,
                    help="ID=FILE: a saved get_ranking_rule result (assignment or experiment bucket rule; repeat)")
     p.add_argument("--experiments", help="saved search_discovery_experiments listing (every page)")
-    p.add_argument("--account", required=True, help="the Discovery account name the user confirmed")
+    acct = p.add_mutually_exclusive_group(required=True)
+    acct.add_argument("--account-file", help="a text file holding the Discovery account name the user confirmed")
+    acct.add_argument("--account", help="the account name, only if it is plain letters, digits, hyphens and underscores")
     p.add_argument("--environment", required=True, choices=["staging", "production"],
                    help="where to write: staging first where the account has it; production needs its own plan")
     p.add_argument("--site-group-id", help="site group ID or site name, copied into every payload and undo")
@@ -883,6 +970,7 @@ def main():
     v.add_argument("--out", help="also write the result to this file")
     a = ap.parse_args()
     if a.cmd == "plan":
+        a.account = account_name(a)
         result = cmd_plan(a)
         write_out(a.out, result)
         print(json.dumps(mask(result), indent=2, ensure_ascii=False))

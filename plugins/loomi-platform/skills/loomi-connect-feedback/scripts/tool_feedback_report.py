@@ -5,7 +5,7 @@ Usage:
   python3 tool_feedback_report.py list-known --doc known-tool-behaviour.md [--published-tools published-tools.txt]
          [--sent-log sent.jsonl] [--out known.json]
   python3 tool_feedback_report.py build --report report.json --environment production|staging
-         [--known-doc known-tool-behaviour.md] [--private-terms terms.txt] [--published-tools published-tools.txt]
+         --private-terms terms.txt [--known-doc known-tool-behaviour.md] [--published-tools published-tools.txt]
          [--sent-log sent.jsonl] [--out plan.json]
   python3 tool_feedback_report.py verify --plan plan.json --response 1=response.json [--sent-log sent.jsonl]
          [--out result.json]
@@ -14,18 +14,21 @@ list-known: lists the items in docs/known-tool-behaviour.md marked as worth repo
 known_marker), with line number, section, the tools they name, a link to the line, and whether the sent log already
 has them.
 
-build: --report is ONE report (references/report-format.md): tool, summary, gap_type, completion_estimate, expected,
+build: --report is ONE report (references/feedback-fields.md): tool, summary, gap_type, completion_estimate, expected,
 actual, arguments, and optionally response_excerpt, what_i_tried, suggestion, product, known_line, client, model.
-It replaces every ID, account or project name, email, URL, auth_key, token and other secret in the arguments and the
-response excerpt with a <placeholder>, writes the feedback text, and lints everything: an email, a secret-shaped
-pair, a long hex or UUID ID, a URL outside this repository, a phone number or a --private-terms entry left anywhere,
-or a field over the tool's length limit, makes the change blocked. It prints a plan in the shape in
-docs/skill-authoring.md ("Plan files for write skills"): one create change for submit_llm_feedback, live_impact none.
+Arguments go through an allow-list: only numbers, booleans, ISO dates and plain values of enum-like keys
+(allowed_arg_keys) are kept; every other value becomes a <placeholder> named after its key. A response excerpt that
+parses as JSON is treated the same way. Free text is redacted (URLs and hosts, emails, tokens and secret pairs, IDs,
+IP addresses, phone numbers, names after "user", "by" and similar, and every --private-terms entry), then linted
+with the same patterns and stricter ones: anything left, or a field over the tool's length limit, makes the change
+blocked. Redaction is best effort: the assistant and the user still read the whole report before it's sent. It
+prints a plan in the shape in docs/skill-authoring.md ("Plan files for write skills"): one create change for
+submit_llm_feedback, live_impact none.
 
 verify: --response 1=FILE is submit_llm_feedback's saved response. Loomi Connect has no tool to read a report back,
-so this reads the response only: accepted (with the ID when there is one), rejected (nothing was recorded: invalid
-or rate-limited) or unknown (it may have been recorded: never resend). --sent-log appends accepted and unknown
-reports, so build blocks sending the same report twice.
+so this reads the response only: accepted (success true or an ID, and no negative wording), rejected (nothing was
+recorded: invalid, rate-limited or refused) or unknown (it may have been recorded: never resend). --sent-log appends
+accepted and unknown reports, so build blocks sending the same report twice.
 
 It never calls Loomi Connect: the assistant makes the one call, after confirmation. Standard library only.
 """
@@ -41,22 +44,49 @@ TOOL_NAME = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)+$")
 TOOL_VERBS = ("get_", "list_", "search_", "create_", "update_", "delete_", "upsert_", "import_", "clone_", "start_",
               "end_", "archive_", "bulk_", "calculate_", "estimate_", "execute_", "generate_", "preview_", "compare_",
               "validate_", "submit_")
-EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")
+
+
+def words(key):
+    return "|".join(sorted((re.escape(w) for w in RULES[key]), key=len, reverse=True))
+
+
+# Shared by redaction and lint. A placeholder is <name>; nothing here matches inside one.
 URL = re.compile(r"https?://[^\s<>\"'`)\]}]+", re.I)
+PROTOCOL_RELATIVE = re.compile(r"(?<![:\w/])//[\w-]+(?:\.[\w-]+)+[^\s<>\"'`)\]}]*")
+SCHEMELESS = re.compile(r"(?<![\w.@/<-])[\w-]+(?:\.[\w-]+)+/[^\s<>\"'`)\]}]*")  # host/path, as in algorithm_fix_plan.py
+BARE_HOST = re.compile(r"(?<![\w.@/<-])(?:www\d?\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:%s)\b(?![.-]\w)" % words("host_tlds"), re.I)
+EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")
+JWT = re.compile(r"\beyJ[\w-]+\.[\w-]+\.[\w-]*")
+AUTH_SCHEME = re.compile(r"\b(Bearer|Basic)\s+(?!<)[^\s,;\"']+", re.I)
+TOKEN = re.compile(r"(?<![\w<])(?:%s)" % "|".join(RULES["token_patterns"]))
+PAIR = re.compile(r"(?<![\w<-])([\"']?)([A-Za-z][\w-]{0,60})\1\s*([:=])\s*(\"[^\"\n]*\"|'[^'\n]*'|[^\s&\"',;)}\]<>]+)")
+CONTEXT_ID = re.compile(r"\b(%s)s?\b(\s*[:=#]?\s*)(?!<)((?=[\w.-]*\d)[\w.-]+|[A-Za-z0-9]+(?:[-_.][A-Za-z0-9]+)+)"
+                        % words("context_id_words"), re.I)
+PERSON = re.compile(r"\b((?i:%s))\b([\"']?\s*[:=]?\s*[\"']?\s*)([A-Z][a-z'À-ſ-]+(?:\s+[A-Z][a-z'À-ſ-]+)+)"
+                    % words("person_context_words"))
 UUID = re.compile(r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b")
-HEX = re.compile(r"\b(?=[0-9a-fA-F]*[0-9])(?=[0-9a-fA-F]*[a-fA-F])[0-9a-fA-F]{%d,}\b|\b[0-9]{%d,}\b"
-                 % (RULES["min_hex_id_chars"], RULES["min_hex_id_chars"]))
-PHONE = re.compile(r"\+\d[\d\s().-]{7,}\d")
-BEARER = re.compile(r"\bBearer\s+(?!<)[A-Za-z0-9._~+/=-]{8,}", re.I)
-_NAMES = "|".join(sorted((re.escape(n) for n in RULES["secret_names"]), key=len, reverse=True))
-SECRET_EQ = re.compile(r"(?<![A-Za-z0-9_])(%s)\s*=\s*(?!<)(?!(?:null|none|true|false)\b)([^\s&\"',;)}\]<>]+)" % _NAMES, re.I)
-SECRET_JSON = re.compile(r"([\"'])(%s)\1\s*:\s*([\"'])(?!<)([^\"']+)\3" % _NAMES, re.I)
+HEX = re.compile(r"\b(?=[0-9a-fA-F]*[0-9])(?=[0-9a-fA-F]*[a-fA-F])[0-9a-fA-F]{%d,}\b" % RULES["min_hex_id_chars"])
+IPV4 = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
+PHONE = re.compile(r"(?<![\w<.])\+?\(?\d[\d\s().-]{4,}\d(?![\w>])")
+DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+NUMERIC_ID = re.compile(r"(?<![\w<])\d{%d,}(?![\w>])" % RULES["min_numeric_id_digits"])
+# Lint only: stricter, so a redaction miss still blocks.
+LOOSE_EMAIL = re.compile(r"[^\s<@]@[^\s>@]+\.\w")
+OPAQUE = re.compile(r"(?<![\w<])(?=[\w-]*\d)(?=[\w-]*[A-Za-z])[\w-]{%d,}" % RULES["min_opaque_token_chars"])
+QUERY_STRING = re.compile(r"\?[\w%.\[\]-]+=")
+WWW = re.compile(r"\bwww\d?\.", re.I)
+DIGITS = re.compile(r"\d{%d,}" % RULES["min_numeric_id_digits"])
+PLAIN_VALUE = re.compile(RULES["plain_value_pattern"])
+ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?$")
+SAFE_KEY = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]{0,40}$")
+
 CONTEXT_ERROR = re.compile(r"\bproject\b|organi[sz]ation|\baccount\b|workspace|permission|\baccess\b|denied|"
                            r"forbidden|unauthori[sz]ed|\b40[13]\b", re.I)
 RATE_ERROR = re.compile(r"\b429\b|rate.?limit|too many", re.I)
 INVALID_ERROR = re.compile(r"\b40[09]\b|\b422\b|validation|invalid|required|must be|too long|max.?length|"
                            r"exceeds|not one of|enum", re.I)
-SUCCESS_WORDS = re.compile(r"\b(success|submitted|received|recorded|thank)", re.I)
+NEGATIVE = re.compile(r"\b(?:not|never|unable|cannot|can't|couldn't|could not|failed|failure|error|rejected|"
+                      r"denied)\b", re.I)
 ID_KEYS = ("feedback_id", "submission_id", "id", "_id")
 
 
@@ -129,37 +159,109 @@ def allowed_url(url):
 
 # ---------- redaction ----------
 
-def key_is_sensitive(key):
-    k = str(key).lower()
-    return k in RULES["placeholder_keys"] or any(k.endswith(s) for s in RULES["placeholder_key_suffixes"])
+def nk(key):
+    """A name normalised for every check: lower case, without _, - or spaces (accountId and account_id match)."""
+    return re.sub(r"[\s_-]", "", str(key).lower())
+
+
+def sensitive(key):
+    k = nk(key)
+    return k in RULES["sensitive_names_exact"] or any(w in k for w in RULES["sensitive_name_words"]) or any(k.endswith(s) for s in RULES["sensitive_name_suffixes"])
+
+
+def placeholder(key):
+    k = re.sub(r"[^a-z0-9]", "", nk(key)) if key is not None else ""
+    return f"<{k or 'value'}>"
+
+
+def _pair(m):
+    q, name, sep, value = m.group(1), m.group(2), m.group(3), m.group(4)
+    bare = value.strip("\"'")
+    if not sensitive(name) or bare.startswith("<") or bare.lower() in ("", "null", "none", "true", "false"):
+        return m.group(0)
+    if nk(name) in RULES["allowed_arg_keys"] and PLAIN_VALUE.match(bare) and not DIGITS.search(bare):
+        return m.group(0)
+    quote = value[0] if value[:1] in ("\"", "'") and value[-1:] == value[:1] and len(value) > 1 else ""
+    space = " " if sep == ":" else ""
+    return f"{q}{name}{q}{sep}{space}{quote}{placeholder(name)}{quote}"
+
+
+def _phone(m):
+    s = m.group(0)
+    digits = sum(c.isdigit() for c in s)
+    if DATE.search(s) or digits < RULES["min_phone_digits"]:
+        return s
+    if not (s.lstrip("(").startswith("+") or re.search(r"\d[\s().-]+\d", s)):
+        return s
+    return "<phone>"
 
 
 def redact_text(text, terms=()):
-    """Replace URLs, emails, secret pairs, IDs, phone numbers and flagged names in free text with placeholders."""
+    """Best-effort replacement of personal and secret-shaped things in free text with <placeholders>."""
     s = str(text)
     s = URL.sub(lambda m: m.group(0) if allowed_url(m.group(0)) else "<url>", s)
+    s = PROTOCOL_RELATIVE.sub("<url>", s)
     s = EMAIL.sub("<email>", s)
-    s = BEARER.sub("Bearer <token>", s)
-    s = SECRET_JSON.sub(lambda m: f'{m.group(1)}{m.group(2)}{m.group(1)}: {m.group(3)}<{m.group(2).lower()}>{m.group(3)}', s)
-    s = SECRET_EQ.sub(lambda m: f"{m.group(1)}=<{m.group(1).lower()}>", s)
+    s = SCHEMELESS.sub("<url>", s)
+    s = JWT.sub("<token>", s)
+    s = AUTH_SCHEME.sub(lambda m: f"{m.group(1)} <token>", s)
+    s = TOKEN.sub("<token>", s)
+    s = PAIR.sub(_pair, s)
+    s = CONTEXT_ID.sub(lambda m: f"{m.group(1)}{m.group(2)}<{nk(m.group(1))}>", s)
+    s = PERSON.sub(lambda m: f"{m.group(1)}{m.group(2)}<name>", s)
+    s = BARE_HOST.sub("<host>", s)
     s = UUID.sub("<id>", s)
     s = HEX.sub("<id>", s)
-    s = PHONE.sub("<phone>", s)
+    s = IPV4.sub("<ip>", s)
+    s = PHONE.sub(_phone, s)
+    s = NUMERIC_ID.sub("<id>", s)
     for t in terms:
         s = re.sub(re.escape(t), "<name>", s, flags=re.I)
     return s
 
 
-def redact_args(value, terms=(), key=None):
-    if key is not None and key_is_sensitive(key) and value not in (None, True, False, "", [], {}):
-        return f"<{str(key).lower()}>"
+def redact_value(value, terms=(), key=None, text_keys=()):
+    """Allow-list redaction for arguments and JSON excerpts: keep numbers, booleans, ISO dates and plain values of
+    allowed_arg_keys; replace every other string with a placeholder named after its key. Strings under text_keys get
+    free-text redaction instead. Keys that aren't plain names (data used as a key) are replaced too."""
     if isinstance(value, dict):
-        return {str(k): redact_args(v, terms, k) for k, v in sorted(value.items(), key=lambda kv: str(kv[0]))}
+        out, n = {}, 0
+        for k, v in sorted(value.items(), key=lambda kv: str(kv[0])):
+            k = str(k)
+            if not SAFE_KEY.match(k) or any(t.lower() in k.lower() for t in terms):
+                n += 1
+                k = f"<key{n}>"
+            out[k] = redact_value(v, terms, k, text_keys)
+        return out
     if isinstance(value, list):
-        return [redact_args(v, terms) for v in value]
-    if isinstance(value, str):
-        return redact_text(value, terms)
-    return value
+        return [redact_value(v, terms, key, text_keys) for v in value]
+    if value is None or isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        if (key is not None and sensitive(key)) or len(str(abs(int(value)))) >= RULES["min_numeric_id_digits"]:
+            return placeholder(key)
+        return value
+    s = str(value)
+    if key is not None and nk(key) in text_keys:
+        return redact_text(s, terms)
+    if ISO_DATE.match(s) and not (key is not None and sensitive(key)):
+        return s
+    if (key is not None and nk(key) in RULES["allowed_arg_keys"] and PLAIN_VALUE.match(s)
+            and not DIGITS.search(s) and not any(t.lower() in s.lower() for t in terms)):
+        return s
+    return placeholder(key)
+
+
+def redact_excerpt(text, terms):
+    """A JSON excerpt goes through the allow-list (error and message text kept, redacted); anything else is free text."""
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return redact_text(text, terms).strip()
+    if isinstance(data, str):
+        return redact_text(data, terms).strip()
+    return json.dumps(redact_value(data, terms, None, {nk(k) for k in RULES["excerpt_text_keys"]}),
+                      ensure_ascii=False, sort_keys=True)
 
 
 # ---------- lint ----------
@@ -169,29 +271,50 @@ def mask(s):
     return f"{s[:1]}... ({len(s)} characters)"
 
 
+LINT = (
+    ("url", URL, "a URL (its host or query string can identify the customer); write <url>"),
+    ("url", PROTOCOL_RELATIVE, "a //host URL; write <url>"),
+    ("url", SCHEMELESS, "a host with a path; write <url>"),
+    ("url", QUERY_STRING, "a query string; write <url>"),
+    ("host", BARE_HOST, "a host name; write <host>"),
+    ("host", WWW, "a www. host; write <host>"),
+    ("email", EMAIL, "an email address; write <email>"),
+    ("email", LOOSE_EMAIL, "something shaped like an email address; write <email>"),
+    ("secret", JWT, "a JWT; write <token>"),
+    ("secret", AUTH_SCHEME, "a Bearer or Basic credential; write <token>"),
+    ("secret", TOKEN, "a known token format; write <token>"),
+    ("id", UUID, "a UUID-shaped ID; write <id> or a named placeholder such as <project_id>"),
+    ("id", HEX, "a long hex ID; write <id> or a named placeholder"),
+    ("id", DIGITS, "a long number that may be an ID; write <id>"),
+    ("id", OPAQUE, "a long token or ID; write <id> or <token>"),
+    ("ip", IPV4, "an IP address; write <ip>"),
+)
+
+
 def lint_text(field, text, terms):
     """Every personal or secret-shaped thing left in one field, without repeating it."""
     hits = []
-    t = str(text or "")
-    for m in URL.finditer(t):
-        if not allowed_url(m.group(0)):
-            hits.append(("url", "a URL (its host or query string can identify the customer); write <url>", m.group(0)))
-    for m in EMAIL.finditer(t):
-        hits.append(("email", "an email address; write <email>", m.group(0)))
-    for rx, what in ((SECRET_EQ, "a secret-shaped name=value pair"), (SECRET_JSON, "a secret-shaped JSON pair"),
-                     (BEARER, "a bearer token")):
+    t = URL.sub(lambda m: " " if allowed_url(m.group(0)) else m.group(0), str(text or ""))
+    for check, rx, message in LINT:
         for m in rx.finditer(t):
-            hits.append(("secret", f"{what}; write a <placeholder>", m.group(0)))
-    for m in UUID.finditer(t):
-        hits.append(("id", "a UUID-shaped ID; write <id> or a named placeholder such as <project_id>", m.group(0)))
-    for m in HEX.finditer(t):
-        hits.append(("id", "a long hex or numeric ID; write <id> or a named placeholder", m.group(0)))
+            if rx is DIGITS and IPV4.search(m.group(0)):
+                continue
+            hits.append((check, message, m.group(0)))
+    for m in PAIR.finditer(t):
+        if _pair(m) != m.group(0):
+            hits.append(("secret", "a sensitive name: value or name=value pair; write a <placeholder>", m.group(0)))
+    for m in CONTEXT_ID.finditer(t):
+        hits.append(("id", "an ID or name after an account, project or similar word; write a <placeholder>", m.group(0)))
+    for m in PERSON.finditer(t):
+        hits.append(("person", "what looks like a person's name; write <name>", m.group(0)))
     for m in PHONE.finditer(t):
-        hits.append(("phone", "a phone number; write <phone>", m.group(0)))
+        if _phone(m) != m.group(0):
+            hits.append(("phone", "a phone number; write <phone>", m.group(0)))
     low = t.lower()
     for term in terms:
         if term.lower() in low:
-            hits.append(("private_term", "a name you flagged as private; write a placeholder", term))
+            hits.append(("private_term", "a private name (organisation, project, account, catalog, site, customer or "
+                         "brand); write a placeholder", term))
     out, seen = [], set()
     for check, message, found in hits:
         k = (check, found)
@@ -294,7 +417,7 @@ def cmd_build(a):
     if isinstance(rep, list):
         fail(f"{a.report}: holds a list. One report per plan: write ONE report object and ask about it on its own.")
     if not isinstance(rep, dict):
-        fail(f"{a.report}: expected one JSON object (references/report-format.md).")
+        fail(f"{a.report}: expected one JSON object (references/feedback-fields.md).")
     terms = private_terms(a.private_terms)
     tools = published_tools(a.published_tools)
     problems, warnings = [], []
@@ -305,6 +428,18 @@ def cmd_build(a):
     def warn(check, message, field=None):
         warnings.append({"check": check, "field": field, "message": message})
 
+    if not terms:
+        warn("private_terms", "The private terms file is empty. It must list the organisation, project, account, "
+             "catalog and site names used in this session, and any customer or brand the user flagged.",
+             "private_terms")
+    redacted = []
+
+    def clean(field, value):
+        out = redact_text(value, terms).strip() if value else ""
+        if out != (value or "").strip():
+            redacted.append(field)
+        return out
+
     tool = str(rep.get("tool") or "").strip()
     if not TOOL_NAME.match(tool):
         block("tool", "tool must be one Loomi Connect tool name, such as get_discovery_trend.", "tool")
@@ -312,7 +447,7 @@ def cmd_build(a):
         warn("tool", f"{tool} isn't in the published tools list. Check the name (renamed tools fail under their old "
              "name); never report on a tool tagged internal.", "tool")
 
-    summary = str(rep.get("summary") or "").strip()
+    summary = clean("summary", str(rep.get("summary") or "").strip())
     if not summary:
         block("summary", "summary is empty: write one line saying what goes wrong.", "summary")
     elif "\n" in summary or len(summary) > RULES["summary_max_chars"]:
@@ -337,8 +472,8 @@ def cmd_build(a):
     if a.environment == "staging" and product == "engagement":
         warn("environment", "Engagement has no staging environment; check --environment.", "environment")
 
-    expected = str(rep.get("expected") or "").strip()
-    actual = str(rep.get("actual") or "").strip()
+    expected = clean("expected", str(rep.get("expected") or "").strip())
+    actual = clean("actual", str(rep.get("actual") or "").strip())
     for name, val in (("expected", expected), ("actual", actual)):
         if not val:
             block(name, f"{name} is empty: say what you expected and what came back.", name)
@@ -349,8 +484,13 @@ def cmd_build(a):
     if not isinstance(args, dict):
         block("arguments", "arguments must be the JSON object sent to the tool ({} if none).", "arguments")
         args = {}
-    clean_args = redact_args(args, terms)
-    excerpt = redact_text(rep["response_excerpt"], terms).strip() if rep.get("response_excerpt") else ""
+    clean_args = redact_value(args, terms)
+    if clean_args != args:
+        redacted.append("arguments")
+    raw_excerpt = str(rep.get("response_excerpt") or "").strip()
+    excerpt = redact_excerpt(raw_excerpt, terms) if raw_excerpt else ""
+    if excerpt and excerpt != raw_excerpt:
+        redacted.append("response_excerpt")
 
     known = None
     if rep.get("known_line") is not None:
@@ -374,10 +514,13 @@ def cmd_build(a):
         if len(val) > RULES["max_short_field_chars"]:
             block("length", f"{name} is longer than max_short_field_chars (references/rules.json).", name)
 
-    what = str(rep.get("what_i_tried") or "").strip() or (
+    what = clean("what_i_tried", str(rep.get("what_i_tried") or "").strip()) or (
         f"Called {tool} with the arguments in the reproduction below the feedback, and compared what came back "
         "with the tool's description.")
-    suggestion = str(rep.get("suggestion") or "").strip()
+    suggestion = clean("suggestion", str(rep.get("suggestion") or "").strip())
+    if redacted:
+        warn("redacted", "Placeholders were put into " + ", ".join(redacted) + ". Read the whole report: redaction is "
+             "best effort and can miss names, IDs and business data, or remove something the team needs.", None)
 
     env_bits = [f"Product: {product}" if product else None, f"Environment: {a.environment}",
                 f"Client: {client}" if client else None]
@@ -487,14 +630,24 @@ def error_of(d):
     return None
 
 
+def message_text(d, depth=0):
+    """The human-readable text in a response (message, detail, status), to check for negative wording."""
+    if not isinstance(d, dict) or depth > 2:
+        return ""
+    parts = [str(d[k]) for k in ("message", "detail", "status", "note") if isinstance(d.get(k), str)]
+    parts += [message_text(d.get(k), depth + 1) for k in ("result", "data")]
+    return " ".join(p for p in parts if p)
+
+
 def classify_error(err):
     if CONTEXT_ERROR.search(err):
         return "rejected", "context", True, ("Loomi Connect refused it for access reasons. Stop: check the connection "
                                              "and the user's access before anything else.")
     if RATE_ERROR.search(err):
         return "rejected", "rate_limited", True, ("Rate-limited, so nothing was recorded. Wait at least the Retry-After "
-                                                  "time (the tool allows one report every 10 seconds), then ask the "
-                                                  "user again before sending.")
+                                                  f"time (and at least min_seconds_between_reports, "
+                                                  f"{RULES['min_seconds_between_reports']} seconds), then ask the user "
+                                                  "again before sending.")
     if INVALID_ERROR.search(err):
         return "rejected", "invalid", False, ("The tool rejected the report, so nothing was recorded. Fix the report, "
                                               "run build again and ask the user again.")
@@ -522,15 +675,15 @@ def cmd_verify(a):
             fail(f"--response {n}: the plan has no ready change {n}.")
         data, text = read_response(path)
         res = {"n": n, "tool": ch.get("tool"), "target": ch.get("target")}
-        err = error_of(data) if data is not None else (text if re.search(r"\berror\b|\bfailed\b", text, re.I) else None)
+        err = error_of(data) if data is not None else (text if NEGATIVE.search(text) else None)
         if err is not None:
             state, reason, stop, note = classify_error(err)
             res.update(state=state, reason=reason, stop=stop, error=redact_text(err)[:200], note=note)
         else:
             fid = find_id(data) if isinstance(data, dict) else None
-            ok = (isinstance(data, dict) and (data.get("success") is True or
-                  (isinstance(data.get("result"), dict) and data["result"].get("success") is True))) or bool(fid) \
-                or bool(SUCCESS_WORDS.search(text))
+            success = isinstance(data, dict) and (data.get("success") is True or (
+                isinstance(data.get("result"), dict) and data["result"].get("success") is True))
+            ok = (success or bool(fid)) and not NEGATIVE.search(message_text(data))
             if ok:
                 res.update(state="accepted", feedback_id=fid, note="The tool accepted the report." +
                            ("" if fid else " It returned no ID."))
@@ -566,11 +719,13 @@ def main():
     k.add_argument("--sent-log", help="the sent log verify writes, to mark items already reported")
     k.add_argument("--out", help="also write the list to this file")
     b = sub.add_parser("build", help="build, redact and lint one report, and write the plan")
-    b.add_argument("--report", required=True, help="ONE report as JSON (references/report-format.md)")
+    b.add_argument("--report", required=True, help="ONE report as JSON (references/feedback-fields.md)")
     b.add_argument("--environment", required=True, choices=RULES["environments"],
                    help="where the problem happened; required, no default")
     b.add_argument("--known-doc", help="path of docs/known-tool-behaviour.md, needed when the report has known_line")
-    b.add_argument("--private-terms", help="file of names the user flagged as private (customer, brand), one per line")
+    b.add_argument("--private-terms", required=True,
+                   help="file of private names, one per line: the session's organisation, project, account, catalog "
+                        "and site names, and any customer or brand the user flagged")
     b.add_argument("--published-tools", help="path of docs/published-tools.txt, to check the tool name")
     b.add_argument("--sent-log", help="the sent log verify writes, to block sending the same report twice")
     b.add_argument("--out", help="also write the plan to this file")

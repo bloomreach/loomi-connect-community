@@ -39,6 +39,8 @@ def build(report, *extra, env="production"):
     with tempfile.TemporaryDirectory() as tmp:
         p = Path(tmp) / "report.json"
         p.write_text(json.dumps(report), encoding="utf-8")
+        if "--private-terms" not in extra:
+            extra = ("--private-terms", FX / "private-terms.txt", *extra)
         return ok(run("build", "--report", p, "--environment", env, "--known-doc", DOC, "--published-tools", TOOLS,
                       *extra))
 
@@ -106,8 +108,8 @@ class Build(unittest.TestCase):
                        "5f2b9c8e1a4d7f3b6c0e9a21", "FAKEsecret999", "123e4567-e89b-12d3-a456-426614174000",
                        "api.demo.test"):
             self.assertNotIn(leaked, fb)
-        for ph in ('"account_id": "<account_id>"', '"auth_key": "<auth_key>"', '"domain_key": "<domain_key>"',
-                   '"page_url": "<page_url>"', "<email>", "<url>", "<id>"):
+        for ph in ('"account_id": "<accountid>"', '"auth_key": "<authkey>"', '"domain_key": "<domainkey>"',
+                   '"page_url": "<pageurl>"', '"note": "<note>"', '"debug": "<debug>"', '"request_id": "<requestid>"'):
             self.assertIn(ph, fb)
         self.assertIn('"days": 30', fb)
         self.assertIn('"filter_preset": "lowest_converting"', fb)
@@ -120,16 +122,15 @@ class Build(unittest.TestCase):
                      RULES["repo_doc_url"] + "#L10", "Suggestion: "):
             self.assertIn(part, fb)
 
-    def test_leaky_free_text_is_blocked_without_repeating_it(self):
+    def test_leaky_free_text_is_redacted(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = ok(run("build", "--report", FX / "report_leaky.json", "--environment", "production",
                          "--private-terms", FX / "private-terms.txt", cwd=tmp))
-        self.assertEqual(out["changes"][0]["status"], "blocked")
-        self.assertEqual(out["batches"], [])
-        self.assertEqual(checks(out), ["email", "id", "phone", "private_term", "secret", "url"])
-        shown = json.dumps(out["changes"][0]["problems"])
-        for secret in ("jane.doe@example.com", "FAKEtok", "FAKEkey1", "FAKEbearertoken12345", "Acme Outdoor"):
-            self.assertNotIn(secret, shown)
+        sent = json.dumps(out["changes"][0]["payload"])
+        for secret in ("jane.doe@example.com", "FAKEtok", "FAKEkey1", "FAKEbearertoken12345", "Acme Outdoor",
+                       "5f2b9c8e1a4d7f3b6c0e9a21", "app.demo.test", "7946"):
+            self.assertNotIn(secret, sent)
+        self.assertIn("redacted", [w["check"] for w in out["changes"][0]["warnings"]])
 
     def test_private_terms_in_arguments_are_replaced(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -137,19 +138,28 @@ class Build(unittest.TestCase):
             terms.write_text("Demo Brand\n", encoding="utf-8")
             out = build(with_(arguments={"q": "demo brand jackets"}), "--private-terms", terms)
         self.assertEqual(out["changes"][0]["status"], "ready")
-        self.assertIn('"q": "<name> jackets"', out["changes"][0]["payload"]["feedback"])
+        self.assertIn('"q": "<q>"', out["changes"][0]["payload"]["feedback"])
 
     def test_list_of_reports_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp) / "reports.json"
             p.write_text(json.dumps([GOOD, GOOD]), encoding="utf-8")
-            r = run("build", "--report", p, "--environment", "production")
+            r = run("build", "--report", p, "--environment", "production", "--private-terms", FX / "private-terms.txt")
         self.assertEqual(r.returncode, 1)
         self.assertIn("One report per plan", json.loads(r.stdout)["error"])
 
     def test_environment_is_required(self):
-        r = run("build", "--report", FX / "report_good.json")
+        r = run("build", "--report", FX / "report_good.json", "--private-terms", FX / "private-terms.txt")
         self.assertNotEqual(r.returncode, 0)
+
+    def test_private_terms_file_is_required(self):
+        r = run("build", "--report", FX / "report_good.json", "--environment", "production")
+        self.assertNotEqual(r.returncode, 0)
+        with tempfile.TemporaryDirectory() as tmp:
+            empty = Path(tmp) / "terms.txt"
+            empty.write_text("", encoding="utf-8")
+            out = build(GOOD, "--private-terms", empty)
+        self.assertIn("private_terms", [w["check"] for w in out["changes"][0]["warnings"]])
 
     def test_schema_violations_block(self):
         self.assertIn("gap_type", checks(build(with_(gap_type="BUG"))))
@@ -176,7 +186,7 @@ class Build(unittest.TestCase):
                           known_line=17), env="staging")
         self.assertEqual(out["changes"][0]["status"], "ready")
         warned = sorted(w["check"] for w in out["changes"][0]["warnings"])
-        self.assertEqual(warned, ["completion_estimate", "known_line", "tool"])
+        self.assertEqual(warned, ["completion_estimate", "known_line", "redacted", "tool"])
         eng = build(with_(product="engagement"), env="staging")
         self.assertIn("environment", [w["check"] for w in eng["changes"][0]["warnings"]])
 
@@ -197,7 +207,7 @@ class Verify(unittest.TestCase):
         self.plan = self.dir / "plan.json"
         self.log = self.dir / "sent.jsonl"
         ok(run("build", "--report", FX / "report_good.json", "--environment", "production", "--known-doc", DOC,
-               "--out", self.plan, cwd=self.dir))
+               "--private-terms", FX / "private-terms.txt", "--out", self.plan, cwd=self.dir))
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -230,7 +240,7 @@ class Verify(unittest.TestCase):
     def test_sent_log_blocks_resend_and_marks_list(self):
         self.verify("response_unclear.json")
         out = ok(run("build", "--report", FX / "report_good.json", "--environment", "production", "--known-doc",
-                     DOC, "--sent-log", self.log, cwd=self.dir))
+                     DOC, "--private-terms", FX / "private-terms.txt", "--sent-log", self.log, cwd=self.dir))
         self.assertEqual(checks(out), ["already_sent"])
         listed = ok(run("list-known", "--doc", DOC, "--sent-log", self.log, cwd=self.dir))
         self.assertEqual([i["line"] for i in listed["items"] if i["already_sent"]], [10])
@@ -240,12 +250,165 @@ class Verify(unittest.TestCase):
         self.assertEqual(r.returncode, 1)
 
 
+REVIEW_LEAKS = ("acme-demo.test", "acme-shop", "6012345", "6013", "6012", "eyJhbGci", "FAKEsig", "Jane", "Doe",
+                "acme_demo_test", "FAKEaccess9token", "FAKEclientsecret", "AKIAFAKE", "7946", "0958", "555-123",
+                "203.0.113.7", "size 12 dress", "Acme", "acme-prod", "FAKEauthkey", "VIP", "RkFLRTpGQUtF",
+                "FAKEbearer", "abcdef12", "FAKEgoogle", "FAKEopenai", "GOCSPX-FAKE", "xoxb-FAKE", "ghp_FAKE",
+                "glpat-FAKE", "FAKEapikey123", "FAKErefresh", "98765", "price desc")
+
+
+class SecurityReview(unittest.TestCase):
+    """The security review's synthetic report: every item must be redacted or the plan blocked."""
+
+    def payload_text(self, out):
+        return json.dumps(out["changes"][0]["payload"], ensure_ascii=False)
+
+    def test_review_report_never_ready_with_a_leak(self):
+        out = build(json.loads((FX / "report_review.json").read_text(encoding="utf-8")),
+                    "--private-terms", FX / "private-terms-review.txt")
+        ch = out["changes"][0]
+        text = self.payload_text(out)
+        leaks = [x for x in REVIEW_LEAKS if x in text]
+        self.assertTrue(ch["status"] == "blocked" or not leaks, leaks)
+        self.assertEqual(leaks, [], "redaction should catch every item in the review report")
+
+    def test_allow_list_keeps_only_plain_enum_values_numbers_and_dates(self):
+        args = json.loads((FX / "report_review.json").read_text(encoding="utf-8"))["arguments"]
+        out = build(with_(arguments=args), "--private-terms", FX / "private-terms-review.txt")
+        fb = out["changes"][0]["payload"]["feedback"]
+        for kept in ('"filter_preset": "lowest_converting"', '"search_by": "query"', '"rows": 24',
+                     '"start_date": "2026-10-01"', '"fl": "pid,brand"'):
+            self.assertIn(kept, fb)
+        for ph in ('"accountId": "<accountid>"', '"account_id": "<accountid>"', '"campaign_name": "<campaignname>"',
+                   '"segment": "<segment>"', '"query": "<query>"', '"search_query": "<searchquery>"', '"q": "<q>"',
+                   '"name": "<name>"', '"sort": "<sort>"'):
+            self.assertIn(ph, fb)
+
+
+def load_module():
+    import importlib.util
+    sys.dont_write_bytecode = True
+    spec = importlib.util.spec_from_file_location("tool_feedback_report", SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class Patterns(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.m = load_module()
+
+    def red(self, text):
+        return self.m.redact_text(text)
+
+    def test_each_free_text_pattern(self):
+        cases = {
+            "see shop.acme.test/search?account_id=1": "acme",
+            "see www.acme-shop.com/p/1": "acme",
+            "img //cdn.acme.test/a.png": "cdn.",
+            "host www.acme-shop.com only": "acme",
+            "mail ops@example.com": "ops@",
+            "jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJGQUtFIn0.FAKEsig": "eyJ",
+            "Authorization: Basic RkFLRTpGQUtF": "RkFL",
+            "Bearer FAKEbearer": "FAKEbearer",
+            "X-Api-Key: FAKEheadervalue": "FAKEheader",
+            "api-key: FAKEapikey": "FAKEapikey",
+            "refresh_token=FAKErefresh": "FAKErefresh",
+            "token: abcdef12": "abcdef12",
+            '"client_secret": "FAKEcs"': "FAKEcs",
+            "key AKIAFAKE00FAKE00FAKE0": "AKIA",
+            "g ya29.FAKEgoogle": "ya29",
+            "o sk-FAKEopenai123": "sk-FAKE",
+            "c GOCSPX-FAKE": "GOCSPX",
+            "s xoxb-FAKE": "xoxb",
+            "gh ghp_FAKEgithub": "ghp_",
+            "gl glpat-FAKEgitlab": "glpat",
+            "from 203.0.113.7": "203.0",
+            "call 020 7946 0958": "7946",
+            "call 555-123-4567": "4567",
+            "call +44 20 7946 0000": "7946",
+            "account 6012345 project acme-prod": "6012345",
+            "project acme-prod": "acme-prod",
+            "id 6413": "6413",
+            "row 123456": "123456",
+            "User Jane Doe failed": "Jane",
+            "created by Jane Doe": "Jane",
+            '"lastModifiedBy": "Jane Doe"': "Jane",
+            "uuid 123e4567-e89b-12d3-a456-426614174000": "123e4567",
+            "hex 5f2b9c8e1a4d7f3b6c0e9a21": "5f2b",
+        }
+        for text, leak in cases.items():
+            self.assertNotIn(leak, self.red(text), text)
+
+    def test_ordinary_text_survives(self):
+        for text in ("filter_preset=lowest_converting returns 0 rows on 2026-11-04",
+                     "days 7 and 30, page 2, total_rows 0",
+                     "data.debug.request.experiments holds the list",
+                     "https://github.com/bloomreach/loomi-connect-community/blob/main/docs/known-tool-behaviour.md#L10",
+                     "$11.07M against $19.94M"):
+            self.assertEqual(self.red(text), text)
+
+    def test_names_are_normalised(self):
+        self.assertEqual(self.m.nk("account_Id"), self.m.nk("accountId"))
+        self.assertTrue(self.m.sensitive("accountId"))
+        self.assertTrue(self.m.sensitive("lastModifiedBy"))
+        self.assertTrue(self.m.sensitive("X-Api-Key"))
+        self.assertFalse(self.m.sensitive("filter_preset"))
+
+    def test_stricter_lint_catches_what_redaction_misses(self):
+        for text in ("user@host.example", "abcdEFGH1234ijklMNOP5678qrst", "see ?account=1", "www.shop",
+                     "number 1234567"):
+            self.assertTrue(self.m.lint_text("x", text, []), text)
+        self.assertEqual(self.m.lint_text("x", "filter_preset returned <id> rows", []), [])
+
+    def test_excerpt_json_uses_allow_list_and_keeps_error_text(self):
+        out = self.m.redact_excerpt(json.dumps({"error": "User Jane Doe denied", "owner": "Jane Doe",
+                                                "count": 3, "rows": [{"title": "Jane's dress"}]}), [])
+        self.assertNotIn("Jane", out)
+        self.assertIn('"count": 3', out)
+        self.assertIn("denied", out)
+
+
+class VerifyWording(unittest.TestCase):
+    def verify_json(self, response):
+        with tempfile.TemporaryDirectory() as tmp:
+            plan = Path(tmp) / "plan.json"
+            ok(run("build", "--report", FX / "report_good.json", "--environment", "production", "--known-doc", DOC,
+                   "--private-terms", FX / "private-terms.txt", "--out", plan, cwd=tmp))
+            resp = Path(tmp) / "resp.json"
+            resp.write_text(response if isinstance(response, str) else json.dumps(response), encoding="utf-8")
+            return ok(run("verify", "--plan", plan, "--response", f"1={resp}", cwd=tmp))["results"][0]
+
+    def test_negated_success_is_not_accepted(self):
+        self.assertEqual(self.verify_json({"success": True, "message": "Feedback could not be recorded"})["state"],
+                         "unknown")
+        self.assertEqual(self.verify_json({"status": "received"})["state"], "unknown")
+        self.assertEqual(self.verify_json("Feedback not received")["state"], "unknown")
+        self.assertEqual(self.verify_json("Thank you, feedback received")["state"], "unknown")
+        self.assertEqual(self.verify_json({"success": True})["state"], "accepted")
+        self.assertEqual(self.verify_json({"data": {"id": "fb-2"}})["feedback_id"], "fb-2")
+
+    def test_rate_note_uses_the_rule(self):
+        res = self.verify_json({"success": False, "error": "HTTP 429"})
+        self.assertIn("min_seconds_between_reports", res["note"])
+        self.assertIn(str(RULES["min_seconds_between_reports"]), res["note"])
+
+
 class Rules(unittest.TestCase):
     def test_every_rule_has_a_note(self):
         keys = set(RULES) - {"about", "notes"}
         self.assertEqual(sorted(keys - set(RULES["notes"])), [])
         self.assertEqual(sorted(set(RULES["notes"]) - keys), [])
         self.assertTrue(RULES["about"])
+
+    def test_rate_limit_keys_are_named_not_numbered_in_skill_md(self):
+        text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        for key in ("min_seconds_between_reports", "max_reports_per_hour"):
+            self.assertIn(key, text)
+            self.assertIn(key, RULES)
+        self.assertNotIn("10 seconds", text)
+        self.assertNotIn("20 an hour", text)
 
 
 if __name__ == "__main__":

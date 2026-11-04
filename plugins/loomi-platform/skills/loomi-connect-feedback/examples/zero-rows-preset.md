@@ -29,7 +29,7 @@ Actual: success: true with total_rows 0, while the same call without filter_pres
 
 Minimal reproduction (IDs, account and project names, emails, URLs and secrets replaced by placeholders):
   tool: get_discovery_category_performance_table
-  arguments: {"account_id": "<account_id>", "days": 30, "filter_preset": "lowest_converting"}
+  arguments: {"account_id": "<accountid>", "days": 30, "filter_preset": "lowest_converting"}
 
 Response excerpt (placeholders as above):
 {"success": true, "data": {"total_rows": 0, "rows": []}}
