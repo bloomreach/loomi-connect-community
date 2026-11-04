@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement). Python 3 is optional, for the bundled script.
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: engagement
   access: read-only
 ---
@@ -114,7 +114,7 @@ Order the gaps by priority (high, then medium, then low; within each, by value a
 
 - **missing** → `engagement-scenario-builder`, with the trigger, the first wait, the purchase or consent check and the channel from the flow definitions;
 - **draft, stopped or weak** → `scenario-qa` to check it, then name what to fix (connect the trigger, shorten the first wait, add the purchase check) before the user switches it on in the Engagement UI;
-- **live** → `engagement-scenario-performance`, to measure it step by step.
+- **live** → `engagement-scenario-performance`, to measure it step by step, or `engagement-journey-health` to check all live flows at once for steps that send nothing, are suppressed or fail.
 
 If reachability is low across the board, say that more flows won't help until more customers can be reached, and point to `contactability-audit`.
 

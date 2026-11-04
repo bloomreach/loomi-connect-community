@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server with Bloomreach Engagement, and optionally Bloomreach Discovery for trending searches. Python 3 is optional, for the bundled ranking script.
 metadata:
   author: bloomreach
-  version: "0.1.6"
+  version: "0.1.7"
   products: engagement,discovery
   access: read-only
 ---
@@ -21,7 +21,7 @@ Answers "which audiences should we be working that we aren't?" for one Engagemen
 3. an **estimated value**, with every assumption shown;
 4. whether an existing **segment, scenario or campaign already covers it**;
 5. a **suggested action and channel**;
-6. a ranking by **value × reachability**, and hand-offs to `engagement-segment-builder` (to build it), `campaign-planner` (to time it) and `winback-opportunity` (for lapsed customers).
+6. a ranking by **value × reachability**, and hand-offs to `engagement-segment-builder` (to build it), `campaign-planner` (to time it) and `winback-opportunity` (for lapsed customers). For the repeat window of first-time buyers (pattern timing), `engagement-repeat-purchase-cohorts` measures it by cohort.
 
 It uses **aggregate counts only**. It never reads individual customers and never changes anything.
 

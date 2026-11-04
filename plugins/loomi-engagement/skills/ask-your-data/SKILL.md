@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement). Python 3 is optional, for the bundled result-summary script.
 metadata:
   author: bloomreach
-  version: "0.1.5"
+  version: "0.1.6"
   products: engagement
   access: read-only
 ---
@@ -160,6 +160,9 @@ Suggest the natural next skill, if it's installed:
 - Check whether a property or event is tracked properly: `engagement-tracking-health`.
 - Email or SMS campaign results: `engagement-campaign-digest`.
 - Explain an existing saved report, funnel or dashboard: `engagement-report-explainer`.
+- Two numbers that should match don't (this answer against a report, a filter or another tool): `engagement-number-reconciliation`.
+- Why revenue, orders or order value changed: `engagement-revenue-change-explainer`.
+- How many first-time buyers come back, and when: `engagement-repeat-purchase-cohorts`.
 - Lapsed-customer and churn sizing: `winback-opportunity`.
 
 ## Safety
