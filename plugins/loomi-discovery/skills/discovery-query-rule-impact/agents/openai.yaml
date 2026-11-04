@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Discovery Query Rule Impact"
+  short_description: "What each merchandising rule does to one Bloomreach Discovery search, and whether it helps revenue"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true

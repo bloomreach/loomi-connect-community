@@ -1,0 +1,45 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 0,
+   "start": 0,
+   "docs": []
+  },
+  "debug": {
+   "explain.structured": {},
+   "customizations.explain": [
+    {
+     "id": 900001,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 900002,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 950001,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 800001,
+     "ruleType": "algo",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 700001,
+     "ruleType": "facet",
+     "liveInTest": false,
+     "name": null
+    }
+   ]
+  }
+ }
+}

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.2.1"
+  version: "0.2.2"
   products: discovery
   access: read-only
 ---
@@ -104,7 +104,7 @@ Make these calls one at a time:
 - `list_site_search_media_rules` with `q=<query>`: banners or sponsored content;
 - `search_discovery_experiments` with `experiment_statuses="RUNNING"`. **Changes are blocked while an A/B test is running**, so note any running test.
 
-If ranking rules apply to this query, you can isolate their effect: run the product grid again with their IDs in `disabled_customization_ids`, and compare the top results.
+If ranking rules apply to this query, you can isolate their effect: run the product grid again with their IDs in `disabled_customization_ids`, and compare the top results. To measure every rule on the query (what each pins, moves and hides, and whether it helps or hurts revenue), hand off to `discovery-query-rule-impact`.
 
 ### 6. Check autosuggest (optional)
 

@@ -1,0 +1,73 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 1,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "H1",
+     "title": "Beaded gown H1",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "explain.structured": {
+    "H1": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ]
+   },
+   "customizations.explain": [
+    {
+     "id": 900001,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 900002,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 950001,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 800001,
+     "ruleType": "algo",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 700001,
+     "ruleType": "facet",
+     "liveInTest": false,
+     "name": null
+    }
+   ],
+   "disabled_customizations.ids": [],
+   "feUrl": "https://search.example.test/api?auth_key=FAKEKEY"
+  }
+ }
+}
