@@ -99,6 +99,10 @@ def collect(root):
         })
     skills.sort(key=lambda s: (PLUGIN_ORDER.index(s["plugin"]), s["name"]))
     checked, tools = read_tools(root)
+    # Tools for finding tools and guides (tagged meta) aren't capabilities a skill is built on, so they
+    # stay out of the tool map and the coverage count.
+    helpers = sorted(t["name"] for t in tools if "meta" in t["tags"])
+    tools = [t for t in tools if "meta" not in t["tags"]]
     for t in tools:
         pat = re.compile(r"\b" + re.escape(t["name"]) + r"\b")
         t["skills"] = sorted(s["name"] for s in skills if pat.search(s["text"]))
@@ -107,7 +111,7 @@ def collect(root):
         del s["text"]
     scripts = sorted(p for p in root.glob("plugins/*/skills/*/scripts/*.py"))
     tests = sorted(p for p in root.glob("tests/**/test_*.py"))
-    return {"skills": skills, "plugins": plugins, "tools": tools, "tools_checked": checked,
+    return {"skills": skills, "plugins": plugins, "tools": tools, "helpers": helpers, "tools_checked": checked,
             "scripts": len(scripts), "tests": len(tests)}
 
 
@@ -148,6 +152,9 @@ def render_markdown(data):
         f"The skills use {len(used)} of the {len(tools)} published Loomi Connect tools "
         f"(tool list checked {data['tools_checked']}).",
     ]
+    if data["helpers"]:
+        out[-1] += (" Tools for finding tools and guides aren't counted: "
+                    + ", ".join(f"`{n}`" for n in data["helpers"]) + ".")
     unused = [t["name"] for t in tools if not t["skills"]]
     if unused:
         out.append("Not used by any skill yet: " + ", ".join(f"`{n}`" for n in unused) + ".")
