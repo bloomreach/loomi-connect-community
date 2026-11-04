@@ -15,8 +15,7 @@
   "response_excerpt": "{\"success\": true, \"data\": {\"total_rows\": 0, \"rows\": []}}",
   "what_i_tried": "Called it with days 7 and 30, with and without filter_preset; sorted the unfiltered table instead.",
   "suggestion": "Apply the preset, or say in the description which accounts it works for.",
-  "known_line": 127,
-  "client": "claude-code"
+  "known_line": 127
 }
 ```
 
@@ -34,25 +33,30 @@
 | `suggestion` | no | What would fix it: a parameter, a field, a description change. |
 | `product` | no | `discovery`, `engagement` or `datahub`. |
 | `known_line` | no | The line number from `list-known` when the problem is an item in docs/known-tool-behaviour.md. Needs `--known-doc`. |
-| `client`, `model` | no | The tool detects both itself; give them only if detection is known to fail. |
+| `client`, `model` | never | Not sent: the tool detects both itself, and free text there could leak a name. A report that sets them gets a warning that they're ignored. |
 
-Placeholders are `<name>` in angle brackets: `<project_id>`, `<account_id>`, `<auth_key>`, `<email>`, `<url>`, `<id>`. Use them in `summary`, `expected`, `actual` and the other free text from the start. The script also redacts free text (URLs and hosts, emails, tokens and secret pairs, IDs, IP addresses, phone numbers, names after "user", "by" and similar), then lints it with stricter patterns and **blocks** anything it can still detect. This is best effort: it can't recognise every name, ID or business figure, so you and the user read the whole report before it's sent.
+Placeholders are `<name>` in angle brackets: `<project_id>`, `<account_id>`, `<auth_key>`, `<email>`, `<url>`, `<id>`. Use them in `summary`, `expected`, `actual` and the other free text from the start. The script normalises every string (NFKC, invisible characters removed), redacts the free text and the quoted known-behaviour line, and then lints the final strings exactly as sent:
 
-**Private terms.** Always write `<work>/private-terms.txt` with your file-writing tool, one per line: the organisation, project, account, catalog and site names used in this session, and any customer, brand, site or person the user says must not appear. Pass it with `--private-terms` (required). The script replaces them everywhere and blocks the plan if any are left.
+- **Hard leaks block the plan:** an email or anything with `@` or "at … dot", a URL, link target or host (only the repo's known-behaviour URL is allowed), a secret, token, cookie or `%3D`-encoded value, an ID, an IP address, a card number, an IBAN, a phone number, a private term.
+- **Soft ones warn:** capitalised word pairs anywhere (sentence start included), capitalised words in quoted strings, tokens with several `_` or `-` parts that aren't tool or field names, unusual enum values in the arguments (`known_arg_values`), a word after "user", "by" and similar, money amounts and large figures, business figures, dotted names. They're listed in the confirmation, masked except the first letter.
+
+This is best effort: it can't recognise every name, ID or business figure, so you read `payload_preview` and the user reads every field before it's sent.
+
+**Private terms.** Always write `<work>/private-terms.txt` with your file-writing tool, one per line: the organisation, project, account, catalog and site names used in this session, and any customer, brand, site or person the user says must not appear. If none were used, write the `private_terms_none_line` from [rules.json](rules.json) instead; an empty file blocks the plan. Pass it with `--private-terms` (required). The script matches variants (case, and spaces, `_`, `.` or `-` between parts), replaces them everywhere, checks the `tool` field too, and blocks the plan if any are left.
 
 ## What the feedback text looks like
 
 ```
 [Loomi Connect Community report] <tool>: <summary>
 
-Product: <product> | Environment: <production or staging> | Client: <client>
+Product: <product> | Environment: <production or staging>
 
 Expected: <expected>
 Actual: <actual>
 
-Minimal reproduction (IDs, account and project names, emails, URLs and secrets replaced by placeholders):
+Minimal reproduction (IDs, names, emails, URLs and secrets replaced with placeholders):
   tool: <tool>
-  arguments: {"account_id": "<account_id>", "days": 30, ...}
+  arguments: {"account_id": "<accountid>", "days": 30, ...}
 
 Response excerpt (placeholders as above):
 <response_excerpt>
@@ -63,4 +67,4 @@ Recorded in the Loomi Connect Community repo's known tool behaviour (<section>, 
 Suggestion: <suggestion>
 ```
 
-Sections without content are left out. `what_i_tried` goes in its own field.
+Sections without content are left out. `what_i_tried` goes in its own field. The plan's `payload_preview` shows `gap_type`, `completion_estimate`, this text and `what_i_tried` exactly as they'll be sent; the confirmation shows it verbatim.

@@ -18,6 +18,5 @@
   "response_excerpt": "{\"success\": true, \"data\": {\"total_rows\": 0, \"debug\": \"https://api.demo.test/v1?auth_key=FAKEsecret999\", \"request_id\": \"123e4567-e89b-12d3-a456-426614174000\"}}",
   "what_i_tried": "Called it with days 7 and 30, with and without filter_preset.",
   "suggestion": "Apply the preset.",
-  "known_line": 10,
-  "client": "claude-code"
+  "known_line": 10
 }

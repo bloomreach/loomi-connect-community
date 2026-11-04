@@ -117,7 +117,7 @@ class Build(unittest.TestCase):
     def test_feedback_has_every_section(self):
         fb = build(GOOD)["changes"][0]["payload"]["feedback"]
         self.assertTrue(fb.startswith(RULES["report_prefix"] + " get_discovery_category_performance_table: "))
-        for part in ("Environment: production", "Client: claude-code", "Expected: ", "Actual: ",
+        for part in ("Environment: production", "Expected: ", "Actual: ",
                      "Minimal reproduction", "  tool: get_discovery_category_performance_table",
                      RULES["repo_doc_url"] + "#L10", "Suggestion: "):
             self.assertIn(part, fb)
@@ -159,7 +159,10 @@ class Build(unittest.TestCase):
             empty = Path(tmp) / "terms.txt"
             empty.write_text("", encoding="utf-8")
             out = build(GOOD, "--private-terms", empty)
-        self.assertIn("private_terms", [w["check"] for w in out["changes"][0]["warnings"]])
+            self.assertIn("private_terms", checks(out))
+            empty.write_text(RULES["private_terms_none_line"] + "\n", encoding="utf-8")
+            out = build(GOOD, "--private-terms", empty)
+        self.assertEqual(out["changes"][0]["status"], "ready", out["changes"][0]["problems"])
 
     def test_schema_violations_block(self):
         self.assertIn("gap_type", checks(build(with_(gap_type="BUG"))))
@@ -169,7 +172,6 @@ class Build(unittest.TestCase):
         self.assertIn("summary", checks(build(with_(summary="x" * (RULES["summary_max_chars"] + 1)))))
         self.assertIn("tool", checks(build(with_(tool="Bad Tool"))))
         self.assertIn("actual", checks(build(with_(actual=""))))
-        self.assertIn("length", checks(build(with_(client="c" * (RULES["max_short_field_chars"] + 1)))))
 
     def test_over_length_blocks(self):
         long_excerpt = "rows: [] " * (RULES["max_field_chars"] // 8)
@@ -182,11 +184,12 @@ class Build(unittest.TestCase):
         self.assertIn("known_line", checks(build(with_(known_line=999))))
 
     def test_warnings(self):
-        out = build(with_(completion_estimate=RULES["completion_estimate_max"], tool="get_unknown_thing",
+        out = build(with_(completion_estimate=RULES["completion_estimate_max"], tool="search_scenarios",
                           known_line=17), env="staging")
-        self.assertEqual(out["changes"][0]["status"], "ready")
-        warned = sorted(w["check"] for w in out["changes"][0]["warnings"])
-        self.assertEqual(warned, ["completion_estimate", "known_line", "redacted", "tool"])
+        self.assertEqual(out["changes"][0]["status"], "ready", out["changes"][0]["problems"])
+        warned = sorted(w["check"] for w in out["changes"][0]["warnings"] if not w.get("soft"))
+        self.assertEqual(warned, ["completion_estimate", "known_line", "redacted"])
+        self.assertIn("tool", checks(build(with_(tool="get_unknown_thing"))))
         eng = build(with_(product="engagement"), env="staging")
         self.assertIn("environment", [w["check"] for w in eng["changes"][0]["warnings"]])
 
@@ -254,7 +257,7 @@ REVIEW_LEAKS = ("acme-demo.test", "acme-shop", "6012345", "6013", "6012", "eyJhb
                 "acme_demo_test", "FAKEaccess9token", "FAKEclientsecret", "AKIAFAKE", "7946", "0958", "555-123",
                 "203.0.113.7", "size 12 dress", "Acme", "acme-prod", "FAKEauthkey", "VIP", "RkFLRTpGQUtF",
                 "FAKEbearer", "abcdef12", "FAKEgoogle", "FAKEopenai", "GOCSPX-FAKE", "xoxb-FAKE", "ghp_FAKE",
-                "glpat-FAKE", "FAKEapikey123", "FAKErefresh", "98765", "price desc")
+                "glpat-FAKE", "FAKEapikey123", "FAKErefresh", "98765")
 
 
 class SecurityReview(unittest.TestCase):
@@ -277,11 +280,11 @@ class SecurityReview(unittest.TestCase):
         out = build(with_(arguments=args), "--private-terms", FX / "private-terms-review.txt")
         fb = out["changes"][0]["payload"]["feedback"]
         for kept in ('"filter_preset": "lowest_converting"', '"search_by": "query"', '"rows": 24',
-                     '"start_date": "2026-10-01"', '"fl": "pid,brand"'):
+                     '"start_date": "2026-10-01"', '"fl": "pid,brand"', '"sort": "price desc"'):
             self.assertIn(kept, fb)
         for ph in ('"accountId": "<accountid>"', '"account_id": "<accountid>"', '"campaign_name": "<campaignname>"',
                    '"segment": "<segment>"', '"query": "<query>"', '"search_query": "<searchquery>"', '"q": "<q>"',
-                   '"name": "<name>"', '"sort": "<sort>"'):
+                   '"name": "<name>"'):
             self.assertIn(ph, fb)
 
 
@@ -359,8 +362,8 @@ class Patterns(unittest.TestCase):
     def test_stricter_lint_catches_what_redaction_misses(self):
         for text in ("user@host.example", "abcdEFGH1234ijklMNOP5678qrst", "see ?account=1", "www.shop",
                      "number 1234567"):
-            self.assertTrue(self.m.lint_text("x", text, []), text)
-        self.assertEqual(self.m.lint_text("x", "filter_preset returned <id> rows", []), [])
+            self.assertTrue(self.m.lint_text("x", text, [])[0], text)
+        self.assertEqual(self.m.lint_text("x", "filter_preset returned <id> rows", []), ([], []))
 
     def test_excerpt_json_uses_allow_list_and_keeps_error_text(self):
         out = self.m.redact_excerpt(json.dumps({"error": "User Jane Doe denied", "owner": "Jane Doe",
@@ -368,6 +371,216 @@ class Patterns(unittest.TestCase):
         self.assertNotIn("Jane", out)
         self.assertIn('"count": 3', out)
         self.assertIn("denied", out)
+
+
+class Round3(unittest.TestCase):
+    """The third audit: the final strings are linted as sent, hard leaks block, soft ones warn."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.m = load_module()
+
+    def hard(self, text, terms=()):
+        return [h["check"] for h in self.m.lint_text("feedback", text, self.m.term_patterns(list(terms)))[0]]
+
+    def soft(self, text):
+        return [h["check"] for h in self.m.lint_text("feedback", text, [])[1]]
+
+    def test_s1_payload_preview_has_every_field_verbatim(self):
+        out = build(with_(model="model-x"))
+        p, prev = out["changes"][0]["payload"], out["payload_preview"]
+        for k in ("gap_type", "completion_estimate"):
+            self.assertIn(f"{k}: {p[k]}", prev)
+        self.assertIn("client: (never sent", prev)
+        self.assertIn("model: (never sent", prev)
+        self.assertIn(p["feedback"], prev)
+        self.assertIn(p["what_i_tried"], prev)
+
+    def test_s2_nfkc_and_invisible_characters(self):
+        self.assertNotIn("example", self.m.redact_text("jane＠example.com"))
+        self.assertNotIn("acme", self.m.redact_text("shop.ac​me.com/p"))
+        self.assertIn("email", self.hard(self.m.clean_str("a＠b")))
+        out = build(with_(summary="Problem for Ac‍me Outdoor"),
+                    "--private-terms", FX / "private-terms-review.txt")
+        self.assertNotIn("Acme", out["changes"][0]["payload"]["feedback"])
+
+    def test_s3_known_text_and_tool_are_linted_as_sent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            doc = Path(tmp) / "known.md"
+            doc.write_text("## Discovery\n\n- `search_scenarios` leaks for ops@example.com. **(bug?)**\n",
+                           encoding="utf-8")
+            report = with_(tool="search_scenarios", known_line=3)
+            p = Path(tmp) / "r.json"
+            p.write_text(json.dumps(report), encoding="utf-8")
+            out = ok(run("build", "--report", p, "--environment", "production", "--known-doc", doc,
+                         "--private-terms", FX / "private-terms.txt", cwd=tmp))
+        self.assertNotIn("ops@example.com", out["changes"][0]["payload"]["feedback"])
+        terms = Path(FX / "private-terms.txt")
+        self.assertIn("private_term", checks(build(with_(tool="search_scenarios"), "--private-terms",
+                                                   self.write_terms("search scenarios"))))
+        self.assertTrue(terms.exists())
+
+    def write_terms(self, *terms):
+        d = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: [f.unlink() for f in d.iterdir()] and None or d.rmdir())
+        f = d / "terms.txt"
+        f.write_text("\n".join(terms) + "\n", encoding="utf-8")
+        return f
+
+    def test_s4_hard_blocks(self):
+        cases = {
+            "contact a@b": "email", "jane (at) example": "email", "jane at example dot com": "email",
+            "see https://evil.example/x": "url", "go to shop.acme.com.br now": "host", "[here](shop.acme.io)": "url",
+            "token: abcdef12": "secret", "sk_live_FAKE51abc": "secret", "Cookie: sid=FAKE": "cookie",
+            "_session=FAKEsess1": "secret", "sig a%3Db%3D": "secret", "id 5f2b9c8e1a4d7f3b6c0e9a21": "id",
+            "from 2001:db8::1": "ip", "card 4111 1111 1111 1111": "card", "iban GB82WEST12345698765432": "iban",
+            "from 203.0.113.7": "ip", "secret aB3/dE5+fG7=hI9kL1": "secret",
+        }
+        for text, check in cases.items():
+            self.assertIn(check, self.hard(text), text)
+
+    def test_s4_soft_warnings_dont_block(self):
+        for text, check in (("I asked Jane Doe about it", "capitalised"), ("reported by zoë", "person"),
+                            ("cost was €1200", "money"), ("about 1,234,567 rows", "money"),
+                            ("revenue fell to 400", "business_figure"), ("see data.debug.request", "dotted_name")):
+            self.assertIn(check, self.soft(text), text)
+            self.assertEqual(self.hard(text), [], text)
+        out = build(with_(expected="I asked Jane Doe; revenue fell to 400."))
+        self.assertEqual(out["changes"][0]["status"], "ready")
+        self.assertTrue(any(w.get("soft") for w in out["changes"][0]["warnings"]))
+
+    def test_2_names_unicode_and_single_after_triggers(self):
+        for text in ("User Zoë", "reported by Łukasz Nowak", "profile of Søren", "customer José"):
+            red = self.m.redact_text(text)
+            self.assertIn("<name>", red, text)
+        self.assertIn("person", self.soft("user jane"))
+        self.assertEqual(self.soft("sorted by date"), [])
+        self.assertEqual(self.soft("Expected: The rows"), [])
+
+    def test_3_hosts_and_emails(self):
+        self.assertNotIn("acme", self.m.redact_text("visit acme.com.br today"))
+        self.assertEqual(self.m.redact_text("open data.json and notes.md"), "open data.json and notes.md")
+        self.assertIn("url", self.hard("[link](https://evil.example/p)"))
+
+    def test_4_keys(self):
+        v = self.m.redact_value({"facets": {"color": {"red": 3}}, "topQueries": {"a": 1}, "Bad Key": 1,
+                                 "lowerCamel": 1, "snake_key": 1, "big": {f"k{i}": i for i in range(12)}})
+        self.assertEqual(sorted(v["facets"]), ["<key1>"])
+        self.assertEqual(sorted(v["topQueries"]), ["<key1>"])
+        self.assertIn("lowerCamel", v)
+        self.assertIn("snake_key", v)
+        self.assertNotIn("Bad Key", v)
+        self.assertTrue(all(k.startswith("<key") for k in v["big"]))
+
+    def test_5_enum_values_and_birth_dates(self):
+        v = self.m.redact_value({"order": "asc", "sort": "Price DESC", "sort_direction": "desc", "dob": "1990-01-02",
+                                 "birth_date": "1990-01-02", "start_date": "2026-10-01"})
+        self.assertEqual(v["order"], "<order>")
+        self.assertEqual(v["sort"], "<sort>")
+        self.assertEqual(v["sort_direction"], "desc")
+        self.assertEqual((v["dob"], v["birth_date"]), ("<dob>", "<birthdate>"))
+        self.assertEqual(v["start_date"], "2026-10-01")
+
+    def test_6_pair_separators_and_new_words(self):
+        for text, leak in (("email == jane", "jane"), ("city != Paris", "Paris"), ("revenue >= 1200", "1200"),
+                           ("segment in vip_list", "vip_list"), ("customer like jan", "jan"),
+                           ("first_name: Ann", "Ann"), ("street=Main", "Main"), ("zip: 90210", "90210"),
+                           ("client_ip: 10.0.0.1", "10.0"), ("aov = 42", "42"), ("price: 19", "19")):
+            self.assertNotIn(leak, self.m.redact_text(text), text)
+
+    def test_7_private_term_variants(self):
+        terms = self.m.term_patterns(["Acme Outdoor"])
+        for text in ("acme-outdoor", "ACME_OUTDOOR", "acme.outdoor", "AcmeOutdoor"):
+            self.assertEqual(self.m.redact_text(text, terms), "<name>", text)
+            self.assertIn("private_term", self.hard(text, ["Acme Outdoor"]))
+        self.assertIn("private_term", checks(build(with_(tool="search_acme_outdoor"), "--private-terms",
+                                                   self.write_terms("Acme Outdoor"))))
+
+    def test_8_secrets(self):
+        self.assertIn("secret", self.hard("aB3dE5fG7hI9kL1m"))
+        for text in ("api key FAKE12345", "password hunter2FAKE", "sk_test_FAKEabc"):
+            self.assertNotIn("FAKE", self.m.redact_text(text), text)
+        self.assertEqual(self.m.redact_text("the token is invalid"), "the token is invalid")
+
+    def test_9_cookies(self):
+        for text in ("Set-Cookie: sid=FAKE; Path=/", "_ga=GA1.2.FAKE123", "x=a%3DFAKE"):
+            red = self.m.redact_text(text)
+            self.assertNotIn("FAKE", red, text)
+            self.assertEqual(self.hard(red), [], red)
+        self.assertIn("cookie", self.hard("Cookie: sid=FAKE"))
+        self.assertIn("secret", self.hard("value a%3Db"))
+
+    def test_12_only_the_repo_doc_url(self):
+        ok_url = RULES["repo_doc_url"] + "#L10"
+        self.assertEqual(self.hard(ok_url), [])
+        for bad in (RULES["repo_doc_url"] + "?x=1", "https://github.com/bloomreach/loomi-connect-community/x",
+                    RULES["repo_doc_url"] + "#token"):
+            self.assertTrue(self.hard(bad), bad)
+
+    def test_13_tool_must_be_published(self):
+        self.assertIn("tool", checks(build(with_(tool="get_not_published"))))
+
+    def test_15_empty_terms_block_unless_none_used(self):
+        self.assertIn("private_terms", checks(build(GOOD, "--private-terms", self.write_terms(""))))
+        none = self.write_terms(RULES["private_terms_none_line"])
+        self.assertEqual(build(GOOD, "--private-terms", none)["changes"][0]["status"], "ready")
+
+    def test_16_redacted_nested_values_dont_block(self):
+        text = json.dumps(self.m.redact_value({"customer_ids": ["a", "b"], "filters": {"email": ["x"]}}))
+        self.assertEqual(self.hard(text), [])
+
+
+class Round4(unittest.TestCase):
+    """Silent leaks left after round 3, with the coordinator's exact inputs."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.m = load_module()
+
+    def soft(self, text):
+        return [h["check"] for h in self.m.lint_text("feedback", text, [])[1]]
+
+    def test_1_client_and_model_are_never_sent(self):
+        out = build(with_(client="Jane Doe laptop", model="acme-prod"))
+        ch = out["changes"][0]
+        sent = json.dumps(ch["payload"]) + out["payload_preview"]
+        self.assertNotIn("Jane", sent)
+        self.assertNotIn("acme-prod", sent)
+        self.assertNotIn("client", ch["payload"])
+        self.assertNotIn("model", ch["payload"])
+        self.assertIn("client_model_ignored", [w["check"] for w in ch["warnings"]])
+
+    def test_2_capitalised_name_at_sentence_start_and_in_quotes(self):
+        self.assertIn("capitalised", self.soft("Jane Doe from merchandising saw it"))
+        self.assertIn("quoted_name", self.soft("segment 'Big spenders - Jane Doe' failed"))
+        out = build(with_(actual="Jane Doe from merchandising saw it",
+                          response_excerpt=json.dumps({"error": "segment 'Big spenders - Jane Doe' failed"})))
+        soft = [w["check"] for w in out["changes"][0]["warnings"] if w.get("soft")]
+        self.assertIn("capitalised", soft)
+        self.assertIn("quoted_name", soft)
+        self.assertEqual(self.soft("The Loomi Connect team"), [])
+
+    def test_3_domain_keys_and_account_tokens(self):
+        self.assertNotIn("acme_us_en", self.m.redact_text("domain key acme_us_en"))
+        self.assertIn("separated_token", self.soft("acme-fr-fr"))
+        self.assertNotIn("separated_token", self.soft("get_discovery_category_performance_table"))
+        self.assertNotIn("separated_token", self.soft("disabled_customization_ids"))
+
+    def test_4_short_numeric_ids_after_context_words(self):
+        for text in ("acct 6012", "Discovery account 6012", "site 7"):
+            red = self.m.redact_text(text)
+            self.assertFalse(any(c.isdigit() for c in red), red)
+        self.assertEqual(self.m.redact_text("site search and account and project names"),
+                         "site search and account and project names")
+
+    def test_5_unusual_enum_values_warn(self):
+        out = build(with_(arguments={"status": "acme_vip_list", "fl": "pid,acme_secret_attr"}))
+        ch = out["changes"][0]
+        self.assertEqual(ch["status"], "ready")
+        warned = [w for w in ch["warnings"] if w["check"] == "argument_value"]
+        self.assertEqual(len(warned), 2)
+        clean = build(with_(arguments={"status": "active", "fl": "pid,brand"}))
+        self.assertFalse([w for w in clean["changes"][0]["warnings"] if w["check"] == "argument_value"])
 
 
 class VerifyWording(unittest.TestCase):

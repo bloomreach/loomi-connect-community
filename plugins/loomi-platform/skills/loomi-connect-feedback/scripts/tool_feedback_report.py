@@ -14,16 +14,17 @@ list-known: lists the items in docs/known-tool-behaviour.md marked as worth repo
 known_marker), with line number, section, the tools they name, a link to the line, and whether the sent log already
 has them.
 
-build: --report is ONE report (references/feedback-fields.md): tool, summary, gap_type, completion_estimate, expected,
-actual, arguments, and optionally response_excerpt, what_i_tried, suggestion, product, known_line, client, model.
-Arguments go through an allow-list: only numbers, booleans, ISO dates and plain values of enum-like keys
-(allowed_arg_keys) are kept; every other value becomes a <placeholder> named after its key. A response excerpt that
-parses as JSON is treated the same way. Free text is redacted (URLs and hosts, emails, tokens and secret pairs, IDs,
-IP addresses, phone numbers, names after "user", "by" and similar, and every --private-terms entry), then linted
-with the same patterns and stricter ones: anything left, or a field over the tool's length limit, makes the change
-blocked. Redaction is best effort: the assistant and the user still read the whole report before it's sent. It
-prints a plan in the shape in docs/skill-authoring.md ("Plan files for write skills"): one create change for
-submit_llm_feedback, live_impact none.
+build: --report is ONE report (references/feedback-fields.md). Every string is NFKC-normalised and stripped of
+invisible format characters first. client and model are never sent (the tool detects them). Arguments go through an
+allow-list: only numbers, booleans, ISO dates and plain values of enum-like keys (allowed_arg_keys) are kept; every
+other value becomes a <placeholder> named after its key. A response excerpt that parses as JSON is treated the same
+way. Free text, and the quoted known-behaviour line, are redacted (best effort). Then the FINAL strings exactly as
+sent are linted: a hard leak (email, URL or host, secret or token, cookie, ID, IP address, card number, IBAN, phone
+number, private term) blocks the plan; a soft one (capitalised word pairs, capitalised words in quotes, a name after
+"user" or "by", tokens with several _ or - parts, unusual enum values, money, business figures, dotted names) is a
+warning, shown masked in the confirmation. The plan carries payload_preview: every field exactly as it will be sent,
+for the user to read in full. It has the shape in docs/skill-authoring.md ("Plan files for write skills"): one
+create change for submit_llm_feedback, live_impact none.
 
 verify: --response 1=FILE is submit_llm_feedback's saved response. Loomi Connect has no tool to read a report back,
 so this reads the response only: accepted (success true or an ID, and no negative wording), rejected (nothing was
@@ -37,6 +38,7 @@ import hashlib
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 RULES = json.loads((Path(__file__).resolve().parent.parent / "references" / "rules.json").read_text(encoding="utf-8"))
@@ -50,35 +52,56 @@ def words(key):
     return "|".join(sorted((re.escape(w) for w in RULES[key]), key=len, reverse=True))
 
 
-# Shared by redaction and lint. A placeholder is <name>; nothing here matches inside one.
-URL = re.compile(r"https?://[^\s<>\"'`)\]}]+", re.I)
+L = r"[^\W\d_]"  # any Unicode letter
+STOP = r"[\s<>\"'`)\]}]"
+ALLOWED_URL = re.compile(r"^%s(?:#L\d+)?$" % re.escape(RULES["repo_doc_url"]))
+URL = re.compile(r"(?:https?|ftp)://[^\s<>\"'`)\]}]+", re.I)
+MD_LINK = re.compile(r"\[([^\]\n]*)\]\(([^)\s]+)\)")
 PROTOCOL_RELATIVE = re.compile(r"(?<![:\w/])//[\w-]+(?:\.[\w-]+)+[^\s<>\"'`)\]}]*")
 SCHEMELESS = re.compile(r"(?<![\w.@/<-])[\w-]+(?:\.[\w-]+)+/[^\s<>\"'`)\]}]*")  # host/path, as in algorithm_fix_plan.py
-BARE_HOST = re.compile(r"(?<![\w.@/<-])(?:www\d?\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:%s)\b(?![.-]\w)" % words("host_tlds"), re.I)
-EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")
+HOST = re.compile(r"(?<![\w.@/<-])[a-z0-9-]+(?:\.[a-z0-9-]+)+(?![\w-])", re.I)
+WWW = re.compile(r"\bwww\d?\.", re.I)
+EMAIL = re.compile(r"[\w.%+-]+@[\w-]+(?:\.[\w-]+)*\.[A-Za-z]{2,}")
+OBFUSCATED_EMAIL = re.compile(r"[\w.+-]+\s*(?:\(at\)|\[at\]|\s+at\s+)\s*[\w-]+\s*(?:\(dot\)|\[dot\]|\s+dot\s+)\s*\w+", re.I)
+ANY_AT = re.compile(r"@|\(at\)|\[at\]|\s+at\s+\w+\s+dot\s+\w", re.I)
 JWT = re.compile(r"\beyJ[\w-]+\.[\w-]+\.[\w-]*")
-AUTH_SCHEME = re.compile(r"\b(Bearer|Basic)\s+(?!<)[^\s,;\"']+", re.I)
+AUTH_SCHEME = re.compile(r"\b(Bearer|Basic|Digest)\s+(?!<)[^\s,;\"']+", re.I)
 TOKEN = re.compile(r"(?<![\w<])(?:%s)" % "|".join(RULES["token_patterns"]))
-PAIR = re.compile(r"(?<![\w<-])([\"']?)([A-Za-z][\w-]{0,60})\1\s*([:=])\s*(\"[^\"\n]*\"|'[^'\n]*'|[^\s&\"',;)}\]<>]+)")
+COOKIE = re.compile(r"\b((?:Set-)?Cookie)\s*:\s*(?!<cookie>)[^\n]+", re.I)
+ENCODED = re.compile(r"\S*%3[Dd]\S*")
+PAIR = re.compile(r"(?<![\w<-])([\"']?)([A-Za-z_][\w-]{0,60})\1\s*(==|!=|<=|>=|[:=]|\s(?:in|like)\s)\s*"
+                  r"(\"[^\"\n]*\"|'[^'\n]*'|[^\s&\"',;)}\]<>\[{]+)", re.I)
+SECRET_WS = re.compile(r"(?<![\w<-])((?:[A-Za-z_][\w-]{0,40}?)?(?:key|token|secret|password))\s+(?!<)"
+                       r"(?=[^\s]*\d|[^\s]{12,})([^\s&\"',;)}\]<>\[{]+)", re.I)
+CONTEXT_ANY = re.compile(r"\b(%s)s?\b(\s*[:=#]?\s*)(?!<)([\w.-]+)" % words("context_any_words"), re.I)
 CONTEXT_ID = re.compile(r"\b(%s)s?\b(\s*[:=#]?\s*)(?!<)((?=[\w.-]*\d)[\w.-]+|[A-Za-z0-9]+(?:[-_.][A-Za-z0-9]+)+)"
                         % words("context_id_words"), re.I)
-PERSON = re.compile(r"\b((?i:%s))\b([\"']?\s*[:=]?\s*[\"']?\s*)([A-Z][a-z'À-ſ-]+(?:\s+[A-Z][a-z'À-ſ-]+)+)"
-                    % words("person_context_words"))
+PERSON = re.compile(r"\b(%s)\b([\"']?\s*[:=]?\s*[\"']?\s*)(%s[^\W\d_'’-]*[’'-]?%s*(?:\s+%s[^\W\d_'’-]*){0,2})"
+                    % (words("person_context_words"), L, L, L), re.I)
 UUID = re.compile(r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b")
 HEX = re.compile(r"\b(?=[0-9a-fA-F]*[0-9])(?=[0-9a-fA-F]*[a-fA-F])[0-9a-fA-F]{%d,}\b" % RULES["min_hex_id_chars"])
+IBAN = re.compile(r"\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){3,7}(?: ?[A-Z0-9]{1,3})?\b")
 IPV4 = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
+IPV6 = re.compile(r"(?<![\w:])(?:[0-9A-Fa-f]{0,4}:){2,7}[0-9A-Fa-f]{0,4}(?![\w:])")
+CARD = re.compile(r"(?<![\d])\d(?:[\s/,.-]?\d){12,18}(?!\d)")
 PHONE = re.compile(r"(?<![\w<.])\+?\(?\d[\d\s().-]{4,}\d(?![\w>])")
 DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 NUMERIC_ID = re.compile(r"(?<![\w<])\d{%d,}(?![\w>])" % RULES["min_numeric_id_digits"])
-# Lint only: stricter, so a redaction miss still blocks.
-LOOSE_EMAIL = re.compile(r"[^\s<@]@[^\s>@]+\.\w")
-OPAQUE = re.compile(r"(?<![\w<])(?=[\w-]*\d)(?=[\w-]*[A-Za-z])[\w-]{%d,}" % RULES["min_opaque_token_chars"])
-QUERY_STRING = re.compile(r"\?[\w%.\[\]-]+=")
-WWW = re.compile(r"\bwww\d?\.", re.I)
 DIGITS = re.compile(r"\d{%d,}" % RULES["min_numeric_id_digits"])
+OPAQUE = re.compile(r"(?<![\w<])(?=[\w/+=-]*\d)(?=[\w/+=-]*[A-Za-z])[\w/+=-]{%d,}" % RULES["min_opaque_token_chars"])
+QUERY_STRING = re.compile(r"\?[\w%.\[\]-]+=")
+WORD = re.compile(r"%s[^\W\d_'’-]*(?:['’-]%s+)*" % (L, L))
+CURRENCY = words("currency_codes")
+MONEY = re.compile(r"[$€£¥₹]\s?\d|\d[\d.,]*\s?[$€£¥₹]|\b(?:%s)\s?\d|\d[\d.,]*\s?(?:%s)\b|\b\d{1,3}(?:,\d{3})+\b"
+                   % (CURRENCY, CURRENCY))
+METRIC = re.compile(r"\b(?:%s)\b[^\n.;]{0,30}?\d" % words("business_metric_words"), re.I)
 PLAIN_VALUE = re.compile(RULES["plain_value_pattern"])
+CONTEXT_STOP = {w.lower() for w in RULES["context_stopwords"]}
+COMMON_CAPS = {w.lower() for w in RULES["common_capitalised_words"]}
+SEPARATED = re.compile(r"(?<![\w<.-])(?=[\w-]*[A-Za-z])[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+){2,}(?![\w>-])")
+QUOTED = re.compile(r"'([^'\n]{1,120})'|\"([^\"\n]{1,120})\"")
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?$")
-SAFE_KEY = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]{0,40}$")
+KEY_OK = re.compile(r"^[a-z][a-z0-9_]*$|^[a-z]+(?:[A-Z][a-z0-9]*)*$")
 
 CONTEXT_ERROR = re.compile(r"\bproject\b|organi[sz]ation|\baccount\b|workspace|permission|\baccess\b|denied|"
                            r"forbidden|unauthori[sz]ed|\b40[13]\b", re.I)
@@ -123,6 +146,22 @@ def norm(text):
     return re.sub(r"\s+", " ", str(text or "").strip().lower())
 
 
+def clean_str(s):
+    """NFKC-normalise (full-width @ becomes @) and drop invisible format characters (zero-width, bidi controls)."""
+    s = unicodedata.normalize("NFKC", str(s))
+    return "".join(c for c in s if unicodedata.category(c) != "Cf")
+
+
+def clean_deep(v):
+    if isinstance(v, dict):
+        return {clean_str(k): clean_deep(x) for k, x in v.items()}
+    if isinstance(v, list):
+        return [clean_deep(x) for x in v]
+    if isinstance(v, str):
+        return clean_str(v)
+    return v
+
+
 def published_tools(path):
     if not path:
         return None
@@ -135,10 +174,25 @@ def published_tools(path):
 
 
 def private_terms(path):
-    if not path:
-        return []
-    terms = [t.strip() for t in read_text(path).splitlines()]
-    return sorted({t for t in terms if t and not t.startswith("#")}, key=lambda t: (-len(t), t.lower()))
+    """(terms, none_used): the names in the file, and whether it says no names were used."""
+    terms, none_used = set(), False
+    for line in read_text(path).splitlines():
+        t = clean_str(line).strip()
+        if norm(t) == norm(RULES["private_terms_none_line"]):
+            none_used = True
+        elif t and not t.startswith("#"):
+            terms.add(t)
+    return sorted(terms, key=lambda t: (-len(t), t.lower())), none_used
+
+
+def term_patterns(terms):
+    """Each term as a pattern that also matches its variants: case, and spaces, _, . or - between its parts."""
+    out = []
+    for t in terms:
+        parts = [p for p in re.split(r"[\W_]+", t) if p]
+        if parts:
+            out.append((t, re.compile(r"[\s_.\-]*".join(re.escape(p) for p in parts), re.I)))
+    return out
 
 
 def read_sent_log(path):
@@ -154,7 +208,7 @@ def read_sent_log(path):
 
 
 def allowed_url(url):
-    return any(url.startswith(p) for p in RULES["allowed_url_prefixes"]) and "?" not in url
+    return bool(ALLOWED_URL.match(url))
 
 
 # ---------- redaction ----------
@@ -166,7 +220,8 @@ def nk(key):
 
 def sensitive(key):
     k = nk(key)
-    return k in RULES["sensitive_names_exact"] or any(w in k for w in RULES["sensitive_name_words"]) or any(k.endswith(s) for s in RULES["sensitive_name_suffixes"])
+    return (k in RULES["sensitive_names_exact"] or any(w in k for w in RULES["sensitive_name_words"])
+            or any(k.endswith(s) for s in RULES["sensitive_name_suffixes"]))
 
 
 def placeholder(key):
@@ -177,13 +232,13 @@ def placeholder(key):
 def _pair(m):
     q, name, sep, value = m.group(1), m.group(2), m.group(3), m.group(4)
     bare = value.strip("\"'")
-    if not sensitive(name) or bare.startswith("<") or bare.lower() in ("", "null", "none", "true", "false"):
+    if not (sensitive(name) or name.startswith("_")) or bare.startswith("<") or bare.lower() in ("", "null", "none", "true", "false"):
         return m.group(0)
     if nk(name) in RULES["allowed_arg_keys"] and PLAIN_VALUE.match(bare) and not DIGITS.search(bare):
         return m.group(0)
     quote = value[0] if value[:1] in ("\"", "'") and value[-1:] == value[:1] and len(value) > 1 else ""
-    space = " " if sep == ":" else ""
-    return f"{q}{name}{q}{sep}{space}{quote}{placeholder(name)}{quote}"
+    sep_out = sep if sep.strip() not in (":",) else ": "
+    return f"{q}{name}{q}{sep_out}{quote}{placeholder(name)}{quote}"
 
 
 def _phone(m):
@@ -196,39 +251,114 @@ def _phone(m):
     return "<phone>"
 
 
+def luhn(digits):
+    total, alt = 0, False
+    for c in reversed(digits):
+        d = int(c)
+        if alt:
+            d = d * 2 - 9 if d > 4 else d * 2
+        total += d
+        alt = not alt
+    return total % 10 == 0
+
+
+def _card(m):
+    s = m.group(0)
+    digits = re.sub(r"\D", "", s)
+    if DATE.search(s) or not 13 <= len(digits) <= 19 or not luhn(digits):
+        return s
+    return "<card>"
+
+
+def host_kind(text):
+    """'hard' for a host name, 'soft' for a dotted name that may be one, None for a file name or version."""
+    last = text.rsplit(".", 1)[-1].lower()
+    if not last.isalpha() or len(last) < 2 or last in RULES["not_host_suffixes"]:
+        return None
+    if last in RULES["host_tlds"] or len(last) == 2 or text.lower().startswith("www"):
+        return "hard"
+    return "soft"
+
+
+def _context_any(m):
+    """Any number or token right after account, acct, site, project, catalog, view, workspace or domain key."""
+    tok = m.group(3).rstrip(".")
+    if tok.lower() in CONTEXT_STOP:
+        return m.group(0)
+    return f"{m.group(1)}{m.group(2)}<{re.sub(r'[^a-z0-9]', '', nk(m.group(1)))}>" + m.group(3)[len(tok):]
+
+
+def _ipv6(m):
+    s = m.group(0)
+    return "<ip>" if s.count(":") >= 2 and ("::" in s or re.search(r"[A-Fa-f]", s)) and re.search(r"[0-9A-Fa-f]", s) else s
+
+
+def _person(m):
+    names = m.group(3).split()
+    keep = []
+    for i, w in enumerate(names):
+        if w[:1].isupper():
+            keep.append(i)
+        else:
+            break
+    if not keep:
+        return m.group(0)
+    rest = " ".join(names[len(keep):])
+    return f"{m.group(1)}{m.group(2)}<name>" + (f" {rest}" if rest else "")
+
+
 def redact_text(text, terms=()):
     """Best-effort replacement of personal and secret-shaped things in free text with <placeholders>."""
-    s = str(text)
+    s = clean_str(text)
+    s = MD_LINK.sub(lambda m: m.group(0) if allowed_url(m.group(2)) else f"[{m.group(1)}](<url>)", s)
     s = URL.sub(lambda m: m.group(0) if allowed_url(m.group(0)) else "<url>", s)
     s = PROTOCOL_RELATIVE.sub("<url>", s)
     s = EMAIL.sub("<email>", s)
+    s = OBFUSCATED_EMAIL.sub("<email>", s)
     s = SCHEMELESS.sub("<url>", s)
     s = JWT.sub("<token>", s)
     s = AUTH_SCHEME.sub(lambda m: f"{m.group(1)} <token>", s)
     s = TOKEN.sub("<token>", s)
+    s = COOKIE.sub(lambda m: f"{m.group(1)}: <cookie>", s)
+    s = ENCODED.sub("<encoded>", s)
     s = PAIR.sub(_pair, s)
+    s = SECRET_WS.sub(lambda m: f"{m.group(1)} {placeholder(m.group(1))}", s)
+    s = CONTEXT_ANY.sub(_context_any, s)
     s = CONTEXT_ID.sub(lambda m: f"{m.group(1)}{m.group(2)}<{nk(m.group(1))}>", s)
-    s = PERSON.sub(lambda m: f"{m.group(1)}{m.group(2)}<name>", s)
-    s = BARE_HOST.sub("<host>", s)
+    s = PERSON.sub(_person, s)
+    s = HOST.sub(lambda m: "<host>" if host_kind(m.group(0)) == "hard" else m.group(0), s)
     s = UUID.sub("<id>", s)
     s = HEX.sub("<id>", s)
+    s = IBAN.sub("<iban>", s)
     s = IPV4.sub("<ip>", s)
+    s = IPV6.sub(_ipv6, s)
+    s = CARD.sub(_card, s)
     s = PHONE.sub(_phone, s)
     s = NUMERIC_ID.sub("<id>", s)
-    for t in terms:
-        s = re.sub(re.escape(t), "<name>", s, flags=re.I)
+    for _, rx in terms:
+        s = rx.sub("<name>", s)
     return s
+
+
+def map_like(parent, obj):
+    p = nk(parent) if parent is not None else ""
+    if parent is None:
+        return False  # the top level of arguments or an excerpt: tool parameter and response field names
+    return (p in RULES["map_parent_keys"] or any(p.startswith(x) for x in RULES["map_parent_prefixes"])
+            or len(obj) > RULES["max_object_keys"])
 
 
 def redact_value(value, terms=(), key=None, text_keys=()):
     """Allow-list redaction for arguments and JSON excerpts: keep numbers, booleans, ISO dates and plain values of
     allowed_arg_keys; replace every other string with a placeholder named after its key. Strings under text_keys get
-    free-text redaction instead. Keys that aren't plain names (data used as a key) are replaced too."""
+    free-text redaction instead. Keys are kept only when they look like field names (snake_case or lower camelCase)
+    and the object isn't map-like (facets, queries, top..., or more than max_object_keys keys)."""
     if isinstance(value, dict):
         out, n = {}, 0
+        replace_all = map_like(key, value)
         for k, v in sorted(value.items(), key=lambda kv: str(kv[0])):
             k = str(k)
-            if not SAFE_KEY.match(k) or any(t.lower() in k.lower() for t in terms):
+            if replace_all or not KEY_OK.match(k) or any(rx.search(k) for _, rx in terms):
                 n += 1
                 k = f"<key{n}>"
             out[k] = redact_value(v, terms, k, text_keys)
@@ -247,7 +377,7 @@ def redact_value(value, terms=(), key=None, text_keys=()):
     if ISO_DATE.match(s) and not (key is not None and sensitive(key)):
         return s
     if (key is not None and nk(key) in RULES["allowed_arg_keys"] and PLAIN_VALUE.match(s)
-            and not DIGITS.search(s) and not any(t.lower() in s.lower() for t in terms)):
+            and not DIGITS.search(s) and not any(rx.search(s) for _, rx in terms)):
         return s
     return placeholder(key)
 
@@ -264,64 +394,181 @@ def redact_excerpt(text, terms):
                       ensure_ascii=False, sort_keys=True)
 
 
-# ---------- lint ----------
+# ---------- lint (on the final strings, exactly as sent) ----------
 
 def mask(s):
     s = str(s)
     return f"{s[:1]}... ({len(s)} characters)"
 
 
-LINT = (
-    ("url", URL, "a URL (its host or query string can identify the customer); write <url>"),
-    ("url", PROTOCOL_RELATIVE, "a //host URL; write <url>"),
-    ("url", SCHEMELESS, "a host with a path; write <url>"),
-    ("url", QUERY_STRING, "a query string; write <url>"),
-    ("host", BARE_HOST, "a host name; write <host>"),
-    ("host", WWW, "a www. host; write <host>"),
-    ("email", EMAIL, "an email address; write <email>"),
-    ("email", LOOSE_EMAIL, "something shaped like an email address; write <email>"),
-    ("secret", JWT, "a JWT; write <token>"),
-    ("secret", AUTH_SCHEME, "a Bearer or Basic credential; write <token>"),
-    ("secret", TOKEN, "a known token format; write <token>"),
-    ("id", UUID, "a UUID-shaped ID; write <id> or a named placeholder such as <project_id>"),
-    ("id", HEX, "a long hex ID; write <id> or a named placeholder"),
-    ("id", DIGITS, "a long number that may be an ID; write <id>"),
-    ("id", OPAQUE, "a long token or ID; write <id> or <token>"),
-    ("ip", IPV4, "an IP address; write <ip>"),
+HARD = (
+    ("url", URL, "a URL (its host or query string can identify the customer)"),
+    ("url", PROTOCOL_RELATIVE, "a //host URL"),
+    ("url", SCHEMELESS, "a host with a path"),
+    ("url", QUERY_STRING, "a query string"),
+    ("host", WWW, "a www. host"),
+    ("email", ANY_AT, "an @ or an 'at ... dot' address"),
+    ("secret", JWT, "a JWT"),
+    ("secret", AUTH_SCHEME, "a Bearer, Basic or Digest credential"),
+    ("secret", TOKEN, "a known token format"),
+    ("secret", ENCODED, "a %3D-encoded value (cookie or signed parameter)"),
+    ("secret", OPAQUE, "a long token or ID"),
+    ("cookie", re.compile(r"\b(?:set-)?cookie\s*:\s*(?!<cookie>)\S", re.I), "a cookie header"),
+    ("id", UUID, "a UUID-shaped ID"),
+    ("id", HEX, "a long hex ID"),
+    ("id", DIGITS, "a long number that may be an ID"),
+    ("iban", IBAN, "an IBAN"),
+    ("ip", IPV4, "an IPv4 address"),
 )
+REDUCED = ("url", "email", "secret")  # for short fields whose IDs legitimately hold digits and dates
 
 
-def lint_text(field, text, terms):
-    """Every personal or secret-shaped thing left in one field, without repeating it."""
-    hits = []
-    t = URL.sub(lambda m: " " if allowed_url(m.group(0)) else m.group(0), str(text or ""))
-    for check, rx, message in LINT:
-        for m in rx.finditer(t):
-            if rx is DIGITS and IPV4.search(m.group(0)):
+def known_phrase_mask(t):
+    for p in sorted(RULES["known_phrases"], key=len, reverse=True):
+        t = re.sub(re.escape(p), lambda m: "#" * len(m.group(0)), t)
+    return t
+
+
+def capitalised_pairs(t):
+    """Two or more adjacent capitalised words anywhere, sentence start included (a possible person or brand),
+    unless they're a known phrase or every word is a common word."""
+    t = known_phrase_mask(t)
+    groups, cur = [], []
+    for m in WORD.finditer(t):
+        w = m.group(0)
+        if w[:1].isupper() and (len(w) == 1 or not w.isupper()):
+            if cur and re.fullmatch(r"[ \t]+", t[cur[-1][1]:m.start()]):
+                cur.append((m.start(), m.end()))
                 continue
-            hits.append((check, message, m.group(0)))
-    for m in PAIR.finditer(t):
-        if _pair(m) != m.group(0):
-            hits.append(("secret", "a sensitive name: value or name=value pair; write a <placeholder>", m.group(0)))
-    for m in CONTEXT_ID.finditer(t):
-        hits.append(("id", "an ID or name after an account, project or similar word; write a <placeholder>", m.group(0)))
-    for m in PERSON.finditer(t):
-        hits.append(("person", "what looks like a person's name; write <name>", m.group(0)))
-    for m in PHONE.finditer(t):
-        if _phone(m) != m.group(0):
-            hits.append(("phone", "a phone number; write <phone>", m.group(0)))
-    low = t.lower()
-    for term in terms:
-        if term.lower() in low:
-            hits.append(("private_term", "a private name (organisation, project, account, catalog, site, customer or "
-                         "brand); write a placeholder", term))
-    out, seen = [], set()
-    for check, message, found in hits:
-        k = (check, found)
-        if k not in seen:
-            seen.add(k)
-            out.append({"check": check, "field": field, "message": f"{field} contains {message}.", "found": mask(found)})
+            if cur:
+                groups.append(cur)
+            cur = [(m.start(), m.end())]
+        elif cur:
+            groups.append(cur)
+            cur = []
+    if cur:
+        groups.append(cur)
+    found = []
+    for g in groups:
+        if len(g) >= 2 and not all(t[a:b].lower() in COMMON_CAPS for a, b in g):
+            found.append((g[0][0], t[g[0][0]:g[-1][1]]))
+    return found
+
+
+def quoted_capitals(t):
+    """Capitalised words inside a quoted string (segment, campaign or customer names in error text)."""
+    t = known_phrase_mask(t)
+    out = []
+    for m in QUOTED.finditer(t):
+        inner = m.group(1) if m.group(1) is not None else m.group(2)
+        start = m.start() + 1
+        for w in WORD.finditer(inner):
+            word = w.group(0)
+            if word[:1].isupper() and word.lower() not in COMMON_CAPS:
+                out.append((start, inner))
+                break
     return out
+
+
+def separated_tokens(t, tools):
+    """Tokens with two or more _ or - separators that aren't tool or known field names (domain keys, account ids)."""
+    t = known_phrase_mask(t)
+    known = {nk(x) for x in RULES["known_field_names"]} | {nk(x) for x in RULES["allowed_arg_keys"]}
+    out = []
+    for m in SEPARATED.finditer(t):
+        tok = m.group(0)
+        if tools is not None and tok in tools:
+            continue
+        if tools is None and TOOL_NAME.match(tok) and tok.startswith(TOOL_VERBS):
+            continue
+        if nk(tok) in known or tok.lower() in {w.lower() for w in RULES["known_phrases"]}:
+            continue
+        out.append((m.start(), tok))
+    return out
+
+
+def lint_text(field, text, terms, reduced=False, tools=None):
+    """(hard, soft): what's left in one final string. Hard leaks block; soft ones are warnings."""
+    t = clean_str(text or "")
+    t = URL.sub(lambda m: " " * len(m.group(0)) if allowed_url(m.group(0)) else m.group(0), t)
+    hard, soft = [], []
+
+    def line_of(pos):
+        return t.count("\n", 0, pos) + 1
+
+    def add(bucket, check, what, m_start, found):
+        bucket.append((check, what, line_of(m_start), found))
+
+    for check, rx, what in HARD:
+        if reduced and check not in REDUCED:
+            continue
+        for m in rx.finditer(t):
+            if check == "url" and rx is URL and allowed_url(m.group(0)):
+                continue
+            if rx is DIGITS and (IPV4.search(t[max(0, m.start() - 4):m.end() + 4]) or reduced):
+                continue
+            add(hard, check, what, m.start(), m.group(0))
+    for _, rx in terms:
+        for m in rx.finditer(t):
+            add(hard, "private_term", "a private name (organisation, project, account, catalog, site, customer or "
+                "brand)", m.start(), m.group(0))
+    if not reduced:
+        for m in MD_LINK.finditer(t):
+            if not allowed_url(m.group(2)) and not m.group(2).startswith("<"):
+                add(hard, "url", "a link target", m.start(), m.group(2))
+        for m in HOST.finditer(t):
+            kind = host_kind(m.group(0))
+            if kind == "hard":
+                add(hard, "host", "a host name", m.start(), m.group(0))
+            elif kind == "soft":
+                add(soft, "dotted_name", "a dotted name that may be a host", m.start(), m.group(0))
+        for m in PAIR.finditer(t):
+            if _pair(m) != m.group(0):
+                add(hard, "secret", "a sensitive name: value or name=value pair", m.start(), m.group(0))
+        for m in SECRET_WS.finditer(t):
+            add(hard, "secret", "a value after a key, token, secret or password", m.start(), m.group(0))
+        for m in CONTEXT_ID.finditer(t):
+            add(hard, "id", "an ID or name after an account, project or similar word", m.start(), m.group(0))
+        for m in CONTEXT_ANY.finditer(t):
+            if _context_any(m) != m.group(0):
+                add(hard, "id", "a number or name after an account, site, catalog or similar word", m.start(),
+                    m.group(0))
+        for m in IPV6.finditer(t):
+            if _ipv6(m) != m.group(0):
+                add(hard, "ip", "an IPv6 address", m.start(), m.group(0))
+        for m in CARD.finditer(t):
+            if _card(m) != m.group(0):
+                add(hard, "card", "a card number", m.start(), m.group(0))
+        for m in PHONE.finditer(t):
+            if _phone(m) != m.group(0):
+                add(hard, "phone", "a phone number", m.start(), m.group(0))
+        stop = {w.lower() for w in RULES["name_stopwords"]}
+        for m in PERSON.finditer(t):
+            first = m.group(3).split()[0]
+            if first.lower() not in stop:
+                add(soft, "person", f"a word after '{m.group(1).lower()}' that may be a name", m.start(3), m.group(3))
+        for pos, pair in capitalised_pairs(t):
+            add(soft, "capitalised", "capitalised words that may be a person, customer or brand", pos, pair)
+        for pos, inner in quoted_capitals(t):
+            add(soft, "quoted_name", "capitalised words in a quoted string that may be a name", pos, inner)
+        for pos, tok in separated_tokens(t, tools):
+            add(soft, "separated_token", "a token with several _ or - parts that may be a domain key or account "
+                "name", pos, tok)
+        for m in MONEY.finditer(t):
+            add(soft, "money", "a money amount or large figure", m.start(), m.group(0))
+        for m in METRIC.finditer(t):
+            add(soft, "business_figure", "a business figure", m.start(), m.group(0))
+
+    def pack(items):
+        out, seen = [], set()
+        for check, what, line, found in items:
+            k = (check, line, found)
+            if k not in seen:
+                seen.add(k)
+                out.append({"check": check, "field": field, "line": line,
+                            "message": f"{field} line {line} contains {what}.", "found": mask(found)})
+        return out
+    return pack(hard), pack(soft)
 
 
 # ---------- known-tool-behaviour.md ----------
@@ -370,7 +617,8 @@ def known_item(lines, n, section, subsection, sub_line, tools):
             if lines[j].startswith("#"):
                 break
     cap = RULES["known_excerpt_chars"]
-    text = line.strip()
+    text = clean_str(line).strip()
+    parent = clean_str(parent) if parent else parent
     named = tools_named(text + " " + (parent or ""), tools) or tools_named(sub_line or "", tools)
     return {"line": n, "section": section, "subsection": subsection, "tools": named,
             "text": text[:cap] + ("..." if len(text) > cap else ""),
@@ -412,13 +660,37 @@ def one_line(text):
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
+def unknown_enum_parts(key, value):
+    """Parts of a kept enum-like argument value that may be data: underscore-joined words not in known_arg_values,
+    or, for a field list (fl), any field not in the list."""
+    if not isinstance(value, str) or value.startswith("<") or nk(key) not in RULES["allowed_arg_keys"]:
+        return []
+    known = {v.lower() for v in RULES["known_arg_values"].get(nk(key), [])}
+    is_list = nk(key) in RULES["field_list_keys"]
+    return [p for p in re.split(r"[ ,]+", value)
+            if p and p.lower() not in known and (is_list or "_" in p)]
+
+
+def payload_preview(payload):
+    """Every field exactly as it will be sent, for the user to read in full before saying yes."""
+    lines = [f"gap_type: {payload.get('gap_type')}",
+             f"completion_estimate: {payload.get('completion_estimate')}",
+             "client: (never sent; the tool detects it)",
+             "model: (never sent; the tool detects it)",
+             "----- feedback -----", payload.get("feedback", ""),
+             "----- what_i_tried -----", payload.get("what_i_tried", "")]
+    return "\n".join(lines)
+
+
 def cmd_build(a):
     rep = raw_json(a.report)
     if isinstance(rep, list):
         fail(f"{a.report}: holds a list. One report per plan: write ONE report object and ask about it on its own.")
     if not isinstance(rep, dict):
         fail(f"{a.report}: expected one JSON object (references/feedback-fields.md).")
-    terms = private_terms(a.private_terms)
+    rep = clean_deep(rep)
+    term_list, none_used = private_terms(a.private_terms)
+    terms = term_patterns(term_list)
     tools = published_tools(a.published_tools)
     problems, warnings = [], []
 
@@ -428,15 +700,15 @@ def cmd_build(a):
     def warn(check, message, field=None):
         warnings.append({"check": check, "field": field, "message": message})
 
-    if not terms:
-        warn("private_terms", "The private terms file is empty. It must list the organisation, project, account, "
-             "catalog and site names used in this session, and any customer or brand the user flagged.",
-             "private_terms")
+    if not term_list and not none_used:
+        block("private_terms", "The private terms file is empty. List the organisation, project, account, catalog and "
+              f"site names used in this session, or, if none were used, a line '{RULES['private_terms_none_line']}'.",
+              "private_terms")
     redacted = []
 
     def clean(field, value):
         out = redact_text(value, terms).strip() if value else ""
-        if out != (value or "").strip():
+        if out != clean_str(value or "").strip():
             redacted.append(field)
         return out
 
@@ -444,8 +716,10 @@ def cmd_build(a):
     if not TOOL_NAME.match(tool):
         block("tool", "tool must be one Loomi Connect tool name, such as get_discovery_trend.", "tool")
     elif tools is not None and tool not in tools:
-        warn("tool", f"{tool} isn't in the published tools list. Check the name (renamed tools fail under their old "
-             "name); never report on a tool tagged internal.", "tool")
+        block("tool", f"{tool} isn't in the published tools list. Check the name (renamed tools fail under their old "
+              "name); never report on a tool tagged internal.", "tool")
+    if any(rx.search(tool) for _, rx in terms):
+        block("private_term", "tool contains a private name.", "tool")
 
     summary = clean("summary", str(rep.get("summary") or "").strip())
     if not summary:
@@ -485,6 +759,11 @@ def cmd_build(a):
         block("arguments", "arguments must be the JSON object sent to the tool ({} if none).", "arguments")
         args = {}
     clean_args = redact_value(args, terms)
+    for k, v in sorted(clean_args.items()):
+        for part in unknown_enum_parts(k, v):
+            warnings.append({"check": "argument_value", "field": "arguments", "line": None, "soft": True,
+                             "message": f"arguments: {k} has a value that isn't a common one and may be a name.",
+                             "found": mask(part)})
     if clean_args != args:
         redacted.append("arguments")
     raw_excerpt = str(rep.get("response_excerpt") or "").strip()
@@ -508,25 +787,20 @@ def cmd_build(a):
                 warn("known_line", f"Line {kl} names {', '.join(known['tools'])}, not {tool}. Check the line.",
                      "known_line")
 
-    client = str(rep.get("client") or "").strip()
-    model = str(rep.get("model") or "").strip()
-    for name, val in (("client", client), ("model", model)):
-        if len(val) > RULES["max_short_field_chars"]:
-            block("length", f"{name} is longer than max_short_field_chars (references/rules.json).", name)
+    for name in ("client", "model"):
+        if rep.get(name):
+            warn("client_model_ignored", f"{name} is ignored and never sent: the tool detects it itself, and free "
+                 "text there could leak a name.", name)
 
     what = clean("what_i_tried", str(rep.get("what_i_tried") or "").strip()) or (
         f"Called {tool} with the arguments in the reproduction below the feedback, and compared what came back "
         "with the tool's description.")
     suggestion = clean("suggestion", str(rep.get("suggestion") or "").strip())
-    if redacted:
-        warn("redacted", "Placeholders were put into " + ", ".join(redacted) + ". Read the whole report: redaction is "
-             "best effort and can miss names, IDs and business data, or remove something the team needs.", None)
 
-    env_bits = [f"Product: {product}" if product else None, f"Environment: {a.environment}",
-                f"Client: {client}" if client else None]
+    env_bits = [f"Product: {product}" if product else None, f"Environment: {a.environment}"]
     parts = [f"{RULES['report_prefix']} {tool}: {one_line(summary)}", "",
              " | ".join(b for b in env_bits if b), "", f"Expected: {expected}", f"Actual: {actual}", "",
-             "Minimal reproduction (IDs, account and project names, emails, URLs and secrets replaced by placeholders):",
+             "Minimal reproduction (IDs, names, emails, URLs and secrets replaced with placeholders):",
              f"  tool: {tool}",
              "  arguments: " + json.dumps(clean_args, ensure_ascii=False, sort_keys=True)]
     if excerpt:
@@ -536,8 +810,8 @@ def cmd_build(a):
         parts += ["", f"Recorded in the Loomi Connect Community repo's known tool behaviour ({where}, line "
                   f"{known['line']}): {known['link']}"]
         if known["parent"]:
-            parts.append("> " + known["parent"])
-        parts.append("> " + known["text"])
+            parts.append("> " + redact_text(known["parent"], terms))
+        parts.append("> " + redact_text(known["text"], terms))
     if suggestion:
         parts += ["", f"Suggestion: {suggestion}"]
     feedback = "\n".join(parts)
@@ -545,22 +819,20 @@ def cmd_build(a):
     payload = {"gap_type": gap, "what_i_tried": what, "feedback": feedback}
     if ce is not None:
         payload["completion_estimate"] = ce
-    if client:
-        payload["client"] = client
-    if model:
-        payload["model"] = model
 
     for name, val in (("feedback", feedback), ("what_i_tried", what)):
         if len(val) > RULES["max_field_chars"]:
             block("length", f"{name} is {len(val)} characters, over the tool's max_field_chars "
                   "(references/rules.json). Shorten the response excerpt or the text.", name)
 
-    lint_fields = (("summary", summary), ("expected", expected), ("actual", actual), ("suggestion", suggestion),
-                   ("what_i_tried", what), ("arguments", json.dumps(clean_args, ensure_ascii=False)),
-                   ("response_excerpt", excerpt), ("client", client), ("model", model))
-    for name, val in lint_fields:
-        for hit in lint_text(name, val, terms):
-            problems.append(hit)
+    # Lint the final strings exactly as sent: hard leaks block, soft ones are warnings shown in the confirmation.
+    for name, val in (("feedback", feedback), ("what_i_tried", what)):
+        hard, soft = lint_text(name, val, terms, tools=tools)
+        problems.extend(hard)
+        warnings.extend(dict(w, soft=True) for w in soft)
+    if redacted:
+        warn("redacted", "Placeholders were put into " + ", ".join(redacted) + ". Check they didn't remove what the "
+             "team needs, and read every line: redaction is best effort.", None)
 
     fp = fingerprint(tool, summary)
     for e in read_sent_log(a.sent_log):
@@ -585,10 +857,14 @@ def cmd_build(a):
           "problems": problems, "warnings": warnings}
     summary_out = {"tool": tool, "summary": one_line(summary), "gap_type": gap, "completion_estimate": ce,
                    "product": product, "environment": a.environment, "known_link": known["link"] if known else None,
-                   "feedback_chars": len(feedback), "what_i_tried_chars": len(what)}
+                   "feedback_chars": len(feedback), "what_i_tried_chars": len(what),
+                   "soft_warnings": sum(1 for w in warnings if w.get("soft"))}
     return {"ok": True, "environment": a.environment, "fingerprint": fp,
             "known_line": known["line"] if known else None, "changes": [ch],
             "batches": [[1]] if status == "ready" else [], "summary": summary_out,
+            "payload_preview": payload_preview(payload),
+            "confirm_note": "Show payload_preview verbatim in a fenced block, list every warning, and ask the user to "
+                            "read every line: redaction is best effort.",
             "counts": {"ready": int(status == "ready"), "blocked": int(status == "blocked"), "no_change": 0}}
 
 
