@@ -7,7 +7,7 @@ Audits an Engagement project's tracking and data quality. It finds event types t
 | **Products** | Engagement |
 | **Access** | Read-only |
 | **Loomi Connect tools** | `list_cloud_organizations`, `list_projects`, `get_event_schema`, `get_customer_property_schema`, `get_customer_schema`, `estimate_eql_cost`, `execute_analytics_eql`, optionally `get_project_overview`, `search_trends`, `search_reports` |
-| **Tested with** | Claude Code (manual run of the method, the EQL patterns and the script against a live sandbox project, plus a schema-only check of a production project) |
+| **Tested with** | Claude Code (manual run of the method, the EQL patterns and the script against a live sandbox project, plus a schema-only check of a production project). Version 0.1.6: the purchase history and duplicate order queries were run on a sandbox with 23 million events; both totals matched an earlier independent count (485,313 purchases) |
 | **Maintainer** | Bloomreach |
 
 ## Example prompts
