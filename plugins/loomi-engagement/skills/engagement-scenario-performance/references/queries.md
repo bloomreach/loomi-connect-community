@@ -13,14 +13,14 @@ by column event campaign.status grouping top 16
 in last <DAYS> days
 ```
 
-Rows are node ids, columns are statuses: `enqueued`, `delivered`, `opened`, `clicked`, `hard_bounced`, `soft_bounced`, `failed`, `unsubscribed` and others (some projects spell them `hard_bounce`, `soft_bounce`, `unsubscribe`; count both). Fold them:
+Rows are node ids, columns are statuses: `enqueued`, `sent`, `delivered`, `opened`, `clicked`, `hard_bounced`, `soft_bounced`, `failed`, `unsubscribed` and others (some projects spell them `hard_bounce`, `soft_bounce`, `unsubscribe`; count both). Fold them:
 
 | Number | From |
 |---|---|
-| sent | max(`enqueued`, `delivered` + bounced) |
-| delivered | `delivered` |
+| sent | max(`sent`, `enqueued`, `delivered` + bounced) |
+| delivered | `delivered`; for SMS and push steps, which record `sent` and no `delivered`, leave it blank (—) |
 | opened, clicked, unsubscribed | the status of the same name |
-| bounced | `hard_bounced` + `soft_bounced` + `failed` |
+| bounced | `hard_bounced` + `soft_bounced` + `failed` (plus `hard_bounce` and `soft_bounce` where a project uses them) |
 
 Some projects record only `campaign_name`, not `campaign_id`. If the query returns nothing for a scenario that's known to send, retry with `.campaign_name = "<scenario name>"`.
 

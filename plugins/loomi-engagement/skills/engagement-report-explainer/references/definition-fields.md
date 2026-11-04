@@ -37,7 +37,7 @@ A customer filter is `{"filters": [...], "formula": "F0&F1"}`. `F0`, `F1`, ... a
 
 Attribute types you'll meet: `property` (event or customer property), `timestamp`, `expression`, `aggregate`, `prediction`, `segmentation` (each of the last four has an `id` to look up).
 
-Operators to translate carefully: `equal to` / `equals`, `in` / `is in`, `has value`, `has no value`, `contains`, `matches regex`, numeric `greater than` and so on. A `not` variant or a `!` in the formula excludes.
+Operators to translate carefully: `equal to` / `equals`, `in` / `is in`, `has value`, `has no value`, `contains`, `matches regex` (it must match the whole value, so a pattern such as `gmail` without `.*` around it matches nothing; flag that as a likely mistake), numeric `greater than` and so on. A `not` variant or a `!` in the formula excludes.
 
 ## Reports (`search_reports` with `report_id`)
 

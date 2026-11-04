@@ -38,6 +38,8 @@ Combine with `and`, `or`, `not` and parentheses.
 
 Other operators, from the tool documentation: `has no value`, `starts with`, `ends with`, `does not contain`, `matches regex`, `between X and Y`, `more than X days ago`, `id <identifier-field> <operator>`, `is in ["a", "b"]` (strings only, at least two items).
 
+`matches regex` must match the **whole** value: `customer.email matches regex "gmail"` matched no one in testing, while `".*gmail.*"` matched as expected. Use `contains` for a substring, or wrap the pattern in `.*`.
+
 ## Syntax traps (confirmed in testing)
 
 - **Inside `exists[...]`, `where` must come before `in last`.** `exists[event purchase in last 90 days where .total_price > 100]` fails with "Unexpected token where".
