@@ -62,6 +62,8 @@ input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:9px 12px;bord
 .sk h3 a{color:var(--ink);text-decoration:none}
 .sk h3 a:hover{text-decoration:underline}
 .sk p{margin:2px 0 0;color:var(--muted);font-size:15px;grid-column:2}
+.dl{margin-left:auto;font:600 12px var(--mono);color:var(--arctic);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:3px 7px}
+.dl:hover{border-color:var(--arctic)}
 .wtag{font:600 11px/1 var(--mono);padding:4px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;color:var(--write);background:var(--write-bg)}
 footer .wrap{padding-block:24px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
 @media (max-width:600px){.bar nav{display:none}.prow{grid-template-columns:1fr 54px}.pname{grid-column:1/-1}.sk{grid-template-columns:1fr}.sk p{grid-column:1}}
@@ -71,7 +73,7 @@ footer .wrap{padding-block:24px 40px;border-top:1px solid var(--line);color:var(
 <header class="bar gutter"><div class="wrap">
   <a class="logo" href="./" aria-label="loomi-connect-community home">__LOGO__</a>
   <span class="tag">Community</span>
-  <nav aria-label="Site"><a href="./">Home</a><a id="gh-start" href="#">Start here</a><a id="gh-repo" href="#">GitHub</a></nav>
+  <nav aria-label="Site"><a href="./">Home</a><a href="quickstart.html">Quickstart</a><a href="tools.html">Tools</a><a id="gh-start" href="#">Start here</a><a id="gh-repo" href="#">GitHub</a></nav>
 </div></header>
 <main class="gutter"><div class="wrap">
   <div>
@@ -103,7 +105,7 @@ const COLORS={"loomi-engagement":"var(--eng)","loomi-discovery":"var(--disc)","l
 $("gh-repo").href=D.repo; $("gh-start").href=D.repo+"/blob/main/docs/start-here.md";
 const W=D.skills.filter(s=>s.writes).length;
 $("title").innerHTML=`<em>${D.skills.length}</em> skills across ${D.plugins.length} plugins`;
-$("lede").textContent=`${D.skills.length-W} only read. ${W} can change something, and each of those shows exactly what it will change and waits for a yes.`;
+$("lede").innerHTML=`${D.skills.length-W} only read. ${W} can change something, and each of those shows exactly what it will change and waits for a yes. Using claude.ai or ChatGPT? Download a skill's <b>.zip</b> and follow the <a href="quickstart.html">quickstart</a>.`;
 $("foot").textContent=`Generated from each skill's SKILL.md. Tool list checked ${D.toolsChecked}.`;
 const max=Math.max(...D.plugins.map(p=>p.skills));
 $("plugins").innerHTML=D.plugins.map(p=>{const r=p.skills-p.writes;
@@ -117,7 +119,7 @@ $("q").oninput=render;
 function render(){const t=$("q").value.trim().toLowerCase();
   const rows=D.skills.filter(s=>(plugin==="all"||s.plugin===plugin)&&(!wonly||s.writes)&&(!t||s.name.includes(t)||s.summary.toLowerCase().includes(t)));
   $("count").textContent=rows.length+" of "+D.skills.length;
-  $("list").innerHTML=rows.map(s=>`<div class="sk"><div class="pl" style="color:${COLORS[s.plugin]}">${esc(s.plugin.replace("loomi-",""))}</div><h3><a href="${D.repo}/tree/main/plugins/${esc(s.plugin)}/skills/${esc(s.name)}">${esc(s.name)}</a>${s.writes?'<span class="wtag">writes</span>':''}</h3><p>${esc(s.summary)}</p></div>`).join("")
+  $("list").innerHTML=rows.map(s=>`<div class="sk"><div class="pl" style="color:${COLORS[s.plugin]}">${esc(s.plugin.replace("loomi-",""))}</div><h3><a href="${D.repo}/tree/main/plugins/${esc(s.plugin)}/skills/${esc(s.name)}">${esc(s.name)}</a>${s.writes?'<span class="wtag">writes</span>':''}<a class="dl" href="downloads/${esc(s.name)}.zip" download aria-label="Download ${esc(s.name)} as a zip">.zip</a></h3><p>${esc(s.summary)}</p></div>`).join("")
     ||'<p style="color:var(--muted);padding:12px 0">No skills match. Clear the search or pick another plugin.</p>';}
 render();
 </script>

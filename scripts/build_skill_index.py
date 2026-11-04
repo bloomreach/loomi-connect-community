@@ -15,6 +15,7 @@ import datetime as dt
 import json
 import re
 import shutil
+import zipfile
 import subprocess
 import sys
 from collections import Counter
@@ -217,7 +218,7 @@ def render_site(root, data, outdir):
             + inline_svg(site / "assets" / "bloomreach-logo-text.svg",
                          'class="logo-text" role="img" aria-label="Bloomreach" fill="currentColor"'))
     outdir.mkdir(parents=True, exist_ok=True)
-    for name in ("index", "skills"):
+    for name in ("index", "skills", "quickstart", "tools"):
         try:
             tpl = (site / f"{name}.template.html").read_text(encoding="utf-8")
         except OSError as e:
@@ -225,7 +226,19 @@ def render_site(root, data, outdir):
         page = tpl.replace("__DATA__", blob).replace("__LOGO__", logo)
         (outdir / f"{name}.html").write_text(page, encoding="utf-8", newline="\n")
     shutil.copytree(site / "assets", outdir / "assets", dirs_exist_ok=True)
+    zip_skills(root, outdir / "downloads")
     (outdir / ".nojekyll").write_text("", encoding="utf-8")
+
+
+def zip_skills(root, dest):
+    """One zip per skill, with the skill's folder at the top, ready to upload to claude.ai or ChatGPT."""
+    dest.mkdir(parents=True, exist_ok=True)
+    for skill_md in sorted(root.glob("plugins/*/skills/*/SKILL.md")):
+        folder = skill_md.parent
+        with zipfile.ZipFile(dest / f"{folder.name}.zip", "w", zipfile.ZIP_DEFLATED) as z:
+            for f in sorted(folder.rglob("*")):
+                if f.is_file() and "__pycache__" not in f.parts and f.suffix not in (".pyc", ".pyo"):
+                    z.write(f, Path(folder.name) / f.relative_to(folder))
 
 
 def tool_list_age_warning(checked, today):

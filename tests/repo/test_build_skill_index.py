@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -67,7 +68,7 @@ class BuildSkillIndexTest(unittest.TestCase):
             r = run(BUILD, "--check", "--site", Path(tmp) / "site", "--today", "2026-11-04")
             self.assertEqual(r.returncode, 0, r.stderr)
             out = Path(tmp) / "site"
-            for f in ("index.html", "skills.html", "assets/bloomreach-logo-icon.svg", ".nojekyll"):
+            for f in ("index.html", "skills.html", "quickstart.html", "tools.html", "assets/bloomreach-logo-icon.svg", ".nojekyll"):
                 self.assertTrue((out / f).exists(), f)
             page = (out / "index.html").read_text(encoding="utf-8")
             self.assertNotIn("__DATA__", page)
@@ -75,6 +76,12 @@ class BuildSkillIndexTest(unittest.TestCase):
             payload = json.loads(re.search(r"const D=(\{.*?\});\n", page, re.S).group(1))
             self.assertEqual({s["name"] for s in payload["skills"]}, {s["name"] for s in self.data["skills"]})
             self.assertNotRegex(json.dumps(payload["contributors"]), r"@")
+            zips = sorted((out / "downloads").glob("*.zip"))
+            self.assertEqual({z.stem for z in zips}, {s["name"] for s in self.data["skills"]})
+            with zipfile.ZipFile(out / "downloads" / "loomi-project-overview.zip") as z:
+                names = z.namelist()
+            self.assertIn("loomi-project-overview/SKILL.md", names)
+            self.assertFalse([n for n in names if "__pycache__" in n or not n.startswith("loomi-project-overview/")])
 
     def test_old_tool_list_warns(self):
         self.assertIsNone(self.b.tool_list_age_warning("2026-11-01", dt.date(2026, 11, 4)))
