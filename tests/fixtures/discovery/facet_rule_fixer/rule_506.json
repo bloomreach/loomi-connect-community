@@ -1,0 +1,46 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 506,
+   "ruleType": "facet",
+   "isLive": false,
+   "audiences": [
+    {
+     "id": 77,
+     "audienceName": null
+    }
+   ],
+   "queries": [
+    {
+     "id": 5060,
+     "query": "50100",
+     "queryType": "category",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "boosted_facets": {
+     "brand": 1
+    },
+    "value_configs_facets": {
+     "material": {
+      "merged": {
+       "Denim": [
+        "Denium"
+       ]
+      }
+     }
+    }
+   },
+   "name": "Old denim facets",
+   "enabled": false,
+   "user": "editor@example.com",
+   "syncStatus": "SUCCESS",
+   "isEditable": true,
+   "startedAt": null,
+   "endedAt": null
+  }
+ },
+ "error": null
+}

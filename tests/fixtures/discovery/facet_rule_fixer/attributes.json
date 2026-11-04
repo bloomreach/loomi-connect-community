@@ -1,0 +1,79 @@
+{
+ "success": true,
+ "data": [
+  {
+   "name": "brand",
+   "type": "STR",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "category",
+   "type": "HIERARCHY",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "color_groups",
+   "type": "STR",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "colors",
+   "type": "STR",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "cluster",
+   "type": "STR",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "gender",
+   "type": "STR",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "margin",
+   "type": "NUM",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "price",
+   "type": "NUM",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "product_size",
+   "type": "STR",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "rating",
+   "type": "NUM",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "season",
+   "type": "STR",
+   "facetable": true,
+   "level": "PARENT"
+  },
+  {
+   "name": "description",
+   "type": "STR",
+   "facetable": false,
+   "level": "PARENT"
+  }
+ ],
+ "error": null,
+ "total": null
+}

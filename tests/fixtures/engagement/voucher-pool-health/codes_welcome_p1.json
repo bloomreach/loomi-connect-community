@@ -1,0 +1,190 @@
+{
+  "success": true,
+  "data": [
+    {
+      "code": "WELCOME-FAKE-000",
+      "status": "available",
+      "assigned_time": null,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-001",
+      "status": "available",
+      "assigned_time": null,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-002",
+      "status": "available",
+      "assigned_time": null,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-003",
+      "status": "available",
+      "assigned_time": null,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-004",
+      "status": "available",
+      "assigned_time": null,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A000",
+      "status": "assigned",
+      "assigned_time": 1793707200.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A001",
+      "status": "assigned",
+      "assigned_time": 1793620800.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A002",
+      "status": "assigned",
+      "assigned_time": 1793534400.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A003",
+      "status": "assigned",
+      "assigned_time": 1793448000.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A004",
+      "status": "assigned",
+      "assigned_time": 1793361600.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A005",
+      "status": "assigned",
+      "assigned_time": 1793275200.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A006",
+      "status": "assigned",
+      "assigned_time": 1793188800.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A007",
+      "status": "assigned",
+      "assigned_time": 1793102400.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A008",
+      "status": "assigned",
+      "assigned_time": 1793016000.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A009",
+      "status": "assigned",
+      "assigned_time": 1792929600.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A010",
+      "status": "assigned",
+      "assigned_time": 1792843200.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A011",
+      "status": "assigned",
+      "assigned_time": 1792756800.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A012",
+      "status": "assigned",
+      "assigned_time": 1792670400.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A013",
+      "status": "assigned",
+      "assigned_time": 1792584000.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A014",
+      "status": "assigned",
+      "assigned_time": 1792497600.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A015",
+      "status": "assigned",
+      "assigned_time": 1792411200.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A016",
+      "status": "assigned",
+      "assigned_time": 1792324800.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A017",
+      "status": "assigned",
+      "assigned_time": 1792238400.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A018",
+      "status": "assigned",
+      "assigned_time": 1792152000.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A019",
+      "status": "assigned",
+      "assigned_time": 1792065600.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A020",
+      "status": "assigned",
+      "assigned_time": 1791979200.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A021",
+      "status": "assigned",
+      "assigned_time": 1791892800.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A022",
+      "status": "assigned",
+      "assigned_time": 1791806400.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A023",
+      "status": "assigned",
+      "assigned_time": 1791720000.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "WELCOME-FAKE-A024",
+      "status": "assigned",
+      "assigned_time": 1791633600.0,
+      "redeemed_time": null
+    }
+  ],
+  "matched": 60,
+  "matched_limited": false,
+  "skip": 0,
+  "limit": 30,
+  "error": null
+}

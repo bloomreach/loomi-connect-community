@@ -1,0 +1,23 @@
+[
+  {
+    "action": "update",
+    "item_id": "P100",
+    "set": {
+      "margin": 40
+    },
+    "reason": "x"
+  },
+  {
+    "action": "update",
+    "item_id": "P200",
+    "set": {
+      "colour": "red"
+    },
+    "reason": "x"
+  },
+  {
+    "action": "delete",
+    "item_id": "P300",
+    "reason": "not asked"
+  }
+]

@@ -1,0 +1,18 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "e200000000000000000000e2",
+   "name": "Spring preview",
+   "status": "draft",
+   "archived": false,
+   "design": {
+    "data": {
+     "jinja_html": "<img src=\"https://cdn.media.example/storage/proj/media/original/00000008-aaaa-4bbb-8ccc-000000000008\" alt=\"Spring\">"
+    }
+   },
+   "created_by_display_name": "Pat Example",
+   "edited_by_display_name": "Pat Example"
+  }
+ }
+}

@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "ext1",
+      "name": "VIP buyers"
+    },
+    {
+      "id": "ext2",
+      "name": "Lapsed"
+    },
+    {
+      "id": "ext3",
+      "name": "Churn model"
+    },
+    {
+      "id": "ext4",
+      "name": "Loyal",
+      "destination": "google",
+      "status": "FAILED",
+      "last_sync": "2026-10-20",
+      "size": 250
+    }
+  ],
+  "error": null
+}

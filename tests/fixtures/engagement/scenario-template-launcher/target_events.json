@@ -1,0 +1,4 @@
+{"success": true, "data": {"events": [
+  {"type": "view_item", "used": true, "properties": {"default": {"properties": [{"property": "product_id"}, {"property": "title"}]}}},
+  {"type": "session_start", "used": true, "properties": {"default": {"properties": [{"property": "device"}]}}}
+]}, "error": null}

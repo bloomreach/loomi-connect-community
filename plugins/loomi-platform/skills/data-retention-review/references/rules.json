@@ -1,0 +1,36 @@
+{
+  "about": "The data retention review rules. scripts/data_retention_review.py reads this file, so change a unit length, word list, skill need or threshold here and nowhere else. Each key is explained under notes; references/review-checks.md says what each check means.",
+  "unit_days": {"seconds": "1/86400", "minutes": "1/1440", "hours": "1/24", "days": "1", "weeks": "7", "months": "365/12", "quarters": "365/4", "years": "365"},
+  "skill_needs": [
+    {"skill": "winback-opportunity", "event": "purchase", "days": 730, "why": "recency bands up to 365+ days, widened to 730 for long purchase cycles"},
+    {"skill": "segment-opportunity-finder", "event": "purchase", "days": 365, "why": "VIP slowdown window up to 365 days"},
+    {"skill": "funnel-leak-finder", "event": "view_item", "days": 30, "why": "default funnel window"},
+    {"skill": "funnel-leak-finder", "event": "cart_update", "days": 30, "why": "default funnel window"},
+    {"skill": "funnel-leak-finder", "event": "purchase", "days": 30, "why": "default funnel window"},
+    {"skill": "deliverability-trend", "event": "campaign", "days": 90, "why": "default trend window (its window_days rule)"},
+    {"skill": "contact-frequency-audit", "event": "campaign", "days": 28, "why": "default window (its window_days rule)"},
+    {"skill": "engagement-tracking-health", "event": "*", "days": 90, "why": "90-day volume baseline for every event type"}
+  ],
+  "feeds_live_kinds": ["segmentation", "customer_filter", "aggregate", "running_aggregate", "expression", "prediction", "event_segmentation", "scenario"],
+  "overkeep_factor": 3,
+  "min_keep_days": 90,
+  "personal_words": {
+    "high": ["birth", "birthday", "birthdate", "dob", "gender", "sex", "health", "medical", "religion", "ethnicity", "ssn", "passport", "national", "iban", "card", "pregnan", "disability", "orientation", "political"],
+    "medium": ["email", "mail", "phone", "mobile", "msisdn", "first", "last", "surname", "fullname", "name", "address", "street", "ip", "useragent", "fbclid", "fbp", "gclid", "cookie", "latitude", "longitude", "geo", "wife", "husband", "spouse", "child", "children", "wedding", "anniversary"],
+    "low": ["city", "zip", "postcode", "postal", "state", "region", "company", "age", "language", "employer"]
+  },
+  "not_personal_words": ["product", "item", "campaign", "category", "brand", "page", "event", "file", "template", "catalog", "list", "segment", "store", "shop"],
+  "list_limit": 12,
+  "max_details": 60,
+  "notes": {
+    "unit_days": "Days in each retention or window unit, as exact fractions. Months and quarters are a twelfth and a quarter of a year, so '12 months' equals '1 year'.",
+    "skill_needs": "Lookback windows that this repository's skills rely on: each is the event type (or * for every event type) and how many days back the skill reads. An event kept for less is medium, because that skill will under-count.",
+    "feeds_live_kinds": "Definition kinds that can feed campaigns and scenarios. A window longer than retention in one of these is high; in reports, funnels, trends and dashboards it's medium.",
+    "overkeep_factor": "An event type kept for more than this many times the longest window anything reads (and at least min_keep_days) is reported as kept longer than it's used.",
+    "min_keep_days": "The shortest window assumed for any event, so an event nothing reads isn't judged against zero days.",
+    "personal_words": "Words in a customer or event property name that suggest personal data, by sensitivity. 'high' are special-category or identity-document words; 'medium' direct identifiers and tracking IDs; 'low' indirect ones. Matched against the words of the property name (split on non-letters and camelCase) and each pair of neighbouring words joined (user_agent gives useragent); a word shorter than 4 letters must match exactly, longer words also match as a prefix (birth matches birthdate).",
+    "not_personal_words": "A property name that contains one of these words is not reported for medium or low words (product_name, campaign_name), only for high ones.",
+    "list_limit": "At most this many names are quoted in one finding.",
+    "max_details": "At most this many definitions are fetched by ID in one review (read by the steps in SKILL.md, not the script); the rest are listed as not checked."
+  }
+}

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: engagement
   access: writes
 ---
@@ -116,7 +116,7 @@ python3 <this skill's folder>/scripts/email_draft_plan.py plan --draft <work>/dr
 Use `--customer-filters <work>/filter.json` instead of `--segmentations` for a customer filter audience, and repeat `--campaigns` for each saved campaign. The plan has the shape in the authoring guide's "Plan files for write skills", with `project_id` and `project_name` in place of `account` and `environment`. Its one change is `kind: create`, `tool: create_email_campaign`, `live_impact: none`, with `status`:
 
 - `ready`: lint passed. `warnings` (subject length, empty preheader, data-driven images, schedule) are shown with the plan.
-- `blocked`: `problems` list each lint failure (no unsubscribe link, no postal address, unbalanced Jinja, `<script>` or event handlers, `<iframe>`, `<embed>` or `<object>`, an image, `srcset`, poster or tracking pixel from a host the user didn't supply (Outlook conditional comments included), customer data in an image URL or in a link to a host the user didn't supply, missing alt text, subject over the limit, placeholder text such as lorem ipsum, TODO, an empty `{{ }}` or a `%%SLOT%%` left in) or a context problem (unknown sender, missing or archived segment, wrong consent). Fix the HTML or the spec and run `plan` again until it's `ready`.
+- `blocked`: `problems` list each lint failure (no unsubscribe link, no postal address, unbalanced Jinja, `<script>` or event handlers, `<iframe>`, `<embed>` or `<object>`, an image, `srcset`, poster or tracking pixel from a host the user didn't supply (Outlook conditional comments included), a link or image whose host is disguised (a backslash, an `@` before the path, or Jinja in the scheme or host), customer data in an image URL or in a link to a host the user didn't supply, missing alt text, subject over the limit, placeholder text such as lorem ipsum, TODO, an empty `{{ }}` or a `%%SLOT%%` left in) or a context problem (unknown sender, missing or archived segment, wrong consent). Fix the HTML or the spec and run `plan` again until it's `ready`.
 
 `undo` is empty: this skill never deletes, so `undo_note` says to delete the draft in the Engagement UI if it isn't wanted. Without scripts, do every check in [references/rules.json](references/rules.json) and the list above by hand.
 

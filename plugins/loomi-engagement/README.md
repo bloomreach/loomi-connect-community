@@ -11,6 +11,8 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [ask-your-data](skills/ask-your-data/) | Answers plain-English analytics questions with cost-checked EQL, showing the query and assumptions | Read-only |
 | [engagement-report-explainer](skills/engagement-report-explainer/) | Explains an inherited dashboard, report, funnel or segment in plain English; audits saved analyses | Read-only |
 | [customer-360-lookup](skills/customer-360-lookup/) | Privacy-first summary of one named customer: profile, timeline, scores, recommendations and support flags | Read-only |
+| [portfolio-overview](skills/portfolio-overview/) | One health table across every Engagement project in an organisation, with flags and hand-offs | Read-only |
+| [engagement-catalog-fixer](skills/engagement-catalog-fixer/) | Fixes Engagement catalog items (price, sale price, stock, URL, image, title) from catalog-parity-check findings or your list, with full-item undo; deletes only items you name | **Writes** |
 
 ### Campaigns and automation
 
@@ -22,8 +24,10 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [contact-frequency-audit](skills/contact-frequency-audit/) | How often customers were really messaged per channel, opt-outs and clicks by frequency, and a recommended cap | Read-only |
 | [engagement-scenario-explainer](skills/engagement-scenario-explainer/) | Explains a scenario in plain English; audit mode for stale or broken flows | Read-only |
 | [engagement-scenario-builder](skills/engagement-scenario-builder/) | Builds or changes a scenario from a plain-English description, saved as a draft after confirmation | **Writes** |
+| [scenario-template-launcher](skills/scenario-template-launcher/) | Starts a new scenario by cloning a proven one from the same or another project as a draft, with a fix list of references that won't resolve | **Writes** |
 | [convert-klaviyo-email-to-bloomreach](skills/convert-klaviyo-email-to-bloomreach/) | Migrates Klaviyo email exports into editable Visual Builder emails, saved as draft scenarios after confirmation | **Writes** |
 | [engagement-email-builder](skills/engagement-email-builder/) | Turns a brief into an email campaign draft (subject, preheader, responsive HTML, personalization, existing sender and segment), linted, created after confirmation and never sent | **Writes** |
+| [engagement-sms-builder](skills/engagement-sms-builder/) | Turns a brief into an SMS campaign draft, linted for segments, STOP/HELP, links, consent and quiet hours; can revise its own draft; never started or deleted | **Writes** |
 | [engagement-scenario-performance](skills/engagement-scenario-performance/) | Step-by-step results for one scenario: sends, clicks, purchases after, split assignments | Read-only |
 | [lifecycle-coverage-map](skills/lifecycle-coverage-map/) | Which of eight standard lifecycle flows are live, weak, stopped, draft or missing, with the monthly revenue at stake for each gap | Read-only |
 | [engagement-jinja-writer](skills/engagement-jinja-writer/) | Writes and fixes Bloomreach Jinja for weblayers, emails and scenarios, checked against the rules that break templates, with real asset IDs looked up | Read-only |
@@ -32,6 +36,7 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [scenario-qa](skills/scenario-qa/) | Pre-launch QA of one scenario's emails, SMS and push: links, Jinja, compliance and flow, with a go/no-go verdict | Read-only |
 | [campaign-qa](skills/campaign-qa/) | Pre-send QA of one email or SMS campaign, every variant and translation: links, Jinja, compliance, spam risk, audience and schedule, with a go/no-go verdict | Read-only |
 | [engagement-send-preflight](skills/engagement-send-preflight/) | Go/no-go list of every email, SMS and push due in the next few days, with what to fix before each one sends, plus collisions | Read-only |
+| [voucher-pool-health](skills/voucher-pool-health/) | Voucher pools that will run out or expire before the sends that use them: days of cover, planned demand, empty pools still in live use, unused pools | Read-only |
 | [onsite-experience-audit](skills/onsite-experience-audit/) | Expired, overlapping, untested or abandoned banners, weblayers and surveys | Read-only |
 | [engagement-experiment-readout](skills/engagement-experiment-readout/) | A/B test results for scenarios and campaigns: call a winner, keep running or stop | Read-only |
 | [recommendation-model-audit](skills/recommendation-model-audit/) | Recommendation engines: usage, catalog freshness, duplicates, filters, and placements missing recommendations | Read-only |
@@ -45,6 +50,7 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [winback-opportunity](skills/winback-opportunity/) | Revenue at risk from lapsing customers, coverage gaps, and a win-back programme | Read-only |
 | [segment-opportunity-finder](skills/segment-opportunity-finder/) | Finds valuable audiences you haven't targeted yet, ranked by value and how many can be reached | Read-only |
 | [contactability-audit](skills/contactability-audit/) | Share of customers reachable by email, SMS and push, consent trend, unreachable high-value customers and unused consent categories | Read-only |
+| [ad-audience-sync-health](skills/ad-audience-sync-health/) | Ad-platform audience steps, external segments and autosegments that are stale, failing, tiny, duplicated, built on archived segments or missing advertising consent | Read-only |
 | [prediction-activation-check](skills/prediction-activation-check/) | Predictions that are built but unused or stale, with ideas for putting them to work | Read-only |
 
 ### Housekeeping and governance
@@ -55,6 +61,7 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [project-access-review](skills/project-access-review/) | User-access review across projects: external, shared and test accounts, with removals to action | Read-only |
 | [engagement-dependency-map](skills/engagement-dependency-map/) | What uses a definition, what breaks if it goes, and a safe deletion order | Read-only |
 | [integration-inventory](skills/integration-inventory/) | Unused, duplicate, broken and secret-bearing integrations, API triggers, project variables and webhooks, without repeating secrets | Read-only |
+| [engagement-media-cleanup](skills/engagement-media-cleanup/) | Unused, heavy, duplicate and alt-less images, blocks, snippets and templates, with fix, delete and review lists | Read-only |
 
 Skills marked **Writes** only run when you call them by name, and ask for confirmation before every change.
 

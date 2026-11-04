@@ -1,0 +1,16 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "aaaaaaaaaaaaaaaaaaaaaaa6",
+      "name": "x",
+      "total": 0,
+      "available": 0,
+      "company_id": "00000000-0000-0000-0000-000000000000",
+      "used_by": [
+        "campaign_design_scn000000000000000000001"
+      ]
+    },
+    "error": null
+  }
+}

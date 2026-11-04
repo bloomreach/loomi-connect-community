@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Engagement Catalog Fixer"
+  short_description: "Fix prices, stock, URLs and titles of Bloomreach Engagement catalog items, after you confirm"
+policy:
+  # Updates and (when asked) deletes live Engagement catalog items, so it only runs when called by name.
+  allow_implicit_invocation: false

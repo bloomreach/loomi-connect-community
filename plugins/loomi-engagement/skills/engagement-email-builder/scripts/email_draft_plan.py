@@ -46,6 +46,7 @@ RESOURCE_ATTRS = ("src", "poster", "data", "background")
 # Comment markers, including Outlook conditional comments, removed so the markup inside them is linted too.
 COMMENT_MARKERS = re.compile(r"<!--\[if[^\]]*\]>|<!\[endif\]-->|<!--|-->|<!\[endif\]>?|<!\[if[^\]]*\]>", re.I)
 CUSTOMER_REF = re.compile(r"\bcustomer(?:_ids)?\s*(?:\.|\[)")
+JINJA_ANY = re.compile(r"\{\{.*?\}\}|\{%.*?%\}|\{#.*?#\}", re.S)
 BLOCK_TAGS = {"for": "endfor", "if": "endif", "macro": "endmacro", "call": "endcall", "filter": "endfilter",
               "raw": "endraw", "with": "endwith", "block": "endblock", "autoescape": "endautoescape"}
 MIDDLE_TAGS = {"else": ("if", "for"), "elif": ("if",)}
@@ -323,6 +324,27 @@ def visible_len(text):
     return len(t.strip())
 
 
+def authority_problem(url):
+    """Why a URL's scheme and host part can't be trusted, or None. Mail clients and urlsplit can disagree on a host
+    written with a backslash or user info (@), and Jinja there decides the host only at send time. A URL that is all
+    Jinja with no "://" (a catalog or recommendation field) is data-driven and checked elsewhere."""
+    if "://" not in url and "\\" not in url:
+        return None
+    if "\\" in url:
+        return "contains a backslash, which mail clients and checkers read differently"
+    hidden = JINJA_ANY.sub("\x00", url)
+    if "://" not in hidden:
+        return None  # every "://" is inside Jinja: its literal hosts are checked by literal_hosts()
+    rest = hidden.split("://", 1)[1]
+    head = hidden[:len(hidden) - len(rest)]
+    authority = re.split(r"[/?#]", rest, maxsplit=1)[0]
+    if "@" in authority:
+        return "has an @ before the path, so the real host is the part after it"
+    if "\x00" in head + authority or re.search(r"\{\{|\{%|\}\}|%\}", head + authority):
+        return "has Jinja in its scheme or host, so the host is only decided at send time"
+    return None
+
+
 def is_jinja(url):
     return url.strip().startswith(("{{", "{%"))
 
@@ -341,6 +363,10 @@ def check_url_host(lint, url, where, allowed, what, seen):
     u = url.strip()
     if not u:
         lint.block("images", f"{what} with an empty source.", where)
+        return
+    why = authority_problem(u)
+    if why:
+        lint.block("url_host_form", f"{what} URL {u[:80]!r} {why}. Write it as https://<host>/<path>.", where)
         return
     if ("{{" in u or "{%" in u) and CUSTOMER_REF.search(u):
         lint.block("image_personal_data", f"{what} URL {u[:60]!r} carries customer data, which tells that host who "
@@ -395,6 +421,10 @@ def check_html(lint, html, draft, allowed):
         if any(t in low.replace(" ", "") for t in RULES["unsubscribe_tokens"]):
             unsub = True
             continue
+        why = authority_problem(h)
+        if why:
+            lint.block("url_host_form", f"Link {h[:80]!r} {why}. Write it as https://<host>/<path>.", "body")
+            continue
         if not h or h == "#":
             lint.block("links", "A link has an empty or '#' href.", "body")
         elif low.startswith("javascript:") or low.startswith("data:"):
@@ -440,6 +470,11 @@ def check_html(lint, html, draft, allowed):
     pixel_max = RULES["tracking_pixel_max_px"]
     for img in p.images:
         src = img.get("src", "")
+        why = authority_problem(src.strip())
+        if why:
+            lint.block("url_host_form", f"Image URL {src.strip()[:80]!r} {why}. Write it as https://<host>/<path>.",
+                       "body")
+            continue
         try:
             w, h = (int(re.sub(r"px$", "", str(img.get(k, "")).strip()) or 99) for k in ("width", "height"))
         except ValueError:

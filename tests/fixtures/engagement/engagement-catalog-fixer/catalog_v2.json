@@ -1,0 +1,13 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "cat0000000000000000000001",
+      "name": "products",
+      "type": "product",
+      "catalog_version": "v2",
+      "fields": []
+    },
+    "error": null
+  }
+}

@@ -1,0 +1,54 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 501,
+   "ruleType": "facet",
+   "isLive": false,
+   "audiences": [],
+   "queries": [
+    {
+     "id": 5010,
+     "query": "*",
+     "queryType": "global",
+     "matchType": "PHRASE_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "aliases_facets": {},
+    "value_configs_facets": {
+     "colors": {
+      "merged": {
+       "Cream": [
+        "cream",
+        "beige"
+       ]
+      }
+     }
+    },
+    "excluded_facets": [
+     "countryOfOrigin"
+    ],
+    "boosted_facets": {
+     "brand": 1,
+     "colors": 2
+    },
+    "always_included_facets": [
+     "category",
+     "color_groups",
+     "brand",
+     "colors"
+    ],
+    "buried_facets": {}
+   },
+   "name": "default",
+   "enabled": true,
+   "user": "editor@example.com",
+   "syncStatus": "SUCCESS",
+   "isEditable": true,
+   "startedAt": null,
+   "endedAt": null
+  }
+ },
+ "error": null
+}

@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": {
+    "_id": "seg-tiers",
+    "name": "Customer value tiers",
+    "archived": false,
+    "segments": [
+      {
+        "name": "Lapsed VIP"
+      },
+      {
+        "name": "Gold"
+      },
+      {
+        "name": "Other"
+      }
+    ]
+  }
+}

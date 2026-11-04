@@ -1,0 +1,7 @@
+{
+  "result": {
+    "success": false,
+    "data": null,
+    "error": "[NOT_FOUND] The requested resource was not found (HTTP 404)."
+  }
+}

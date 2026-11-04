@@ -1,0 +1,38 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 505,
+   "ruleType": "facet",
+   "isLive": false,
+   "audiences": [],
+   "queries": [
+    {
+     "id": 5050,
+     "query": "40100",
+     "queryType": "category",
+     "matchType": "EXACT_MATCH"
+    },
+    {
+     "id": 5051,
+     "query": "40200",
+     "queryType": "category",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "excluded_facets": [
+     "season"
+    ]
+   },
+   "name": null,
+   "enabled": true,
+   "user": "editor@example.com",
+   "syncStatus": "SUCCESS",
+   "isEditable": true,
+   "startedAt": null,
+   "endedAt": null
+  }
+ },
+ "error": null
+}

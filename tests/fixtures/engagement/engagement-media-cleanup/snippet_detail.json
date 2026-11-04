@@ -1,0 +1,17 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "5100000000000000000000a1",
+   "name": "Unsubscribe line",
+   "archived": false,
+   "created": 1690000000,
+   "edited": 1690000000,
+   "jinja_html": "Reply STOP to opt out",
+   "params": {},
+   "created_by_display_name": "Pat Example",
+   "edited_by_display_name": "Pat Example"
+  },
+  "error": null
+ }
+}

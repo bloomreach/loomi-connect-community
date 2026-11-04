@@ -1,0 +1,25 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "id": "seg000000000000000000001",
+        "name": "VIP buyers",
+        "archived": false,
+        "used_by": []
+      },
+      {
+        "id": "seg000000000000000000002",
+        "name": "Lapsed",
+        "archived": true,
+        "used_by": []
+      },
+      {
+        "id": "seg000000000000000000003",
+        "name": "Loyal",
+        "archived": false,
+        "used_by": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "5d10000000000000000000d1",
+    "name": "Shipping SMS",
+    "status": "active",
+    "archived": false,
+    "action": {
+     "variants": [
+      {
+       "translations": {
+        "": {
+         "message": "Your order has shipped and is on its way to you today. {{ snippet('5100000000000000000000a1') }}"
+        }
+       }
+      }
+     ]
+    },
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   }
+  ]
+ }
+}

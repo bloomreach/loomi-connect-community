@@ -1,0 +1,5 @@
+{"result": {"success": true, "data": {"_id": "rep-1", "name": "Quarterly traffic", "archived": false, "server": {
+  "event_filters": {"date": {"enabled": true, "absolute": false, "duration": {"count": 90, "units": "days"}, "from_date": null, "to_date": null, "offset": null}, "attributes": []},
+  "metrics": [{"members": [{"type": "event", "event": {"type": "page_visit", "filter": []}, "aggregation": "count",
+    "date_filter": {"enabled": false, "absolute": false, "duration": {"count": 30, "units": "days"}}}]}],
+  "rows": [], "columns": []}}}}

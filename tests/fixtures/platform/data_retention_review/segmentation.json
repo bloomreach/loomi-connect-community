@@ -1,0 +1,6 @@
+{"result": {"success": true, "data": {"_id": "seg-1", "name": "Bought in the last two years", "archived": false,
+  "customer_filter": {"filters": [], "formula": ""},
+  "segments": [{"name": "Buyers", "customer_filter": {"formula": "F0", "filters": [
+    {"type": "funnel_steps", "steps": [{"type": "purchase", "name": "purchase", "filter": []}],
+     "date_filter": {"enabled": true, "type": "static", "absolute": false, "duration": {"count": 24, "units": "months"}, "from_date": null, "to_date": null, "offset": null},
+     "duration_filter": {"enabled": false, "duration": {"count": 30, "units": "days"}}}]}}]}}}

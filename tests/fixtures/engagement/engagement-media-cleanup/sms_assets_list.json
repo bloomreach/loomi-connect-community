@@ -1,0 +1,25 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "5a10000000000000000000a1",
+    "name": "Shipping update",
+    "archived": false,
+    "created": 1690000000,
+    "edited": 1690000000,
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "5a20000000000000000000a2",
+    "name": "Spring sale 2023",
+    "archived": false,
+    "created": 1690000000,
+    "edited": 1690000000,
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   }
+  ]
+ }
+}

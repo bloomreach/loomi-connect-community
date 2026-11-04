@@ -1,0 +1,75 @@
+{
+  "success": true,
+  "data": {
+    "catalog_id": "cat0000000000000000000001",
+    "project_id": "proj-demo",
+    "configuration_hash": "FAKEHASH",
+    "custom_attribute_definitions": [
+      {
+        "name": "availability",
+        "record_field_name": "availability",
+        "attribute_value_definition": {
+          "type": "String"
+        }
+      },
+      {
+        "name": "brand",
+        "record_field_name": "brand",
+        "attribute_value_definition": {
+          "type": "String"
+        }
+      },
+      {
+        "name": "image",
+        "record_field_name": "image",
+        "attribute_value_definition": {
+          "type": "String"
+        }
+      },
+      {
+        "name": "margin",
+        "record_field_name": "margin",
+        "attribute_value_definition": {
+          "type": "Float"
+        }
+      },
+      {
+        "name": "sale_price",
+        "record_field_name": "sale_price",
+        "attribute_value_definition": {
+          "type": "Float"
+        }
+      },
+      {
+        "name": "stock_level",
+        "record_field_name": "stock_level",
+        "attribute_value_definition": {
+          "type": "Float"
+        }
+      },
+      {
+        "name": "title",
+        "record_field_name": "title",
+        "attribute_value_definition": {
+          "type": "String"
+        }
+      },
+      {
+        "name": "url",
+        "record_field_name": "url",
+        "attribute_value_definition": {
+          "type": "String"
+        }
+      }
+    ],
+    "reserved_attribute_mappings": [
+      {
+        "name": "price",
+        "record_field_name": "price",
+        "attribute_value_definition": {
+          "type": "Float"
+        }
+      }
+    ]
+  }
+}

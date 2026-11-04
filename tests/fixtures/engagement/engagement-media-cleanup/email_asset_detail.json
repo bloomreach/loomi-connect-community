@@ -1,0 +1,17 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "ea10000000000000000000a1",
+   "name": "Newsletter template",
+   "archived": false,
+   "created": 1690000000,
+   "edited": 1690000000,
+   "design": {
+    "jinja_html": "<img src=\"https://cdn.media.example/storage/proj/media/original/00000007-aaaa-4bbb-8ccc-000000000007\" alt=\"Header\">"
+   },
+   "created_by_display_name": "Pat Example",
+   "edited_by_display_name": "Pat Example"
+  }
+ }
+}

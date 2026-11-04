@@ -1,0 +1,9 @@
+{"success": true, "events": [
+  {"type": "purchase", "properties": {"default_group": {"properties": [{"property": "purchase_id", "type": "string"}, {"property": "total_price", "type": "number"}, {"property": "email", "type": "string"}]}}},
+  {"type": "page_visit", "properties": {"default_group": {"properties": [{"property": "url", "type": "string"}, {"property": "ip", "type": "string"}, {"property": "user_agent", "type": "string"}]}}},
+  {"type": "campaign", "properties": {"default_group": {"properties": [{"property": "status", "type": "string"}]}}},
+  {"type": "session_start", "properties": {"default_group": {"properties": [{"property": "browser", "type": "string"}]}}},
+  {"type": "view_item", "properties": {"default_group": {"properties": [{"property": "product_id", "type": "string"}, {"property": "product_name", "type": "string"}]}}},
+  {"type": "consent", "properties": {"default_group": {"properties": [{"property": "category", "type": "string"}]}}},
+  {"type": "newsletter_signup", "properties": {"default_group": {"properties": [{"property": "email", "type": "string"}, {"property": "source", "type": "string"}]}}}
+], "error": null}

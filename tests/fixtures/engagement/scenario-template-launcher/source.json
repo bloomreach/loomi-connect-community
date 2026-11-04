@@ -1,0 +1,37 @@
+{"result": {"success": true, "data": {
+  "_id": "src-scenario-0001", "name": "Browse abandonment", "status": "active", "archived": false,
+  "created_by_display_name": "Example Editor", "edited_by_display_name": "Example Editor",
+  "trigger": null, "customer_filter": null, "last_node_id": 6,
+  "nodes": [
+    {"id": 1, "type": "on-event-trigger", "name": "Viewed a product", "x": 0, "y": 0, "delay_seconds": 30,
+     "event": {"type": "view_item", "filter": [{"attribute": {"type": "property", "property": "category_level_1"},
+       "constraint": {"type": "string", "operator": "is set"}}]}},
+    {"id": 2, "type": "wait-action", "name": "Wait 2 hours", "count": 2, "units": "hours", "x": 200, "y": 0},
+    {"id": 3, "type": "condition", "name": "Not bought, newsletter consent, VIP", "x": 400, "y": 0,
+     "customer_filter": {"formula": "!A&B&C&D", "filters": [
+       {"type": "funnel_steps", "steps": [{"name": "purchase", "type": "purchase", "filter": [
+         {"attribute": {"type": "property", "property": "purchase_status"}, "constraint": {"type": "string", "operator": "equals", "operands": [{"type": "constant", "value": "success"}]}}]}]},
+       {"type": "attribute", "attribute": {"type": "consent", "category": "newsletter", "mode": "valid"}, "constraint": {"type": "boolean", "operator": "is", "value": "true"}},
+       {"type": "attribute", "attribute": {"type": "segmentation", "id": "seg-demo-1"}, "constraint": {"type": "string", "operator": "equals", "operands": [{"type": "constant", "value": "VIP"}]}},
+       {"type": "attribute", "attribute": {"type": "property", "property": "loyalty_tier"}, "constraint": {"type": "string", "operator": "is set"}}]}},
+    {"id": 4, "type": "send-email-action", "name": "Still looking?", "x": 600, "y": 0,
+     "consent_category": "newsletter", "frequency_policy": "smart-policy",
+     "design": {"type": "html", "data": {"subject": "Still thinking it over?",
+       "jinja_html": "<p>{{ project_variables.brand_name }}</p>{% set ids = aggregates['agg-demo-1'] %}{% set recs = recommendations('rec-demo-1', 4) %}{% for p in catalogs['products'].items_by_id(ids) %}{{ p.title }}{% endfor %}{{ catalogs.get('x') }}<a href=\"{{ email.unsubscribe }}\">Unsubscribe</a>"}}},
+    {"id": 5, "type": "per-customer-webhook-action", "name": "Notify CRM", "x": 800, "y": 0,
+     "auth_integration_id": "int-demo-1", "method": "POST",
+     "url": "https://hooks.example/notify?token=FAKE-TOKEN-URL",
+     "headers": {"Authorization": "Bearer FAKE-TOKEN-HEADER"},
+     "body": "{\"secret\": \"FAKE-TOKEN-BODY\"}",
+     "parametrized_parts": {"url": "https://hooks.example/notify?token=FAKE-TOKEN-URL", "headers": {"Authorization": "Bearer FAKE-TOKEN-HEADER"}}},
+    {"id": 6, "type": "send-sms-action", "name": "SMS nudge", "x": 1000, "y": 0, "consent_category": "sms",
+     "content": "Hi {{ customer.first_name | default('there') }}"}
+  ],
+  "connections": [
+    {"source": {"node_id": 1, "connector_index": 0}, "destination": {"node_id": 2, "connector_index": 0}},
+    {"source": {"node_id": 2, "connector_index": 1}, "destination": {"node_id": 3, "connector_index": 0}},
+    {"source": {"node_id": 3, "connector_index": 1}, "destination": {"node_id": 4, "connector_index": 0}},
+    {"source": {"node_id": 4, "connector_index": 1}, "destination": {"node_id": 5, "connector_index": 0}},
+    {"source": {"node_id": 5, "connector_index": 1}, "destination": {"node_id": 6, "connector_index": 0}}
+  ]
+}, "error": null}}

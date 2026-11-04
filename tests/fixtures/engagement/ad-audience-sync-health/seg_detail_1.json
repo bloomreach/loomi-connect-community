@@ -1,0 +1,23 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "id": "seg000000000000000000001",
+      "name": "VIP buyers",
+      "archived": false,
+      "customer_filter": {
+        "filters": [
+          {
+            "attribute": {
+              "type": "consent",
+              "category": "advertising",
+              "mode": "valid"
+            },
+            "constraint": {}
+          }
+        ],
+        "formula": "F0"
+      }
+    }
+  }
+}

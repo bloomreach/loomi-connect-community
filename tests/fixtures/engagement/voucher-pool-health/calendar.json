@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "data": [
+    {
+      "campaign_id": "em0000000000000000000001",
+      "campaign_name": "Black Friday email",
+      "action_id": 1,
+      "channel": "email",
+      "status": "scheduled",
+      "times": [
+        {
+          "start": 1795770000.0
+        }
+      ],
+      "results": {
+        "reach": null,
+        "potential_reach": 180
+      }
+    },
+    {
+      "campaign_id": "zz0000000000000000000009",
+      "campaign_name": "Unrelated",
+      "channel": "sms",
+      "status": "active",
+      "times": [
+        {
+          "start": 1794301200.0
+        }
+      ],
+      "results": {
+        "potential_reach": 9999
+      }
+    }
+  ]
+}

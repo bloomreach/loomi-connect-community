@@ -1,0 +1,10 @@
+{
+ "success": true,
+ "query": "select count any event by any event type grouping top 60 in last 7 days",
+ "analysis_type": "report",
+ "data": {
+  "rows": [],
+  "success": true
+ },
+ "error": null
+}

@@ -1,0 +1,24 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 501,
+   "name": null,
+   "ruleType": "facet",
+   "enabled": true,
+   "syncStatus": "SUCCESS",
+   "queries": [
+    {
+     "id": 5010,
+     "query": "*",
+     "queryType": "global"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "isEditable": true,
+   "lastModifiedBy": null
+  }
+ ],
+ "error": null
+}

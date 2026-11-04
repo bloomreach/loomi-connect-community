@@ -1,0 +1,6 @@
+{"result": {"success": true, "data": [
+  {"name": "title", "family": "main", "level": "parent", "currently_present": true, "examples": [{"field_data_type": "string", "field_value": "Blue mug", "field_value_class": "with_value", "is_truncated": false, "job": {"id": "job-x"}, "patch": {"file_path": "a.json", "file_path_sequence_number": 1, "sequence_number": 1}, "record": {"id": "rec-1"}}]},
+  {"name": "material", "family": "main", "level": "parent", "currently_present": false},
+  {"name": "colour", "family": "main", "level": "parent", "currently_present": false},
+  {"name": "loyalty_points", "family": "main", "level": "parent", "currently_present": true}
+]}}

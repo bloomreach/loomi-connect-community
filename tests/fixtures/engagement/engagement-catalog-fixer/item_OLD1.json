@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "data": {
+    "catalog_id": "cat0000000000000000000001",
+    "properties": {
+      "availability": "in stock",
+      "brand": "Acme",
+      "margin": 5,
+      "price": 10,
+      "title": "Discontinued Stove",
+      "url": "https://shop.example/p/old1",
+      "supplier_price": 7
+    },
+    "_id": "OLD1"
+  },
+  "error": null
+}

@@ -1,0 +1,24 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 503,
+   "name": null,
+   "ruleType": "facet",
+   "enabled": false,
+   "syncStatus": "SUCCESS",
+   "queries": [
+    {
+     "id": 5030,
+     "query": "jeans",
+     "queryType": "sitesearch"
+    }
+   ],
+   "isAbTestLive": false,
+   "audienceName": null,
+   "isEditable": true,
+   "lastModifiedBy": null
+  }
+ ],
+ "error": null
+}

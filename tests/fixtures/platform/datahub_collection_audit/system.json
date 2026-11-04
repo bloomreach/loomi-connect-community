@@ -1,0 +1,5 @@
+{"success": true, "data": {"schema": {"attributes": [
+  {"name": "title", "family": "system", "level": "parent", "data_type": "String", "display_name": "Title"},
+  {"name": "price", "family": "system", "level": "parent", "data_type": "Float", "display_name": "Price"},
+  {"name": "brand", "family": "system", "level": "parent", "data_type": "String", "display_name": "Brand"}
+]}}}

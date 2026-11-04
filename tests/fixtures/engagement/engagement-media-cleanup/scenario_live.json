@@ -1,0 +1,31 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "5c10000000000000000000c1",
+   "name": "Welcome journey",
+   "status": "active",
+   "archived": false,
+   "nodes": [
+    {
+     "id": 1,
+     "type": "email",
+     "design": {
+      "data": {
+       "jinja_html": "{{ block('b100000000000000000000b1') }}<p>Welcome</p>"
+      }
+     }
+    },
+    {
+     "id": 2,
+     "type": "per-customer-webhook-action",
+     "headers": {
+      "Authorization": "Bearer FAKE-TOKEN"
+     }
+    }
+   ],
+   "created_by_display_name": "Pat Example",
+   "edited_by_display_name": "Pat Example"
+  }
+ }
+}

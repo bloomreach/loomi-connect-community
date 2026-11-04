@@ -1,0 +1,46 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "project_id": "p-alpha-0001",
+    "name": "Brand Alpha",
+    "workspace_id": "ws-0001",
+    "workspace_name": "Brands",
+    "category": "int",
+    "url_slug": "brand-alpha",
+    "overview": {
+     "archived_events": 0,
+     "event_types_overview": {
+      "session_start": {
+       "event_count": 4000000
+      },
+      "page_visit": {
+       "event_count": 3000000
+      },
+      "view_item": {
+       "event_count": 2000000
+      },
+      "cart_update": {
+       "event_count": 500000
+      },
+      "purchase": {
+       "event_count": 200000
+      },
+      "campaign": {
+       "event_count": 1000000
+      }
+     },
+     "events": 10700000,
+     "identified_customers": 100000,
+     "merged_customers": 0,
+     "oldest_timestamp": 1600000000,
+     "total_customers": 100000,
+     "user_accounts": 3
+    },
+    "overview_error": null
+   }
+  ],
+  "error": null
+ }
+}

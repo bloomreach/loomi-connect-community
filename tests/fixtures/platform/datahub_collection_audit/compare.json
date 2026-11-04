@@ -1,0 +1,4 @@
+{"success": true, "data": {"changes": [
+  {"action": "add", "object_type": "schema.attribute", "keys": {"name": "promo_flag", "family": "main", "level": "parent"}},
+  {"action": "modify", "object_type": "schema.identifier", "keys": {"family": "main", "level": "parent"}}
+]}}

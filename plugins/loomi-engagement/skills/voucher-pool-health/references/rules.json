@@ -1,0 +1,37 @@
+{
+  "about": "Thresholds and matching rules for scripts/voucher_pool_health.py: how burn rate is measured, when a pool is red, amber or green, which objects count as live and how a pool's users are found. The script reads this file and its CLI defaults come from it. Each key is explained under notes.",
+  "burn_window_days": 28,
+  "horizon_days": 30,
+  "red_days_cover": 7,
+  "amber_days_cover": 21,
+  "amber_demand_share": 0.8,
+  "expiry_warning_days": 14,
+  "live_kinds": ["scenario", "email", "sms", "banner"],
+  "live_statuses": ["active", "running", "serving", "scheduled", "started"],
+  "used_by_prefixes": {
+    "campaign_design": "scenario",
+    "email_campaign": "email",
+    "sms_campaign": "sms",
+    "banner": "banner",
+    "in_app_message": "in_app_message",
+    "email_block": "email_block",
+    "snippet": "snippet"
+  },
+  "code_expiry_fields": ["valid_until", "expires_at", "expiration", "expiration_date", "expiry", "expire_at", "valid_to"],
+  "min_id_chars": 8,
+  "max_code_pages": 3,
+  "notes": {
+    "burn_window_days": "How many days back assignments are counted to work out codes used per day. The window ends at the start of --today (UTC). A longer window smooths out one-off sends; a shorter one reacts faster to a new campaign.",
+    "horizon_days": "How many days ahead of --today the campaign calendar is read for planned sends that use a pool.",
+    "red_days_cover": "A pool with a live user and fewer days of cover than this (available codes divided by codes used per day) is red: it runs out within the week.",
+    "amber_days_cover": "Fewer days of cover than this (but at least red_days_cover) is amber: order or import more codes soon.",
+    "amber_demand_share": "When the audience of the planned sends in the horizon is at least this share of the available codes (but not more than them), the pool is amber. More planned demand than available codes is red.",
+    "expiry_warning_days": "A pool whose expiry date (given with --expiry, or read from a code expiry field) falls within this many days of --today is amber, even when no planned send is later than it.",
+    "live_kinds": "Object kinds that hand out codes to customers. A user of one of these kinds with a live status makes the pool live.",
+    "live_statuses": "Statuses (compared case-insensitively) that count as live. Draft, inactive, paused, finished and archived objects aren't live. A user whose status wasn't loaded is reported as status unknown.",
+    "used_by_prefixes": "How each entry in a pool's used_by list (<prefix>_<id>) maps to an object kind. campaign_design and banner were seen live; the others are kept from other definitions' used_by lists. Unknown prefixes are kept as their own kind and treated as not live.",
+    "code_expiry_fields": "Per-code fields read as an expiry date if list_voucher_codes ever returns one. None was returned live (codes carried only code, status, assigned_time and redeemed_time), so expiry normally comes from --expiry.",
+    "max_code_pages": "The most list_voucher_codes pages (up to 1,000 codes each) to load per pool, and only when neither an earlier snapshot nor a voucher event gives the burn rate. Every page brings codes into the conversation, so keep this small; unless the pages cover the whole pool, the burn rate comes from the pages loaded and is reported as a lower bound (page order isn't guaranteed, so reaching back past the window isn't enough).",
+    "min_id_chars": "A pool ID shorter than this isn't searched for inside definitions, to avoid accidental matches. Pool names are matched only inside Jinja voucher references."
+  }
+}

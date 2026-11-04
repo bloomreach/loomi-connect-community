@@ -1,0 +1,8 @@
+{"success": true, "default_retention_enabled": false, "default_duration": null, "event_overrides": [
+  {"event_type": "campaign", "retention_enabled": true, "duration": {"count": 1, "units": "days"}},
+  {"event_type": "purchase", "retention_enabled": true, "duration": {"count": 1, "units": "years"}},
+  {"event_type": "page_visit", "retention_enabled": true, "duration": {"count": 30, "units": "days"}},
+  {"event_type": "consent", "retention_enabled": false, "duration": null},
+  {"event_type": "old_event", "retention_enabled": true, "duration": {"count": 30, "units": "days"}},
+  {"event_type": "session_start", "retention_enabled": true, "duration": {"count": 5, "units": "years"}}
+], "error": null}

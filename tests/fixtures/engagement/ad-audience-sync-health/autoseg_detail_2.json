@@ -1,0 +1,16 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "as2",
+      "name": "Old groups",
+      "archived": false,
+      "used_by": [],
+      "job_info": {
+        "status": "successful",
+        "last_run_at": 1767268800,
+        "error": null
+      }
+    }
+  }
+}

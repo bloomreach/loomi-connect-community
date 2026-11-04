@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "data": [
+    {
+      "code": "VIP-FAKE-1",
+      "status": "assigned",
+      "assigned_time": 1793534400.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "VIP-FAKE-2",
+      "status": "assigned",
+      "assigned_time": 1785585600.0,
+      "redeemed_time": null
+    }
+  ],
+  "matched": 300,
+  "matched_limited": false,
+  "skip": 0,
+  "limit": 2,
+  "error": null
+}

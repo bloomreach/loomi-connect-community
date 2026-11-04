@@ -1,0 +1,30 @@
+{
+  "success": true,
+  "data": {
+    "columns": [],
+    "rows": [
+      {
+        "headers": [
+          {
+            "value": "US"
+          }
+        ],
+        "values": [
+          20,
+          999.5
+        ]
+      },
+      {
+        "headers": [
+          {
+            "value": "DE"
+          }
+        ],
+        "values": [
+          8,
+          120
+        ]
+      }
+    ]
+  }
+}

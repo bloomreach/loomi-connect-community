@@ -1,0 +1,49 @@
+{
+  "success": true,
+  "data": {
+    "enabled": true,
+    "general_consent": {
+      "email": true,
+      "sms": false
+    },
+    "categories": [
+      {
+        "id": "sms_marketing",
+        "legitimate_interest": false,
+        "sources": {
+          "sms_reply": true
+        },
+        "translations": {
+          "": {
+            "name": "SMS marketing"
+          }
+        }
+      },
+      {
+        "id": "newsletter",
+        "legitimate_interest": false,
+        "sources": {
+          "sms_reply": false
+        },
+        "translations": {
+          "": {
+            "name": "Newsletter"
+          }
+        }
+      },
+      {
+        "id": "existing_customers",
+        "legitimate_interest": true,
+        "sources": {
+          "sms_reply": true
+        },
+        "translations": {
+          "": {
+            "name": "Legitimate interest"
+          }
+        }
+      }
+    ]
+  },
+  "error": null
+}

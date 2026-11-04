@@ -1,0 +1,122 @@
+{
+  "about": "The catalog fixer's limits, field names and stock words. scripts/catalog_fix_plan.py reads this file, so change a rule here and nowhere else. Each key is explained under notes.",
+  "max_changes_per_batch": 20,
+  "max_changes_per_plan": 100,
+  "import_min_items": 5,
+  "use_import_for_v2": false,
+  "protected_field_pattern": "margin|cost|profit|wholesale|markup|cogs|supplier|purchase|buy_?price|landed|vendor|net_price",
+  "id_case_insensitive": true,
+  "truncated_value_chars": 200,
+  "sparse_item_min_share": 0.5,
+  "stock_out_number": 0,
+  "readback_checks": 3,
+  "default_engagement_fields": {
+    "price": [
+      "price"
+    ],
+    "sale_price": [
+      "sale_price",
+      "discounted_price",
+      "price_sale"
+    ],
+    "availability": [
+      "availability",
+      "in_stock",
+      "stock_level",
+      "stock",
+      "active"
+    ],
+    "url": [
+      "url",
+      "link",
+      "product_url"
+    ],
+    "image": [
+      "image",
+      "image_url",
+      "image_link",
+      "thumb_image"
+    ],
+    "title": [
+      "title",
+      "name",
+      "product_name"
+    ]
+  },
+  "stock_text_pairs": [
+    [
+      "in stock",
+      "out of stock"
+    ],
+    [
+      "instock",
+      "outofstock"
+    ],
+    [
+      "in_stock",
+      "out_of_stock"
+    ],
+    [
+      "available",
+      "unavailable"
+    ],
+    [
+      "true",
+      "false"
+    ],
+    [
+      "yes",
+      "no"
+    ],
+    [
+      "y",
+      "n"
+    ],
+    [
+      "1",
+      "0"
+    ],
+    [
+      "active",
+      "inactive"
+    ],
+    [
+      "in stock",
+      "sold out"
+    ],
+    [
+      "in stock",
+      "soldout"
+    ],
+    [
+      "low stock",
+      "out of stock"
+    ],
+    [
+      "limited availability",
+      "out of stock"
+    ],
+    [
+      "preorder",
+      "out of stock"
+    ],
+    [
+      "backorder",
+      "out of stock"
+    ]
+  ],
+  "notes": {
+    "max_changes_per_batch": "At most this many item updates go into one batch, which the user confirms with one yes. Deletes are always a batch of one.",
+    "max_changes_per_plan": "At most this many ready changes go into one plan; the rest are listed in deferred, for the next plan. Blocked and unchanged items don't count.",
+    "import_min_items": "When use_import_for_v2 (or --use-import) is on, a v2 batch of at least this many updates is written with one import_catalog_items call (each operation carrying the item's full record) instead of one upsert_catalog_item call per item. v1 catalogs always use upsert_catalog_item.",
+    "protected_field_pattern": "Regular expression (case-insensitive) for internal commercial fields: margin, cost, supplier, purchase, buy and landed prices and similar. A fix that touches a matching field is blocked, their values are kept unchanged in every payload, and they are never shown.",
+    "id_case_insensitive": "Match item IDs from the parity output and the change file to the saved items after trimming and lower-casing them. Must equal catalog-parity-check's value; a test checks it. The payload always uses the item's own ID.",
+    "truncated_value_chars": "catalog-parity-check cuts text values off at this many characters (str(v)[:200] in catalog_parity.py's display()); the two must match, and a test checks it. A Discovery URL, image or title this long may be cut off, so its fix is skipped until the user gives the full value.",
+    "sparse_item_min_share": "Warn when an item holds fewer than this share of the fields the catalog defines: an earlier partial write may have wiped it, and the update can only keep what is there.",
+    "stock_out_number": "The value written to a numeric stock field (stock_level and similar) to mark an item out of stock. Marking one in stock needs a quantity from the user.",
+    "readback_checks": "After each batch, read each item back up to this many times, a few seconds apart, while it still shows the old values (v1 writes are queued; v2 writes finish when their job succeeds), then run verify.",
+    "default_engagement_fields": "For each parity check, the Engagement properties that may hold the value, in order. Used when the parity output doesn't name the field: the first one the item holds, else the first one the catalog defines. --field NAME=EFIELD overrides one for a run. Must equal catalog-parity-check's fields[name].engagement lists; a test checks it.",
+    "stock_text_pairs": "In-stock and out-of-stock words that go together, lower-case. A text stock field is switched to the other word of the first pair that holds its value, keeping upper, title or first-letter case, so the catalog's vocabulary doesn't change. The extra pairs cover catalog-parity-check's other stock words: \"low stock\", \"limited availability\", \"preorder\" and \"backorder\" become \"out of stock\", and \"sold out\" becomes \"in stock\". A value in no pair (\"discontinued\", say) blocks the fix until the user gives the value.",
+    "use_import_for_v2": "Off until a live test confirms import_catalog_items' operation shape ({op: upsert, path: /<item_id>, value: {fields: ...}}): every update is then one upsert_catalog_item call. --use-import turns it on for a run; the first import batch is then one item, verified before the rest."
+  }
+}

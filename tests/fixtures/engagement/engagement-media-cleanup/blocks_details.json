@@ -1,0 +1,31 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "b100000000000000000000b1",
+    "name": "Footer logo block",
+    "archived": false,
+    "jinja_html": "<img src=\"https://cdn.media.example/storage/proj/media/original/00000002-aaaa-4bbb-8ccc-000000000002\" alt=\"Brand logo\">",
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "b200000000000000000000b2",
+    "name": "Test block",
+    "archived": false,
+    "jinja_html": "<p>Hello</p>",
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "b300000000000000000000b3",
+    "name": "Footer logo block (1)",
+    "archived": false,
+    "jinja_html": "<p>Old footer</p>",
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   }
+  ]
+ }
+}

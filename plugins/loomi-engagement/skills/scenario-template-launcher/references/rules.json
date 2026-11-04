@@ -1,0 +1,41 @@
+{
+  "about": "The scenario template launcher's clone rules. scripts/scenario_clone_plan.py reads this file and its CLI defaults come from it, so change a rule here and nowhere else. Each key is explained under notes.",
+  "name_suffix_format": " (clone {date})",
+  "scenario_on_conflict": "duplicate",
+  "dependency_on_conflict": "use_old",
+  "allowed_on_conflict": ["duplicate", "use_old"],
+  "forbidden_on_conflict": ["replace"],
+  "scenario_dependency_type": "campaign_design",
+  "not_started_statuses": ["draft", "inactive"],
+  "webhook_type_words": ["webhook"],
+  "sender_type_words": ["email", "sms"],
+  "new_dependency_warning": 5,
+  "ref_priority": {
+    "trigger_event": "high",
+    "consent_category": "high",
+    "integration": "high",
+    "catalog": "high",
+    "engine_catalog": "high",
+    "event": "medium",
+    "event_property": "medium",
+    "customer_property": "medium",
+    "frequency_policy": "medium",
+    "project_variable": "medium",
+    "id_reference": "medium"
+  },
+  "ignored_catalog_words": ["get", "items", "keys", "values"],
+  "notes": {
+    "name_suffix_format": "Default suffix the clone appends to the source scenario's name; {date} is replaced by --today. clone_scenario appends it as given, so it starts with a space. A distinct name is what lets the skill find the clone again by name after an error.",
+    "scenario_on_conflict": "on_conflict for the scenario itself (the campaign_design dependency with the source scenario's ID) when the preview says it already exists in the target, as it always does for a clone into the same project. duplicate makes a new scenario; replace would overwrite the existing one, so it is never used.",
+    "dependency_on_conflict": "Default on_conflict for every other dependency the preview says already exists in the target (aggregates, expressions, segmentations, recommendation engines): use_old reuses the target's item and creates nothing. --on-conflict ID=duplicate copies the source's version as a new item instead.",
+    "allowed_on_conflict": "The only on_conflict values the script writes into a plan. Anything else is refused.",
+    "forbidden_on_conflict": "on_conflict values the script refuses outright: replace overwrites an existing item in the target project, which can change live scenarios and campaigns that use it.",
+    "scenario_dependency_type": "The preview's dependency type for the scenario itself. The plan is blocked when the preview has no dependency of this type with the source scenario's ID (the preview was for another scenario).",
+    "not_started_statuses": "Statuses verify accepts for the clone. Any other status (active, finishing, paused) raises an alert: the clone must never be running.",
+    "webhook_type_words": "A node whose type contains one of these words is a webhook. Its headers, body and URL are never printed; the plan only says whether it has headers, a body and an authentication integration.",
+    "sender_type_words": "A node whose type contains one of these words sends email or SMS. In a clone to another project, its sender and channel settings come from the target project's defaults, so the plan warns to check them.",
+    "new_dependency_warning": "A warning when the clone would create more than this many new items (dependencies the target doesn't have) besides the scenario itself.",
+    "ref_priority": "Priority (high, medium or low) of each kind of reference that won't resolve in the target project. trigger_event is the event that starts the flow; id_reference is an aggregate, expression, segmentation, prediction or recommendation engine ID the scenario uses that the preview didn't list as a dependency, so it still points at the source project's item.",
+    "ignored_catalog_words": "Words after catalogs. in Jinja that are methods, not catalog names (catalogs.get(...))."
+  }
+}

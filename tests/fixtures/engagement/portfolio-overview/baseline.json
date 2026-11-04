@@ -1,0 +1,16 @@
+{
+ "ok": true,
+ "today": "2026-08-01",
+ "projects": [
+  {
+   "project_id": "p-alpha-0001",
+   "customers": 100000,
+   "events": 10700000
+  },
+  {
+   "project_id": "p-charlie-0003",
+   "customers": 150000,
+   "events": 13000000
+  }
+ ]
+}

@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Engagement SMS Builder"
+  short_description: "Turn a brief into a Bloomreach Engagement SMS campaign draft, after you confirm"
+policy:
+  # This skill creates and revises SMS campaign drafts (create_sms_campaign, update_sms_campaign), so it only runs when called by name.
+  allow_implicit_invocation: false

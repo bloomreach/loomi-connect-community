@@ -1,0 +1,3 @@
+{"success": true, "dependencies": [
+  {"id": "other-scenario-9", "type": "campaign_design", "name": "Something else", "exists": false, "changed": false}
+], "warnings": [], "error": null}

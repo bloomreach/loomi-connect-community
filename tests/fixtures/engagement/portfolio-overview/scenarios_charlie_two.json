@@ -1,0 +1,21 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "s1",
+    "name": "Welcome",
+    "status": "active",
+    "archived": false,
+    "created_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "s2",
+    "name": "Cart",
+    "status": "active",
+    "archived": false
+   }
+  ],
+  "error": null
+ }
+}

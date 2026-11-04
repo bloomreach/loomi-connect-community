@@ -1,0 +1,29 @@
+{
+ "success": true,
+ "data": [
+  {
+   "categoryId": "21200",
+   "name": "Category 21200"
+  },
+  {
+   "categoryId": "30100",
+   "name": "Category 30100"
+  },
+  {
+   "categoryId": "40100",
+   "name": "Category 40100"
+  },
+  {
+   "categoryId": "40200",
+   "name": "Category 40200"
+  },
+  {
+   "categoryId": "50100",
+   "name": "Category 50100"
+  },
+  {
+   "categoryId": "60100",
+   "name": "Category 60100"
+  }
+ ]
+}

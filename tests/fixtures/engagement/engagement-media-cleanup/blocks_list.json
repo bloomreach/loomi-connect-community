@@ -1,0 +1,35 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "b100000000000000000000b1",
+    "name": "Footer logo block",
+    "archived": false,
+    "created": 1690000000,
+    "edited": 1690000000,
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "b200000000000000000000b2",
+    "name": "Test block",
+    "archived": false,
+    "created": 1690000000,
+    "edited": 1690000000,
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "b300000000000000000000b3",
+    "name": "Footer logo block (1)",
+    "archived": false,
+    "created": 1690000000,
+    "edited": 1690000000,
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   }
+  ],
+  "error": null
+ }
+}

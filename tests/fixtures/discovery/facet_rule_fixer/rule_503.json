@@ -1,0 +1,35 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 503,
+   "ruleType": "facet",
+   "isLive": false,
+   "audiences": [],
+   "queries": [
+    {
+     "id": 5030,
+     "query": "jeans",
+     "queryType": "sitesearch",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "boosted_facets": {
+     "product_size": 1
+    },
+    "always_included_facets": [
+     "product_size"
+    ]
+   },
+   "name": "Jeans facets",
+   "enabled": false,
+   "user": "editor@example.com",
+   "syncStatus": "SUCCESS",
+   "isEditable": true,
+   "startedAt": null,
+   "endedAt": null
+  }
+ },
+ "error": null
+}

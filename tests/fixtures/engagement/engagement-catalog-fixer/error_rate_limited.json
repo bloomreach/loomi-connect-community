@@ -1,0 +1,5 @@
+{
+  "success": false,
+  "data": null,
+  "error": "Too many requests: rate limit reached. Retry after ~2 second(s)."
+}

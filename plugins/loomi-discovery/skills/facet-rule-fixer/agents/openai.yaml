@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Facet Rule Fixer"
+  short_description: "Boost, bury, hide or always show Bloomreach Discovery facets, after you confirm"
+policy:
+  # Writes live Discovery facet rules, so it only runs when called by name.
+  allow_implicit_invocation: false

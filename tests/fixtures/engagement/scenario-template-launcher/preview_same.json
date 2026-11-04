@@ -1,0 +1,7 @@
+{"success": true, "dependencies": [
+  {"id": "agg-demo-1", "type": "aggregate", "name": "Last viewed products", "exists": true, "changed": true},
+  {"id": "exp-demo-1", "type": "expression", "name": "Hour of day", "exists": true, "changed": true},
+  {"id": "rec-demo-1", "type": "recommendation_engine", "name": "Similar items", "exists": true, "changed": true},
+  {"id": "seg-demo-1", "type": "segmentation", "name": "Tiers", "exists": true, "changed": true},
+  {"id": "src-scenario-0001", "type": "campaign_design", "name": "Browse abandonment", "exists": true, "changed": true}
+], "warnings": [], "error": null}

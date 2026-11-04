@@ -1,0 +1,42 @@
+{
+  "about": "Thresholds and matching rules for scripts/ad_audience_health.py: when an audience sync is stale, too small or failing, how ad-audience steps are recognised in scenarios, what counts as advertising consent, and when an autosegment is stale. The script reads this file and its CLI defaults come from it. Each key is explained under notes.",
+  "stale_sync_days": 3,
+  "default_min_size": 1000,
+  "platform_min_sizes": {
+    "facebook": 100,
+    "meta": 100,
+    "google": 1000,
+    "adwords": 1000,
+    "tiktok": 1000,
+    "snapchat": 1000,
+    "pinterest": 100,
+    "linkedin": 300
+  },
+  "failing_statuses": ["failed", "failure", "error", "errored", "broken", "disconnected", "invalid", "expired", "unauthorized"],
+  "live_statuses": ["active", "running", "started"],
+  "ads_integration_words": ["ads", "adwords", "facebook", "meta", "google-ads", "tiktok", "snapchat", "pinterest", "linkedin", "criteo", "dv360"],
+  "ad_node_words": ["retarget", "audience", "facebook", "adwords", "google-ads", "googleads", "meta-ads", "tiktok", "snapchat", "pinterest", "linkedin", "criteo"],
+  "non_ad_node_types": ["on-event-trigger", "on-api-trigger", "on-date-attribute-trigger", "repeated-trigger", "wait-action", "wait-action-dynamic", "wait-action-optimal", "wait-action-silent-hours", "condition", "ab-split", "ab-split-contextual", "segmentation-fork", "limit", "label", "send-email-action", "send-sms-action", "send-mms-action", "push-notification-mobile-action", "push-notification-browser-action", "per-customer-webhook-action", "batch-webhook-action", "add-event-action", "set-property-action", "serve-banner-action", "send-app-inbox-action"],
+  "ad_consent_words": ["advert", "ads", "retarget", "targeting", "third party", "third-party", "third_party", "paid media", "paid_media", "marketing cookies", "marketing_cookies", "personalised ads", "personalized ads"],
+  "external_fields": {
+    "destination": ["destination", "platform", "integration_type", "target", "destination_type"],
+    "status": ["sync_status", "status", "state", "last_sync_status"],
+    "last_sync": ["last_sync", "last_synced_at", "last_sync_at", "last_sync_time", "synced_at", "updated_at", "updated"],
+    "size": ["size", "member_count", "members", "customer_count", "count", "audience_size"],
+    "segmentation": ["segmentation_id", "linked_segmentation_id", "source_segmentation_id"]
+  },
+  "stale_autosegment_days": 90,
+  "notes": {
+    "stale_sync_days": "An audience whose last sync (from the tool, or given with --last-sync) is older than this many days before --today is stale. Ad platforms drop people who are no longer synced, so a stale audience targets an old list.",
+    "default_min_size": "Rule of thumb: an audience with fewer customers than this is too small to use on an ad platform whose minimum isn't listed in platform_min_sizes. Platforms count matched users, which is usually well below the number sent, so treat this as a floor, not a target.",
+    "platform_min_sizes": "Rule of thumb per destination (matched case-insensitively against the destination's type or name): the smallest audience worth sending. These are approximations of the platforms' published minimums, which change and differ by ad product; check the platform's own documentation before acting.",
+    "failing_statuses": "Sync statuses (compared case-insensitively, as a whole word) that mean the last sync failed. Read only when the tool returns a status field; search_external_segments returned only an id and a name in testing.",
+    "live_statuses": "Scenario statuses (compared case-insensitively) that count as live. A live scenario that feeds an ad audience raises empty, stale and no-consent findings to high.",
+    "ads_integration_words": "Words in a search_integrations type or name that mark an ad-platform destination (Facebook Ads and Google Ads were seen live as facebook-ads and google-adwords).",
+    "ad_node_words": "Words in a scenario node's type that mark a step sending customers to an ad audience. The node type names for these steps weren't seen live, so the script also counts any node of a type outside non_ad_node_types that mentions an ads integration's ID. Matches are labelled for the user to confirm.",
+    "non_ad_node_types": "Scenario node types that never send customers to an ad platform (triggers, waits, logic, messages, webhooks, properties, weblayers), from the scenario-exploration guide.",
+    "ad_consent_words": "Words in a consent category's ID or name that mark it as the advertising category. If the project has such a category, an audience must filter on it; if it has categories but none of these, any consent condition counts and the report says no advertising category was found.",
+    "external_fields": "Field names read from each external segment record for its destination, sync status, last sync time, size and linked segmentation, first match wins. None of them was returned live; they're read only if the tool starts returning them.",
+    "stale_autosegment_days": "An autosegment whose last successful run is older than this many days is stale: its groups describe old behaviour."
+  }
+}

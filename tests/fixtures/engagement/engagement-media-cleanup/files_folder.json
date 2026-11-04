@@ -1,0 +1,106 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "00000004-aaaa-4bbb-8ccc-000000000004",
+    "name": "logo.d7e9962cbacf5f0d2076.png",
+    "archived": false,
+    "implicitly_archived": false,
+    "tags": [],
+    "parent_id": "dir-0001",
+    "file_type": "image",
+    "mime_type": "image/png",
+    "variants": {
+     "original": {
+      "file_size": 6100,
+      "dimensions": "288x84",
+      "url": "https://cdn.media.example/storage/proj/media/original/00000004-aaaa-4bbb-8ccc-000000000004"
+     },
+     "thumbnail": {
+      "file_size": 1000,
+      "dimensions": "300x150",
+      "url": "https://cdn.media.example/storage/proj/media/thumbnail/00000004-aaaa-4bbb-8ccc-000000000004"
+     }
+    },
+    "created": 1690000000,
+    "created_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "00000007-aaaa-4bbb-8ccc-000000000007",
+    "name": "template-only.png",
+    "archived": false,
+    "implicitly_archived": false,
+    "tags": [],
+    "parent_id": "dir-0001",
+    "file_type": "image",
+    "mime_type": "image/png",
+    "variants": {
+     "original": {
+      "file_size": 40000,
+      "dimensions": "600x200",
+      "url": "https://cdn.media.example/storage/proj/media/original/00000007-aaaa-4bbb-8ccc-000000000007"
+     },
+     "thumbnail": {
+      "file_size": 1000,
+      "dimensions": "300x150",
+      "url": "https://cdn.media.example/storage/proj/media/thumbnail/00000007-aaaa-4bbb-8ccc-000000000007"
+     }
+    },
+    "created": 1690000000,
+    "created_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "00000008-aaaa-4bbb-8ccc-000000000008",
+    "name": "promo-draft.png",
+    "archived": false,
+    "implicitly_archived": false,
+    "tags": [],
+    "parent_id": "dir-0001",
+    "file_type": "image",
+    "mime_type": "image/png",
+    "variants": {
+     "original": {
+      "file_size": 400000,
+      "dimensions": "1200x600",
+      "url": "https://cdn.media.example/storage/proj/media/original/00000008-aaaa-4bbb-8ccc-000000000008"
+     },
+     "thumbnail": {
+      "file_size": 1000,
+      "dimensions": "300x150",
+      "url": "https://cdn.media.example/storage/proj/media/thumbnail/00000008-aaaa-4bbb-8ccc-000000000008"
+     }
+    },
+    "created": 1793318400,
+    "created_by_display_name": "Pat Example"
+   },
+   {
+    "_id": "00000009-aaaa-4bbb-8ccc-000000000009",
+    "name": "hero-banner-final.png",
+    "archived": false,
+    "implicitly_archived": false,
+    "tags": [],
+    "parent_id": "dir-0001",
+    "file_type": "image",
+    "mime_type": "image/png",
+    "variants": {
+     "original": {
+      "file_size": 1200000,
+      "dimensions": "2400x1200",
+      "url": "http://cdn.media.example/storage/proj/media/original/00000009-aaaa-4bbb-8ccc-000000000009"
+     },
+     "thumbnail": {
+      "file_size": 1000,
+      "dimensions": "300x150",
+      "url": "http://cdn.media.example/storage/proj/media/thumbnail/00000009-aaaa-4bbb-8ccc-000000000009"
+     }
+    },
+    "created": 1792022400,
+    "created_by_display_name": "Pat Example"
+   }
+  ],
+  "directories": [],
+  "path": [],
+  "error": null
+ }
+}

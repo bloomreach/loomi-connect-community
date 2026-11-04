@@ -1,0 +1,35 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "e100000000000000000000e1",
+   "name": "Black Friday launch",
+   "status": "active",
+   "archived": false,
+   "scenario_id": "e100000000000000000000e1",
+   "design": {
+    "type": "visual",
+    "data": {
+     "jinja_html": "<html><body><img src=\"https://cdn.media.example/storage/proj/media/original/00000001-aaaa-4bbb-8ccc-000000000001\" width=\"600\"><img src=\"http://img.cdn.example/x.png?token=FAKE123\" alt=\"Promo\"><img src=\"https://track.example/o.gif\" width=\"1\" height=\"1\"></body></html>",
+     "beefree_template": "{\"page\": {\"rows\": [{\"columns\": [{\"modules\": [{\"descriptor\": {\"image\": {\"src\": \"https://cdn.media.example/storage/proj/media/original/00000001-aaaa-4bbb-8ccc-000000000001\", \"alt\": \"\", \"href\": \"https://shop.example/sale\"}}}]}]}]}}"
+    }
+   },
+   "split": {
+    "variants": [
+     {
+      "design": {
+       "type": "visual",
+       "data": {
+        "jinja_html": "<html><body><img src=\"https://cdn.media.example/storage/proj/media/original/00000001-aaaa-4bbb-8ccc-000000000001\" width=\"600\"><img src=\"http://img.cdn.example/x.png?token=FAKE123\" alt=\"Promo\"><img src=\"https://track.example/o.gif\" width=\"1\" height=\"1\"></body></html>",
+        "beefree_template": "{\"page\": {\"rows\": [{\"columns\": [{\"modules\": [{\"descriptor\": {\"image\": {\"src\": \"https://cdn.media.example/storage/proj/media/original/00000001-aaaa-4bbb-8ccc-000000000001\", \"alt\": \"\", \"href\": \"https://shop.example/sale\"}}}]}]}]}}"
+       }
+      }
+     }
+    ]
+   },
+   "created_by_display_name": "Pat Example",
+   "edited_by_display_name": "Pat Example"
+  },
+  "error": null
+ }
+}

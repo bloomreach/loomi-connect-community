@@ -1,0 +1,59 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "cat0000000000000000000001",
+      "name": "products",
+      "type": "product",
+      "catalog_version": "v1",
+      "fields": [
+        {
+          "name": "availability",
+          "type": "string",
+          "searchable": false
+        },
+        {
+          "name": "brand",
+          "type": "string",
+          "searchable": false
+        },
+        {
+          "name": "image",
+          "type": "string",
+          "searchable": false
+        },
+        {
+          "name": "margin",
+          "type": "number",
+          "searchable": false
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "searchable": false
+        },
+        {
+          "name": "sale_price",
+          "type": "number",
+          "searchable": false
+        },
+        {
+          "name": "stock_level",
+          "type": "number",
+          "searchable": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "searchable": false
+        },
+        {
+          "name": "url",
+          "type": "string",
+          "searchable": false
+        }
+      ]
+    },
+    "error": null
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "about": "The Data Hub item collection audit rules. scripts/datahub_collection_audit.py reads this file, so change a threshold, word list or owner here and nowhere else. Each key is explained under notes; references/checks.md says what each check means.",
+  "required_min_fill": 0.98,
+  "key_min_fill": 0.9,
+  "sparse_fill": 0.2,
+  "min_sample": 50,
+  "type_mismatch_share": 0.05,
+  "key_fields": ["title", "price", "url", "image_url", "thumb_image", "availability", "brand"],
+  "type_map": {
+    "String": "string", "Text": "string", "Url": "string", "Date": "string", "DateTime": "string",
+    "Float": "number", "Double": "number", "Number": "number", "Decimal": "number",
+    "Integer": "integer", "Int": "integer", "Long": "integer",
+    "Boolean": "boolean", "Bool": "boolean",
+    "List": "list", "Object": "object", "Map": "object", "Json": "object"
+  },
+  "record_meta_keys": ["id", "_id", "record_id", "item_id", "variant_id", "variant_ids", "variants", "created", "updated", "edited", "created_at", "updated_at", "metadata", "meta", "family", "item_type"],
+  "pair_tokens": ["staging", "stage", "stg", "production", "prod", "prd", "dev", "development", "test", "qa", "uat", "sandbox", "preview", "live", "copy", "old", "new", "backup", "bak", "v1", "v2", "v3"],
+  "locale_pattern": "^[a-z]{2}([_-][a-z]{2})?$",
+  "success_states": ["success", "succeeded", "successful", "completed", "complete", "finished", "done"],
+  "failed_states": ["failed", "failure", "error", "errored", "aborted", "killed", "timeout", "timed_out"],
+  "data_job_types": ["records-update", "items-update"],
+  "stale_days": 7,
+  "list_limit": 10,
+  "owners": {
+    "feed": "Whoever sends the data (the feed or integration team)",
+    "config": "The Data Hub administrator for this workspace",
+    "pipeline": "The Data Hub administrator; Bloomreach support if a job keeps failing",
+    "downstream": "The Engagement or Discovery owner who uses the catalog"
+  },
+  "notes": {
+    "required_min_fill": "An identifier or a field the configuration marks required, filled on fewer than this share of sampled records, is high.",
+    "key_min_fill": "A key_fields field the collection configures or the data contains, filled on fewer than this share of sampled records, is medium.",
+    "sparse_fill": "A configured attribute filled on fewer than this share of sampled records is low (0 means configured but never filled in the sample: 'unused').",
+    "min_sample": "Fewer sampled records than this for an item type and its fill rates and type checks are reported as rough, with a not_checked note.",
+    "type_mismatch_share": "A field whose sampled values (or field-tool examples) disagree with its declared data_type on at least this share of filled values is reported: medium, or high when it is an identifier.",
+    "key_fields": "Field names that should be filled on every item. Only checked when the collection configures the field or the data contains it somewhere, so a field the collection never uses isn't reported.",
+    "type_map": "Declared data_type (case-insensitive; 'List.X' is a list) to the JSON value kind it should hold. Numbers sent as text count as a mismatch. Unknown declared types are skipped and listed under not_checked.",
+    "record_meta_keys": "Record keys that are bookkeeping, not data fields, so they're never counted as unconfigured fields.",
+    "pair_tokens": "Name parts (split on _ - . and spaces) removed when pairing collections automatically, so products_staging pairs with products_prod. Explicit --pair always wins.",
+    "locale_pattern": "A name part matching this regular expression is treated as a locale (en, en_us, de-de) and removed when pairing, so products_en pairs with products_de.",
+    "success_states": "Data Hub job states (lower-cased) that count as a successful run.",
+    "failed_states": "Data Hub job states (lower-cased) that count as a failed run. The latest data job failing is high; an earlier failure followed by a success is low.",
+    "data_job_types": "Job types that write data into a collection. Their latest success sets freshness; other job types (configuration-update, destination syncs) are reported on failure only.",
+    "stale_days": "A collection whose latest successful data job is older than this many days (against --today) is medium.",
+    "list_limit": "At most this many names are quoted in one finding.",
+    "owners": "Who usually fixes each kind of finding; every finding names one of these."
+  }
+}

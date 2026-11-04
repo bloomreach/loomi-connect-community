@@ -1,0 +1,82 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "sms-new-1",
+      "name": "Boots weekend - lapsed VIPs - SMS DRAFT",
+      "status": "draft",
+      "is_paused": false,
+      "archived": false,
+      "tags": [],
+      "created_by_display_name": "Example Editor",
+      "edited_by_display_name": "Example Editor",
+      "edited": 1780000000,
+      "locked": false,
+      "locked_for_current_user": false,
+      "schedule": {
+        "active": true,
+        "type": "now"
+      },
+      "customer_filter": {
+        "filters": [
+          {
+            "type": "attribute",
+            "attribute": {
+              "type": "segmentation",
+              "id": "seg-tiers"
+            },
+            "constraint": {
+              "type": "string",
+              "operator": "equals",
+              "operands": [
+                {
+                  "type": "constant",
+                  "value": "Lapsed VIP"
+                }
+              ]
+            }
+          }
+        ],
+        "formula": "F0"
+      },
+      "split": {
+        "type": "off"
+      },
+      "action": {
+        "consent_category": "sms_marketing",
+        "general_consent": false,
+        "frequency_policy": "unlimited-policy",
+        "link_shortener_domain": null,
+        "throughput_policy_id": null,
+        "transfer_user_identity": "first_click",
+        "unsubscribe_list": null,
+        "url_params": null,
+        "variants": [
+          {
+            "id": 0,
+            "max_message_parts": 8,
+            "type": "sms",
+            "translations": {
+              "": {
+                "message": "Acme Outdoor: Hi {{ customer['first_name'] | default('there', true) }}, 20% off boots ends Sunday. https://go.acme-outdoor.example/boots Reply STOP to opt out, HELP for help",
+                "sender": {
+                  "mms": {
+                    "provider": null
+                  },
+                  "name": "Acme Outdoor",
+                  "sender": "AcmeOutdr",
+                  "sms": {
+                    "provider": null
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "silent_hours": null,
+      "throughput_policy": null
+    },
+    "error": null
+  }
+}

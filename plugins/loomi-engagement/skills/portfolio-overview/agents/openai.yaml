@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Portfolio Overview"
+  short_description: "One health table across every Bloomreach Engagement project in an organisation"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true

@@ -1,0 +1,23 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "id": "int0000000000000000000fb1",
+        "name": "Facebook Ads",
+        "type": "facebook-ads"
+      },
+      {
+        "id": "int0000000000000000000gg1",
+        "name": "Google Ads",
+        "type": "google-adwords"
+      },
+      {
+        "id": "int0000000000000000000ml1",
+        "name": "uploads.example.test email",
+        "type": "mailgunemail"
+      }
+    ],
+    "error": null
+  }
+}

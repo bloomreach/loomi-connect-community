@@ -1,0 +1,7 @@
+{
+  "result": {
+    "success": false,
+    "data": [],
+    "error": "[ACCESS_DENIED] You don't have access (HTTP 403). See https://example.test/help?token=FAKE"
+  }
+}
