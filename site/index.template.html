@@ -35,7 +35,12 @@ a{color:var(--arctic)}
 .bar nav{margin-left:auto;display:flex;gap:18px;font-size:15px;flex-wrap:wrap}
 .bar nav a{color:var(--ink);text-decoration:none}
 .bar nav a:hover{text-decoration:underline}
-.hero .wrap{padding-block:64px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.hero{position:relative;display:flex;align-items:center;min-height:calc(100vh - 61px);min-height:calc(100svh - 61px)}
+.hero .wrap{width:100%;padding-block:56px 88px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.more{position:absolute;bottom:max(24px,env(safe-area-inset-bottom,0px));right:max(16px,env(safe-area-inset-right,0px));width:48px;height:48px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);animation:nudge 2.4s ease-in-out infinite}
+.more:hover{border-color:var(--ink)}
+.more svg{width:20px;height:20px}
+@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 h1{margin:0;font:500 clamp(36px,7.4vw,80px)/1.02 var(--mono);letter-spacing:-.03em;word-break:break-word}
 h1 .dash{color:var(--muted)}
 h1 .mark{text-decoration:underline;text-decoration-color:var(--spark);text-decoration-thickness:.14em;text-underline-offset:.16em;text-decoration-skip-ink:none}
@@ -47,7 +52,6 @@ h1 .mark{text-decoration:underline;text-decoration-color:var(--spark);text-decor
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .stat{padding:18px 0;display:flex;flex-direction:column;gap:2px}
 .stat b{font:500 36px/1 var(--sans);font-variant-numeric:tabular-nums}
-.toolnote{margin:0;font-size:15px}
 .stat span{color:var(--muted);font-size:14px}
 section.block .wrap{padding-block:56px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 h2{margin:0;font:500 clamp(26px,3.4vw,36px)/1.1 var(--sans);text-wrap:balance}
@@ -68,8 +72,8 @@ h2{margin:0;font:500 clamp(26px,3.4vw,36px)/1.1 var(--sans);text-wrap:balance}
 .people span{border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:15px}
 .people span:first-child{background:var(--spark);border-color:var(--spark);color:var(--spark-ink)}
 footer .wrap{padding-block:32px 48px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px 24px;color:var(--muted);font-size:14px}
-@media (max-width:640px){.bar nav{display:none}.hero .wrap{padding-block:40px 28px}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:640px){.bar nav{display:none}.hero .wrap{padding-block:40px 88px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -79,17 +83,18 @@ footer .wrap{padding-block:32px 48px;border-top:1px solid var(--line);display:fl
   <nav aria-label="Site"><a href="quickstart.html">Quickstart</a><a href="skills.html">Skills</a><a href="tools.html">Tools</a><a id="gh-start" href="#">Start here</a><a id="gh-charter" href="#">Charter</a><a id="gh-repo" href="#">GitHub</a></nav>
 </div></header>
 
-<section class="hero gutter"><div class="wrap">
+<section class="hero gutter">
+<a class="more" href="#more" aria-label="See more below"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7l6 6 6-6"/></svg></a>
+<div class="wrap">
   <div class="kicker">Bloomreach · open source · Apache-2.0</div>
   <h1><span class="mark">loomi</span><span class="dash">-</span>connect<span class="dash">-</span>community</h1>
   <p class="lede">Skills that turn Loomi Connect, the Bloomreach MCP server, into repeatable results across Engagement, Discovery and Data Hub. They work the same in Claude and OpenAI clients. Bloomreach maintains it; anyone can contribute.</p>
   <div class="cta"><a class="btn primary" href="quickstart.html">Get started</a><a class="btn" href="skills.html" id="cta-skills">Browse the skills</a><a class="btn" id="cta-repo" href="#">View on GitHub</a></div>
   <div class="stats" id="stats" aria-label="Totals"></div>
-  <p class="toolnote"><a href="tools.html" id="toolnote">See which Loomi Connect tools the skills use</a></p>
 </div></section>
 
 
-<section class="block gutter" style="background:var(--surface)"><div class="wrap">
+<section class="block gutter" id="more" style="background:var(--surface)"><div class="wrap">
   <div class="kicker">Plugins</div>
   <h2>Four plugins, installed one at a time or all together</h2>
   <div class="plugins" id="plugins"></div>
@@ -126,12 +131,11 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const blob=p=>D.repo+"/blob/main/"+p, tree=p=>D.repo+"/tree/main/"+p;
 $("gh-repo").href=$("cta-repo").href=D.repo; $("gh-start").href=blob("docs/start-here.md");
 $("gh-charter").href=blob("CHARTER.md"); $("gh-disclaimer").href=blob("DISCLAIMER.md");
-const writes=D.skills.filter(s=>s.writes).length, used=D.tools.filter(t=>t.skills.length).length;
+const writes=D.skills.filter(s=>s.writes).length;
 $("cta-skills").textContent="Browse the "+D.skills.length+" skills";
 $("stats").innerHTML=[[D.skills.length,"skills"],[D.plugins.length,"plugins"],[D.skills.length-writes,"read-only"],[writes,"write, after you confirm"],[D.scripts,"helper scripts"],[D.tests,"test files"]]
   .map(([n,l])=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
 $("checked").textContent="Tool list checked "+D.toolsChecked;
-$("toolnote").textContent=`The skills use ${used} of the ${D.tools.length} published Loomi Connect tools. See the tool map →`;
 $("plugins").innerHTML=D.plugins.map(p=>`<div class="plugin"><a class="name" href="${tree("plugins/"+p.name)}">${esc(p.name)}</a><div class="n">${p.skills}<small>${p.writes} write</small></div><p>${esc(p.description)}</p></div>`).join("");
 $("people").innerHTML=D.contributors.map(n=>`<span>${esc(n)}</span>`).join("")||"<span>Be the first.</span>";
 document.querySelectorAll(".copy").forEach(b=>b.addEventListener("click",()=>{const t=$(b.dataset.for).textContent;
