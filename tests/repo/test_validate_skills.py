@@ -78,9 +78,9 @@ class TestListings(FakeRepoTest):
         self.edit("plugins/demo/README.md", "(skills/demo-skill/)", "(skills/other/)")
         self.assertFails("plugins/demo/README.md: does not link to skill 'demo-skill'")
 
-    def test_missing_from_start_here(self):
-        self.edit("docs/start-here.md", "skills/demo-skill/", "skills/")
-        self.assertFails("docs/start-here.md: does not link to skill 'demo-skill'")
+    def test_missing_from_skills_by_task(self):
+        self.edit("docs/skills-by-task.md", "skills/demo-skill/", "skills/")
+        self.assertFails("docs/skills-by-task.md: does not link to skill 'demo-skill'")
 
 
 class TestAccess(FakeRepoTest):
@@ -163,7 +163,7 @@ class TestSharedScripts(FakeRepoTest):
         shutil.copytree(self.skill, other)
         self.edit("plugins/demo/skills/second-skill/SKILL.md", "name: demo-skill", "name: second-skill")
         self.edit("plugins/demo/README.md", "\n\nTo add", "\n| [second-skill](skills/second-skill/) | x | Read-only |\n\nTo add")
-        start = self.root / "docs/start-here.md"
+        start = self.root / "docs/skills-by-task.md"
         start.write_text(start.read_text() + "\n[second-skill](../plugins/demo/skills/second-skill/)\n")
         (other / "scripts/demo.py").write_text(text)
 
@@ -193,7 +193,7 @@ class TestLinks(FakeRepoTest):
 
     def test_valid_and_ignored_links(self):
         self.write("docs/extra.md", "\n".join([
-            "[start](start-here.md#every-monday) [folder](../plugins/demo/) [web](https://example.com/x)",
+            "[start](skills-by-task.md#every-monday) [folder](../plugins/demo/) [web](https://example.com/x)",
             "[mail](mailto:a@example.com) [anchor](#top) ![img](../plugins/demo/README.md)",
             "`[code](not-checked.md)`",
             "```", "[fenced](not-checked.md)", "```",

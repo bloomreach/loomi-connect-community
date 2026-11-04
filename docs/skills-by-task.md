@@ -1,4 +1,4 @@
-# Start here
+# Skills by task
 
 This guide is for merchandisers, ecommerce managers and CRM teams who run an online store on Bloomreach. It points you to the right skill for the job you're doing.
 

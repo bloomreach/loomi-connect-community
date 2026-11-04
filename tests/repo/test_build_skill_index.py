@@ -63,6 +63,10 @@ class BuildSkillIndexTest(unittest.TestCase):
         self.assertFalse([t for t in self.data["tools"] if "internal" in t["tags"]])
         self.assertTrue(any(t["skills"] for t in self.data["tools"]))
 
+    def test_helper_tools_stay_out_of_the_tool_map(self):
+        self.assertIn("list_all_tools", self.data["helpers"])
+        self.assertFalse([t for t in self.data["tools"] if "meta" in t["tags"]])
+
     def test_site_builds_with_every_skill_and_no_email_addresses(self):
         with tempfile.TemporaryDirectory() as tmp:
             r = run(BUILD, "--check", "--site", Path(tmp) / "site", "--today", "2026-11-04")
@@ -73,6 +77,16 @@ class BuildSkillIndexTest(unittest.TestCase):
             page = (out / "index.html").read_text(encoding="utf-8")
             self.assertNotIn("__DATA__", page)
             self.assertNotIn("__LOGO__", page)
+            navs = {}
+            for f in ("index", "skills", "quickstart", "tools"):
+                html = (out / f"{f}.html").read_text(encoding="utf-8")
+                self.assertNotIn("__NAV__", html)
+                navs[f] = re.search(r'<nav aria-label="Site">.*?</nav>', html).group(0)
+            self.assertEqual(len({n.replace(' aria-current="page"', "") for n in navs.values()}), 1, "every page has the same menu")
+            self.assertIn('href="tools.html" aria-current="page"', navs["tools"])
+            for f in ("index", "skills", "quickstart", "tools"):
+                html = (out / f"{f}.html").read_text(encoding="utf-8")
+                self.assertNotRegex(html, r"\b(Discovery|Engagement)\b", f"{f}.html uses the old product names")
             payload = json.loads(re.search(r"const D=(\{.*?\});\n", page, re.S).group(1))
             self.assertEqual({s["name"] for s in payload["skills"]}, {s["name"] for s in self.data["skills"]})
             self.assertNotRegex(json.dumps(payload["contributors"]), r"@")

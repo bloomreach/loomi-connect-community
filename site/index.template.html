@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>loomi-connect-community</title>
-<meta name="description" content="Community skills for Loomi Connect, the Bloomreach MCP server for Engagement, Discovery and Data Hub.">
+<meta name="description" content="Community skills for Loomi Connect, the Bloomreach MCP server for Marketing, Search and Data Hub.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
 <!-- Generated from site/index.template.html by scripts/build_skill_index.py. Edit the template, not this file. -->
@@ -43,6 +43,7 @@ a:hover{text-decoration-thickness:3px}
 .theme:focus-visible{outline:3px solid var(--arctic-bright);outline-offset:2px}
 .bar nav a{color:var(--ink);text-decoration:none}
 .bar nav a:hover{text-decoration:underline}
+.bar nav a[aria-current]{font-weight:600}
 .hero{position:relative;display:flex;align-items:center;min-height:calc(100vh - 61px);min-height:calc(100svh - 61px)}
 .hero .wrap{width:100%;padding-block:56px 88px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
 .more{position:absolute;bottom:max(24px,env(safe-area-inset-bottom,0px));right:max(16px,env(safe-area-inset-right,0px));width:48px;height:48px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);animation:nudge 2.4s ease-in-out infinite}
@@ -80,8 +81,9 @@ h2{margin:0;font:500 clamp(26px,3.4vw,36px)/1.1 var(--sans);text-wrap:balance}
 .people span{border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:15px}
 .people span:first-child{background:var(--spark);border-color:var(--spark);color:var(--spark-ink)}
 footer .wrap{padding-block:32px 48px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px 24px;color:var(--muted);font-size:14px}
-@media (max-width:640px){.bar nav{display:none}.theme{margin-left:auto}.hero .wrap{padding-block:40px 88px}}
+@media (max-width:640px){.hero .wrap{padding-block:40px 88px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:640px){.bar nav{display:none}.theme{margin-left:auto}}
 </style>
 <script src="assets/theme.js"></script>
 </head>
@@ -89,7 +91,7 @@ footer .wrap{padding-block:32px 48px;border-top:1px solid var(--line);display:fl
 <header class="bar gutter"><div class="wrap">
   <a class="logo" href="./" aria-label="loomi-connect-community home">__LOGO__</a>
   <span class="tag">Community</span>
-  <nav aria-label="Site"><a href="quickstart.html">Quickstart</a><a href="skills.html">Skills</a><a href="tools.html">Tools</a><a id="gh-start" href="#">Start here</a><a id="gh-charter" href="#">Charter</a><a id="gh-repo" href="#">GitHub</a></nav>
+  __NAV__
   <button class="theme" id="theme" type="button" aria-label="Switch theme"></button>
 </div></header>
 
@@ -98,7 +100,7 @@ footer .wrap{padding-block:32px 48px;border-top:1px solid var(--line);display:fl
 <div class="wrap">
   <div class="kicker">Bloomreach · open source · Apache-2.0</div>
   <h1><span class="mark">loomi</span><span class="dash">-</span>connect<span class="dash">-</span>community</h1>
-  <p class="lede">Skills that turn Loomi Connect, the Bloomreach MCP server, into repeatable results across Engagement, Discovery and Data Hub. They work the same in Claude and OpenAI clients. Bloomreach maintains it; anyone can contribute.</p>
+  <p class="lede">Skills that turn Loomi Connect, the Bloomreach MCP server, into repeatable results across Marketing, Search and Data Hub. They work the same in Claude and OpenAI clients. Bloomreach maintains it; anyone can contribute.</p>
   <div class="cta"><a class="btn primary" href="quickstart.html">Get started</a><a class="btn" href="skills.html" id="cta-skills">Browse the skills</a><a class="btn" id="cta-repo" href="#">View on GitHub</a></div>
   <div class="stats" id="stats" aria-label="Totals"></div>
 </div></section>
@@ -139,8 +141,8 @@ const D=__DATA__;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const blob=p=>D.repo+"/blob/main/"+p, tree=p=>D.repo+"/tree/main/"+p;
-$("gh-repo").href=$("cta-repo").href=D.repo; $("gh-start").href=blob("docs/start-here.md");
-$("gh-charter").href=blob("CHARTER.md"); $("gh-disclaimer").href=blob("DISCLAIMER.md");
+$("cta-repo").href=D.repo;
+$("gh-disclaimer").href=blob("DISCLAIMER.md");
 const writes=D.skills.filter(s=>s.writes).length;
 $("cta-skills").textContent="Browse the "+D.skills.length+" skills";
 $("stats").innerHTML=[[D.skills.length,"skills"],[D.plugins.length,"plugins"],[D.skills.length-writes,"read-only"],[writes,"write, after you confirm"],[D.scripts,"helper scripts"],[D.tests,"test files"]]

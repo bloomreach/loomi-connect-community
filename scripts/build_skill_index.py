@@ -99,6 +99,10 @@ def collect(root):
         })
     skills.sort(key=lambda s: (PLUGIN_ORDER.index(s["plugin"]), s["name"]))
     checked, tools = read_tools(root)
+    # Tools for finding tools and guides (tagged meta) aren't capabilities a skill is built on, so they
+    # stay out of the tool map and the coverage count.
+    helpers = sorted(t["name"] for t in tools if "meta" in t["tags"])
+    tools = [t for t in tools if "meta" not in t["tags"]]
     for t in tools:
         pat = re.compile(r"\b" + re.escape(t["name"]) + r"\b")
         t["skills"] = sorted(s["name"] for s in skills if pat.search(s["text"]))
@@ -107,7 +111,7 @@ def collect(root):
         del s["text"]
     scripts = sorted(p for p in root.glob("plugins/*/skills/*/scripts/*.py"))
     tests = sorted(p for p in root.glob("tests/**/test_*.py"))
-    return {"skills": skills, "plugins": plugins, "tools": tools, "tools_checked": checked,
+    return {"skills": skills, "plugins": plugins, "tools": tools, "helpers": helpers, "tools_checked": checked,
             "scripts": len(scripts), "tests": len(tests)}
 
 
@@ -134,7 +138,7 @@ def render_markdown(data):
         "",
         f"**{len(skills)} skills** in **{len(PLUGIN_ORDER)} plugins**. {len(skills) - writes} only read; "
         f"{writes} can change something, and only after you confirm. For skills grouped by the job you're doing, "
-        "see [docs/start-here.md](docs/start-here.md).",
+        "see [docs/skills-by-task.md](docs/skills-by-task.md).",
         "",
         "| Plugin | Skills | Read-only | Writes |",
         "|---|---:|---:|---:|",
@@ -148,6 +152,9 @@ def render_markdown(data):
         f"The skills use {len(used)} of the {len(tools)} published Loomi Connect tools "
         f"(tool list checked {data['tools_checked']}).",
     ]
+    if data["helpers"]:
+        out[-1] += (" Tools for finding tools and guides aren't counted: "
+                    + ", ".join(f"`{n}`" for n in data["helpers"]) + ".")
     unused = [t["name"] for t in tools if not t["skills"]]
     if unused:
         out.append("Not used by any skill yet: " + ", ".join(f"`{n}`" for n in unused) + ".")
@@ -200,12 +207,36 @@ def inline_svg(path, extra_attrs=""):
     return svg.replace("<svg ", f"<svg {extra_attrs} ", 1)
 
 
+NAV = [("Quickstart", "quickstart.html"), ("Skills", "skills.html"), ("Tools", "tools.html"),
+       ("Skills by task", REPO_URL + "/blob/main/docs/skills-by-task.md"), ("Charter", REPO_URL + "/blob/main/CHARTER.md"),
+       ("GitHub", REPO_URL)]
+
+
+def render_nav(page):
+    """The same menu on every page, so the pages can't drift apart; the current page is marked."""
+    links = "".join(f'<a href="{href}"' + (' aria-current="page"' if href == f"{page}.html" else "") + f">{label}</a>"
+                    for label, href in NAV)
+    return f'<nav aria-label="Site">{links}</nav>'
+
+
+# The site uses the current product names. Only the capitalised words change: plugin and tool names
+# (loomi-discovery, get_discovery_*) are real identifiers and stay as they are.
+PRODUCT_NAMES = [(re.compile(r"\bDiscovery\b"), "Search"), (re.compile(r"\bEngagement\b"), "Marketing")]
+
+
+def current_names(text):
+    for pat, name in PRODUCT_NAMES:
+        text = pat.sub(name, text)
+    return text
+
+
 def render_site(root, data, outdir):
     site = root / "site"
     counts = plugin_counts(data)
     payload = {
-        "skills": data["skills"],
-        "plugins": [dict(data["plugins"][p], **counts[p]) for p in PLUGIN_ORDER],
+        "skills": [dict(s, summary=current_names(s["summary"])) for s in data["skills"]],
+        "plugins": [dict(data["plugins"][p], description=current_names(data["plugins"][p]["description"]), **counts[p])
+                    for p in PLUGIN_ORDER],
         "tools": [{"name": t["name"], "area": t["area"], "skills": t["skills"]} for t in data["tools"]],
         "toolsChecked": data["tools_checked"],
         "scripts": data["scripts"],
@@ -223,7 +254,7 @@ def render_site(root, data, outdir):
             tpl = (site / f"{name}.template.html").read_text(encoding="utf-8")
         except OSError as e:
             fail(f"Can't read site/{name}.template.html: {e}")
-        page = tpl.replace("__DATA__", blob).replace("__LOGO__", logo)
+        page = tpl.replace("__DATA__", blob).replace("__LOGO__", logo).replace("__NAV__", render_nav(name))
         (outdir / f"{name}.html").write_text(page, encoding="utf-8", newline="\n")
     shutil.copytree(site / "assets", outdir / "assets", dirs_exist_ok=True)
     zip_skills(root, outdir / "downloads")
