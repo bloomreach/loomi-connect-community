@@ -84,6 +84,9 @@ class BuildSkillIndexTest(unittest.TestCase):
                 navs[f] = re.search(r'<nav aria-label="Site">.*?</nav>', html).group(0)
             self.assertEqual(len({n.replace(' aria-current="page"', "") for n in navs.values()}), 1, "every page has the same menu")
             self.assertIn('href="tools.html" aria-current="page"', navs["tools"])
+            for f in ("index", "skills", "quickstart", "tools"):
+                html = (out / f"{f}.html").read_text(encoding="utf-8")
+                self.assertNotRegex(html, r"\b(Discovery|Engagement)\b", f"{f}.html uses the old product names")
             payload = json.loads(re.search(r"const D=(\{.*?\});\n", page, re.S).group(1))
             self.assertEqual({s["name"] for s in payload["skills"]}, {s["name"] for s in self.data["skills"]})
             self.assertNotRegex(json.dumps(payload["contributors"]), r"@")
