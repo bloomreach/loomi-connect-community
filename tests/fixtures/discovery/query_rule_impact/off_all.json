@@ -1,0 +1,230 @@
+{
+ "success": true,
+ "data": {
+  "response": {
+   "numFound": 11,
+   "start": 0,
+   "docs": [
+    {
+     "pid": "A",
+     "title": "Silk evening gown A",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "H1",
+     "title": "Beaded gown H1",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "B",
+     "title": "Velvet gown B",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "X1",
+     "title": "Pinned satin gown X1",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "C",
+     "title": "Chiffon gown C",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "X2",
+     "title": "Pinned lace gown X2",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    },
+    {
+     "pid": "D",
+     "title": "Sequin gown D",
+     "price": 100.0,
+     "score": null,
+     "docType": "product"
+    }
+   ]
+  },
+  "debug": {
+   "explain.structured": {
+    "A": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
+    "H1": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
+    "B": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
+    "X1": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
+    "C": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
+    "X2": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ],
+    "D": [
+     {
+      "match": true,
+      "value": 1,
+      "field": "BR_SV_GENERAL_TERMV_product_name_tf",
+      "term": "gown",
+      "boost": 1
+     },
+     {
+      "totalNormalizedScore": 400,
+      "relevance": 80,
+      "performance": 500,
+      "keyword_score": 7.5,
+      "vector_score": 0.4,
+      "semantic_weight": 0.3
+     }
+    ]
+   },
+   "customizations.explain": [
+    {
+     "id": 900001,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 900002,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 950001,
+     "ruleType": "ranking",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 800001,
+     "ruleType": "algo",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 700001,
+     "ruleType": "facet",
+     "liveInTest": false,
+     "name": null
+    },
+    {
+     "id": 990001,
+     "ruleType": "algo",
+     "liveInTest": false,
+     "name": null
+    }
+   ],
+   "disabled_customizations.ids": [
+    "700001",
+    "800001",
+    "900001",
+    "900002",
+    "950001"
+   ],
+   "feUrl": "https://search.example.test/api?auth_key=FAKEKEY",
+   "sqApiUrl": "https://sq.example.test/api/v1/core/?auth_key=FAKEKEY2&q=gown"
+  }
+ }
+}

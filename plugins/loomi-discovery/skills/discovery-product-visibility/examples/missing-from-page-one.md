@@ -10,7 +10,7 @@ Synthetic example. The account, products and rule IDs are made up.
 2. `search_discovery_catalog_products`: `product_id="P10"`. Saved to `catalog.json`.
 
 ```bash
-python3 <this skill's folder>/scripts/visibility_explain.py --pid P10 --grid work/grid-1.json --catalog work/catalog.json --query "rain jacket" --out work/visibility.json
+python3 <this skill's folder>/scripts/visibility_explain.py --pid P10 --grid work/grid-1.json --catalog work/catalog.json --query 'rain jacket' --out work/visibility.json
 ```
 
 ## Why "Wool coat" (P10) ranks #13 for "rain jacket"

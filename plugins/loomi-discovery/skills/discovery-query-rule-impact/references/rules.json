@@ -1,0 +1,25 @@
+{
+  "about": "Settings for measuring what each merchandising rule does to one search or category page, and for the revenue estimate. scripts/rule_impact.py reads this file and its CLI defaults come from it. Each key is explained under notes.",
+  "page_size": 24,
+  "fl": "pid,title,brand,price",
+  "position_weights": [0.12, 0.09, 0.075, 0.065, 0.055, 0.048, 0.042, 0.037, 0.033, 0.03, 0.027, 0.025, 0.023, 0.021, 0.019, 0.018, 0.017, 0.016, 0.015, 0.014, 0.013, 0.012, 0.011, 0.01],
+  "scale_weights_to_query_views": true,
+  "neutral_band_share": 0.005,
+  "high_priority_share": 0.02,
+  "min_query_visits": 500,
+  "min_rpv_coverage": 0.5,
+  "ranking_rule_types": ["ranking"],
+  "algo_rule_types": ["algo", "ranking_algo"],
+  "notes": {
+    "page_size": "Products on page one, and the rows to request on every grid call (pass rows=page_size). Moves are measured on this page; a product ranked deeper counts as off the page (weight 0).",
+    "fl": "Fields to request on every grid call. Never add margin or cost.",
+    "position_weights": "ASSUMPTION, not measured: the relative share of a search's visits that open the product at each page-one position (first entry = position 1). Positions past the end of the list weigh 0. Replace it with your own click curve if you have one.",
+    "scale_weights_to_query_views": "When true and the query row has product_page_views, the curve is scaled so its total equals the query's product views per visit (product_page_views / visits), so only the curve's shape is assumed. Product views from deeper pages are attributed to page one by this scaling, so it slightly overstates page one. When false, or the views are missing, the curve is used as given.",
+    "neutral_band_share": "An estimated effect smaller than this share of the query's revenue (either way) is 'neutral': within the noise of the assumptions.",
+    "high_priority_share": "A rule that hurts by at least this share of the query's revenue, or hides a confirmed above-median seller, is high priority.",
+    "min_query_visits": "Below this many query visits in the period the estimate is flagged as low traffic: one shopper's order can swing the product RPVs it rests on.",
+    "min_rpv_coverage": "If products with a known RPV account for less than this share of the weight that moved, the estimate is flagged as partial (products with no RPV are left out, never counted as 0).",
+    "ranking_rule_types": "customizations.explain ruleType values that are ranking (boost, bury, pin, exclude) rules and are toggled one at a time.",
+    "algo_rule_types": "customizations.explain ruleType values that are ranking algorithms; these are toggled together as all_algo. Other types (facet, personalization, synonyms, redirects) aren't removed by disabled_customization_ids and aren't measured."
+  }
+}

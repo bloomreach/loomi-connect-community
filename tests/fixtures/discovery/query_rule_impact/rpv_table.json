@@ -1,0 +1,43 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "prod_id": "X1",
+    "product_title": "Pinned satin gown X1",
+    "visits": 500,
+    "revenue": "$1000.00",
+    "rpv": "$2.00"
+   },
+   {
+    "prod_id": "X2",
+    "product_title": "Pinned lace gown X2",
+    "visits": 500,
+    "revenue": "$2000.00",
+    "rpv": "$4.00"
+   },
+   {
+    "prod_id": "A",
+    "product_title": "Silk evening gown A",
+    "visits": 500,
+    "revenue": "$5000.00",
+    "rpv": "$10.00"
+   },
+   {
+    "prod_id": "B",
+    "product_title": "Velvet gown B",
+    "visits": 500,
+    "revenue": "$4000.00",
+    "rpv": "$8.00"
+   },
+   {
+    "prod_id": "C",
+    "product_title": "Chiffon gown C",
+    "visits": 500,
+    "revenue": "$2500.00",
+    "rpv": "$5.00"
+   }
+  ],
+  "total_rows": 5
+ }
+}

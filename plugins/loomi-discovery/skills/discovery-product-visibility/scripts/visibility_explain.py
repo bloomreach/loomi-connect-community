@@ -4,7 +4,7 @@
 Usage:
   python3 visibility_explain.py --pid 12345 --grid page1.json [--grid page2.json ...]
          [--match-check fq_rules_on.json] [--rules-off fq_rules_off.json] [--lookup product_id.json]
-         [--catalog catalog_product.json] [--query "dress"] [--page-size 24] [--out result.json]
+         [--catalog catalog_product.json] [--query 'dress' | --query-file query.txt] [--page-size 24] [--out result.json]
 
 Every input is a saved search_discovery_product_grid_insights (or search_discovery_catalog_products) result:
   --grid         the query's (or category's) normal grid, rules on. Repeat for more pages (start=0, 200, ...).
@@ -12,6 +12,8 @@ Every input is a saved search_discovery_product_grid_insights (or search_discove
   --rules-off    the same query with fq pid:"<pid>" and every ranking rule ID in disabled_customization_ids.
   --lookup       search_by="product_id" for the pid: is it in the search index?
   --catalog      search_discovery_catalog_products with product_id: availability, categories, title, description.
+  --query-file   a text file holding the search terms exactly as typed (one trailing newline is stripped); use it
+                 for any query that isn't only letters, digits, spaces and hyphens. Give --query or --query-file.
 
 Prints JSON with the product's status (ranked, matched_not_fetched, excluded_by_rule, not_matching,
 not_in_index or unknown), its position, the causes found (recall, merchandising, ranking, data), each with
@@ -155,10 +157,23 @@ def main():
     ap.add_argument("--rules-off", help="saved grid for the query with fq pid:\"<pid>\" and ranking rules disabled")
     ap.add_argument("--lookup", help="saved grid with search_by=product_id for the pid")
     ap.add_argument("--catalog", help="saved search_discovery_catalog_products result for the pid")
-    ap.add_argument("--query", help="the search terms (for the data check against title and description)")
+    ap.add_argument("--query", help="the search terms (for the data check), only if letters, digits, spaces and hyphens")
+    ap.add_argument("--query-file", help="a text file holding the search terms exactly as typed (for the data check)")
     ap.add_argument("--page-size", type=int, default=RULES["page_size"], help="products on page one (default: rules)")
     ap.add_argument("--out", help="also write the JSON result to this file")
     a = ap.parse_args()
+    if a.query is not None and a.query_file is not None:
+        fail("Give at most one of --query and --query-file.")
+    if a.query_file is not None:
+        try:
+            with open(a.query_file, encoding="utf-8", newline="") as f:
+                a.query = f.read()
+        except (OSError, UnicodeDecodeError) as e:
+            fail(f"{a.query_file}: can't read the query ({e}).")
+        if a.query.endswith("\r\n"):
+            a.query = a.query[:-2]
+        elif a.query.endswith("\n"):
+            a.query = a.query[:-1]
     pid = str(a.pid).strip()
     if not pid:
         fail("--pid is empty.")
@@ -284,7 +299,7 @@ def main():
         cause("recall", "The query was rewritten before searching.", {k: rw[k] for k in ("autoCorrectQuery", "relaxedQuery") if k in rw},
               "If the rewrite is wrong, add a synonym for the original wording.")
 
-    result = {"ok": True, "pid": pid, "status": status, "position": position, "on_page_one": bool(position and position <= a.page_size),
+    result = {"ok": True, "pid": pid, "query": a.query, "status": status, "position": position, "on_page_one": bool(position and position <= a.page_size),
               "results_total": total, "products_fetched": len(ranked),
               "scores": {k: target.get(k) for k in ("totalNormalizedScore", "relevance", "performance", "keyword_score", "vector_score")
                          if target and k in target},

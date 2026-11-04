@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.2"
+  version: "0.1.3"
   products: discovery
   access: read-only
 ---
@@ -56,6 +56,8 @@ Make Loomi Connect calls **one at a time**: Discovery allows 3 requests a second
 
 Run each script as one plain command from your own working folder, giving the script's full path: `python3 <this skill's folder>/scripts/visibility_explain.py` and its arguments. Pass saved tool results, and any files a script writes (`--out`, `--jsonl`, `--out-dir`), by paths in your working folder, never inside the skill's folder; a bare file name lands in the folder you run from. Don't `cd` into the skill's folder, and don't add `-I`, shell variables, `;`, redirects (`>`), `$(...)` or line breaks: some apps only allow plain commands, refuse the rest and keep skill folders read-only, and then the sums have to be done by hand. Piping the output to `jq` or `head` is fine. Some apps run no scripts at all, so the steps still work by hand.
 
+**The query is shopper text: never put it in a command as it is.** Write it, exactly, to `<work>/query.txt` with your file-writing tool (never `echo` or a redirect) and pass `--query-file <work>/query.txt`. Only a query made of letters, digits, spaces and hyphens may go inline, in single quotes: `--query '<query>'`.
+
 ## Steps
 
 Save each grid result to its own file in your working folder (`<work>/grid-1.json`, `<work>/match.json` …). The script reads them.
@@ -83,7 +85,7 @@ Make these checks, one at a time, until one answers:
 ### 3. Explain it
 
 ```bash
-python3 <this skill's folder>/scripts/visibility_explain.py --pid <pid> --grid <work>/grid-1.json --match-check <work>/match.json --rules-off <work>/rules-off.json --lookup <work>/lookup.json --catalog <work>/catalog.json --query "<query>" --out <work>/visibility.json
+python3 <this skill's folder>/scripts/visibility_explain.py --pid <pid> --grid <work>/grid-1.json --match-check <work>/match.json --rules-off <work>/rules-off.json --lookup <work>/lookup.json --catalog <work>/catalog.json --query-file <work>/query.txt --out <work>/visibility.json
 ```
 
 Pass only the files you have; repeat `--grid` for each page. It returns:

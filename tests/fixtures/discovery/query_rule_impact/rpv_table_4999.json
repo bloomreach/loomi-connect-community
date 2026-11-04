@@ -1,0 +1,27 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "prod_id": "X1",
+    "rpv": "$2.00"
+   },
+   {
+    "prod_id": "X2",
+    "rpv": "$4.999"
+   },
+   {
+    "prod_id": "A",
+    "rpv": "$10.00"
+   },
+   {
+    "prod_id": "B",
+    "rpv": "$8.00"
+   },
+   {
+    "prod_id": "C",
+    "rpv": "$5.00"
+   }
+  ]
+ }
+}

@@ -1,0 +1,5 @@
+{
+ "success": false,
+ "data": null,
+ "error": "Product not found: D (https://api.example.test/x?auth_key=FAKE)"
+}

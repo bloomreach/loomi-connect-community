@@ -1,0 +1,12 @@
+{
+ "success": true,
+ "data": {
+  "productId": "H1",
+  "currency": "USD",
+  "visits": 100,
+  "atcRate": 40.0,
+  "cvr": 20.0,
+  "rpv": 20.0,
+  "revenue": 2000
+ }
+}

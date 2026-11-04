@@ -1,0 +1,14 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "Gown",
+    "visits": 1000,
+    "product_page_views": 800,
+    "revenue": "$20000.00",
+    "rpv": "$20.00"
+   }
+  ]
+ }
+}

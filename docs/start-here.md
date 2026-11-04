@@ -48,11 +48,12 @@ Start with the health check, then go deeper where it points you.
 1. [discovery-search-health](../plugins/loomi-discovery/skills/discovery-search-health/): overall search performance, and the queries worth investigating.
 2. [discovery-zero-results-triage](../plugins/loomi-discovery/skills/discovery-zero-results-triage/): every search that leads nowhere, sorted into synonym fix, catalog gap, redirect or noise.
 3. [discovery-query-diagnosis](../plugins/loomi-discovery/skills/discovery-query-diagnosis/): a deep dive into one query, with fixes ranked by impact.
-4. [discovery-synonym-review](../plugins/loomi-discovery/skills/discovery-synonym-review/): synonyms that are bad, risky or missing a direction.
-5. [autosuggest-audit](../plugins/loomi-discovery/skills/autosuggest-audit/): search suggestions that steer shoppers wrong, or leave out what sells.
-6. [facet-optimizer](../plugins/loomi-discovery/skills/facet-optimizer/): filters that are missing, messy or unhelpful.
-7. [facet-rule-fixer](../plugins/loomi-discovery/skills/facet-rule-fixer/) (**writes** facet rules, after you confirm): apply the filter changes the optimizer recommends.
-8. [discovery-redirect-audit](../plugins/loomi-discovery/skills/discovery-redirect-audit/): redirects that are broken, clash with each other, hijack broad searches, or are missing.
+4. [discovery-query-rule-impact](../plugins/loomi-discovery/skills/discovery-query-rule-impact/): what each merchandising rule on one search does, and whether it helps or hurts revenue.
+5. [discovery-synonym-review](../plugins/loomi-discovery/skills/discovery-synonym-review/): synonyms that are bad, risky or missing a direction.
+6. [autosuggest-audit](../plugins/loomi-discovery/skills/autosuggest-audit/): search suggestions that steer shoppers wrong, or leave out what sells.
+7. [facet-optimizer](../plugins/loomi-discovery/skills/facet-optimizer/): filters that are missing, messy or unhelpful.
+8. [facet-rule-fixer](../plugins/loomi-discovery/skills/facet-rule-fixer/) (**writes** facet rules, after you confirm): apply the filter changes the optimizer recommends.
+9. [discovery-redirect-audit](../plugins/loomi-discovery/skills/discovery-redirect-audit/): redirects that are broken, clash with each other, hijack broad searches, or are missing.
 
 ## Improving categories, products and brands
 

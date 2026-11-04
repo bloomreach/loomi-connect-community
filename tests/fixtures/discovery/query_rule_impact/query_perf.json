@@ -1,0 +1,22 @@
+{
+ "success": true,
+ "data": {
+  "rows": [
+   {
+    "query": "gowns",
+    "visits": 50,
+    "browse_sessions": 52,
+    "revenue": "$900.00",
+    "rpv": "$18.00"
+   },
+   {
+    "query": "gown",
+    "visits": 1000,
+    "browse_sessions": 1040,
+    "revenue": "$20000.00",
+    "rpv": "$20.00"
+   }
+  ],
+  "total_rows": 2
+ }
+}
