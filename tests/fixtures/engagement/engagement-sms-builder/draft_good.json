@@ -1,0 +1,25 @@
+{
+  "name": "Boots weekend - lapsed VIPs - SMS DRAFT",
+  "brand": "Acme Outdoor",
+  "message": "Acme Outdoor: Hi {{ customer['first_name'] | default('there', true) }}, 20% off boots ends Sunday. https://go.acme-outdoor.example/boots Reply STOP to opt out, HELP for help",
+  "sender": {
+    "name": "Acme Outdoor",
+    "sender": "AcmeOutdr",
+    "source": "project_default"
+  },
+  "audience": {
+    "type": "segment",
+    "segmentation_id": "seg-tiers",
+    "segment": "Lapsed VIP"
+  },
+  "consent_category": "sms_marketing",
+  "user_supplied_hosts": [
+    "go.acme-outdoor.example"
+  ],
+  "regions": [
+    "US-NY"
+  ],
+  "schedule": {
+    "type": "now"
+  }
+}

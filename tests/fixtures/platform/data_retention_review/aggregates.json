@@ -1,0 +1,10 @@
+{"result": {"success": true, "data": [
+  {"_id": "agg-1", "name": "Lifetime orders", "archived": false, "type": "count",
+   "event": {"type": "purchase", "filter": [{"attribute": {"type": "property", "property": "status"}, "constraint": {"type": "string", "operator": "equals", "operands": [{"type": "constant", "value": "success"}]}}]},
+   "date_filter": {"enabled": false, "absolute": false, "duration": {"count": 30, "units": "days"}, "from_date": null, "to_date": null, "offset": null}},
+  {"_id": "agg-2", "name": "Orders older than 13 months", "archived": false, "type": "count",
+   "event": {"type": "purchase", "filter": [{"attribute": {"type": "timestamp"}, "constraint": {"type": "date", "operator": "more than", "tense": "ago", "amount": 13, "units": "months"}}]},
+   "date_filter": {"enabled": false, "absolute": false, "duration": {"count": 30, "units": "days"}, "from_date": null, "to_date": null, "offset": null}},
+  {"_id": "agg-3", "name": "Old archived", "archived": true, "type": "count", "event": {"type": "page_visit"},
+   "date_filter": {"enabled": true, "absolute": false, "duration": {"count": 2, "units": "years"}}}
+]}}

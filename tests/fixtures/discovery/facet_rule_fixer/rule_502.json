@@ -1,0 +1,41 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 502,
+   "ruleType": "facet",
+   "isLive": false,
+   "audiences": [],
+   "queries": [
+    {
+     "id": 5020,
+     "query": "21200",
+     "queryType": "category",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "aliases_facets": {},
+    "boosted_facets": {
+     "colors": 1,
+     "rating": 2,
+     "gender": 3
+    },
+    "always_included_facets": [
+     "gender",
+     "rating",
+     "colors"
+    ],
+    "buried_facets": {}
+   },
+   "name": null,
+   "enabled": true,
+   "user": "editor@example.com",
+   "syncStatus": "SUCCESS",
+   "isEditable": true,
+   "startedAt": null,
+   "endedAt": null
+  }
+ },
+ "error": null
+}

@@ -1,0 +1,85 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 502,
+    "name": null,
+    "ruleType": "facet",
+    "enabled": true,
+    "syncStatus": "SUCCESS",
+    "queries": [
+     {
+      "id": 5020,
+      "query": "21200",
+      "queryType": "category"
+     }
+    ],
+    "isAbTestLive": false,
+    "audienceName": null,
+    "isEditable": true,
+    "lastModifiedBy": null
+   },
+   {
+    "id": 504,
+    "name": null,
+    "ruleType": "facet",
+    "enabled": true,
+    "syncStatus": "SUCCESS",
+    "queries": [
+     {
+      "id": 5040,
+      "query": "30100",
+      "queryType": "category"
+     }
+    ],
+    "isAbTestLive": false,
+    "audienceName": null,
+    "isEditable": true,
+    "lastModifiedBy": null
+   },
+   {
+    "id": 505,
+    "name": null,
+    "ruleType": "facet",
+    "enabled": true,
+    "syncStatus": "SUCCESS",
+    "queries": [
+     {
+      "id": 5050,
+      "query": "40100",
+      "queryType": "category"
+     },
+     {
+      "id": 5051,
+      "query": "40200",
+      "queryType": "category"
+     }
+    ],
+    "isAbTestLive": false,
+    "audienceName": null,
+    "isEditable": true,
+    "lastModifiedBy": null
+   },
+   {
+    "id": 506,
+    "name": null,
+    "ruleType": "facet",
+    "enabled": false,
+    "syncStatus": "SUCCESS",
+    "queries": [
+     {
+      "id": 5060,
+      "query": "50100",
+      "queryType": "category"
+     }
+    ],
+    "isAbTestLive": false,
+    "audienceName": null,
+    "isEditable": true,
+    "lastModifiedBy": null
+   }
+  ],
+  "error": null
+ }
+}

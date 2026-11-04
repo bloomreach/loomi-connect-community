@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Engagement Media Cleanup"
+  short_description: "Find unused, heavy, duplicate and alt-less images and reusable content in Bloomreach Engagement"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true

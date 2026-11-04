@@ -13,6 +13,8 @@ Skills that span Bloomreach products (Discovery, Engagement, Data Hub) and use L
 | [data-feed-health](skills/data-feed-health/) | Red/amber/green check of the pixel, catalog feeds, Data Hub and Engagement catalogs | Read-only |
 | [catalog-parity-check](skills/catalog-parity-check/) | Compares the Discovery and Engagement catalogs: missing products and mismatched price, stock, URL, image and title, ranked by revenue at stake | Read-only |
 | [implementation-readiness](skills/implementation-readiness/) | Go-live checklist for a new account: pixel, catalog, attributes, API traffic, core events, IDs, consent and first flows, with an owner for each fix | Read-only |
+| [datahub-collection-audit](skills/datahub-collection-audit/) | Data Hub item collections: drift between paired collections, sparse key fields, values that don't fit their type, unused fields, stale or failing jobs | Read-only |
+| [data-retention-review](skills/data-retention-review/) | Event retention against the lookback windows segments, aggregates, reports and skills read; over-kept events; personal properties never removed (not legal advice) | Read-only |
 | [change-impact-tracker](skills/change-impact-tracker/) | Did my change work? Before and after against a control, with a verdict and range | Read-only |
 
 ### Planning and growth

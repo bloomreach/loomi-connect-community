@@ -1,0 +1,14 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaaaaa2",
+        "name": "Black Friday 20",
+        "total": 200,
+        "available": 160
+      }
+    ],
+    "error": null
+  }
+}

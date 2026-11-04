@@ -1,0 +1,78 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 1,
+    "experimentName": "Category test",
+    "experimentStatus": "RUNNING",
+    "user": "editor@example.com",
+    "buckets": [
+     {
+      "id": 11,
+      "ruleIdentifierInfo": {
+       "id": 504,
+       "ruleType": "facet",
+       "query": [
+        {
+         "query": "30100",
+         "queryType": "category"
+        }
+       ]
+      }
+     },
+     {
+      "id": 12,
+      "ruleIdentifierInfo": null
+     }
+    ]
+   },
+   {
+    "id": 2,
+    "experimentName": "Shorts ranking",
+    "experimentStatus": "running",
+    "buckets": [
+     {
+      "id": 21,
+      "ruleIdentifierInfo": {
+       "id": 9001,
+       "ruleType": "ranking",
+       "query": [
+        {
+         "query": "Shorts",
+         "queryType": "sitesearch"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "id": 3,
+    "experimentName": "Old dress test",
+    "experimentStatus": "COMPLETED",
+    "buckets": [
+     {
+      "id": 31,
+      "ruleIdentifierInfo": {
+       "id": 502,
+       "ruleType": "facet",
+       "query": [
+        {
+         "query": "21200",
+         "queryType": "category"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  ],
+  "error": null
+ },
+ "meta": {
+  "pagination": {
+   "total": 3
+  }
+ }
+}

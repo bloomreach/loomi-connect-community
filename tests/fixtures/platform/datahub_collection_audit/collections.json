@@ -1,0 +1,8 @@
+{"result": {"success": true, "data": [
+  {"_id": "coll-0001", "name": "products_prod", "workspace_id": "ws-example",
+   "types": [{"name": "product", "item_class": "product", "relationships": ["variant"], "destinations": {"engagement": [{"name": "main_catalog"}], "discovery": []}},
+             {"name": "store", "item_class": "custom", "relationships": [], "destinations": {"engagement": [], "discovery": []}}]},
+  {"_id": "coll-0002", "name": "products_staging", "workspace_id": "ws-example",
+   "types": [{"name": "product", "item_class": "product", "relationships": ["variant"], "destinations": {}}]},
+  {"_id": "coll-0003", "name": "legacy_feed", "workspace_id": "ws-example", "types": [], "item_types": []}
+]}}

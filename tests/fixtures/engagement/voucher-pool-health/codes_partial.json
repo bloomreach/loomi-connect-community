@@ -1,0 +1,70 @@
+{
+  "success": true,
+  "data": [
+    {
+      "code": "PART-FAKE-0",
+      "status": "assigned",
+      "assigned_time": 1793620800.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-1",
+      "status": "assigned",
+      "assigned_time": 1793534400.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-2",
+      "status": "assigned",
+      "assigned_time": 1793448000.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-3",
+      "status": "assigned",
+      "assigned_time": 1793361600.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-4",
+      "status": "assigned",
+      "assigned_time": 1793275200.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-5",
+      "status": "assigned",
+      "assigned_time": 1793188800.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-6",
+      "status": "assigned",
+      "assigned_time": 1793102400.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-7",
+      "status": "assigned",
+      "assigned_time": 1793016000.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-8",
+      "status": "assigned",
+      "assigned_time": 1792929600.0,
+      "redeemed_time": null
+    },
+    {
+      "code": "PART-FAKE-9",
+      "status": "assigned",
+      "assigned_time": 1792843200.0,
+      "redeemed_time": null
+    }
+  ],
+  "matched": 100,
+  "matched_limited": false,
+  "skip": 0,
+  "limit": 10,
+  "error": null
+}

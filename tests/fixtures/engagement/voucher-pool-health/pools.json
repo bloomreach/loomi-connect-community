@@ -1,0 +1,50 @@
+{
+  "result": {
+    "success": true,
+    "data": [
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaaaaa1",
+        "name": "Welcome 10",
+        "total": 60,
+        "available": 5
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaaaaa2",
+        "name": "Black Friday 20",
+        "total": 200,
+        "available": 150
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaaaaa3",
+        "name": "Spring 15",
+        "total": 10,
+        "available": 0
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaaaaa4",
+        "name": "Old pool",
+        "total": 5,
+        "available": 5
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaaaaa5",
+        "name": "Loyalty 5",
+        "total": 20,
+        "available": 20
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaaaaa6",
+        "name": "VIP",
+        "total": 300,
+        "available": 250
+      },
+      {
+        "_id": "aaaaaaaaaaaaaaaaaaaaaaa7",
+        "name": "Partial",
+        "total": 100,
+        "available": 40
+      }
+    ],
+    "error": null
+  }
+}

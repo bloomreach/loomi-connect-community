@@ -1,0 +1,12 @@
+{"result": {"success": true, "data": [
+  {"_id": "agg-10", "name": "Odd units", "archived": false, "type": "count",
+   "event": {"type": "purchase", "filter": [
+     {"attribute": {"type": "timestamp"}, "constraint": {"type": "date", "operator": "in the last", "amount": 2, "units": "fortnights"}},
+     {"attribute": {"type": "timestamp"}, "constraint": {"type": "date", "operator": "in the last", "amount": 30, "units": "d"}},
+     {"attribute": {"type": "timestamp"}, "constraint": {"type": "date", "operator": "more than", "tense": "ago", "amount": 1, "units": "yrs"}}]},
+   "date_filter": {"enabled": true, "absolute": false, "duration": {"count": 30, "units": "days"}}},
+  {"_id": "agg-11", "name": "Between dates", "archived": false, "type": "count",
+   "event": {"type": "purchase", "filter": [
+     {"attribute": {"type": "timestamp"}, "constraint": {"type": "date", "operator": "between", "amount": 3, "units": "days"}}]},
+   "date_filter": {"enabled": true, "absolute": false, "duration": {"count": 30, "units": "days"}}}
+]}}

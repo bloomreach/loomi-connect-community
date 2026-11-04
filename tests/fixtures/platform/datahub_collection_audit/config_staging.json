@@ -1,0 +1,13 @@
+{"success": true, "data": {"etag": "fake-etag-2", "schema": {
+  "identifiers": [{"family": "main", "level": "parent", "name": "item_code"}],
+  "attributes": [
+    {"name": "title", "family": "main", "level": "parent", "data_type": "String"},
+    {"name": "price", "family": "main", "level": "parent", "data_type": "String"},
+    {"name": "colour", "family": "main", "level": "parent", "data_type": "String", "display_name": "Colour"},
+    {"name": "material", "family": "main", "level": "parent", "data_type": "String", "required": true},
+    {"name": "in_stock", "family": "main", "level": "parent", "data_type": "Boolean"},
+    {"name": "size", "family": "main", "level": "variant", "data_type": "String"},
+    {"name": "geo", "family": "main", "level": "parent", "data_type": "GeoPoint"},
+    {"name": "promo_flag", "family": "main", "level": "parent", "data_type": "Boolean"}
+  ]},
+  "destinations": {}}}

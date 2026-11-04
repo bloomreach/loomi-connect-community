@@ -1,0 +1,4 @@
+{"result": {"success": true, "data": [
+  {"_id": "tgt-scenario-1", "name": "Welcome series", "status": "active", "created": 1700000000},
+  {"_id": "tgt-scenario-2", "name": "Browse abandonment (clone 2026-11-04)", "status": "draft", "created": 1700000100}
+], "error": null}}

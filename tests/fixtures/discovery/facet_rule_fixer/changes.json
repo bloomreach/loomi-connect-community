@@ -1,0 +1,120 @@
+{
+ "changes": [
+  {
+   "action": "set",
+   "scope": "global",
+   "add": {
+    "hide": [
+     "cluster",
+     "margin"
+    ],
+    "always_show": [
+     "price"
+    ]
+   },
+   "remove": {
+    "always_show": [
+     "color_groups"
+    ]
+   },
+   "reason": "Junk facets"
+  },
+  {
+   "action": "set",
+   "scope": "category",
+   "targets": [
+    "21200"
+   ],
+   "facets": {
+    "boost": [
+     "product_size",
+     "colors",
+     "price"
+    ]
+   },
+   "remove": {
+    "all": [
+     "rating",
+     "gender"
+    ]
+   },
+   "reason": "Dresses"
+  },
+  {
+   "action": "set",
+   "scope": "search",
+   "targets": [
+    "skirts"
+   ],
+   "add": {
+    "boost": [
+     "product_size",
+     "colors"
+    ]
+   },
+   "name": "Skirts facets",
+   "reason": "No rule yet"
+  },
+  {
+   "action": "set",
+   "scope": "search",
+   "targets": [
+    "Jeans"
+   ],
+   "add": {
+    "boost": [
+     {
+      "facet": "gender",
+      "position": 1
+     }
+    ]
+   },
+   "enabled": true,
+   "reason": "Mixed gender"
+  },
+  {
+   "action": "set",
+   "scope": "category",
+   "targets": [
+    "30100"
+   ],
+   "add": {
+    "hide": [
+     "rating"
+    ]
+   },
+   "reason": "In a test"
+  },
+  {
+   "action": "set",
+   "scope": "category",
+   "targets": [
+    "40100"
+   ],
+   "add": {
+    "hide": [
+     "rating"
+    ]
+   },
+   "reason": "Overlaps 505"
+  },
+  {
+   "action": "set",
+   "scope": "search",
+   "targets": [
+    "shorts"
+   ],
+   "add": {
+    "boost": [
+     "product_size"
+    ]
+   },
+   "reason": "In a ranking test"
+  },
+  {
+   "action": "delete",
+   "rule_id": 506,
+   "reason": "Disabled and replaced"
+  }
+ ]
+}

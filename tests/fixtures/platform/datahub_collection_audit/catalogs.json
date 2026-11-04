@@ -1,0 +1,6 @@
+{"result": {"success": true, "data": [
+  {"_id": "cat-1", "name": "Main catalog", "item_collection_id": "coll-0001", "item_collection_name": "products_prod", "item_collection_item_type": "product"},
+  {"_id": "cat-2", "name": "Gift cards", "item_collection_id": "coll-0099", "item_collection_name": "old_products", "item_collection_item_type": "product"},
+  {"_id": "cat-3", "name": "Stores", "item_collection_id": "coll-0001", "item_collection_name": "products_prod", "item_collection_item_type": "warehouse"},
+  {"_id": "cat-4", "name": "Legacy upload", "item_collection_id": null}
+]}}

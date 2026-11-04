@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ad Audience Sync Health"
+  short_description: "Stale, tiny, duplicated or unconsented ad audiences, external segments and autosegments in Bloomreach Engagement"
+policy:
+  allow_implicit_invocation: true

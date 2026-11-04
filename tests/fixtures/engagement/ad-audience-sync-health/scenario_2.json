@@ -1,0 +1,74 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "scn000000000000000000002",
+      "name": "Old FB sync",
+      "status": "inactive",
+      "archived": false,
+      "nodes": [
+        {
+          "id": 1,
+          "type": "on-event-trigger"
+        },
+        {
+          "id": 2,
+          "type": "condition",
+          "name": "Audience",
+          "customer_filter": {
+            "filters": [
+              {
+                "attribute": {
+                  "type": "segmentation",
+                  "id": "seg000000000000000000003"
+                },
+                "constraint": {
+                  "operator": "has value"
+                }
+              },
+              {
+                "attribute": {
+                  "type": "consent",
+                  "category": "advertising",
+                  "mode": "valid"
+                },
+                "constraint": {}
+              }
+            ],
+            "formula": "F0&F1"
+          }
+        },
+        {
+          "id": 3,
+          "type": "custom-node",
+          "name": "Push audience",
+          "settings": {
+            "integration": "int0000000000000000000fb1"
+          }
+        }
+      ],
+      "connections": [
+        {
+          "source": {
+            "node_id": 1,
+            "connector_index": 1
+          },
+          "destination": {
+            "node_id": 2,
+            "connector_index": 0
+          }
+        },
+        {
+          "source": {
+            "node_id": 2,
+            "connector_index": 1
+          },
+          "destination": {
+            "node_id": 3,
+            "connector_index": 0
+          }
+        }
+      ]
+    }
+  }
+}

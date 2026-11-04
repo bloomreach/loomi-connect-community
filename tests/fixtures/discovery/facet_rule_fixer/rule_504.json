@@ -1,0 +1,32 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 504,
+   "ruleType": "facet",
+   "isLive": false,
+   "audiences": [],
+   "queries": [
+    {
+     "id": 5040,
+     "query": "30100",
+     "queryType": "category",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "boosted_facets": {
+     "colors": 1
+    }
+   },
+   "name": null,
+   "enabled": true,
+   "user": "editor@example.com",
+   "syncStatus": "SUCCESS",
+   "isEditable": true,
+   "startedAt": null,
+   "endedAt": null
+  }
+ },
+ "error": null
+}

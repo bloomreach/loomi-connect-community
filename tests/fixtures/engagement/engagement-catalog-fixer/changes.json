@@ -1,0 +1,16 @@
+[
+  {
+    "action": "update",
+    "item_id": "P200",
+    "set": {
+      "price": "45.00"
+    },
+    "reason": "Price cut on the site"
+  },
+  {
+    "action": "delete",
+    "item_id": "OLD1",
+    "user_asked": true,
+    "reason": "Discontinued; the user asked to remove it"
+  }
+]

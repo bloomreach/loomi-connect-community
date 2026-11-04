@@ -1,0 +1,44 @@
+{
+ "success": true,
+ "query": "select count any event by any event type grouping top 60 in last 7 days",
+ "analysis_type": "report",
+ "data": {
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "session_start"
+     }
+    ],
+    "values": [
+     4000
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "campaign"
+     }
+    ],
+    "values": [
+     900
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "purchase"
+     }
+    ],
+    "values": [
+     30
+    ]
+   }
+  ],
+  "success": true
+ },
+ "error": null
+}

@@ -167,6 +167,11 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 **Facets and autosuggest**
 - `list_facet_attributes` can only be reached through `search_tools` / `call_tool`, and it marks internal fields (e.g. `margin`) as facetable. `only_facetable=false` still returns only facetable attributes.
 - `get_autosuggest_results` returns only bare strings, and prefixes with punctuation ("t-") return nothing.
+- `get_facet_rule` detail is wrapped twice (`data.data`). `boosted_facets` and `buried_facets` come back as `{facet: position}` maps, but `create_facet_rule` and `update_facet_rule` take ordered lists; boosted facets were also listed in `always_included_facets`. An unknown `rule_id` raises a tool error (HTTP 404) whose text includes an internal URL, and it reads any rule type by ID, so check `ruleType`.
+- `update_facet_rule`: each facet list you send replaces that list; omitted or `null` fields keep their value. Whether an empty list clears an action is untested.
+- `list_facets_global`, `list_site_search_facets` and `list_category_facets` return `{success, data}` with no `result` wrapper, and their queries have no `matchType`. A stored global facet rule had `PHRASE_MATCH`, though `create_facet_rule`'s description gives `EXACT_MATCH` for global rules.
+- `list_facet_attributes` returns `total`, `page` and `total_pages` as `null`; page until a page comes back short.
+- `search_discovery_experiments` buckets name the rule under test in `ruleIdentifierInfo` (`id`, `ruleType`) and its targets in `query[]`.
 
 **Experiments**
 - The success metric and the winner only appear when you fetch an experiment by ID, not in the list.
@@ -239,6 +244,8 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
   - Its description says a saved customer filter can't be referenced by ID (copy `filters` and `formula` inline), but the `email-template-best-practices` guide shows `{"customer_filter": {"id": …}}`. **(bug?)** Use the inline form.
   - `consent_category` and `general_consent` are mutually exclusive; both or neither gives a 400 "Consent settings mismatch". Projects with consent disabled need `unsubscribe_list`.
   - The guide says to send `frequency_policy` as `{"id": …}`, but campaign details return it as a plain string.
+- `create_sms_campaign` always creates a draft; `schedule` is required and `{"type": "now"}` means "send as soon as a person starts it". Consent goes in `action.consent_category` / `action.general_consent`, not at the top level as in email. `update_sms_campaign` (via `search_tools`) replaces the whole campaign and accepts `draft` or `inactive` status. Silent hours and throughput policies appear in `search_sms_campaigns` detail but no tool sets them.
+- The `sms-template-best-practices` guide's Jinja uses `default('there')` without `true`, which doesn't replace empty values.
 - `search_email_campaigns` returns `success: false` with "was not found" for an unknown campaign and "Project … not found in any organization" for an unknown project. Check for the project wording before treating a campaign as gone.
 - `generate_email_campaign_preview_link`:
   - works on email campaigns only;
@@ -271,6 +278,10 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - `create_scenario` / `update_scenario` accept `description` and `max_customers` without error but don't keep them (tested with an update; the read-back had no description and `max_customers: null`). Set flow-level settings in the Engagement UI.
 - `search_api_triggers` can return an empty list: then no scenario in the project can start from an API call yet.
 - `search_api_triggers` detail returns `event_type` (can be `null`), `properties` and `scenario_ids`; the list includes editor names. `search_integrations` returns only `id`, `name` and `type`, in list and detail mode, with no host, config or status. Both wrap results in `result`; `list_project_variables` doesn't (`{"success", "data"}`).
+- `list_predefined_templates` has no scenario templates: it covers weblayers, snippets, emails, blocks, custom rows, SMS and in-app messages, and returns names and tags only.
+- `preview_clone_scenario` lists aggregates, expressions, recommendation engines and the scenario, but not events, properties, consent categories, frequency policies, integrations, catalogs or project variables. Dependency names can be raw EQL. `clone_scenario`'s `on_conflict` takes `duplicate`, `replace` or `use_old`; in a same-project clone, `replace` on the scenario (`campaign_design`) would overwrite the source.
+- `search_scenarios` has no name search, and `system_scenarios=true` returned an empty list on two demo projects (list records have no `system` field). **(bug?)**
+- `search_external_segments` lists segments synced **into** Engagement by reverse ETL, with only `id` and `name`; it is not a list of ad-platform audiences, and no tool lists those or their sync history. Ad destinations appear in `search_integrations` as `facebook-ads` and `google-adwords`. `search_autosegments` lists `job_info.status` and `last_run_at`; `used_by` is only in the detail.
 - IDs from `search_integrations` are rejected as an email node's `provider.integration_id`. Copy `{"type":"global"}` from an existing email node instead.
 - `update_scenario_node` is a shallow merge: a `design` you send replaces the stored one, so send the whole `design`.
 - `create_scenario` accepted payloads of 28–30 KB intact. A single step's design can be over 70 KB.
@@ -285,11 +296,16 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - Jinja (including webhook bodies) references aggregates by ID (`aggregates['<id>']`), so an aggregate can be used by a scenario with no `used_by` entry pointing to it. Consent conditions in a segmentation reference the category by name (`{"type": "consent", "category": "<name>"}`), not by ID.
 - Even where it exists, `used_by` misses references in Jinja templates, exports and the API. Treat an empty `used_by` as "review", not "unused".
 - `initiative_id` appears on scenario and report lists, but not on segmentation, aggregate or dashboard lists.
+- `search_files` needs a `query` of at least 3 characters and can't list the library; `get_directory` browses one folder at a time. File records give `file_size` in bytes, `dimensions` as a string ("600x400"), no content hash, and the file `_id` is part of its URL. In Visual Builder email designs (`include_design=True`), `design.data.beefree_template` is a JSON string and `design.data.file_ids` was empty even when library images were used.
+- `search_email_blocks`: v2 blocks keep content in `snippet.content`; the detail's `html` holds it for either version (parameter `block_id`).
 - `search_item_collections` is a Data Hub tool and takes a `workspace_id`. Engagement catalogs use `search_catalogs` and `get_catalog_usages`.
 - `search_catalog_items` only reaches the first 1,000 items of a catalog (`skip + count` ≤ 1,000, per its schema).
 - `search_catalog_items` returns `{catalog_id, _id, properties:{…}}`. Numbers can be strings in one item and numbers in the next; prices come as `price` and `original_price`.
 - `search_catalog_items` with `field="item_id"` and `query=<id>` finds one item; `total` is the catalog size and `matched` the hits. Items after partial updates can carry only one property. `get_catalog_item` (via `call_tool`) returns `success: false`, "Item … not found in catalog …", for a missing item.
 - `search_catalogs` list records include `is_product_catalog`; a product catalog can have `type: "generic"`.
+- **`upsert_catalog_item` replaces the whole item**: fields you leave out are removed. Always send the full record with only the fixed fields changed. `import_catalog_items` is v2 only (`add`, `upsert`, `remove` at `/{item_id}` or `/{item_id}/fields/{field}`); whether its upsert merges isn't documented. All three catalog write tools return `success: false` on catalogs managed by a Data Hub item collection. A v2 write returns `items_update_job_id` (poll `list_catalog_jobs`); a v1 write returns `queued: true`.
+- `get_catalog_item` returns `{catalog_id, properties: {…}, _id}`, not the flat dict its description promises. `search_catalogs` detail on a v2 catalog can return `fields: []`; `get_catalog_configuration` (via `call_tool`) has the field definitions.
+- `search_voucher_pools` lists only `_id`, `name`, `total` and `available`; `used_by` (`campaign_design_`, `banner_` …, archived scenarios included) is only in the detail. `list_voucher_codes` returns the codes themselves (never repeat them) with `status`, `assigned_time` and `redeemed_time` only: no expiry and no status filter.
 - `get_event_schema` properties sit under `events[].properties.<group>.properties[]`, keyed `property`, next to an `are_all_used` flag. `get_customer_schema` can list `registered` as a soft ID.
 
 **Recommendations and catalogs**
@@ -306,6 +322,7 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - `get_consent_settings` returns `general_consent` (channels sent without a consent category) and each category's `sources`. When `general_consent.email` is false, an email needs a `consent_category`.
 
 **Users and access**
+- `list_projects_with_overview` gives per project only event and customer totals, all-time counts per event type, `oldest_timestamp` and `user_accounts`: no campaign counts (despite its description) and no last-event date. **(bug?)** `get_project_overview` shares the 1-per-second navigation limit.
 - `list_project_users` returns only `_id`, `email`, `username`, `first_name`, `last_name` and `role`. It returns every user in one call, wrapped in `{"success": true, "data": [...]}`.
 - `role` is a job label ("Developer", "Marketing Manager"), often null. It isn't a permission level. There's no permission level, last-login date or invitation date, so admin and stale-account checks aren't possible. **(bug?)**
 - `first_name` and `last_name` can be null, and `last_name` sometimes holds the email address.
@@ -315,6 +332,11 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO
 - Blank `text` components (a single space) are layout spacers. `metric` components (KPI tiles) can't be read, because there's no tool for saved metrics.
 - `calculate_report` returns `as_dict` keyed by row value. Time buckets are Unix seconds at local midnight in the project's time zone. Each value is a list with one number per metric, in `server.metrics[]` order, with no headers. Zero buckets came back even with `hide_null: true`.
 - A date filter with `enabled: false` still carries a `duration`, so a report or funnel can look windowed when it covers all time. A funnel with `duration_filter.enabled: false` has no conversion window.
+
+**Data Hub and retention**
+- `get_data_retention_rules` (via `call_tool`) covers events only: a default plus per-event overrides; an override with `retention_enabled: false` has `duration: null`. A demo project kept `campaign` events for 1 day.
+- `get_datahub_system_configuration` lists the built-in item attributes for an item type; it holds no retention settings. `get_customer_attribute_values` works out aggregate or expression values for one customer; it can't list or count values.
+- `validate_item_collection_attribute` is read-only and checks an attribute definition, not record values. `compare_item_collection_configurations` needs `compare_reference_collection_name` and `compare_reference_item_type`. On a workspace without Data Hub, `search_item_collections` returns `success: false`, "Workspace … has no Data Hub URL".
 
 **Project variables**
 - **`list_project_variables` describes the Jinja syntax wrongly.** Its description says `{{ project_variable.reference }}`, but the Bloomreach docs use `{{ project_variables.reference }}` (plural). Values come back as strings, even ones that look like booleans or numbers (`"false"`, `"1"`).

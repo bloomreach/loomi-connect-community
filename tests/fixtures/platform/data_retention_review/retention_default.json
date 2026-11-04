@@ -1,0 +1,3 @@
+{"result": {"success": true, "default_retention_enabled": true, "default_duration": {"count": 6, "units": "months"}, "event_overrides": [
+  {"event_type": "purchase", "retention_enabled": false, "duration": null}
+], "error": null}}

@@ -210,6 +210,21 @@ class LintBypassTest(unittest.TestCase):
         self.assertEqual(change(out)["status"], "blocked")
         self.assertIn(check, problems(out))
 
+    def test_links_and_images_whose_host_is_disguised_are_blocked(self):
+        host = GOOD_DRAFT["user_supplied_hosts"][0]
+        for tag in (f'<a href="https://evil.example\\@{host}/x">x</a>',
+                    f'<a href="https://evil.example@{host}/x">x</a>',
+                    f'<a href="https://{host}{{{{ \'.evil.example\' }}}}/x">x</a>',
+                    f'<a href="{{{{ scheme }}}}://{host}/x">x</a>',
+                    f'<img src="https://evil.example\\@{host}/p.png" alt="x" width="1" height="1">',
+                    f'<img src="https://evil.example\\@{host}/p.png" alt="x" width="300">'):
+            with self.subTest(tag=tag):
+                self.assertBlocked(plan(GOOD_HTML.replace("</body>", tag + "</body>")), "url_host_form")
+
+    def test_data_driven_links_still_pass_the_host_form_check(self):
+        out = plan(GOOD_HTML.replace("</body>", '<a href="{{ item.url }}">x</a></body>'))
+        self.assertNotIn("url_host_form", problems(out))
+
     def test_jinja_image_src_with_a_literal_host_is_host_checked(self):  # 1a
         img = '<img src="{{ \'https://cdn.evil.example/x.png\' if true else \'\' }}" alt="x" width="100">'
         self.assertBlocked(plan(GOOD_HTML.replace("</body>", img + "</body>")), "unknown_host")

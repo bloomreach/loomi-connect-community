@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": [
+    {
+      "catalog_id": "cat0000000000000000000001",
+      "properties": {
+        "availability": "TRUE",
+        "brand": "Acme",
+        "image": "https://img.example/p300.jpg",
+        "price": "18.50",
+        "stock_level": 40,
+        "title": "Wool Socks",
+        "url": "https://shop.example/p/p300"
+      },
+      "_id": "P300"
+    }
+  ],
+  "total": 426,
+  "matched": 1,
+  "limit": 2,
+  "skip": 0,
+  "error": null
+}

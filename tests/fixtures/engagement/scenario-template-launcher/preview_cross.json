@@ -1,0 +1,6 @@
+{"success": true, "dependencies": [
+  {"id": "agg-demo-1", "type": "aggregate", "name": "Last viewed products", "exists": true, "changed": true},
+  {"id": "exp-demo-1", "type": "expression", "name": "Hour of day", "exists": true, "changed": false},
+  {"id": "rec-demo-1", "type": "recommendation_engine", "name": "Similar items", "exists": false, "changed": false},
+  {"id": "src-scenario-0001", "type": "campaign_design", "name": "Browse abandonment", "exists": false, "changed": false}
+], "warnings": ["Mapping for https://map.example/x?key=FAKE-KEY skipped"], "error": null}

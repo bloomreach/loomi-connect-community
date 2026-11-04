@@ -1,0 +1,19 @@
+{
+ "success": true,
+ "data": [
+  {
+   "project_id": "p-kilo-0011",
+   "name": "Brand Kilo",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "brand-kilo",
+   "overview": {
+    "total_customers": 5000,
+    "identified_customers": 5000
+   },
+   "overview_error": null
+  }
+ ],
+ "error": null
+}

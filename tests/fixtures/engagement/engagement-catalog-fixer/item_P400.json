@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "data": {
+    "catalog_id": "cat0000000000000000000001",
+    "properties": {
+      "stock_level": "4"
+    },
+    "_id": "P400"
+  },
+  "error": null
+}

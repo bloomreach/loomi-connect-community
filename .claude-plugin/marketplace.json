@@ -31,7 +31,7 @@
     {
       "name": "loomi-platform",
       "source": "./plugins/loomi-platform",
-      "description": "Skills that span products: weekly briefing and quarterly review, revenue anomalies, peak and go-live readiness, data and feed health, catalog parity, campaign planning, collections and change impact, and turning search demand into campaigns",
+      "description": "Skills that span products: weekly briefing and quarterly review, revenue anomalies, peak and go-live readiness, data and feed health, catalog parity, Data Hub collections and data retention, campaign planning, collections and change impact, and turning search demand into campaigns",
       "category": "marketing",
       "tags": [
         "bloomreach",

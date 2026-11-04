@@ -1,0 +1,307 @@
+{
+  "about": "The SMS builder's lint limits, word lists and send-time windows. scripts/sms_draft_plan.py reads this file, so change a rule here and nowhere else. Values shared with campaign-qa and scenario-qa (their references/rules.json and references/message-checks.md) are marked 'Same as campaign-qa' in the notes: change them together. Each key is explained under notes. A lint blocker makes the plan's change blocked; a warning is shown with the plan.",
+  "gsm7_single_chars": 160,
+  "gsm7_part_chars": 153,
+  "ucs2_single_chars": 70,
+  "ucs2_part_chars": 67,
+  "segments_warning": 2,
+  "max_segments": 8,
+  "jinja_estimate_chars": 12,
+  "sms_brand_window_chars": 40,
+  "name_placeholder_words": [
+    "placeholder",
+    "test",
+    "todo",
+    "tbd",
+    "changeme",
+    "dummy"
+  ],
+  "placeholder_hosts": [
+    "example.com",
+    "example.org",
+    "example.net",
+    "test.com",
+    "domain.com",
+    "yourdomain.com",
+    "yoursite.com",
+    "localhost"
+  ],
+  "public_shorteners": [
+    "bit.ly",
+    "tinyurl.com",
+    "t.co",
+    "goo.gl",
+    "ow.ly",
+    "is.gd",
+    "buff.ly",
+    "rebrand.ly",
+    "cutt.ly",
+    "shorturl.at",
+    "tiny.cc"
+  ],
+  "placeholder_patterns": [
+    "lorem ipsum",
+    "\\bTODO\\b",
+    "\\bTBD\\b",
+    "\\bFIXME\\b",
+    "\\bXXX\\b",
+    "\\{\\{\\s*\\}\\}",
+    "%%[A-Za-z_ ]+%%",
+    "<[A-Za-z][A-Za-z _-]*>",
+    "\\[(?:first ?name|last ?name|name|url|link|shop ?url|promo ?code|code|company|brand|address)\\]",
+    "\\*\\|[A-Z_]+\\|\\*",
+    "(?-i:\\{\\{\\s*[A-Z][A-Z_]+\\s*\\}\\})",
+    "\\{\\$[a-z_]+\\}",
+    "\\bperson\\.(?:first_name|last_name|email|phone_number)\\b",
+    "\\|\\s*default:\\s*['\"]",
+    "your_engine_id"
+  ],
+  "opt_out_pattern": "\\bstop\\b|opt[\\s-]?out|unsubscribe",
+  "help_pattern": "\\bhelp\\b",
+  "banned_jinja": [
+    "strftime",
+    "strptime",
+    "datetime",
+    "dateformat",
+    "tojson",
+    "groupby",
+    "| merge",
+    ".update(",
+    "| debug",
+    "pprint",
+    "max(",
+    "min("
+  ],
+  "default_schedule": {
+    "type": "now"
+  },
+  "federal_window": {
+    "start_hour": 8,
+    "end_hour": 21
+  },
+  "state_windows": {
+    "US-TX": {
+      "name": "Texas",
+      "weekday": [
+        9,
+        21
+      ],
+      "saturday": [
+        9,
+        21
+      ],
+      "sunday": [
+        12,
+        21
+      ]
+    },
+    "US-MN": {
+      "name": "Minnesota",
+      "weekday": [
+        9,
+        21
+      ],
+      "saturday": [
+        9,
+        21
+      ],
+      "sunday": [
+        9,
+        21
+      ]
+    },
+    "US-RI": {
+      "name": "Rhode Island",
+      "weekday": [
+        9,
+        18
+      ],
+      "saturday": [
+        9,
+        17
+      ]
+    },
+    "US-FL": {
+      "name": "Florida",
+      "weekday": [
+        8,
+        20
+      ],
+      "saturday": [
+        8,
+        20
+      ],
+      "sunday": "none"
+    },
+    "US-OK": {
+      "name": "Oklahoma",
+      "weekday": [
+        8,
+        20
+      ],
+      "saturday": [
+        8,
+        20
+      ],
+      "sunday": [
+        8,
+        20
+      ]
+    },
+    "US-MD": {
+      "name": "Maryland",
+      "weekday": [
+        8,
+        20
+      ],
+      "saturday": [
+        8,
+        20
+      ],
+      "sunday": [
+        8,
+        20
+      ]
+    },
+    "US-WA": {
+      "name": "Washington",
+      "weekday": [
+        8,
+        20
+      ],
+      "saturday": [
+        8,
+        20
+      ],
+      "sunday": [
+        8,
+        20
+      ]
+    },
+    "US-OR": {
+      "name": "Oregon",
+      "weekday": [
+        8,
+        20
+      ],
+      "saturday": [
+        8,
+        20
+      ],
+      "sunday": [
+        8,
+        20
+      ]
+    },
+    "US-AL": {
+      "name": "Alabama",
+      "weekday": [
+        8,
+        20
+      ],
+      "saturday": [
+        8,
+        20
+      ],
+      "sunday": "none"
+    },
+    "US-LA": {
+      "name": "Louisiana",
+      "weekday": [
+        8,
+        20
+      ],
+      "saturday": [
+        8,
+        20
+      ],
+      "sunday": "none"
+    },
+    "US-MS": {
+      "name": "Mississippi",
+      "weekday": [
+        8,
+        20
+      ],
+      "saturday": [
+        8,
+        20
+      ],
+      "sunday": "none"
+    }
+  },
+  "three_per_day_states": [
+    "US-FL",
+    "US-OK",
+    "US-MD"
+  ],
+  "assumed_regions": [
+    "US",
+    "CA"
+  ],
+  "restricted_terms": {
+    "alcohol, tobacco or vaping (needs an age gate)": [
+      "beer",
+      "wine",
+      "vodka",
+      "whisky",
+      "whiskey",
+      "liquor",
+      "cigarette",
+      "tobacco",
+      "vape",
+      "vaping",
+      "e-cig"
+    ],
+    "cannabis or CBD": [
+      "cannabis",
+      "cbd",
+      "thc",
+      "marijuana"
+    ],
+    "gambling": [
+      "casino",
+      "betting",
+      "jackpot",
+      "sportsbook",
+      "poker"
+    ],
+    "high-risk finance": [
+      "payday",
+      "debt relief",
+      "crypto",
+      "bitcoin",
+      "loan approval"
+    ],
+    "phishing pattern": [
+      "verify your account",
+      "account suspended",
+      "confirm your password",
+      "unusual sign-in",
+      "security alert"
+    ]
+  },
+  "notes": {
+    "gsm7_single_chars": "Characters that fit in one GSM-7 SMS. Same as campaign-qa (hard-coded there).",
+    "gsm7_part_chars": "Characters per segment once a GSM-7 message is split into several (the rest carries the joining header). Same as campaign-qa.",
+    "ucs2_single_chars": "Characters that fit in one UCS-2 (Unicode) SMS. One character outside GSM-7, such as an emoji or a curly quote, switches the whole message to UCS-2. Same as campaign-qa.",
+    "ucs2_part_chars": "Characters per segment once a UCS-2 message is split. Same as campaign-qa.",
+    "segments_warning": "A message estimated at more than this many segments is a warning: each segment is billed, and long texts read as spam.",
+    "max_segments": "A message estimated at more than this many segments is a blocker: the sms-template-best-practices guide says carriers reassemble up to 8.",
+    "jinja_estimate_chars": "Characters assumed for each {{ ... }} expression when counting length before rendering. Same as campaign-qa.",
+    "sms_brand_window_chars": "The brand name must appear within this many characters of the start of the message. Same as campaign-qa.",
+    "name_placeholder_words": "A sender name containing one of these words (one demo project's sender was literally a placeholder) is a warning, and the senders subcommand never picks it as the default.",
+    "placeholder_hosts": "Link hosts that are never a real destination: a blocker. Same list as campaign-qa.",
+    "public_shorteners": "Public link shorteners that carriers filter: a warning even when the user supplied the host. A brand-owned shortener is fine. Same list as campaign-qa.",
+    "placeholder_patterns": "Regular expressions (case-insensitive unless wrapped in (?-i:...)) for unfinished copy and merge tags from other tools: lorem ipsum, TODO, empty {{ }}, %%SLOT%%, <angle placeholders>, [URL], *|FNAME|*, {{FNAME}}, Klaviyo person.* and |default:. A match in the name or any message is a blocker. Covers campaign-qa's placeholder_tokens.",
+    "opt_out_pattern": "Regular expression (case-insensitive) for opt-out wording. Missing is a blocker on a marketing message, a warning on one the user says is purely transactional. Same pattern as campaign-qa.",
+    "help_pattern": "Regular expression (case-insensitive) for HELP wording. Missing is a warning, or a blocker when the draft says the sender is in a regulated industry.",
+    "banned_jinja": "Text that doesn't work in Bloomreach Jinja (see engagement-jinja-writer): a blocker. Same list as engagement-email-builder.",
+    "default_schedule": "The schedule a draft gets when the user sets no send time. create_sms_campaign requires one; {\"type\": \"now\"} means the campaign sends as soon as a person starts it in the Engagement UI.",
+    "federal_window": "US federal baseline for marketing texts, in the recipient's local time: start_hour inclusive, end_hour exclusive (21 means the last allowed minute is 20:59). A scheduled time outside it in any recipient time zone is a blocker: the skill never schedules inside quiet hours. Applied to every region.",
+    "state_windows": "Stricter state windows, from campaign-qa's 'SMS and MMS: North America' table: [start_hour, end_hour) per weekday, saturday and sunday in the recipient's local time; 'none' means no sends that day, and a missing day means the federal window. Outside the window of a state the draft names in regions is a blocker; of a state only implied by 'US' (or assumed) it is a warning. Not legal advice; state laws change.",
+    "three_per_day_states": "States that limit marketing contact to 3 messages per 24 hours on the same subject: a reminder warning when the audience can include them. Same as campaign-qa.",
+    "assumed_regions": "Where recipients are assumed to be when the draft gives no regions (every US state plus Canada), as campaign-qa does. The plan says so in a warning.",
+    "restricted_terms": "SMS terms grouped by restricted category. A match is a warning for a person to judge; it never decides carrier approval. Same list as campaign-qa."
+  }
+}

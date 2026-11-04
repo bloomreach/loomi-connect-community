@@ -1,0 +1,5 @@
+interface:
+  display_name: "Voucher Pool Health"
+  short_description: "Which Bloomreach Engagement voucher pools will run out or expire before the sends that use them"
+policy:
+  allow_implicit_invocation: true

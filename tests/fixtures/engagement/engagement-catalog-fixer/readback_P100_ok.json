@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": {
+    "catalog_id": "cat0000000000000000000001",
+    "properties": {
+      "availability": "Out Of Stock",
+      "brand": "Acme",
+      "image": "https://img.example/p100.jpg",
+      "margin": 31.5,
+      "price": 120,
+      "sale_price": 99,
+      "stock_level": 4,
+      "title": "Trail Runner Shoe",
+      "url": "https://shop.example/p/p100"
+    },
+    "_id": "P100"
+  },
+  "error": null
+}

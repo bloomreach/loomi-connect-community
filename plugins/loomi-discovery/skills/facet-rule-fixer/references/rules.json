@@ -1,0 +1,25 @@
+{
+  "about": "Limits and word lists for facet-rule-fixer. scripts/facet_rule_plan.py reads this file, so change a rule here and nowhere else. Each key is explained under notes; SKILL.md and references/change-format.md say how the plan's checks block or warn.",
+  "max_changes_per_batch": 10,
+  "sync_checks": 3,
+  "finished_statuses": [
+    "completed",
+    "ended",
+    "archived",
+    "draft"
+  ],
+  "never_show_words": [
+    "margin",
+    "cost",
+    "profit",
+    "wholesale",
+    "omni_score",
+    "internal"
+  ],
+  "notes": {
+    "max_changes_per_batch": "At most this many ready creates, updates and switch-offs go into one batch, with one yes; more go into further batches. Each switch-on and each delete is always a batch of its own and doesn't count here.",
+    "sync_checks": "After each write, read the rule back with get_facet_rule up to this many times (a few seconds apart) until syncStatus is SUCCESS, then run verify.",
+    "finished_statuses": "Experiment statuses known not to be running, compared case-insensitively. Every other experiment, including one with no status or an unknown one, counts as possibly running: a change whose rule, query or category is in one of its buckets is blocked, and a global change is blocked by any of them.",
+    "never_show_words": "A facet whose name contains one of these (compared lower-case) is commercial or internal: a change that would boost, bury or always show it is blocked. Hiding it is always allowed."
+  }
+}

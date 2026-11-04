@@ -1,0 +1,18 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "bb10000000000000000000b1",
+   "name": "Exit popup",
+   "status": "active",
+   "archived": false,
+   "variants": [
+    {
+     "html": "<div style=\"background:url(http://bg.cdn.example/bg.jpg)\"><img src=\"https://cdn.media.example/storage/proj/media/original/00000006-aaaa-4bbb-8ccc-000000000006\" alt=\"Sale\"></div>"
+    }
+   ],
+   "created_by_display_name": "Pat Example",
+   "edited_by_display_name": "Pat Example"
+  }
+ }
+}

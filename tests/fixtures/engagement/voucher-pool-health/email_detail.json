@@ -1,0 +1,15 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "em0000000000000000000001",
+      "name": "Black Friday email",
+      "status": "scheduled",
+      "archived": false,
+      "design": {
+        "html": "<p>Your code: {{ vouchers[\"Black Friday 20\"].assign_available() }}</p>"
+      }
+    },
+    "error": null
+  }
+}

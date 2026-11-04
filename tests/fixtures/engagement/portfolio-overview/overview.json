@@ -1,0 +1,333 @@
+{
+ "success": true,
+ "data": [
+  {
+   "project_id": "p-alpha-0001",
+   "name": "Brand Alpha",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "brand-alpha",
+   "overview": {
+    "archived_events": 0,
+    "event_types_overview": {
+     "session_start": {
+      "event_count": 4000000
+     },
+     "page_visit": {
+      "event_count": 3000000
+     },
+     "view_item": {
+      "event_count": 2000000
+     },
+     "cart_update": {
+      "event_count": 500000
+     },
+     "purchase": {
+      "event_count": 200000
+     },
+     "campaign": {
+      "event_count": 1000000
+     }
+    },
+    "events": 10700000,
+    "identified_customers": 100000,
+    "merged_customers": 0,
+    "oldest_timestamp": 1600000000,
+    "total_customers": 100000,
+    "user_accounts": 3
+   },
+   "overview_error": null
+  },
+  {
+   "project_id": "p-bravo-0002",
+   "name": "Brand Bravo",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "brand-bravo",
+   "overview": {
+    "archived_events": 0,
+    "event_types_overview": {
+     "session_start": {
+      "event_count": 3200000
+     },
+     "page_visit": {
+      "event_count": 2400000
+     },
+     "view_item": {
+      "event_count": 1600000
+     },
+     "cart_update": {
+      "event_count": 400000
+     },
+     "purchase": {
+      "event_count": 160000
+     },
+     "campaign": {
+      "event_count": 800000
+     }
+    },
+    "events": 8560000,
+    "identified_customers": 80000,
+    "merged_customers": 0,
+    "oldest_timestamp": 1600000000,
+    "total_customers": 80000,
+    "user_accounts": 3
+   },
+   "overview_error": null
+  },
+  {
+   "project_id": "p-charlie-0003",
+   "name": "Brand Charlie",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": null,
+   "url_slug": "brand-charlie",
+   "overview": {
+    "archived_events": 0,
+    "event_types_overview": {
+     "session_start": {
+      "event_count": 4800000
+     },
+     "page_visit": {
+      "event_count": 3600000
+     },
+     "view_item": {
+      "event_count": 2400000
+     },
+     "cart_update": {
+      "event_count": 600000
+     },
+     "purchase": {
+      "event_count": 240000
+     },
+     "campaign": {
+      "event_count": 1200000
+     }
+    },
+    "events": 12840000,
+    "identified_customers": 120000,
+    "merged_customers": 0,
+    "oldest_timestamp": 1600000000,
+    "total_customers": 120000,
+    "user_accounts": 3
+   },
+   "overview_error": null
+  },
+  {
+   "project_id": "p-delta-0004",
+   "name": "Brand Delta",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "brand-delta",
+   "overview": {
+    "archived_events": 0,
+    "event_types_overview": {
+     "session_start": {
+      "event_count": 20000
+     },
+     "page_visit": {
+      "event_count": 15000
+     },
+     "view_item": {
+      "event_count": 10000
+     },
+     "cart_update": {
+      "event_count": 2500
+     },
+     "purchase": {
+      "event_count": 1000
+     },
+     "campaign": {
+      "event_count": 5000
+     }
+    },
+    "events": 53500,
+    "identified_customers": 500,
+    "merged_customers": 0,
+    "oldest_timestamp": 1600000000,
+    "total_customers": 500,
+    "user_accounts": 3
+   },
+   "overview_error": null
+  },
+  {
+   "project_id": "p-echo-0005",
+   "name": "Brand Echo",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "brand-echo",
+   "overview": {
+    "events": 0,
+    "identified_customers": 0,
+    "merged_customers": 0,
+    "oldest_timestamp": null,
+    "total_customers": 0,
+    "user_accounts": 1
+   },
+   "overview_error": null
+  },
+  {
+   "project_id": "p-fox-0006",
+   "name": "Fox Test Sandbox",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "sandbox",
+   "url_slug": "fox-sandbox",
+   "overview": {
+    "archived_events": 0,
+    "event_types_overview": {
+     "session_start": {
+      "event_count": 80000
+     },
+     "page_visit": {
+      "event_count": 60000
+     },
+     "view_item": {
+      "event_count": 40000
+     },
+     "cart_update": {
+      "event_count": 10000
+     },
+     "purchase": {
+      "event_count": 4000
+     },
+     "campaign": {
+      "event_count": 20000
+     }
+    },
+    "events": 214000,
+    "identified_customers": 2000,
+    "merged_customers": 0,
+    "oldest_timestamp": 1600000000,
+    "total_customers": 2000,
+    "user_accounts": 3
+   },
+   "overview_error": null
+  },
+  {
+   "project_id": "p-golf-0007",
+   "name": "Brand Golf",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "brand-golf",
+   "overview_error": "403 Forbidden for https://api.example.test/x?token=FAKE"
+  },
+  {
+   "project_id": "p-hotel-0008",
+   "name": "Brand Hotel",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "brand-hotel",
+   "overview": {
+    "archived_events": 0,
+    "event_types_overview": {
+     "session_start": {
+      "event_count": 3600000
+     },
+     "page_visit": {
+      "event_count": 2700000
+     },
+     "view_item": {
+      "event_count": 1800000
+     },
+     "cart_update": {
+      "event_count": 450000
+     },
+     "purchase": {
+      "event_count": 180000
+     }
+    },
+    "events": 9630000,
+    "identified_customers": 90000,
+    "merged_customers": 0,
+    "oldest_timestamp": 1600000000,
+    "total_customers": 90000,
+    "user_accounts": 3
+   },
+   "overview_error": null
+  },
+  {
+   "project_id": "p-india-0009",
+   "name": "Brand India",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "brand-india",
+   "overview": {
+    "archived_events": 0,
+    "event_types_overview": {
+     "session_start": {
+      "event_count": 2400000
+     },
+     "page_visit": {
+      "event_count": 1800000
+     },
+     "view_item": {
+      "event_count": 54000000
+     },
+     "cart_update": {
+      "event_count": 300000
+     },
+     "purchase": {
+      "event_count": 120000
+     },
+     "campaign": {
+      "event_count": 600000
+     }
+    },
+    "events": 64200000,
+    "identified_customers": 60000,
+    "merged_customers": 0,
+    "oldest_timestamp": 1600000000,
+    "total_customers": 60000,
+    "user_accounts": 3
+   },
+   "overview_error": null
+  },
+  {
+   "project_id": "p-juliet-0010",
+   "name": "Contest Hub",
+   "workspace_id": "ws-0001",
+   "workspace_name": "Brands",
+   "category": "int",
+   "url_slug": "contest-hub",
+   "overview": {
+    "archived_events": 0,
+    "event_types_overview": {
+     "session_start": {
+      "event_count": 2800000
+     },
+     "page_visit": {
+      "event_count": 2100000
+     },
+     "view_item": {
+      "event_count": 1400000
+     },
+     "cart_update": {
+      "event_count": 350000
+     },
+     "purchase": {
+      "event_count": 140000
+     },
+     "campaign": {
+      "event_count": 700000
+     }
+    },
+    "events": 7490000,
+    "identified_customers": 70000,
+    "merged_customers": 0,
+    "oldest_timestamp": 1700000000000,
+    "total_customers": 70000,
+    "user_accounts": 3
+   },
+   "overview_error": null
+  }
+ ],
+ "error": null
+}

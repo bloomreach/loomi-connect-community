@@ -1,0 +1,150 @@
+{
+  "ok": true,
+  "id_mapping": "Discovery product ID (pid) = Engagement item ID, trimmed and compared case-insensitively",
+  "findings": [
+    {
+      "product_id": "p100",
+      "title": "Trail Runner Shoe",
+      "sample": [
+        "top_seller"
+      ],
+      "revenue_at_stake": 12000.0,
+      "priority": "high",
+      "checks": [
+        {
+          "check": "stock_out_on_site_in_engagement",
+          "priority": "high",
+          "detail": "out of stock on the site",
+          "discovery": "out of stock",
+          "engagement": "In Stock",
+          "fields": "availability / availability"
+        },
+        {
+          "check": "sale_price_mismatch",
+          "priority": "high",
+          "detail": "sale price only in discovery",
+          "discovery": 99.0,
+          "engagement": 120.0,
+          "fields": "sale_price / sale_price"
+        },
+        {
+          "check": "title_mismatch",
+          "priority": "low",
+          "detail": null,
+          "discovery": "Trail Runner Shoe xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "engagement": "Trail Runner Shoe",
+          "fields": "title / title"
+        }
+      ]
+    },
+    {
+      "product_id": "P200",
+      "title": "Rain Jacket",
+      "sample": [
+        "top_seller"
+      ],
+      "revenue_at_stake": 8000.0,
+      "priority": "high",
+      "checks": [
+        {
+          "check": "stock_out_on_site_in_engagement",
+          "priority": "high",
+          "detail": "x",
+          "discovery": "out of stock",
+          "engagement": 12,
+          "fields": "availability / stock_level"
+        }
+      ]
+    },
+    {
+      "product_id": "P300",
+      "title": "Wool Socks",
+      "sample": [
+        "top_seller"
+      ],
+      "revenue_at_stake": 3000.0,
+      "priority": "high",
+      "checks": [
+        {
+          "check": "price_mismatch",
+          "priority": "high",
+          "detail": null,
+          "discovery": 15.0,
+          "engagement": 18.5,
+          "fields": "price / price"
+        }
+      ]
+    },
+    {
+      "product_id": "P500",
+      "title": "Gone Hat",
+      "sample": [
+        "random"
+      ],
+      "revenue_at_stake": 0.0,
+      "priority": "high",
+      "checks": [
+        {
+          "check": "price_mismatch",
+          "priority": "high",
+          "detail": null,
+          "discovery": 9.99,
+          "engagement": 12.0,
+          "fields": "price / price"
+        }
+      ]
+    },
+    {
+      "product_id": "P400",
+      "title": null,
+      "sample": [
+        "random"
+      ],
+      "revenue_at_stake": 0.0,
+      "priority": "medium",
+      "checks": [
+        {
+          "check": "url_mismatch",
+          "priority": "medium",
+          "detail": "missing in engagement",
+          "discovery": "https://shop.example/p/p400",
+          "engagement": null,
+          "fields": "url / -"
+        }
+      ]
+    },
+    {
+      "product_id": "OLD1",
+      "title": "Discontinued Stove",
+      "sample": [
+        "random"
+      ],
+      "revenue_at_stake": 0.0,
+      "priority": "high",
+      "checks": [
+        {
+          "check": "missing_in_discovery",
+          "priority": "high",
+          "detail": "in the Engagement catalog but not on the site"
+        }
+      ]
+    },
+    {
+      "product_id": "P600",
+      "title": "New Tent",
+      "sample": [
+        "random"
+      ],
+      "revenue_at_stake": 0.0,
+      "priority": "medium",
+      "checks": [
+        {
+          "check": "missing_in_engagement",
+          "priority": "medium",
+          "detail": "on the site but not in the Engagement catalog"
+        }
+      ]
+    }
+  ],
+  "findings_total": 8
+}

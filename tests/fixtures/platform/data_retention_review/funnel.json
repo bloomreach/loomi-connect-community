@@ -1,0 +1,4 @@
+{"result": {"success": true, "data": {"_id": "fun-1", "name": "Browse to buy", "archived": false,
+  "funnel_steps": {"steps": [{"type": "view_item", "name": "view_item", "filter": []}, {"type": "purchase", "name": "purchase", "filter": []}],
+    "date_filter": {"enabled": true, "absolute": true, "duration": {"count": 30, "units": "days"}, "from_date": 1782864000, "to_date": 1785542400, "offset": null},
+    "duration_filter": {"enabled": true, "duration": {"count": 7, "units": "days"}}}}}}

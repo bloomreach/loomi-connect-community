@@ -1,0 +1,7 @@
+{
+ "result": {
+  "success": false,
+  "data": [],
+  "error": "[ACCESS_DENIED] You do not have access to project p-alpha-0001"
+ }
+}

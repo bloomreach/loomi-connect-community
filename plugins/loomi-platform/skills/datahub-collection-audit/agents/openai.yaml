@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Data Hub Collection Audit"
+  short_description: "Audit Data Hub item collections for drift, missing fields, bad types and stale jobs"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true

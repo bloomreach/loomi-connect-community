@@ -1,0 +1,80 @@
+{
+  "result": {
+    "success": true,
+    "data": {
+      "_id": "scn000000000000000000001",
+      "name": "Facebook sync",
+      "status": "active",
+      "archived": false,
+      "nodes": [
+        {
+          "id": 1,
+          "type": "repeated-trigger"
+        },
+        {
+          "id": 2,
+          "type": "condition",
+          "name": "Audience",
+          "customer_filter": {
+            "filters": [
+              {
+                "attribute": {
+                  "type": "segmentation",
+                  "id": "seg000000000000000000003"
+                },
+                "constraint": {
+                  "operator": "has value"
+                }
+              }
+            ],
+            "formula": "F0"
+          }
+        },
+        {
+          "id": 3,
+          "type": "facebook-audience-add",
+          "name": "Add to FB",
+          "integration_id": "int0000000000000000000fb1"
+        },
+        {
+          "id": 4,
+          "type": "send-email-action",
+          "name": "Email",
+          "note": "int0000000000000000000fb1"
+        }
+      ],
+      "connections": [
+        {
+          "source": {
+            "node_id": 1,
+            "connector_index": 1
+          },
+          "destination": {
+            "node_id": 2,
+            "connector_index": 0
+          }
+        },
+        {
+          "source": {
+            "node_id": 2,
+            "connector_index": 1
+          },
+          "destination": {
+            "node_id": 3,
+            "connector_index": 0
+          }
+        },
+        {
+          "source": {
+            "node_id": 2,
+            "connector_index": 1
+          },
+          "destination": {
+            "node_id": 4,
+            "connector_index": 0
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "success": true,
+  "data": {
+    "catalog_id": "cat0000000000000000000001",
+    "properties": {
+      "availability": "in stock",
+      "brand": "Acme",
+      "image": "https://img.example/p200.jpg",
+      "margin": 12,
+      "price": 50,
+      "stock_level": 12,
+      "title": "Rain Jacket",
+      "url": "https://shop.example/p/p200"
+    },
+    "_id": "P200"
+  },
+  "error": null
+}

@@ -1,0 +1,17 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "a1100000000000000000a1a1",
+    "name": "Inbox promo",
+    "archived": false,
+    "created": 1793491200,
+    "edited": 1793491200,
+    "created_by_display_name": "Pat Example",
+    "edited_by_display_name": "Pat Example"
+   }
+  ],
+  "archived_items_exists": false
+ }
+}

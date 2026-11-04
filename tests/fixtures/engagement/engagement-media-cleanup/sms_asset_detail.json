@@ -1,0 +1,26 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "5a10000000000000000000a1",
+   "name": "Shipping update",
+   "archived": false,
+   "created": 1690000000,
+   "edited": 1690000000,
+   "design": {
+    "type": "sms",
+    "translations": {
+     "": {
+      "message": "Your order has shipped and is on its way to you today.",
+      "sender": {
+       "name": "Shop"
+      }
+     }
+    }
+   },
+   "text": "Your order has shipped and is on its way to you today.",
+   "created_by_display_name": "Pat Example",
+   "edited_by_display_name": "Pat Example"
+  }
+ }
+}

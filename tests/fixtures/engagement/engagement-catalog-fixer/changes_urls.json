@@ -1,0 +1,18 @@
+[
+  {
+    "action": "update",
+    "item_id": "P200",
+    "set": {
+      "url": "http://shop.example/p/p200-new"
+    },
+    "reason": "x"
+  },
+  {
+    "action": "update",
+    "item_id": "P300",
+    "set": {
+      "image": "https://cdn.other.test/p300.jpg"
+    },
+    "reason": "x"
+  }
+]

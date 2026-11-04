@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": {
+    "_id": "cf-boots",
+    "name": "Boot buyers with phone",
+    "archived": false,
+    "filters": [
+      {
+        "type": "attribute",
+        "attribute": {
+          "type": "property",
+          "property": "phone"
+        },
+        "constraint": {
+          "type": "string",
+          "operator": "has value",
+          "operands": []
+        }
+      }
+    ],
+    "formula": "F0"
+  }
+}

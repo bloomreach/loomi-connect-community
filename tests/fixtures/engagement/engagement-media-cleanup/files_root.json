@@ -1,0 +1,135 @@
+{
+ "success": true,
+ "data": [
+  {
+   "_id": "00000001-aaaa-4bbb-8ccc-000000000001",
+   "name": "hero-banner.png",
+   "archived": false,
+   "implicitly_archived": false,
+   "tags": [],
+   "parent_id": null,
+   "file_type": "image",
+   "mime_type": "image/png",
+   "variants": {
+    "original": {
+     "file_size": 1200000,
+     "dimensions": "2400x1200",
+     "url": "https://cdn.media.example/storage/proj/media/original/00000001-aaaa-4bbb-8ccc-000000000001"
+    },
+    "thumbnail": {
+     "file_size": 1000,
+     "dimensions": "300x150",
+     "url": "https://cdn.media.example/storage/proj/media/thumbnail/00000001-aaaa-4bbb-8ccc-000000000001"
+    }
+   },
+   "created": 1791158400,
+   "created_by_display_name": "Pat Example"
+  },
+  {
+   "_id": "00000002-aaaa-4bbb-8ccc-000000000002",
+   "name": "logo.png",
+   "archived": false,
+   "implicitly_archived": false,
+   "tags": [],
+   "parent_id": null,
+   "file_type": "image",
+   "mime_type": "image/png",
+   "variants": {
+    "original": {
+     "file_size": 6100,
+     "dimensions": "288x84",
+     "url": "https://cdn.media.example/storage/proj/media/original/00000002-aaaa-4bbb-8ccc-000000000002"
+    },
+    "thumbnail": {
+     "file_size": 1000,
+     "dimensions": "300x150",
+     "url": "https://cdn.media.example/storage/proj/media/thumbnail/00000002-aaaa-4bbb-8ccc-000000000002"
+    }
+   },
+   "created": 1690000000,
+   "created_by_display_name": "Pat Example"
+  },
+  {
+   "_id": "00000003-aaaa-4bbb-8ccc-000000000003",
+   "name": "old-test-image.png",
+   "archived": false,
+   "implicitly_archived": false,
+   "tags": [],
+   "parent_id": null,
+   "file_type": "image",
+   "mime_type": "image/png",
+   "variants": {
+    "original": {
+     "file_size": 50000,
+     "dimensions": "600x400",
+     "url": "https://cdn.media.example/storage/proj/media/original/00000003-aaaa-4bbb-8ccc-000000000003"
+    },
+    "thumbnail": {
+     "file_size": 1000,
+     "dimensions": "300x150",
+     "url": "https://cdn.media.example/storage/proj/media/thumbnail/00000003-aaaa-4bbb-8ccc-000000000003"
+    }
+   },
+   "created": 1690000000,
+   "created_by_display_name": "Pat Example"
+  },
+  {
+   "_id": "00000005-aaaa-4bbb-8ccc-000000000005",
+   "name": "new-promo.jpg",
+   "archived": false,
+   "implicitly_archived": false,
+   "tags": [],
+   "parent_id": null,
+   "file_type": "image",
+   "mime_type": "image/png",
+   "variants": {
+    "original": {
+     "file_size": 80000,
+     "dimensions": "600x300",
+     "url": "https://cdn.media.example/storage/proj/media/original/00000005-aaaa-4bbb-8ccc-000000000005"
+    },
+    "thumbnail": {
+     "file_size": 1000,
+     "dimensions": "300x150",
+     "url": "https://cdn.media.example/storage/proj/media/thumbnail/00000005-aaaa-4bbb-8ccc-000000000005"
+    }
+   },
+   "created": 1792886400,
+   "created_by_display_name": "Pat Example"
+  },
+  {
+   "_id": "00000006-aaaa-4bbb-8ccc-000000000006",
+   "name": "archived-banner.jpg",
+   "archived": true,
+   "implicitly_archived": false,
+   "tags": [],
+   "parent_id": null,
+   "file_type": "image",
+   "mime_type": "image/png",
+   "variants": {
+    "original": {
+     "file_size": 90000,
+     "dimensions": "800x400",
+     "url": "https://cdn.media.example/storage/proj/media/original/00000006-aaaa-4bbb-8ccc-000000000006"
+    },
+    "thumbnail": {
+     "file_size": 1000,
+     "dimensions": "300x150",
+     "url": "https://cdn.media.example/storage/proj/media/thumbnail/00000006-aaaa-4bbb-8ccc-000000000006"
+    }
+   },
+   "created": 1690000000,
+   "created_by_display_name": "Pat Example"
+  }
+ ],
+ "directories": [
+  {
+   "_id": "dir-0001",
+   "name": "Email templates",
+   "archived": false,
+   "parent_id": null
+  }
+ ],
+ "path": [],
+ "error": null
+}

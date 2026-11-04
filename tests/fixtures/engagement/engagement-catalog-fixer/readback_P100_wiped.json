@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "data": {
+    "catalog_id": "cat0000000000000000000001",
+    "properties": {
+      "availability": "Out Of Stock",
+      "sale_price": 99
+    },
+    "_id": "P100"
+  },
+  "error": null
+}

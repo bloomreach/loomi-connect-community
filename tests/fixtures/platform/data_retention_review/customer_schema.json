@@ -1,0 +1,10 @@
+{"success": true, "properties": [
+  {"property": "email", "type": "string", "source": "user", "used": true, "private": false, "example_values": "FAKE-person@example.com"},
+  {"property": "first_name", "type": "string", "source": "data", "used": true, "private": false, "example_values": null},
+  {"property": "birth_date", "type": "date", "source": "user", "used": false, "private": false, "example_values": ""},
+  {"property": "wifeBirthdate", "type": "date", "source": "user", "used": true, "private": false, "example_values": ""},
+  {"property": "city", "type": "string", "source": "data", "used": true, "private": false, "example_values": null},
+  {"property": "favourite_product_name", "type": "string", "source": "data", "used": true, "private": false, "example_values": null},
+  {"property": "_tax_exempt", "type": "boolean", "source": "data", "used": true, "private": false, "example_values": null},
+  {"property": "Loyalty points", "type": "string", "source": "user", "used": true, "private": false, "example_values": ""}
+], "are_all_used": false, "error": null}
