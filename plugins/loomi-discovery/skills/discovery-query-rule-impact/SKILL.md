@@ -193,7 +193,7 @@ Show money in the account's currency, rounded for display. Never show the grid's
 
 | Pitfall | Do instead |
 |---|---|
-| Reading rule IDs from `data.debug.experiments[name='customizations_priority']` as the tool description says | That key isn't there. Read `debug["customizations.explain"]` (the script's `rules_found`) |
+| Reading rule IDs only from `customizations_priority` | It sits at `data.debug.request.experiments` (not `data.debug.experiments`, as the tool description says) and lists ranking rules only. Read `debug["customizations.explain"]`, which has every rule type (the script's `rules_found`) |
 | Reading the 60–100 KB grid files into the conversation | Save them and pass them to the script |
 | Taking `search=` rows as the query's numbers | It's a substring match; use the exact row |
 | Presenting the `performance` score as revenue | It's an algorithm signal whose scale differs between algorithms (the same product scored 915 on one query and 53 on another); use product RPV |

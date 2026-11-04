@@ -33,4 +33,4 @@ See [examples/pin-rule-on-gown.md](examples/pin-rule-on-gown.md).
 - The estimate ignores substitution (shoppers buying something else instead), so treat it as direction and rough size. To know, A/B test the rule with `discovery-experiment-setup`.
 - Only ranking and ranking algorithm rules can be switched off in the preview. Synonyms, redirects and facet rules aren't removed by `disabled_customization_ids`, so they aren't measured.
 - The grid shows a default shopper: audience-targeted rules, personalisation and A/B test buckets differ for real shoppers.
-- The tool description says active rule IDs are in `debug.experiments`; they're in `debug["customizations.explain"]` (see [known tool behaviour](../../../../docs/known-tool-behaviour.md)).
+- The tool description says active rule IDs are at `debug.experiments`; they're at `debug.request.experiments` (ranking rules only), and `debug["customizations.explain"]` has every rule type, which this skill uses (see [known tool behaviour](../../../../docs/known-tool-behaviour.md)).
