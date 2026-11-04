@@ -12,18 +12,22 @@
 /* Layout: brand bar, a type-led hero, then the tool map (the page's one big moment), plugins, install, people. */
 :root{
   --bg:#ffffff; --surface:#f6f6f4; --ink:#000000; --muted:#5b5b57; --line:#e3e3df;
-  --spark:#fee31b; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
+  --spark:#fee31b; --link-line:#b4a813; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
   --eng:#019ace; --disc:#8873ff; --hub:#ee6c2b; --shared:#04c586; --empty:#e9e9e4;
   --sans:"Bloomreach Sans","Instrument Sans",Arial,Helvetica,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
-@media (prefers-color-scheme:dark){:root{
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26;
-  --arctic:#55bbde; --empty:#23231f; color-scheme:dark}}
+  --arctic:#55bbde; --link-line:#fee31b; --empty:#23231f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26;
+  --arctic:#55bbde; --link-line:#fee31b; --empty:#23231f; color-scheme:dark}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans)}
-a{color:var(--arctic)}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--link-line);text-decoration-thickness:1.5px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:3px}
 .gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap{max-width:1120px;margin:0 auto}
 .bar{border-bottom:1px solid var(--line)}
@@ -31,8 +35,12 @@ a{color:var(--arctic)}
 .logo{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
 .logo-icon{width:30px;height:30px}
 .logo-text{height:15px;width:auto}
-.tag{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;height:22px;padding:1px 9px 0;position:relative;top:2px;font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
 .bar nav{margin-left:auto;display:flex;gap:18px;font-size:15px;flex-wrap:wrap}
+.theme{margin-left:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.theme:hover{border-color:var(--ink)}
+.theme svg{width:18px;height:18px}
+.theme:focus-visible{outline:3px solid var(--arctic-bright);outline-offset:2px}
 .bar nav a{color:var(--ink);text-decoration:none}
 .bar nav a:hover{text-decoration:underline}
 .hero{position:relative;display:flex;align-items:center;min-height:calc(100vh - 61px);min-height:calc(100svh - 61px)}
@@ -72,15 +80,17 @@ h2{margin:0;font:500 clamp(26px,3.4vw,36px)/1.1 var(--sans);text-wrap:balance}
 .people span{border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:15px}
 .people span:first-child{background:var(--spark);border-color:var(--spark);color:var(--spark-ink)}
 footer .wrap{padding-block:32px 48px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px 24px;color:var(--muted);font-size:14px}
-@media (max-width:640px){.bar nav{display:none}.hero .wrap{padding-block:40px 88px}}
+@media (max-width:640px){.bar nav{display:none}.theme{margin-left:auto}.hero .wrap{padding-block:40px 88px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+<script src="assets/theme.js"></script>
 </head>
 <body>
 <header class="bar gutter"><div class="wrap">
   <a class="logo" href="./" aria-label="loomi-connect-community home">__LOGO__</a>
   <span class="tag">Community</span>
   <nav aria-label="Site"><a href="quickstart.html">Quickstart</a><a href="skills.html">Skills</a><a href="tools.html">Tools</a><a id="gh-start" href="#">Start here</a><a id="gh-charter" href="#">Charter</a><a id="gh-repo" href="#">GitHub</a></nav>
+  <button class="theme" id="theme" type="button" aria-label="Switch theme"></button>
 </div></header>
 
 <section class="hero gutter">

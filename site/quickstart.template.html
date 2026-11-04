@@ -12,24 +12,31 @@
 /* Layout: one narrow column. Pick your app, then three numbered steps. Nothing else. */
 :root{
   --bg:#ffffff; --surface:#f6f6f4; --ink:#000000; --muted:#5b5b57; --line:#e3e3df;
-  --spark:#fee31b; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
+  --spark:#fee31b; --link-line:#b4a813; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
   --sans:"Bloomreach Sans","Instrument Sans",Arial,Helvetica,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
-@media (prefers-color-scheme:dark){:root{
-  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26; --arctic:#55bbde; color-scheme:dark}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26; --arctic:#55bbde; --link-line:#fee31b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26; --arctic:#55bbde; --link-line:#fee31b; color-scheme:dark}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans)}
-a{color:var(--arctic)}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--link-line);text-decoration-thickness:1.5px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:3px}
 .gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .bar{border-bottom:1px solid var(--line)}
 .bar .wrap{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:14px;padding-block:14px}
 .logo{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
 .logo-icon{width:30px;height:30px}
 .logo-text{height:15px;width:auto}
-.tag{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;height:22px;padding:1px 9px 0;position:relative;top:2px;font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
 .bar nav{margin-left:auto;display:flex;gap:18px;font-size:15px}
+.theme{margin-left:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.theme:hover{border-color:var(--ink)}
+.theme svg{width:18px;height:18px}
+.theme:focus-visible{outline:3px solid var(--arctic-bright);outline-offset:2px}
 .bar nav a{color:var(--ink);text-decoration:none}
 main{max-width:720px;margin:0 auto;padding-block:48px 72px;display:grid;grid-template-columns:minmax(0,1fr);gap:32px}
 h1{margin:0;font:500 clamp(32px,5vw,48px)/1.08 var(--sans);text-wrap:balance}
@@ -55,14 +62,16 @@ ol.steps>li::before{content:counter(step);grid-row:span 2;width:44px;height:44px
 .note{color:var(--muted);font-size:15px}
 .panel[hidden]{display:none}
 footer{max-width:720px;margin:0 auto;padding-block:24px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:15px}
-@media (max-width:600px){.bar nav{display:none}ol.steps>li{grid-template-columns:36px minmax(0,1fr)}ol.steps>li::before{width:36px;height:36px;line-height:36px;font-size:17px}.steps h2{line-height:36px}}
+@media (max-width:600px){.bar nav{display:none}.theme{margin-left:auto}ol.steps>li{grid-template-columns:36px minmax(0,1fr)}ol.steps>li::before{width:36px;height:36px;line-height:36px;font-size:17px}.steps h2{line-height:36px}}
 </style>
+<script src="assets/theme.js"></script>
 </head>
 <body>
 <header class="bar gutter"><div class="wrap">
   <a class="logo" href="./" aria-label="loomi-connect-community home">__LOGO__</a>
   <span class="tag">Community</span>
   <nav aria-label="Site"><a href="./">Home</a><a href="skills.html">Skills</a><a href="tools.html">Tools</a><a id="gh-repo" href="#">GitHub</a></nav>
+  <button class="theme" id="theme" type="button" aria-label="Switch theme"></button>
 </div></header>
 
 <main class="gutter">
