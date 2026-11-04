@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>loomi-connect-community</title>
+<meta name="description" content="Community skills for Loomi Connect, the Bloomreach MCP server for Engagement, Discovery and Data Hub.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<!-- Generated from site/index.template.html by scripts/build_skill_index.py. Edit the template, not this file. -->
+<style>
+/* Layout: brand bar, a type-led hero, then the tool map (the page's one big moment), plugins, install, people. */
+:root{
+  --bg:#ffffff; --surface:#f6f6f4; --ink:#000000; --muted:#5b5b57; --line:#e3e3df;
+  --spark:#fee31b; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
+  --eng:#019ace; --disc:#8873ff; --hub:#ee6c2b; --shared:#04c586; --empty:#e9e9e4;
+  --sans:"Bloomreach Sans","Instrument Sans",Arial,Helvetica,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26;
+  --arctic:#55bbde; --empty:#23231f; color-scheme:dark}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans)}
+a{color:var(--arctic)}
+.gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto}
+.bar{border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:14px;padding-block:14px}
+.logo{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
+.logo-icon{width:30px;height:30px}
+.logo-text{height:15px;width:auto}
+.tag{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:var(--muted)}
+.bar nav{margin-left:auto;display:flex;gap:18px;font-size:15px;flex-wrap:wrap}
+.bar nav a{color:var(--ink);text-decoration:none}
+.bar nav a:hover{text-decoration:underline}
+.hero .wrap{padding-block:64px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+h1{margin:0;font:500 clamp(36px,7.4vw,80px)/1.02 var(--mono);letter-spacing:-.03em;word-break:break-word}
+h1 .dash{color:var(--muted)}
+h1 .mark{background:linear-gradient(transparent 62%,var(--spark) 62%);}
+.lede{font-size:clamp(18px,2.2vw,21px);line-height:1.45;max-width:58ch;margin:0}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{font:600 15px/1 var(--sans);padding:13px 18px;border-radius:999px;text-decoration:none;border:1px solid var(--ink);color:var(--ink)}
+.btn.primary{background:var(--spark);border-color:var(--spark);color:var(--spark-ink)}
+.btn:focus-visible,.cell:focus-visible,button:focus-visible{outline:3px solid var(--arctic-bright);outline-offset:2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat{padding:18px 0;display:flex;flex-direction:column;gap:2px}
+.stat b{font:500 36px/1 var(--sans);font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:14px}
+section.block .wrap{padding-block:56px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+h2{margin:0;font:500 clamp(26px,3.4vw,36px)/1.1 var(--sans);text-wrap:balance}
+.kicker{font:600 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.map-head{display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between}
+.map-head p{margin:0;max-width:60ch;color:var(--muted)}
+.big{font:500 clamp(40px,6vw,64px)/1 var(--sans);font-variant-numeric:tabular-nums}
+.big small{font-size:.45em;color:var(--muted)}
+.groups{display:grid;gap:22px}
+.group h3{margin:0 0 8px;font:600 13px var(--mono);display:flex;gap:10px;align-items:center}
+.group h3 i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(18px,1fr));gap:4px}
+.cell{aspect-ratio:1;border-radius:3px;border:0;padding:0;cursor:pointer;background:var(--empty);position:relative}
+.cell.on{background:var(--c)}
+.cell.off{background:transparent;box-shadow:inset 0 0 0 1.5px var(--c)}
+.readout{min-height:3.2em;overflow-wrap:anywhere;font:14px/1.5 var(--mono);color:var(--muted);border-left:3px solid var(--spark);padding-left:12px}
+.readout b{color:var(--ink)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.legend span{display:flex;gap:6px;align-items:center}
+.sw{width:12px;height:12px;border-radius:2px;display:inline-block}
+.plugins{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.plugin{background:var(--bg);padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.plugin a.name{font:600 15px var(--mono);color:var(--ink);text-decoration:none}
+.plugin a.name:hover{text-decoration:underline}
+.plugin .n{font:500 32px/1 var(--sans);font-variant-numeric:tabular-nums}
+.plugin .n small{font-size:14px;color:var(--muted);margin-left:6px}
+.plugin p{margin:0;color:var(--muted);font-size:15px}
+.install{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.code{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.code .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font:600 13px var(--mono)}
+.code pre{margin:0;overflow-x:auto;font:13px/1.6 var(--mono)}
+.copy{font:600 12px var(--mono);background:transparent;border:1px solid var(--line);color:var(--ink);padding:5px 9px;border-radius:6px;cursor:pointer}
+.people{display:flex;flex-wrap:wrap;gap:8px}
+.people span{border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:15px}
+.people span:first-child{background:var(--spark);border-color:var(--spark);color:var(--spark-ink)}
+footer .wrap{padding-block:32px 48px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px 24px;color:var(--muted);font-size:14px}
+@media (max-width:640px){.bar nav{display:none}.hero .wrap{padding-block:40px 28px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar gutter"><div class="wrap">
+  <a class="logo" href="./" aria-label="loomi-connect-community home">__LOGO__</a>
+  <span class="tag">Community</span>
+  <nav aria-label="Site"><a href="skills.html">Skills</a><a id="gh-start" href="#">Start here</a><a id="gh-charter" href="#">Charter</a><a id="gh-repo" href="#">GitHub</a></nav>
+</div></header>
+
+<section class="hero gutter"><div class="wrap">
+  <div class="kicker">Bloomreach · open source · Apache-2.0</div>
+  <h1><span class="mark">loomi</span><span class="dash">-</span>connect<span class="dash">-</span>community</h1>
+  <p class="lede">Skills that turn Loomi Connect, the Bloomreach MCP server, into repeatable results across Engagement, Discovery and Data Hub. They work the same in Claude and OpenAI clients. Bloomreach maintains it; anyone can contribute.</p>
+  <div class="cta"><a class="btn primary" href="skills.html" id="cta-skills">Browse the skills</a><a class="btn" id="cta-repo" href="#">View on GitHub</a></div>
+  <div class="stats" id="stats" aria-label="Totals"></div>
+</div></section>
+
+<section class="block gutter"><div class="wrap">
+  <div class="kicker">The Loomi Connect tool map</div>
+  <div class="map-head">
+    <div><h2>Every published tool, and whether a skill uses it</h2><p>One cell per tool Loomi Connect publishes. A filled cell is used by at least one community skill. Select a cell to see which skills use it.</p></div>
+    <div class="big" id="coverage"></div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="groups" id="groups"></div>
+  <div class="readout" id="readout" aria-live="polite">Select a cell.</div>
+</div></section>
+
+<section class="block gutter" style="background:var(--surface)"><div class="wrap">
+  <div class="kicker">Plugins</div>
+  <h2>Four plugins, installed one at a time or all together</h2>
+  <div class="plugins" id="plugins"></div>
+</div></section>
+
+<section class="block gutter"><div class="wrap">
+  <div class="kicker">Install</div>
+  <h2>Connect Loomi Connect first, then add the plugins</h2>
+  <div class="install">
+    <div class="code"><div class="top">Claude Code <button class="copy" data-for="c1" type="button">Copy</button></div><pre id="c1">/plugin marketplace add bloomreach/loomi-connect-community
+/plugin install loomi-engagement@loomi-connect-community
+/plugin install loomi-discovery@loomi-connect-community
+/plugin install loomi-platform@loomi-connect-community
+/plugin install loomi-product-data@loomi-connect-community</pre></div>
+    <div class="code"><div class="top">OpenAI Codex <button class="copy" data-for="c2" type="button">Copy</button></div><pre id="c2">codex plugin marketplace add bloomreach/loomi-connect-community</pre></div>
+  </div>
+</div></section>
+
+<section class="block gutter" style="background:var(--surface)"><div class="wrap">
+  <div class="kicker">The community</div>
+  <h2>People who have shipped skills here</h2>
+  <div class="people" id="people"></div>
+</div></section>
+
+<footer class="gutter"><div class="wrap">
+  <span>Community content isn't an officially supported Bloomreach feature unless marked as such. Read a skill before you run it.</span>
+  <a id="gh-disclaimer" href="#">Disclaimer</a><span id="checked"></span>
+</div></footer>
+
+<script>
+const D=__DATA__;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const blob=p=>D.repo+"/blob/main/"+p, tree=p=>D.repo+"/tree/main/"+p;
+$("gh-repo").href=$("cta-repo").href=D.repo; $("gh-start").href=blob("docs/start-here.md");
+$("gh-charter").href=blob("CHARTER.md"); $("gh-disclaimer").href=blob("DISCLAIMER.md");
+const writes=D.skills.filter(s=>s.writes).length, used=D.tools.filter(t=>t.skills.length).length;
+$("cta-skills").textContent="Browse the "+D.skills.length+" skills";
+$("stats").innerHTML=[[D.skills.length,"skills"],[D.plugins.length,"plugins"],[D.skills.length-writes,"read-only"],[writes,"write, after you confirm"],[D.scripts,"helper scripts"],[D.tests,"test files"]]
+  .map(([n,l])=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
+$("coverage").innerHTML=`${used}<small> / ${D.tools.length}</small>`;
+$("checked").textContent="Tool list checked "+D.toolsChecked;
+const AREAS=[["engagement","Engagement","var(--eng)"],["discovery","Discovery","var(--disc)"],["datahub","Data Hub","var(--hub)"],["shared","Shared","var(--shared)"]];
+$("legend").innerHTML=AREAS.map(a=>`<span><i class="sw" style="background:${a[2]}"></i>${a[1]}</span>`).join("")+`<span><i class="sw" style="box-shadow:inset 0 0 0 1.5px var(--muted)"></i>not used yet</span>`;
+$("groups").innerHTML=AREAS.map(([k,label,c])=>{const ts=D.tools.filter(t=>t.area===k);if(!ts.length)return"";
+  const u=ts.filter(t=>t.skills.length).length;
+  return `<div class="group"><h3><i style="background:${c}"></i>${label} · ${u} of ${ts.length}</h3><div class="cells">`+
+    ts.map(t=>`<button type="button" class="cell ${t.skills.length?"on":"off"}" style="--c:${c}" data-tool="${esc(t.name)}" aria-label="${esc(t.name)}: ${t.skills.length?t.skills.length+" skills":"not used yet"}" title="${esc(t.name)}"></button>`).join("")+`</div></div>`;}).join("");
+const byName=Object.fromEntries(D.tools.map(t=>[t.name,t]));
+function show(name){const t=byName[name];if(!t)return;
+  $("readout").innerHTML=t.skills.length?`<b>${esc(t.name)}</b> · used by ${t.skills.length} skill${t.skills.length>1?"s":""}: ${t.skills.slice(0,12).map(esc).join(", ")}${t.skills.length>12?", …":""}`:`<b>${esc(t.name)}</b> · not used by any skill yet. A good first contribution.`;}
+$("groups").addEventListener("click",e=>{const b=e.target.closest(".cell");if(b)show(b.dataset.tool);});
+$("groups").addEventListener("mouseover",e=>{const b=e.target.closest(".cell");if(b)show(b.dataset.tool);});
+$("groups").addEventListener("focusin",e=>{const b=e.target.closest(".cell");if(b)show(b.dataset.tool);});
+const busiest=[...D.tools].sort((a,b)=>b.skills.length-a.skills.length||a.name.localeCompare(b.name))[0];
+if(busiest)show(busiest.name);
+$("plugins").innerHTML=D.plugins.map(p=>`<div class="plugin"><a class="name" href="${tree("plugins/"+p.name)}">${esc(p.name)}</a><div class="n">${p.skills}<small>${p.writes} write</small></div><p>${esc(p.description)}</p></div>`).join("");
+$("people").innerHTML=D.contributors.map(n=>`<span>${esc(n)}</span>`).join("")||"<span>Be the first.</span>";
+document.querySelectorAll(".copy").forEach(b=>b.addEventListener("click",()=>{const t=$(b.dataset.for).textContent;
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1500)})
+  .catch(()=>{const r=document.createRange();r.selectNodeContents($(b.dataset.for));const s=getSelection();s.removeAllRanges();s.addRange(r);});}));
+</script>
+</body>
+</html>
