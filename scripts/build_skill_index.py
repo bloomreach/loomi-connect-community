@@ -218,7 +218,7 @@ def render_site(root, data, outdir):
             + inline_svg(site / "assets" / "bloomreach-logo-text.svg",
                          'class="logo-text" role="img" aria-label="Bloomreach" fill="currentColor"'))
     outdir.mkdir(parents=True, exist_ok=True)
-    for name in ("index", "skills", "quickstart"):
+    for name in ("index", "skills", "quickstart", "tools"):
         try:
             tpl = (site / f"{name}.template.html").read_text(encoding="utf-8")
         except OSError as e:

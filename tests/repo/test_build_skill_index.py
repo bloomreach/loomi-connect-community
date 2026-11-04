@@ -68,7 +68,7 @@ class BuildSkillIndexTest(unittest.TestCase):
             r = run(BUILD, "--check", "--site", Path(tmp) / "site", "--today", "2026-11-04")
             self.assertEqual(r.returncode, 0, r.stderr)
             out = Path(tmp) / "site"
-            for f in ("index.html", "skills.html", "quickstart.html", "assets/bloomreach-logo-icon.svg", ".nojekyll"):
+            for f in ("index.html", "skills.html", "quickstart.html", "tools.html", "assets/bloomreach-logo-icon.svg", ".nojekyll"):
                 self.assertTrue((out / f).exists(), f)
             page = (out / "index.html").read_text(encoding="utf-8")
             self.assertNotIn("__DATA__", page)
