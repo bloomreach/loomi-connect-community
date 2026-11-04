@@ -47,7 +47,7 @@ This is best effort: it can't recognise every name, ID or business figure, so yo
 ## What the feedback text looks like
 
 ```
-[Loomi Connect Community report] <tool>: <summary>
+[Loomi Connect Community report] <tool> — <summary>
 
 Product: <product> | Environment: <production or staging>
 
