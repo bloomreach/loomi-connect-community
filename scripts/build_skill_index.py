@@ -219,12 +219,24 @@ def render_nav(page):
     return f'<nav aria-label="Site">{links}</nav>'
 
 
+# The site uses the current product names. Only the capitalised words change: plugin and tool names
+# (loomi-discovery, get_discovery_*) are real identifiers and stay as they are.
+PRODUCT_NAMES = [(re.compile(r"\bDiscovery\b"), "Search"), (re.compile(r"\bEngagement\b"), "Marketing")]
+
+
+def current_names(text):
+    for pat, name in PRODUCT_NAMES:
+        text = pat.sub(name, text)
+    return text
+
+
 def render_site(root, data, outdir):
     site = root / "site"
     counts = plugin_counts(data)
     payload = {
-        "skills": data["skills"],
-        "plugins": [dict(data["plugins"][p], **counts[p]) for p in PLUGIN_ORDER],
+        "skills": [dict(s, summary=current_names(s["summary"])) for s in data["skills"]],
+        "plugins": [dict(data["plugins"][p], description=current_names(data["plugins"][p]["description"]), **counts[p])
+                    for p in PLUGIN_ORDER],
         "tools": [{"name": t["name"], "area": t["area"], "skills": t["skills"]} for t in data["tools"]],
         "toolsChecked": data["tools_checked"],
         "scripts": data["scripts"],
