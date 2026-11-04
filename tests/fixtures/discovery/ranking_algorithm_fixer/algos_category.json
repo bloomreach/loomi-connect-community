@@ -1,0 +1,87 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "id": 2,
+    "algoId": "br-standard",
+    "name": "Classic category ranking",
+    "type": "ML_NON_LINEAR_GLOBAL",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "catalog": null,
+    "domainKey": "acme_shop",
+    "signals": null,
+    "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1735689600000,
+    "createdBy": "editor@example.com",
+    "lastModifiedAt": 1735689600000,
+    "lastModifiedBy": "editor@example.com"
+   },
+   {
+    "id": 14,
+    "algoId": "br-ddd14444",
+    "name": "Shop ABR",
+    "type": "ABR_CATALOG",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "catalog": "acme_shop",
+    "domainKey": "acme_shop",
+    "signals": null,
+    "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1735689600000,
+    "createdBy": "editor@example.com",
+    "lastModifiedAt": 1735689600000,
+    "lastModifiedBy": "editor@example.com"
+   },
+   {
+    "id": 15,
+    "algoId": "br-eee15555",
+    "name": "Manual ABR",
+    "type": "ABR_MANUAL",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "catalog": "acme_shop",
+    "domainKey": "acme_shop",
+    "signals": null,
+    "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1735689600000,
+    "createdBy": "editor@example.com",
+    "lastModifiedAt": 1735689600000,
+    "lastModifiedBy": "editor@example.com"
+   },
+   {
+    "id": 21,
+    "algoId": "br-hhh21111",
+    "name": "Margin cat",
+    "type": "ML_LINEAR_CUSTOM",
+    "status": "Available",
+    "searchType": "CATEGORY",
+    "catalog": null,
+    "domainKey": "acme_shop",
+    "signals": [
+     "margin"
+    ],
+    "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+    "weightFileStatus": "SYNCED",
+    "failureMessage": null,
+    "createdAt": 1735689600000,
+    "createdBy": "editor@example.com",
+    "lastModifiedAt": 1735689600000,
+    "lastModifiedBy": "editor@example.com"
+   }
+  ],
+  "meta": {
+   "pagination": {
+    "total": 4
+   }
+  },
+  "error": null
+ }
+}

@@ -1,0 +1,1 @@
+Error calling tool 'search_ranking_algorithms': Client error '404 Not Found' for url 'https://search.example.test/v1/rankingAlgo/99'

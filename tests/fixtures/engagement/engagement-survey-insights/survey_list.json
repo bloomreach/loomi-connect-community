@@ -1,0 +1,13 @@
+{
+ "result": {
+  "success": true,
+  "data": [
+   {
+    "_id": "FAKE1",
+    "name": "x",
+    "status": "active"
+   }
+  ],
+  "error": null
+ }
+}

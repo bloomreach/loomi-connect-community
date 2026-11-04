@@ -1,0 +1,32 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 1,
+   "algoId": "br-standard",
+   "name": "Classic search ranking",
+   "type": "CLASSIC",
+   "status": "Default",
+   "searchType": "KEYWORD",
+   "catalog": null,
+   "domainKey": "acme_shop",
+   "signals": null,
+   "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1735689600000,
+   "createdBy": "editor@example.com",
+   "lastModifiedAt": 1735689600000,
+   "lastModifiedBy": "editor@example.com",
+   "description": "",
+   "baseAlgoId": null,
+   "weights": null,
+   "modelMetaData": {
+    "text": null,
+    "combined": null
+   }
+  },
+  "error": null,
+  "environment_used": "production"
+ }
+}

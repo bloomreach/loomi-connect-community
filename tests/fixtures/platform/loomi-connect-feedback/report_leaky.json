@@ -1,0 +1,15 @@
+{
+  "tool": "search_scenarios",
+  "product": "engagement",
+  "summary": "system_scenarios=true returns an empty list for Acme Outdoor",
+  "gap_type": "OTHER",
+  "completion_estimate": 2,
+  "expected": "System scenarios for project 5f2b9c8e1a4d7f3b6c0e9a21.",
+  "actual": "Empty list. Owner jane.doe@example.com saw it at https://app.demo.test/p/x?token=FAKEtok",
+  "arguments": {
+    "project_id": "5f2b9c8e1a4d7f3b6c0e9a21",
+    "system_scenarios": true
+  },
+  "what_i_tried": "Bearer FAKEbearertoken12345 sent; call +44 20 7946 0000",
+  "suggestion": "auth_key=FAKEkey1"
+}

@@ -1,0 +1,26 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 7001,
+   "ruleType": "ranking_algo",
+   "enabled": true,
+   "user": "editor@example.com",
+   "audiences": [],
+   "queries": [
+    {
+     "id": 1,
+     "query": "pants",
+     "queryType": "sitesearch",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "ranking_algo": {
+     "id": "br-ggg17777"
+    }
+   }
+  }
+ },
+ "error": null
+}

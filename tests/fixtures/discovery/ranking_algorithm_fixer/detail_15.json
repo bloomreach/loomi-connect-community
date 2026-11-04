@@ -1,0 +1,37 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 15,
+   "algoId": "br-eee15555",
+   "name": "Manual ABR",
+   "type": "ABR_MANUAL",
+   "status": "Available",
+   "searchType": "CATEGORY",
+   "catalog": "acme_shop",
+   "domainKey": "acme_shop",
+   "signals": null,
+   "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1735689600000,
+   "createdBy": "editor@example.com",
+   "lastModifiedAt": 1735689600000,
+   "lastModifiedBy": "editor@example.com",
+   "description": "",
+   "modelMetaData": null,
+   "weights": [
+    {
+     "feature_key": "text_match",
+     "display_weight": 70
+    },
+    {
+     "feature_key": "revenue",
+     "display_weight": 30
+    }
+   ],
+   "baseAlgoId": "br-ddd14444"
+  },
+  "error": null
+ }
+}

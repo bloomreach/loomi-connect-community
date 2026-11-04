@@ -1,0 +1,86 @@
+[
+ {
+  "action": "update",
+  "algorithm_id": 11,
+  "weights": {
+   "raw_qd_revenue_keyword": 30
+  },
+  "rebalance": true,
+  "reason": "revenue at zero-ish"
+ },
+ {
+  "action": "delete",
+  "algorithm_id": 12,
+  "reason": "not seen in use; duplicate"
+ },
+ {
+  "action": "update",
+  "algorithm_id": 16,
+  "weights": {
+   "raw_qd_views_keyword": 15,
+   "text_score_keyword": 45
+  },
+  "reason": "dominant signal"
+ },
+ {
+  "action": "delete",
+  "algorithm_id": 17,
+  "reason": "unused"
+ },
+ {
+  "action": "update",
+  "algorithm_id": 14,
+  "weights": {
+   "revenue": 50,
+   "text_match": 50
+  },
+  "reason": "dominant"
+ },
+ {
+  "action": "create",
+  "copy_of": 14,
+  "name": "Shop ABR v2",
+  "weights": {
+   "revenue": 50,
+   "text_match": 50
+  },
+  "reason": "corrected copy"
+ },
+ {
+  "action": "update",
+  "algorithm_id": 21,
+  "weights": {
+   "margin": 20
+  },
+  "rebalance": true,
+  "reason": "custom signal"
+ },
+ {
+  "action": "delete",
+  "algorithm_id": 1,
+  "reason": "test"
+ },
+ {
+  "action": "create",
+  "copy_of": 11,
+  "name": "Text relevance v2",
+  "reason": "copy"
+ },
+ {
+  "action": "update",
+  "algorithm_id": 13,
+  "name": "Text relevance",
+  "reason": "rename"
+ },
+ {
+  "action": "update",
+  "algorithm_id": 15,
+  "name": "Manual ABR 2026",
+  "reason": "rename"
+ },
+ {
+  "action": "delete",
+  "algorithm_id": 15,
+  "reason": "second change"
+ }
+]

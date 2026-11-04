@@ -1,0 +1,37 @@
+{
+ "success": true,
+ "query": "select ...",
+ "analysis_type": "report",
+ "data": {
+  "columns": [
+   []
+  ],
+  "rows": [
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "mobile"
+     }
+    ],
+    "values": [
+     20
+    ]
+   },
+   {
+    "headers": [
+     {
+      "type": "single",
+      "value": "desktop"
+     }
+    ],
+    "values": [
+     10
+    ]
+   }
+  ],
+  "success": true,
+  "valid": true
+ },
+ "error": null
+}

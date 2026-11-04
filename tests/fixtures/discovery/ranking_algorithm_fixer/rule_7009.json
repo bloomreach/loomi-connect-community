@@ -1,0 +1,28 @@
+{
+ "success": true,
+ "data": {
+  "data": {
+   "id": 7009,
+   "ruleType": "ranking_algo",
+   "enabled": true,
+   "audiences": [
+    {
+     "id": 5,
+     "audienceName": "VIP"
+    }
+   ],
+   "queries": [
+    {
+     "id": 2,
+     "query": "*",
+     "queryType": "global",
+     "matchType": "EXACT_MATCH"
+    }
+   ],
+   "customizationItems": {
+    "ranking_algo": "{\"id\": \"br-bbb12222\"}"
+   }
+  }
+ },
+ "error": null
+}

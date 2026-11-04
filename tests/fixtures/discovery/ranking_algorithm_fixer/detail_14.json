@@ -1,0 +1,37 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 14,
+   "algoId": "br-ddd14444",
+   "name": "Shop ABR",
+   "type": "ABR_CATALOG",
+   "status": "Available",
+   "searchType": "CATEGORY",
+   "catalog": "acme_shop",
+   "domainKey": "acme_shop",
+   "signals": null,
+   "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1735689600000,
+   "createdBy": "editor@example.com",
+   "lastModifiedAt": 1735689600000,
+   "lastModifiedBy": "editor@example.com",
+   "description": "",
+   "modelMetaData": null,
+   "weights": [
+    {
+     "feature_key": "text_match",
+     "display_weight": 60
+    },
+    {
+     "feature_key": "revenue",
+     "display_weight": 40
+    }
+   ],
+   "baseAlgoId": null
+  },
+  "error": null
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 31,
+   "algoId": "br-new31111",
+   "name": "Shop ABR v2",
+   "type": "ABR_MANUAL",
+   "status": "Available",
+   "searchType": "CATEGORY",
+   "catalog": "acme_shop",
+   "domainKey": "acme_shop",
+   "signals": null,
+   "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1735689600000,
+   "createdBy": "editor@example.com",
+   "lastModifiedAt": 1735689600000,
+   "lastModifiedBy": "editor@example.com",
+   "weights": [
+    {
+     "feature_key": "text_match",
+     "display_weight": 50
+    },
+    {
+     "feature_key": "revenue",
+     "display_weight": 50
+    }
+   ]
+  }
+ }
+}

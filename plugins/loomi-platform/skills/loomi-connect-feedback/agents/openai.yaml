@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Loomi Connect Feedback"
+  short_description: "Send one privacy-safe tool problem report to the Loomi Connect team, after you confirm"
+policy:
+  # This skill sends a report to the Loomi Connect team (submit_llm_feedback), so it only runs when called by name.
+  allow_implicit_invocation: false

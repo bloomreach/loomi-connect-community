@@ -40,6 +40,7 @@ Skills for **Bloomreach Engagement** that use Loomi Connect.
 | [engagement-send-preflight](skills/engagement-send-preflight/) | Go/no-go list of every email, SMS and push due in the next few days, with what to fix before each one sends, plus collisions | Read-only |
 | [voucher-pool-health](skills/voucher-pool-health/) | Voucher pools that will run out or expire before the sends that use them: days of cover, planned demand, empty pools still in live use, unused pools | Read-only |
 | [onsite-experience-audit](skills/onsite-experience-audit/) | Expired, overlapping, untested or abandoned banners, weblayers and surveys | Read-only |
+| [engagement-survey-insights](skills/engagement-survey-insights/) | Survey results from aggregate EQL: respondents, answer distributions, NPS-style and CSAT scores with confidence intervals, weekly trends and splits, and surveys or questions to fix; free text counted, never listed | Read-only |
 | [engagement-experiment-readout](skills/engagement-experiment-readout/) | A/B test results for scenarios and campaigns: call a winner, keep running or stop | Read-only |
 | [recommendation-model-audit](skills/recommendation-model-audit/) | Recommendation engines: usage, catalog freshness, duplicates, filters, and placements missing recommendations | Read-only |
 

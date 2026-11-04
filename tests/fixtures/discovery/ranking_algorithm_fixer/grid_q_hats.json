@@ -1,0 +1,36 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "response": {
+    "numFound": 1,
+    "docs": [
+     {
+      "pid": "p1"
+     }
+    ]
+   },
+   "debug": {
+    "rankingAlgorithmName": "Summer boost",
+    "customizations.explain": [
+     {
+      "id": 801,
+      "ruleType": "ranking_algo",
+      "liveInTest": false,
+      "queries": [
+       {
+        "type": "sitesearch"
+       }
+      ],
+      "customizationItems": [
+       {
+        "type": "ranking_algo",
+        "value": "{\"id\": \"br-bbb12222\"}"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

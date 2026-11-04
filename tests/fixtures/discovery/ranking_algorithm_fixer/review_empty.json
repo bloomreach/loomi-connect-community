@@ -1,0 +1,61 @@
+{
+ "ok": true,
+ "summary": {
+  "sampled_queries": 0,
+  "sampled_categories": 0
+ },
+ "algorithms": [
+  {
+   "id": 1,
+   "used_on": [],
+   "visits_served": 3000
+  },
+  {
+   "id": 11,
+   "used_on": [],
+   "visits_served": 2000
+  },
+  {
+   "id": 12,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 13,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 16,
+   "used_on": [],
+   "visits_served": 9000
+  },
+  {
+   "id": 17,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 2,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 14,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 15,
+   "used_on": [],
+   "visits_served": 0
+  },
+  {
+   "id": 21,
+   "used_on": [],
+   "visits_served": 1500
+  }
+ ],
+ "findings": [],
+ "not_checked": []
+}

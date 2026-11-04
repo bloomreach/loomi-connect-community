@@ -1,0 +1,24 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "id": 12,
+   "algoId": "br-bbb12222",
+   "name": "Summer boost",
+   "type": "MANUAL",
+   "status": "Available",
+   "searchType": "KEYWORD",
+   "catalog": null,
+   "domainKey": "acme_shop",
+   "signals": null,
+   "modelTrainingStatus": "NO_TRAINING_REQUIRED",
+   "weightFileStatus": "SYNCED",
+   "failureMessage": null,
+   "createdAt": 1735689600000,
+   "createdBy": "editor@example.com",
+   "lastModifiedAt": 1735689600000,
+   "lastModifiedBy": "editor@example.com",
+   "deleted": true
+  }
+ }
+}
