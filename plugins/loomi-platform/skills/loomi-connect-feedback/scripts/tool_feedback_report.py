@@ -798,7 +798,7 @@ def cmd_build(a):
     suggestion = clean("suggestion", str(rep.get("suggestion") or "").strip())
 
     env_bits = [f"Product: {product}" if product else None, f"Environment: {a.environment}"]
-    parts = [f"{RULES['report_prefix']} {tool}: {one_line(summary)}", "",
+    parts = [f"{RULES['report_prefix']} {tool} — {one_line(summary)}", "",
              " | ".join(b for b in env_bits if b), "", f"Expected: {expected}", f"Actual: {actual}", "",
              "Minimal reproduction (IDs, names, emails, URLs and secrets replaced with placeholders):",
              f"  tool: {tool}",

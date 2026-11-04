@@ -2,7 +2,7 @@
 
 These are quirks and bugs in Loomi Connect tools that we found while building and testing the skills in this repository (October 2026). Bear them in mind when writing a skill. When you find a new one, add it here.
 
-Items marked **(bug?)** are worth reporting to the Loomi Connect team. <!-- TODO: link issues once raised -->
+Items marked **(bug?)** are worth reporting to the Loomi Connect team. Every item marked by 2026-11-04 (15 in all) was reported that day through `submit_llm_feedback` with the [loomi-connect-feedback](../plugins/loomi-platform/skills/loomi-connect-feedback/) skill, together with five requests for missing capabilities (query-level product performance; project time zone, default sender and a public tool list; Discovery media rule and dynamic category writes; Engagement definition writes and SMS silent hours; ad-platform audiences and voucher expiry). Report new items the same way, and update or remove an item when the team confirms a fix.
 
 ## General
 

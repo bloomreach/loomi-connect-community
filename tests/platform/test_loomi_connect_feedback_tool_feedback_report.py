@@ -95,6 +95,18 @@ class Build(unittest.TestCase):
         self.assertEqual(out["batches"], [[1]])
         self.assertEqual(len(out["changes"]), 1)
 
+    def test_tool_names_with_sensitive_words_do_not_block_their_own_header(self):
+        # The header used to be "<tool>: <summary>", which the lint read as a name: value secret
+        # whenever the tool name held a word like email, project, segment or catalog.
+        for tool in ("update_email_campaign", "get_project_overview", "search_external_segments",
+                     "search_discovery_catalog_jobs", "list_site_search_ranking_rules"):
+            with self.subTest(tool=tool):
+                out = build(with_(tool=tool, known_line=None), "--published-tools", ROOT / "docs" / "published-tools.txt")
+                ch = out["changes"][0]
+                self.assertNotIn("secret", checks(out), ch["problems"])
+                self.assertEqual(ch["status"], "ready", ch["problems"])
+                self.assertIn(f"{tool} — ", ch["payload"]["feedback"].splitlines()[0])
+
     def test_payload_matches_tool_schema(self):
         p = build(GOOD)["changes"][0]["payload"]
         self.assertTrue(set(p) <= {"gap_type", "what_i_tried", "feedback", "completion_estimate", "client", "model"})
@@ -116,7 +128,7 @@ class Build(unittest.TestCase):
 
     def test_feedback_has_every_section(self):
         fb = build(GOOD)["changes"][0]["payload"]["feedback"]
-        self.assertTrue(fb.startswith(RULES["report_prefix"] + " get_discovery_category_performance_table: "))
+        self.assertTrue(fb.startswith(RULES["report_prefix"] + " get_discovery_category_performance_table — "))
         for part in ("Environment: production", "Expected: ", "Actual: ",
                      "Minimal reproduction", "  tool: get_discovery_category_performance_table",
                      RULES["repo_doc_url"] + "#L10", "Suggestion: "):

@@ -30,7 +30,7 @@ completion_estimate: 3
 client: (never sent; the tool detects it)
 model: (never sent; the tool detects it)
 ----- feedback -----
-[Loomi Connect Community report] get_discovery_category_performance_table: filter_preset=lowest_converting returns 0 rows
+[Loomi Connect Community report] get_discovery_category_performance_table — filter_preset=lowest_converting returns 0 rows
 
 Product: discovery | Environment: production
 
