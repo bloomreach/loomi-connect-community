@@ -63,6 +63,10 @@ class BuildSkillIndexTest(unittest.TestCase):
         self.assertFalse([t for t in self.data["tools"] if "internal" in t["tags"]])
         self.assertTrue(any(t["skills"] for t in self.data["tools"]))
 
+    def test_helper_tools_stay_out_of_the_tool_map(self):
+        self.assertIn("list_all_tools", self.data["helpers"])
+        self.assertFalse([t for t in self.data["tools"] if "meta" in t["tags"]])
+
     def test_site_builds_with_every_skill_and_no_email_addresses(self):
         with tempfile.TemporaryDirectory() as tmp:
             r = run(BUILD, "--check", "--site", Path(tmp) / "site", "--today", "2026-11-04")

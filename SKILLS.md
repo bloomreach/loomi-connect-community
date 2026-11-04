@@ -12,8 +12,7 @@
 | [`loomi-product-data`](plugins/loomi-product-data/) | 4 | 4 | 0 |
 | **Total** | **99** | **82** | **17** |
 
-The skills use 186 of the 187 published Loomi Connect tools (tool list checked 2026-11-04).
-Not used by any skill yet: `list_all_tools`.
+The skills use 185 of the 185 published Loomi Connect tools (tool list checked 2026-11-04). Tools for finding tools and guides aren't counted: `get_guide`, `list_all_tools`.
 
 ## loomi-engagement
 
