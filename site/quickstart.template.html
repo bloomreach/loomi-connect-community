@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quickstart · loomi-connect-community</title>
+<meta name="description" content="Get a Loomi Connect skill working in Claude or ChatGPT in three steps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<!-- Generated from site/quickstart.template.html by scripts/build_skill_index.py. Edit the template, not this file. -->
+<style>
+/* Layout: one narrow column. Pick your app, then three numbered steps. Nothing else. */
+:root{
+  --bg:#ffffff; --surface:#f6f6f4; --ink:#000000; --muted:#5b5b57; --line:#e3e3df;
+  --spark:#fee31b; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
+  --sans:"Bloomreach Sans","Instrument Sans",Arial,Helvetica,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0b0b0a; --surface:#161614; --ink:#f4f4ef; --muted:#a3a39b; --line:#2a2a26; --arctic:#55bbde; color-scheme:dark}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans)}
+a{color:var(--arctic)}
+.gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar{border-bottom:1px solid var(--line)}
+.bar .wrap{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:14px;padding-block:14px}
+.logo{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
+.logo-icon{width:30px;height:30px}
+.logo-text{height:15px;width:auto}
+.tag{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:var(--muted)}
+.bar nav{margin-left:auto;display:flex;gap:18px;font-size:15px}
+.bar nav a{color:var(--ink);text-decoration:none}
+main{max-width:720px;margin:0 auto;padding-block:48px 72px;display:grid;grid-template-columns:minmax(0,1fr);gap:32px}
+h1{margin:0;font:500 clamp(32px,5vw,48px)/1.08 var(--sans);text-wrap:balance}
+.lede{margin:10px 0 0;color:var(--muted);font-size:19px}
+.need{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;font-size:16px}
+.need b{display:block;margin-bottom:6px;font-size:13px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.need ul{margin:0;padding-left:20px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}
+.tab{font:600 15px var(--sans);padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.tab[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab:focus-visible,.copy:focus-visible,a:focus-visible{outline:3px solid var(--arctic-bright);outline-offset:2px}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:28px;counter-reset:step}
+ol.steps>li{counter-increment:step;display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 16px}
+ol.steps>li::before{content:counter(step);grid-row:span 2;width:44px;height:44px;border-radius:50%;background:var(--spark);color:var(--spark-ink);font:600 20px/44px var(--sans);text-align:center}
+.steps h2{margin:0;font:600 20px/44px var(--sans)}
+.steps .body{display:grid;gap:10px;min-width:0}
+.steps p{margin:0}
+.path{font-family:var(--mono);font-size:15px;background:var(--surface);padding:1px 6px;border-radius:4px}
+.code{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:8px;min-width:0}
+.code pre{margin:0;padding:12px 70px 12px 14px;overflow-x:auto;font:14px/1.6 var(--mono)}
+.copy{position:absolute;top:8px;right:8px;font:600 12px var(--mono);background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:5px 9px;border-radius:6px;cursor:pointer}
+.say{border-left:3px solid var(--spark);padding:4px 0 4px 14px;font-size:18px}
+.note{color:var(--muted);font-size:15px}
+.panel[hidden]{display:none}
+footer{max-width:720px;margin:0 auto;padding-block:24px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:15px}
+@media (max-width:600px){.bar nav{display:none}ol.steps>li{grid-template-columns:36px minmax(0,1fr)}ol.steps>li::before{width:36px;height:36px;line-height:36px;font-size:17px}.steps h2{line-height:36px}}
+</style>
+</head>
+<body>
+<header class="bar gutter"><div class="wrap">
+  <a class="logo" href="./" aria-label="loomi-connect-community home">__LOGO__</a>
+  <span class="tag">Community</span>
+  <nav aria-label="Site"><a href="./">Home</a><a href="skills.html">Skills</a><a id="gh-repo" href="#">GitHub</a></nav>
+</div></header>
+
+<main class="gutter">
+  <div>
+    <h1>Get a skill working in three steps</h1>
+    <p class="lede">Connect Loomi Connect, add the skills, then ask in your own words.</p>
+  </div>
+
+  <div class="need"><b>You need</b><ul>
+    <li>Your <strong>Loomi Connect server URL</strong>. Ask your Bloomreach admin; each region has its own.</li>
+    <li>A <strong>Bloomreach login</strong> with access to the projects you want to use.</li>
+  </ul></div>
+
+  <div class="tabs" role="tablist" aria-label="Your app">
+    <button class="tab" role="tab" id="t-claude-code" aria-controls="claude-code" aria-selected="true">Claude Code</button>
+    <button class="tab" role="tab" id="t-claude" aria-controls="claude" aria-selected="false">Claude app</button>
+    <button class="tab" role="tab" id="t-codex" aria-controls="codex" aria-selected="false">Codex</button>
+    <button class="tab" role="tab" id="t-chatgpt" aria-controls="chatgpt" aria-selected="false">ChatGPT</button>
+  </div>
+
+  <section class="panel" id="claude-code" role="tabpanel" aria-labelledby="t-claude-code">
+    <ol class="steps">
+      <li><h2>Connect Loomi Connect</h2><div class="body">
+        <p>In a terminal, with your URL in place of the brackets:</p>
+        <div class="code"><pre>claude mcp add --transport http loomi-connect &lt;your Loomi Connect URL&gt;</pre><button class="copy" type="button">Copy</button></div>
+        <p>Then start <span class="path">claude</span>, type <span class="path">/mcp</span>, and sign in.</p>
+      </div></li>
+      <li><h2>Add the skills</h2><div class="body">
+        <p>In Claude Code, paste:</p>
+        <div class="code"><pre>/plugin marketplace add bloomreach/loomi-connect-community
+/plugin install loomi-engagement@loomi-connect-community
+/plugin install loomi-discovery@loomi-connect-community
+/plugin install loomi-platform@loomi-connect-community
+/plugin install loomi-product-data@loomi-connect-community</pre><button class="copy" type="button">Copy</button></div>
+      </div></li>
+      <li><h2>Ask</h2><div class="body">
+        <p class="say">"Using Loomi Connect, list my Bloomreach organisations and projects."</p>
+        <p class="note">That checks the connection. Then ask for real work, for example "Give me this week's ecommerce briefing". Claude picks the right skill.</p>
+      </div></li>
+    </ol>
+  </section>
+
+  <section class="panel" id="claude" role="tabpanel" aria-labelledby="t-claude" hidden>
+    <ol class="steps">
+      <li><h2>Connect Loomi Connect</h2><div class="body">
+        <p>In claude.ai or Claude Desktop, go to <span class="path">Settings → Connectors</span>, add a custom connector with your Loomi Connect URL, and sign in.</p>
+        <p class="note">If you can't add connectors, your organisation admin needs to allow it.</p>
+      </div></li>
+      <li><h2>Add a skill</h2><div class="body">
+        <p>Download a skill's <b>.zip</b> from the <a href="skills.html">skills page</a>. Then go to <span class="path">Settings → Capabilities → Skills</span> and upload it.</p>
+        <p class="note">Not sure which? Start with <a href="downloads/loomi-project-overview.zip" download>loomi-project-overview.zip</a>.</p>
+      </div></li>
+      <li><h2>Ask</h2><div class="body">
+        <p class="say">"Using Loomi Connect, give me an overview of my project."</p>
+        <p class="note">Claude uses the skill when your request matches it.</p>
+      </div></li>
+    </ol>
+  </section>
+
+  <section class="panel" id="codex" role="tabpanel" aria-labelledby="t-codex" hidden>
+    <ol class="steps">
+      <li><h2>Connect Loomi Connect</h2><div class="body">
+        <p>In a terminal, with your URL in place of the brackets:</p>
+        <div class="code"><pre>codex mcp add loomi-connect --url &lt;your Loomi Connect URL&gt;
+codex mcp login loomi-connect</pre><button class="copy" type="button">Copy</button></div>
+      </div></li>
+      <li><h2>Add the skills</h2><div class="body">
+        <div class="code"><pre>codex plugin marketplace add bloomreach/loomi-connect-community</pre><button class="copy" type="button">Copy</button></div>
+        <p>Then install <span class="path">loomi-engagement</span>, <span class="path">loomi-discovery</span>, <span class="path">loomi-platform</span> and <span class="path">loomi-product-data</span> from Codex's plugin directory.</p>
+      </div></li>
+      <li><h2>Ask</h2><div class="body">
+        <p class="say">"Using Loomi Connect, list my Bloomreach organisations and projects."</p>
+        <p class="note">Codex picks the right skill. To call one by name, type <span class="path">$</span> and the skill name.</p>
+      </div></li>
+    </ol>
+  </section>
+
+  <section class="panel" id="chatgpt" role="tabpanel" aria-labelledby="t-chatgpt" hidden>
+    <ol class="steps">
+      <li><h2>Connect Loomi Connect</h2><div class="body">
+        <p>Turn on developer mode in <span class="path">Settings → Apps &amp; Connectors → Advanced</span>. Then go to <span class="path">Plugins → + → Add custom MCP server</span>, enter your Loomi Connect URL, choose OAuth, and sign in.</p>
+        <p class="note">Developer mode depends on your plan and your workspace admin.</p>
+      </div></li>
+      <li><h2>Add a skill</h2><div class="body">
+        <p>Download a skill's <b>.zip</b> from the <a href="skills.html">skills page</a>. Then go to <span class="path">Skills → Create → Upload from your computer</span>.</p>
+        <p class="note">Skills are on ChatGPT work plans; your workspace admin turns them on. Not sure which skill? Start with <a href="downloads/loomi-project-overview.zip" download>loomi-project-overview.zip</a>.</p>
+      </div></li>
+      <li><h2>Ask</h2><div class="body">
+        <p class="say">"Using Loomi Connect, give me an overview of my project."</p>
+        <p class="note">Or type <span class="path">@</span> and the skill name to call it directly.</p>
+      </div></li>
+    </ol>
+  </section>
+</main>
+
+<footer class="gutter">Stuck? See <a id="gh-connect" href="#">connecting Loomi Connect</a> for every client and common errors. Skills that change data always show you the change and wait for a yes.</footer>
+
+<script>
+const D=__DATA__;
+const $=id=>document.getElementById(id);
+$("gh-repo").href=D.repo; $("gh-connect").href=D.repo+"/blob/main/docs/connecting-loomi-connect.md";
+const tabs=[...document.querySelectorAll(".tab")];
+function pick(id,focus){tabs.forEach(t=>{const on=t.getAttribute("aria-controls")===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;$(t.getAttribute("aria-controls")).hidden=!on;if(on&&focus)t.focus();});
+  try{history.replaceState(null,"","#"+id)}catch(e){}}
+tabs.forEach((t,i)=>{t.addEventListener("click",()=>pick(t.getAttribute("aria-controls")));
+  t.addEventListener("keydown",e=>{if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];pick(n.getAttribute("aria-controls"),true);});});
+const start=location.hash.slice(1);if(tabs.some(t=>t.getAttribute("aria-controls")===start))pick(start);
+document.querySelectorAll(".copy").forEach(b=>b.addEventListener("click",()=>{const pre=b.previousElementSibling;
+  (navigator.clipboard?navigator.clipboard.writeText(pre.textContent):Promise.reject()).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1500)})
+  .catch(()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);});}));
+</script>
+</body>
+</html>

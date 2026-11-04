@@ -1,5 +1,7 @@
 # Loomi Connect Community
 
+**[Website](https://bloomreach.github.io/loomi-connect-community/) · [Quickstart](https://bloomreach.github.io/loomi-connect-community/quickstart.html) · [All skills](SKILLS.md)**
+
 Community skills, workflows and tools for **Loomi Connect**, the Bloomreach MCP server that gives AI assistants access to Bloomreach Engagement, Discovery and Data Hub.
 
 Loomi Connect provides the tools. This repository collects the know-how for using them well: tested skills, workflows and helpers that turn those tools into repeatable results. Bloomreach maintains it, and anyone can contribute.
