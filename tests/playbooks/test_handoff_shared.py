@@ -26,6 +26,11 @@ RULES = {
             {"name": "c", "skill": "catalog-parity-check", "writes": False, "do": "c", "outcomes": ["done"],
              "skip_when": [{"all": [{"stage": "a", "outcomes": ["clean"]}, {"stage": "b", "outcomes": ["clean"]}],
                             "reason": "everything was clean."}]}]},
+        "either": {"title": "Either", "product": "engagement", "stages": [
+            {"name": "a", "skill": "scenario-qa", "writes": False, "do": "a", "outcomes": ["go"]},
+            {"name": "b", "skill": "campaign-qa", "writes": False, "do": "b", "outcomes": ["go"]},
+            {"name": "c", "skill": "engagement-survey-insights", "writes": False, "do": "c", "outcomes": ["done"],
+             "not_before": {"after_stage": ["a", "b"], "days": "wait_days"}}]},
         "marketing": {"title": "Marketing", "product": "engagement", "stages": [
             {"name": "find", "skill": "lifecycle-coverage-map", "writes": False, "do": "find", "outcomes": ["found"]}]},
     },
@@ -224,6 +229,18 @@ class SharedHandoffTest(unittest.TestCase):
         self.run_h("stage", "--handoff", h, "--name", "b", "--status", "done", "--outcome", "clean")
         self.assertEqual(json.loads(self.run_h("status", "--handoff", h, "--json"))["next"]["suggest_skip"], "everything was clean.")
 
+    def test_verify_status_owner_and_a_wait_after_any_of_several_stages(self):
+        h = self.new()
+        ver = self.write("vs.json", {"ok": True, "results": [{"n": 1, "status": "in_place"}]})
+        self.run_h("changes", "--handoff", h, "--plan", self.plan(project_id="proj-1"), "--verify", ver,
+                   "--source", "discovery-autosuggest-exclusions")
+        self.assertEqual(json.loads(h.read_text(encoding="utf-8"))["changes"][0]["result"], "in_place")
+        f = self.write("own.json", {"findings": [{"target": "project p1", "priority": "low", "owner": "security team"}]})
+        self.run_h("findings", "--handoff", h, "--from-file", f, "--source", "project-access-review")
+        self.assertIn("Owner: security team", self.run_h("status", "--handoff", h))
+        bad = self.write("own2.json", {"findings": [{"target": "project p2", "priority": "low", "owner": "jane.doe@example.com"}]})
+        self.run_h("findings", "--handoff", h, "--from-file", bad, "--source", "project-access-review", ok=False)
+
     def test_findings_money_must_be_a_finite_number(self):
         h = self.new()
         for bad in ("NaN", "Infinity"):
@@ -324,6 +341,7 @@ class SharedHandoffTest(unittest.TestCase):
                          ("act", "2026-11-12", False))
         self.assertTrue(runs["b.handoff.json"]["finished"])
         self.assertIn("error", runs["notes.handoff.json"])
+        self.assertEqual((runs["a.handoff.json"]["project_id"], runs["a.handoff.json"]["account"]), ("proj-1", "acme"))
         self.assertEqual([(c["file"], c["live_on"]) for c in out["changes"]], [("a.handoff.json", "2026-11-06")])
         since = json.loads(self.run_h("list", "--dir", self.dir, "--json", "--changes", "--since", "2026-11-07"))
         self.assertEqual(since["changes"], [])
@@ -333,6 +351,12 @@ class SharedHandoffTest(unittest.TestCase):
         text = self.run_h("list", "--dir", self.dir, "--changes", "--today", "2026-11-12")
         self.assertIn("act (engagement-email-builder) | now", text)
         self.assertIn("finished", text)
+
+    def test_a_wait_counts_from_whichever_listed_stage_ran(self):
+        h = self.new("e.handoff.json", "either")
+        self.run_h("stage", "--handoff", h, "--name", "a", "--status", "skipped")
+        self.run_h("stage", "--handoff", h, "--name", "b", "--status", "done", "--outcome", "go", "--today", "2026-11-10")
+        self.assertEqual(json.loads(self.run_h("status", "--handoff", h, "--json"))["next"]["not_before"], "2026-11-17")
 
     def test_list_of_an_empty_folder(self):
         self.assertIn("No *.handoff.json files", self.run_h("list", "--dir", self.dir))

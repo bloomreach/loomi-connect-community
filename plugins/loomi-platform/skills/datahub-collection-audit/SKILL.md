@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Data Hub). Python 3 is optional, for the bundled audit script.
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: datahub
   access: read-only
 ---
@@ -106,7 +106,7 @@ Name inputs `<collection>=<file>`, or `<collection>:<item type>=<file>` for a no
 
 | # | Priority | Collection (item type) | What's wrong | Fix | Owner | Then |
 |---|---|---|---|---|---|---|
-| 1 | High | `products` (product) | Identifier `sku` filled on 96% of 200 sampled records | Fix the feed so every record sends it | Feed or integration team | `data-feed-health` |
+| 1 | High | `products` (product) | Identifier `sku` filled on 96% of 200 sampled records | Fix the feed so every record sends it | feed or integration team | `data-feed-health` |
 
 **3. Collections:** one row each: item types, records sampled, configured attributes, latest successful data job, linked to a catalog.
 

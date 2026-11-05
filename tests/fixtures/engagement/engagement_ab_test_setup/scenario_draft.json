@@ -1,0 +1,133 @@
+{
+ "result": {
+  "success": true,
+  "data": {
+   "_id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+   "name": "Cart reminder flow",
+   "status": "draft",
+   "archived": false,
+   "tags": [],
+   "initiative_id": null,
+   "is_global_object": false,
+   "created": 1700000000,
+   "created_by_display_name": "editor@example.com",
+   "edited": 1700000500.25,
+   "edited_by_display_name": "editor@example.com",
+   "trigger": null,
+   "nodes": [
+    {
+     "id": 0,
+     "type": "on-event-trigger",
+     "name": null,
+     "x": 0,
+     "y": 0,
+     "event": {
+      "type": "cart_update",
+      "filter": []
+     },
+     "delay_seconds": 30,
+     "version": 2
+    },
+    {
+     "id": 1,
+     "type": "wait-action",
+     "name": null,
+     "x": 200,
+     "y": 0,
+     "units": "hours",
+     "count": 4,
+     "version": 1
+    },
+    {
+     "id": 2,
+     "type": "send-email-action",
+     "name": "Cart reminder",
+     "x": 400,
+     "y": 0,
+     "consent_category": "newsletter",
+     "design": {
+      "type": "raw",
+      "data": {
+       "subject": "Your cart is waiting",
+       "jinja_html": "<p>Hi {{ customer.first_name | default('there') }}</p>",
+       "sender_email": "shop@example.com",
+       "sender_name": "Example Shop"
+      }
+     },
+     "version": 3
+    },
+    {
+     "id": 3,
+     "type": "wait-action",
+     "name": null,
+     "x": 600,
+     "y": 0,
+     "units": "days",
+     "count": 1,
+     "version": 1
+    },
+    {
+     "id": 4,
+     "type": "send-sms-action",
+     "name": "Cart SMS",
+     "x": 800,
+     "y": 0,
+     "consent_category": "sms",
+     "design": {
+      "type": "raw",
+      "data": {
+       "message": "Your cart is waiting. Reply STOP to opt out."
+      }
+     },
+     "version": 1
+    }
+   ],
+   "connections": [
+    {
+     "source": {
+      "node_id": 0,
+      "connector_index": 0
+     },
+     "destination": {
+      "node_id": 1,
+      "connector_index": 0
+     }
+    },
+    {
+     "source": {
+      "node_id": 1,
+      "connector_index": 1
+     },
+     "destination": {
+      "node_id": 2,
+      "connector_index": 0
+     }
+    },
+    {
+     "source": {
+      "node_id": 2,
+      "connector_index": 1
+     },
+     "destination": {
+      "node_id": 3,
+      "connector_index": 0
+     }
+    },
+    {
+     "source": {
+      "node_id": 3,
+      "connector_index": 1
+     },
+     "destination": {
+      "node_id": 4,
+      "connector_index": 0
+     }
+    }
+   ],
+   "customer_filter": null,
+   "max_customers": null,
+   "last_node_id": 4
+  },
+  "error": null
+ }
+}

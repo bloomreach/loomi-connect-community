@@ -12,10 +12,10 @@ The trend stage finds complaint drift: the last four weeks pooled at 0.14% again
 - F3 (open, low): channel sms consent gap; 22% with a phone have no SMS consent. Next: engagement-segment-builder
 ```
 
-The user sets a 3-a-week cap in Engagement the same day (F2 done). `scenario-template-launcher` finds no sunset flow to clone (`no_source`); `engagement-scenario-builder` builds one from the outline after its yes (C1, create `scenario 6a3c00000000000000000003`). `scenario-qa`: GO. The user switches it on on 6 November, recorded as the qa stage's start date and as a change from `engagement-ui` (C2, start `scenario 6a3c00000000000000000003`, live on 2026-11-06).
+The user sets a 3-a-week cap in Engagement the same day (F2 done). `scenario-template-launcher` finds no sunset flow to clone (`no_source`); `engagement-scenario-builder` builds one from the outline after its yes (C1, create `scenario 6a3c00000000000000000003`). The user doesn't want an A/B test this time, so the test stage is skipped; later, `status` offers the ab-read-out stage as a skip. `scenario-qa`: GO. The user switches it on on 6 November, recorded as the qa stage's start date and as a change from `engagement-ui` (C2, start `scenario 6a3c00000000000000000003`, live on 2026-11-06).
 
 ```
 **Next:** recheck with deliverability-trend, not before 2026-12-04.
 ```
 
-**Session 2 (5 December).** The four weeks since the start pool at 0.07%: **improved**. The cap started the same week, so the summary credits both and can't split them.
+**Session 2 (5 December).** The ab-read-out stage is skipped (no test). The four weeks since the start pool at 0.07%: **improved**. The cap started the same week, so the summary credits both and can't split them.

@@ -5,7 +5,7 @@ Builds a Bloomreach Engagement scenario (automation flow) from a plain-English d
 | | |
 |---|---|
 | **Products** | Engagement |
-| **Access** | **Writes**: creates a draft scenario, or updates a draft or stopped one, after explicit confirmation |
+| **Access** | **Writes**: creates a draft scenario, or updates a draft or stopped one (`update_scenario`, or `update_scenario_node` for one node), after explicit confirmation |
 | **Loomi Connect tools** | `list_cloud_organizations`, `list_projects`, `get_event_schema`, `get_customer_property_schema`, `search_segmentations`, `search_predictions`, `search_aggregates`, `search_expressions`, `get_consent_settings`*, `search_api_triggers`, `search_scenarios`, `search_scenario_nodes`*, `create_scenario`, `update_scenario`*, `update_scenario_node`*, `estimate_eql_cost`, `execute_analytics_eql`, `get_guide` (* found with `search_tools` and run with `call_tool` if not listed) |
 | **Tested with** | Claude Code: step shapes, output numbering and the check script were verified against scenarios saved in a demo project, read-only. The write path follows the Loomi Connect guide `scenario-write-best-practices`; a live create was not run for this release. Not yet tested in an OpenAI client |
 | **Maintainer** | Bloomreach |

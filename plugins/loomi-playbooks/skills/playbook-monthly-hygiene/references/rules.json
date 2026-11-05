@@ -78,6 +78,17 @@
           "product": "discovery"
         },
         {
+          "name": "media-assets",
+          "skill": "discovery-media-asset-cleanup",
+          "writes": false,
+          "do": "Review the Discovery media asset library against the media rules that use them, and add broken content on live pages and the verified delete list as findings for the user to act on in the Discovery dashboard. Nothing is deleted here.",
+          "outcomes": [
+            "cleanup_list_ready",
+            "library_clean"
+          ],
+          "product": "discovery"
+        },
+        {
           "name": "asset-cleanup",
           "skill": "engagement-asset-cleanup",
           "writes": false,
@@ -112,12 +123,23 @@
             }
           ],
           "product": "engagement"
+        },
+        {
+          "name": "engagement-media",
+          "skill": "engagement-media-cleanup",
+          "writes": false,
+          "do": "Audit the Engagement asset manager's files, blocks, snippets and templates against the content that uses them, and add the fix and verified delete lists as findings for the user to act on in the asset manager. Nothing is deleted here.",
+          "outcomes": [
+            "cleanup_list_ready",
+            "library_clean"
+          ],
+          "product": "engagement"
         }
       ]
     }
   },
   "notes": {
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes).",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, the product it needs (status suggests skipping it when the run doesn't have that product), not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). The two media stages stand alone: they produce lists the user acts on in the Discovery dashboard and the Engagement asset manager, so no later stage depends on them and they have no skip_when.",
     "max_chosen": "How many findings can be chosen at once. Each write stage plans every finding the user approves together, up to this many; the rest wait for next month."
   },
   "max_chosen": 50

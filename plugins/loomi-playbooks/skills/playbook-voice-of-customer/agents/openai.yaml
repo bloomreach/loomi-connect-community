@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Voice of Customer"
+  short_description: "Read a survey, follow up detractors with a flow or email, then check whether the score moved"
+policy:
+  # Writes skill: its segment, flow and email stages create Engagement segments, scenarios and email drafts, so it only runs when called by name.
+  allow_implicit_invocation: false

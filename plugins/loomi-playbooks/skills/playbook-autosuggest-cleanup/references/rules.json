@@ -1,0 +1,31 @@
+{
+  "about": "Stages and timing for the autosuggest-cleanup playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "recheck_after_days": 28,
+  "max_chosen": 20,
+  "playbooks": {
+    "autosuggest-cleanup": {
+      "title": "Autosuggest cleanup",
+      "product": "discovery",
+      "stages": [
+        {"name": "audit", "skill": "autosuggest-audit", "writes": false,
+         "do": "Audit what autosuggest offers for the top queries' prefixes, add the suggestions to hide and the exclusions to undo as findings, and agree which to act on.",
+         "outcomes": ["exclusions_chosen", "nothing_to_exclude"]},
+        {"name": "exclude", "skill": "discovery-autosuggest-exclusions", "writes": true,
+         "do": "Plan the agreed exclusions with a before and after preview, create new rules disabled and switch them on, each batch after its own yes, staging first.",
+         "outcomes": ["live", "left_disabled", "nothing_written"],
+         "skip_when": [{"stage": "audit", "outcomes": ["nothing_to_exclude"], "reason": "the audit found no suggestion worth hiding or bringing back."}]},
+        {"name": "recheck", "skill": "autosuggest-audit", "writes": false,
+         "do": "Audit autosuggest again: check the excluded suggestions stay gone, what shoppers are offered instead, and anything new to fix.",
+         "outcomes": ["cleaned_up", "partly_cleaned", "not_cleaned"],
+         "not_before": {"after_stage": "exclude", "days": "recheck_after_days"},
+         "skip_when": [{"stage": "exclude", "outcomes": ["left_disabled", "nothing_written"], "reason": "no exclusion went live, so there is nothing to re-check."},
+                       {"stage": "exclude", "skipped": true, "reason": "the exclude stage was skipped, so nothing changed."}]}
+      ]
+    }
+  },
+  "notes": {
+    "recheck_after_days": "Days after the exclude stage finishes (the exclusions went live) before the recheck stage is due. Suggestions disappear within minutes of a rule syncing, which the exclusions skill already verifies; the recheck looks at what shoppers search instead, and autosuggest-audit reads 30 days of query performance by default, so four whole weeks gives it a window that starts after the change, with the same weekday mix.",
+    "max_chosen": "How many findings can be chosen at once. The exclude stage acts on every exclusion the user agrees in one plan, up to this many.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when an earlier stage had one of these outcomes, or with skipped: true when it was skipped). The same skill may run twice: the recheck stage repeats the audit."
+  }
+}

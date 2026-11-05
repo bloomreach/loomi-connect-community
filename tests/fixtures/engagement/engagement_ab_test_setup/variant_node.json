@@ -1,0 +1,27 @@
+{
+ "result": {
+  "success": true,
+  "scenario_id": "bbbbbbbbbbbbbbbbbbbbbbbb",
+  "node": {
+   "id": 17,
+   "type": "send-email-action",
+   "name": "Cart reminder with discount",
+   "x": 10,
+   "y": 10,
+   "version": 4,
+   "consent_category": "newsletter",
+   "design": {
+    "type": "raw",
+    "data": {
+     "subject": "10% off your cart",
+     "jinja_html": "<p>Take 10% off</p>",
+     "sender_email": "shop@example.com",
+     "sender_name": "Example Shop"
+    }
+   }
+  },
+  "incoming_connections": [],
+  "outgoing_connections": [],
+  "error": null
+ }
+}

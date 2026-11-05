@@ -1,0 +1,49 @@
+{
+  "about": "Stages and timing for the ranking algorithm tune-up playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "min_test_days": 14,
+  "measure_after_days": 14,
+  "wait_outcomes": ["keep_running", "too_early_to_tell"],
+  "playbooks": {
+    "ranking-algorithm-tune-up": {
+      "title": "Ranking algorithm tune-up",
+      "product": "discovery",
+      "stages": [
+        {"name": "review", "skill": "discovery-ranking-algorithm-review", "writes": false,
+         "do": "Review the account's ranking algorithms, add the findings a corrected copy could fix, and ask the user which one to act on.",
+         "outcomes": ["finding_chosen", "nothing_to_fix"]},
+        {"name": "copy", "skill": "discovery-ranking-algorithm-fixer", "writes": true,
+         "do": "Make a corrected copy of the chosen algorithm, which ranks nothing until a test assigns it, after its own yes.",
+         "outcomes": ["copy_made", "not_copyable"],
+         "skip_when": [{"stage": "review", "outcomes": ["nothing_to_fix"], "reason": "the review found nothing a corrected copy would fix."},
+                       {"stage": "review", "skipped": true, "reason": "the review was skipped, so no algorithm was chosen to copy."}]},
+        {"name": "test", "skill": "discovery-experiment-setup", "writes": true,
+         "do": "A/B test the copy against the algorithm ranking the pages today (Pattern 3), and start it after its own yes.",
+         "outcomes": ["started", "left_as_draft", "not_testable"],
+         "skip_when": [{"stage": "copy", "outcomes": ["not_copyable"], "reason": "there is no corrected copy to test."},
+                       {"stage": "copy", "skipped": true, "reason": "the copy stage was skipped, so there is no copy to test."}]},
+        {"name": "read-out", "skill": "discovery-experiment-readout", "writes": false,
+         "do": "Read the test's result. Don't stop early on a good-looking day.",
+         "outcomes": ["winner", "no_winner", "keep_running"],
+         "not_before": {"after_stage": "test", "days": "min_test_days"},
+         "skip_when": [{"stage": "test", "outcomes": ["left_as_draft", "not_testable"], "reason": "no test is running."},
+                       {"stage": "test", "skipped": true, "reason": "the test stage was skipped, so no test is running."}]},
+        {"name": "close", "skill": "discovery-experiment-close", "writes": true,
+         "do": "End the test keeping the winning algorithm (or today's), check the rules, then archive it, each step after its own yes.",
+         "outcomes": ["shipped_variant", "kept_control"],
+         "skip_when": [{"stage": "read-out", "skipped": true, "reason": "the read-out was skipped: there is no result to act on."}]},
+        {"name": "confirm", "skill": "change-impact-tracker", "writes": false,
+         "do": "Check the new algorithm holds at full traffic, with the rule and its live date from the hand-off file.",
+         "outcomes": ["worked", "no_clear_effect", "made_it_worse", "too_early_to_tell"],
+         "not_before": {"after_stage": "close", "days": "measure_after_days"},
+         "skip_when": [{"stage": "close", "outcomes": ["kept_control"], "reason": "today's algorithm was kept, so nothing changed for shoppers."},
+                       {"stage": "close", "skipped": true, "reason": "the close was skipped: nothing was rolled out."}]}
+      ]
+    }
+  },
+  "notes": {
+    "min_test_days": "Days after the test stage finishes (the test started) before the read-out stage is due. discovery-experiment-setup recommends at least 14 days in whole weeks; use the end date agreed at setup when it's later.",
+    "measure_after_days": "Days after the close stage finishes (the winner went to full traffic) before the confirm stage is due. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when an earlier stage had one of these outcomes, or with skipped: true when it was skipped). max_chosen (default 1) is how many findings a run may act on at once."
+  }
+}

@@ -141,7 +141,7 @@ def read_handoff(path):
 
 
 FINDING_DEFAULTS = {"source": "", "target": "", "rule_id": None, "verdict": None, "priority": None, "money_at_stake": None,
-                    "currency": None, "evidence": "", "warnings": [], "next_skill": None, "status": "open", "found_on": None}
+                    "currency": None, "evidence": "", "warnings": [], "next_skill": None, "owner": None, "status": "open", "found_on": None}
 CHANGE_DEFAULTS = {"source": "", "finding": None, "plan_file": None, "plan_n": None, "kind": None, "target": "",
                    "tool": None, "live_impact": None, "result": "unverified", "live_on": None, "undo": [], "undo_note": None}
 
@@ -341,6 +341,9 @@ def findings_from_file(a):
         verdict = x.get("verdict")
         if verdict is not None and not PLAIN.match(str(verdict)):
             fail(f"{a.from_file}: finding {i} verdict must be plain text.")
+        owner = x.get("owner")
+        if owner is not None and not PLAIN.match(str(owner)):
+            fail(f"{a.from_file}: finding {i} owner must be plain text (a team or role, never a person's name).")
         if (a.source, target) in have:
             skipped.append(target)
             continue
@@ -348,7 +351,7 @@ def findings_from_file(a):
         h["findings"].append({
             "id": fid, "source": a.source, "target": target, "rule_id": None, "verdict": verdict,
             "priority": x["priority"], "money_at_stake": money, "currency": x.get("currency") if PLAIN.match(str(x.get("currency") or "x")) else None,
-            "evidence": flat(x.get("evidence") or ""), "warnings": [], "next_skill": nxt,
+            "evidence": flat(x.get("evidence") or ""), "warnings": [], "next_skill": nxt, "owner": owner,
             "status": "open", "found_on": today(a).isoformat(),
         })
         have.add((a.source, target))
@@ -505,7 +508,8 @@ def cmd_changes(a):
         created_id = next((str(v[k]) for k in sorted(v) if (k == "id" or k.endswith("_id")) and v[k] is not None
                            and PLAIN.match(str(v[k]))), None)
         same = "target" not in v or str(v["target"]) == str(c.get("target"))
-        result = (v.get("result") or v.get("state") or "unverified") if same else "unverified"
+        said = v.get("result") or v.get("state") or (v.get("status") if v.get("status") in RESULTS else None)
+        result = (said or "unverified") if same else "unverified"
         if same and str(v.get("action") or "").startswith("none"):
             result = "not_needed"  # a conditional step whose read-back showed nothing to do: no write was made
         if result not in RESULTS:
@@ -581,10 +585,12 @@ def earliest(h, rule):
     nb = rule.get("not_before")
     if not nb:
         return None
-    after = stage_record(h, nb["after_stage"])
-    if after["status"] != "done" or not after.get("done_on"):
+    names = nb["after_stage"] if isinstance(nb["after_stage"], list) else [nb["after_stage"]]
+    done = [stage_record(h, n) for n in names]
+    done = [x for x in done if x["status"] == "done" and x.get("done_on")]
+    if not done:  # a list counts from whichever of its stages ran, the latest one
         return None
-    return date.fromisoformat(after["done_on"]) + timedelta(days=int(RULES[nb["days"]]))
+    return max(date.fromisoformat(x["done_on"]) for x in done) + timedelta(days=int(RULES[nb["days"]]))
 
 
 def condition_holds(h, cond):
@@ -608,8 +614,8 @@ def next_step(h, now):
         if rule.get("product") and not has_product(h, rule["product"]):
             skip = f"it needs {rule['product'].capitalize()}, which this run doesn't have."
         for cond in rule.get("skip_when", []):
-            if all(condition_holds(h, c) for c in cond.get("all", [cond])):
-                skip = cond["reason"]
+            if skip is None and all(condition_holds(h, c) for c in cond.get("all", [cond])):
+                skip = cond["reason"]  # the first reason that applies (a missing product comes first)
         dates = [d for d in (earliest(h, rule), s.get("not_before") and date.fromisoformat(s["not_before"])) if d]
         when = max(dates) if dates else None
         return {"stage": rule["name"], "skill": rule["skill"], "writes": rule["writes"], "do": rule["do"],
@@ -686,6 +692,7 @@ def cmd_status(a):
         for f in out["open_findings"]:
             print(f"- {flat(f['id'])} ({flat(f['status'])}, {flat(f.get('priority'))}): {flat(f.get('target'))} "
                   f"{flat(f.get('verdict'))}; {flat(f.get('evidence'))}."
+                  + (f" Owner: {flat(f['owner'])}." if f.get("owner") else "")
                   + (f" Next: {flat(f['next_skill'])}" if f.get("next_skill") else ""))
     if h["changes"]:
         print("\n**Changes made in this run:**")
@@ -748,6 +755,8 @@ def cmd_list(a):
             "file": flat(p.name), "playbook": checked_text(h.get("playbook"), SKILL_NAME),
             "subject": checked_text((h.get("subject") or {}).get("kind")),
             "subject_value": flat((h.get("subject") or {}).get("value"))[:80], "started_on": checked_text(h.get("started_on")),
+            "project_id": checked_text((h.get("context") or {}).get("project_id")),
+            "account": checked_text((h.get("context") or {}).get("account")),
             "stages_done": sum(s.get("status") in ("done", "skipped") for s in stages), "stages": len(stages),
             "next_stage": None if not nxt else checked_text(nxt.get("stage")),
             "next_skill": None if not nxt else checked_text(nxt.get("skill"), SKILL_NAME),

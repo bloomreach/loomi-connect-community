@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Reachable Audience"
+  short_description: "Measure who you can contact, build and test an on-site capture form, then check reach grew"
+policy:
+  allow_implicit_invocation: true

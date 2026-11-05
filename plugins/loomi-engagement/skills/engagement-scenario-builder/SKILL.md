@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.1.6"
+  version: "0.1.7"
   products: engagement
   access: writes
 ---
@@ -18,6 +18,7 @@ This skill **can write** to Bloomreach Engagement, but only after the user says 
 
 - **create** one scenario with `create_scenario`. It's always created as a **draft**, so nothing runs until someone switches it on in the Engagement UI.
 - **update** one scenario with `update_scenario`, only when its status is `draft` or `inactive`. Never pass `allow_active`. To change a running (`active`, `finishing`, `paused`) flow, build a new draft copy instead and say so.
+- **update** one node of one scenario with `update_scenario_node` (a one-field change such as a wait time or a condition's name), with the same limit: only when the scenario's status is `draft` or `inactive`, never with `allow_active`.
 
 It never starts, stops, archives or deletes a scenario, and never creates segments, templates or campaigns. For a new audience, hand off to `engagement-segment-builder`.
 

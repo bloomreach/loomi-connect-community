@@ -1,0 +1,6 @@
+interface:
+  display_name: "Engagement A/B Test Setup"
+  short_description: "Plan and add an A/B split or holdout to a Bloomreach scenario, sized and saved as a draft change"
+policy:
+  # This skill updates draft or inactive scenarios (and can create a draft copy), so it only runs when called by name.
+  allow_implicit_invocation: false

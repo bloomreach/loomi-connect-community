@@ -1,5 +1,5 @@
 {
-  "about": "Stages and timing for the revenue-drop playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "about": "Stages and timing for the revenue-drop playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Stages carry the product they need, so a run on Discovery only or Engagement only is offered the other product's stages as skips. Each key is explained under notes.",
   "recovery_check_days": 7,
   "wait_outcomes": [
     "data_not_ready"
@@ -13,7 +13,7 @@
           "name": "explain",
           "skill": "revenue-anomaly-explainer",
           "writes": false,
-          "do": "Break the drop down and rank its causes; add each candidate cause as a finding, and note which suspects it already ruled out.",
+          "do": "Break the Discovery drop down and rank its causes; add each candidate cause as a finding, and note which suspects it already ruled out.",
           "outcomes": [
             "cause_found",
             "no_single_cause",
@@ -22,10 +22,36 @@
           "product": "discovery"
         },
         {
+          "name": "engagement-explain",
+          "skill": "engagement-revenue-change-explainer",
+          "writes": false,
+          "do": "Split the Engagement purchase revenue change into buyers, orders per buyer and order value, check the data first, and add the biggest drivers as findings.",
+          "outcomes": [
+            "cause_found",
+            "no_single_cause",
+            "within_normal",
+            "data_problem"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "numbers",
+          "skill": "engagement-number-reconciliation",
+          "writes": false,
+          "do": "When two numbers for the drop disagree (Discovery and Engagement, a report and the explainer, Bloomreach and the user's BI), find out why and which one to trust. Record not_needed without running when they agree.",
+          "outcomes": [
+            "not_needed",
+            "drop_confirmed",
+            "definition_gap",
+            "data_gap"
+          ],
+          "product": "engagement"
+        },
+        {
           "name": "feeds",
           "skill": "data-feed-health",
           "writes": false,
-          "do": "Check the pixel, the catalog feeds and the index jobs. Record ruled_out without running it when the explainer's pixel and catalog checks were clean.",
+          "do": "Check the pixel, the catalog feeds, the index jobs and Engagement event mapping. Record ruled_out without running it when the explainers' data checks were clean.",
           "outcomes": [
             "feeds_ok",
             "feed_problem",
@@ -33,11 +59,30 @@
           ],
           "skip_when": [
             {
-              "stage": "explain",
-              "outcomes": [
-                "within_normal"
+              "all": [
+                {
+                  "stage": "explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "engagement-explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                }
               ],
-              "reason": "the change is within normal variation: there is no incident to chase."
+              "reason": "neither explainer found a drop beyond normal variation (or neither ran): there is no incident to chase."
+            },
+            {
+              "stage": "numbers",
+              "outcomes": [
+                "definition_gap"
+              ],
+              "reason": "the two numbers differ by definition, not because revenue fell: there is no incident to chase."
             }
           ]
         },
@@ -54,11 +99,30 @@
           "product": "discovery",
           "skip_when": [
             {
-              "stage": "explain",
-              "outcomes": [
-                "within_normal"
+              "all": [
+                {
+                  "stage": "explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "engagement-explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                }
               ],
-              "reason": "the change is within normal variation: there is no incident to chase."
+              "reason": "neither explainer found a drop beyond normal variation (or neither ran): there is no incident to chase."
+            },
+            {
+              "stage": "numbers",
+              "outcomes": [
+                "definition_gap"
+              ],
+              "reason": "the two numbers differ by definition, not because revenue fell: there is no incident to chase."
             }
           ]
         },
@@ -66,7 +130,7 @@
           "name": "journeys",
           "skill": "engagement-journey-health",
           "writes": false,
-          "do": "Check whether a live Engagement flow stopped sending or broke. Record ruled_out when the drop is all in search or category browsing with no fall in returning traffic.",
+          "do": "Check whether a live Engagement flow stopped sending or broke. Record ruled_out when the drop is all in search or category browsing with no fall in returning buyers.",
           "outcomes": [
             "journeys_ok",
             "journey_broken",
@@ -75,11 +139,77 @@
           "product": "engagement",
           "skip_when": [
             {
-              "stage": "explain",
-              "outcomes": [
-                "within_normal"
+              "all": [
+                {
+                  "stage": "explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "engagement-explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                }
               ],
-              "reason": "the change is within normal variation: there is no incident to chase."
+              "reason": "neither explainer found a drop beyond normal variation (or neither ran): there is no incident to chase."
+            },
+            {
+              "stage": "numbers",
+              "outcomes": [
+                "definition_gap"
+              ],
+              "reason": "the two numbers differ by definition, not because revenue fell: there is no incident to chase."
+            }
+          ]
+        },
+        {
+          "name": "funnel",
+          "skill": "funnel-leak-finder",
+          "writes": false,
+          "do": "Find where Engagement shoppers now drop off between view, cart, checkout and purchase, and whether the recovery flows still run. Record ruled_out when the Engagement explainer puts the drop on order value alone.",
+          "outcomes": [
+            "leak_found",
+            "no_new_leak",
+            "ruled_out"
+          ],
+          "product": "engagement",
+          "skip_when": [
+            {
+              "all": [
+                {
+                  "stage": "explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "engagement-explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                }
+              ],
+              "reason": "neither explainer found a drop beyond normal variation (or neither ran): there is no incident to chase."
+            },
+            {
+              "stage": "numbers",
+              "outcomes": [
+                "definition_gap"
+              ],
+              "reason": "the two numbers differ by definition, not because revenue fell: there is no incident to chase."
+            },
+            {
+              "stage": "engagement-explain",
+              "outcomes": [
+                "data_problem"
+              ],
+              "reason": "the Engagement purchase data is incomplete or double-counted, so funnel counts would mislead until it's fixed."
             }
           ]
         },
@@ -87,9 +217,10 @@
           "name": "change",
           "skill": "change-impact-tracker",
           "writes": false,
-          "do": "Measure the recent merchandising change the explainer suspects: did it cause the drop?",
+          "do": "Measure the recent change the explainers suspect, a Discovery rule or test or an Engagement campaign or scenario launch: did it cause the drop?",
           "outcomes": [
             "made_it_worse",
+            "engagement_made_it_worse",
             "worked",
             "no_clear_effect",
             "too_early_to_tell",
@@ -97,11 +228,30 @@
           ],
           "skip_when": [
             {
-              "stage": "explain",
-              "outcomes": [
-                "within_normal"
+              "all": [
+                {
+                  "stage": "explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "engagement-explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                }
               ],
-              "reason": "the change is within normal variation: there is no incident to chase."
+              "reason": "neither explainer found a drop beyond normal variation (or neither ran): there is no incident to chase."
+            },
+            {
+              "stage": "numbers",
+              "outcomes": [
+                "definition_gap"
+              ],
+              "reason": "the two numbers differ by definition, not because revenue fell: there is no incident to chase."
             }
           ]
         },
@@ -117,11 +267,30 @@
           "product": "discovery",
           "skip_when": [
             {
-              "stage": "explain",
-              "outcomes": [
-                "within_normal"
+              "all": [
+                {
+                  "stage": "explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "engagement-explain",
+                  "outcomes": [
+                    "within_normal"
+                  ],
+                  "skipped": true
+                }
               ],
-              "reason": "the change is within normal variation: there is no incident to chase."
+              "reason": "neither explainer found a drop beyond normal variation (or neither ran): there is no incident to chase."
+            },
+            {
+              "stage": "numbers",
+              "outcomes": [
+                "definition_gap"
+              ],
+              "reason": "the two numbers differ by definition, not because revenue fell: there is no incident to chase."
             },
             {
               "stage": "change",
@@ -131,6 +300,13 @@
                 "no_recent_change"
               ],
               "reason": "no rule is to blame."
+            },
+            {
+              "stage": "change",
+              "outcomes": [
+                "engagement_made_it_worse"
+              ],
+              "reason": "the harmful change is an Engagement campaign or scenario: the user stops it in the Engagement UI, recorded as a change, and no Discovery rule is rolled back."
             }
           ]
         },
@@ -138,7 +314,7 @@
           "name": "recovery",
           "skill": "revenue-anomaly-explainer",
           "writes": false,
-          "do": "After the fix has had time, compare the days since the fix with the days of the drop: did revenue recover?",
+          "do": "After the fix has had time, compare the Discovery days since the fix with the days of the drop: did revenue recover?",
           "outcomes": [
             "recovered",
             "partly_recovered",
@@ -146,7 +322,10 @@
             "data_not_ready"
           ],
           "not_before": {
-            "after_stage": "rollback",
+            "after_stage": [
+              "change",
+              "rollback"
+            ],
             "days": "recovery_check_days"
           },
           "product": "discovery",
@@ -156,7 +335,15 @@
               "outcomes": [
                 "within_normal"
               ],
-              "reason": "the change is within normal variation: there is no incident to chase."
+              "skipped": true,
+              "reason": "Discovery revenue didn't drop beyond normal variation (or wasn't explained), so there is no Discovery recovery to check."
+            },
+            {
+              "stage": "numbers",
+              "outcomes": [
+                "definition_gap"
+              ],
+              "reason": "the two numbers differ by definition, not because revenue fell: there is no incident to chase."
             },
             {
               "all": [
@@ -164,6 +351,17 @@
                   "stage": "rollback",
                   "outcomes": [
                     "kept"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "change",
+                  "outcomes": [
+                    "made_it_worse",
+                    "worked",
+                    "no_clear_effect",
+                    "too_early_to_tell",
+                    "no_recent_change"
                   ],
                   "skipped": true
                 },
@@ -190,9 +388,109 @@
                     "ruled_out"
                   ],
                   "skipped": true
+                },
+                {
+                  "stage": "funnel",
+                  "outcomes": [
+                    "no_new_leak",
+                    "ruled_out"
+                  ],
+                  "skipped": true
                 }
               ],
-              "reason": "no rule was rolled back and the feeds, API and journeys checks found nothing to fix, so there is no fix to measure. If a fix landed elsewhere, set the recovery date with stage --not-before instead."
+              "reason": "no rule was rolled back, no Engagement change was stopped, and the feeds, API, journeys and funnel checks found nothing to fix, so there is no fix to measure. If a fix landed elsewhere, set the recovery date with stage --not-before instead."
+            }
+          ]
+        },
+        {
+          "name": "engagement-recovery",
+          "skill": "engagement-revenue-change-explainer",
+          "writes": false,
+          "do": "After the fix has had time, compare Engagement purchase revenue since the fix with the days of the drop: did buyers, orders and order value recover?",
+          "outcomes": [
+            "recovered",
+            "partly_recovered",
+            "still_down",
+            "data_not_ready"
+          ],
+          "not_before": {
+            "after_stage": [
+              "change",
+              "rollback"
+            ],
+            "days": "recovery_check_days"
+          },
+          "product": "engagement",
+          "skip_when": [
+            {
+              "stage": "engagement-explain",
+              "outcomes": [
+                "within_normal"
+              ],
+              "skipped": true,
+              "reason": "Engagement revenue didn't drop beyond normal variation (or wasn't explained), so there is no Engagement recovery to check."
+            },
+            {
+              "stage": "numbers",
+              "outcomes": [
+                "definition_gap"
+              ],
+              "reason": "the two numbers differ by definition, not because revenue fell: there is no incident to chase."
+            },
+            {
+              "all": [
+                {
+                  "stage": "rollback",
+                  "outcomes": [
+                    "kept"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "change",
+                  "outcomes": [
+                    "made_it_worse",
+                    "worked",
+                    "no_clear_effect",
+                    "too_early_to_tell",
+                    "no_recent_change"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "feeds",
+                  "outcomes": [
+                    "feeds_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "api",
+                  "outcomes": [
+                    "api_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "journeys",
+                  "outcomes": [
+                    "journeys_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "funnel",
+                  "outcomes": [
+                    "no_new_leak",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                }
+              ],
+              "reason": "no rule was rolled back, no Engagement change was stopped, and the feeds, API, journeys and funnel checks found nothing to fix, so there is no fix to measure. If a fix landed elsewhere, set the recovery date with stage --not-before instead."
             }
           ]
         }
@@ -200,8 +498,8 @@
     }
   },
   "notes": {
-    "recovery_check_days": "Days after the rollback stage finishes before the recovery stage is due. A week gives a whole weekday cycle after the fix, and Discovery reporting runs about 2 days behind. When the fix was a feed or flow repair outside this run, or the rollback was skipped, record the fix date plus this on the recovery stage with stage --not-before.",
-    "wait_outcomes": "Outcomes that mean a stage isn't finished yet: the recovery stage found too few days since the fix in the reports. The script records them only with status in_progress and a --not-before date to come back on. The change stage's too_early_to_tell is a final outcome here, not a wait: in an incident the rollback decision can't wait for two weeks of data, so it rests on discovery-rule-cleanup's own impact check.",
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). Checks the explainer already ruled out record ruled_out, which says why they weren't run; only a drop within normal variation skips the rest of the run. A skip_when entry with all lists conditions that must every one hold: the recovery stage is offered as a skip when the rollback was skipped or kept and no feed, API or flow problem was found (each check fine, ruled out or skipped), since nothing was fixed."
+    "recovery_check_days": "Days after the rollback stage finishes before the recovery stages are due. A week gives a whole weekday cycle after the fix, and Discovery reporting runs about 2 days behind. When the fix was a feed, flow or campaign change outside this run, or the rollback was skipped, record the fix date plus this on each recovery stage with stage --not-before.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet: a recovery stage found too few days since the fix in the data. The script records them only with status in_progress and a --not-before date to come back on. The change stage's too_early_to_tell is a final outcome here, not a wait: in an incident the rollback decision can't wait for two weeks of data, so it rests on discovery-rule-cleanup's own impact check.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product: the Discovery path is explain, api, rollback and recovery; the Marketing path is engagement-explain, numbers, journeys, funnel and engagement-recovery; feeds and change serve both), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done; the recovery stages count from the later of change and rollback, so an Engagement-only run, where rollback is skipped, still waits after the change stage) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). Checks an explainer already ruled out record ruled_out, which says why they weren't run, and numbers records not_needed when no two numbers disagree. A skip_when entry with all lists conditions that must every one hold. The rest of the run is offered as a skip when neither explainer found a drop beyond normal variation (each within_normal, or skipped because the run lacks that product), or when the numbers stage finds the gap is a difference in definitions (definition_gap). The numbers stage itself is never skipped for within_normal: a user's number that says revenue fell against an explainer that says it didn't is exactly what it reconciles. Each recovery stage is offered as a skip when its own explainer found no drop, and when nothing was fixed: the rollback was skipped or kept, the change stage found no harmful Engagement change, and the feeds, API, journeys and funnel checks found nothing (each fine, ruled out or skipped)."
   }
 }

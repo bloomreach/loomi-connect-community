@@ -1,0 +1,18 @@
+{
+ "test": "holdout",
+ "edge": {
+  "from_node": 1,
+  "from_output": 1,
+  "to_node": 2
+ },
+ "split_name": "Holdout: cart reminder",
+ "control": {
+  "name": "Send",
+  "percentage": 90
+ },
+ "variant": {
+  "name": "Holdout",
+  "percentage": 10
+ },
+ "copy_name": "Cart reminder flow - holdout test"
+}

@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Governance Review"
+  short_description: "Quarterly review of access, integrations, retention, Data Hub, ad audiences and hidden Discovery settings, with an owner per finding"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,51 @@
+{
+  "about": "Stages and timing for the fix-one-search playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "measure_after_days": 14,
+  "wait_outcomes": ["too_early_to_tell"],
+  "playbooks": {
+    "fix-one-search": {
+      "title": "Fix one search",
+      "product": "discovery",
+      "stages": [
+        {"name": "diagnose", "skill": "discovery-query-diagnosis", "writes": false,
+         "do": "Diagnose why the search underperforms, add its recommended fixes as findings, and agree with the user which one to make (or which product to look at).",
+         "outcomes": ["fix_chosen", "product_to_check", "nothing_to_fix"]},
+        {"name": "visibility", "skill": "discovery-product-visibility", "writes": false,
+         "do": "Explain why the named product is missing or buried for the search, add its causes as findings, and agree which fix to make.",
+         "outcomes": ["fix_chosen", "nothing_to_fix"],
+         "skip_when": [{"stage": "diagnose", "outcomes": ["fix_chosen"], "reason": "the diagnosis already chose a fix and no single product needs explaining."},
+                       {"stage": "diagnose", "outcomes": ["nothing_to_fix"], "reason": "the diagnosis found nothing to fix in search."}]},
+        {"name": "qa", "skill": "discovery-change-qa", "writes": false,
+         "do": "Check the chosen fix before anything is written: GO, GO WITH CAUTION or NO-GO, and which way it goes (synonym, redirect, ranking test, or a fix outside search).",
+         "outcomes": ["synonym_go", "redirect_go", "ranking_go", "other_fix", "no_go"],
+         "skip_when": [{"stage": "diagnose", "outcomes": ["nothing_to_fix"], "reason": "the diagnosis found nothing to fix in search."},
+                       {"stage": "visibility", "outcomes": ["nothing_to_fix"], "reason": "the product check found nothing to fix."}]},
+        {"name": "synonyms", "skill": "discovery-synonym-fixer", "writes": true,
+         "do": "Plan the synonym, preview it, create it switched off and switch it on, each batch after its own yes.",
+         "outcomes": ["live", "left_switched_off", "nothing_written"],
+         "skip_when": [{"stage": "qa", "outcomes": ["redirect_go", "ranking_go", "other_fix", "no_go"], "reason": "the chosen fix isn't a synonym, or it failed QA."},
+                       {"stage": "qa", "skipped": true, "reason": "the qa stage was skipped, so no fix was checked to make."}]},
+        {"name": "redirect", "skill": "discovery-redirect-fixer", "writes": true,
+         "do": "Plan the redirect change, check it, create a new redirect switched off and switch it on, each batch after its own yes.",
+         "outcomes": ["live", "left_switched_off", "nothing_written"],
+         "skip_when": [{"stage": "qa", "outcomes": ["synonym_go", "ranking_go", "other_fix", "no_go"], "reason": "the chosen fix isn't a redirect, or it failed QA."},
+                       {"stage": "qa", "skipped": true, "reason": "the qa stage was skipped, so no fix was checked to make."}]},
+        {"name": "measure", "skill": "change-impact-tracker", "writes": false,
+         "do": "Check the fix paid off for the search, with the change and its live date from the hand-off file.",
+         "outcomes": ["worked", "no_clear_effect", "made_it_worse", "too_early_to_tell"],
+         "not_before": {"after_stage": "qa", "days": "measure_after_days"},
+         "skip_when": [{"stage": "qa", "outcomes": ["ranking_go", "other_fix", "no_go"], "reason": "nothing changed in this run: a ranking fix is measured by its own test-and-learn run, and other fixes belong to other skills."},
+                       {"stage": "qa", "skipped": true, "reason": "the qa stage was skipped, so nothing was changed."},
+                       {"all": [{"stage": "synonyms", "outcomes": ["left_switched_off", "nothing_written"]}, {"stage": "redirect", "skipped": true}],
+                        "reason": "the synonym never went live, so there is nothing to measure."},
+                       {"all": [{"stage": "redirect", "outcomes": ["left_switched_off", "nothing_written"]}, {"stage": "synonyms", "skipped": true}],
+                        "reason": "the redirect change never went live, so there is nothing to measure."}]}
+      ]
+    }
+  },
+  "notes": {
+    "measure_after_days": "Days before the measure stage is due. The script counts them from the qa stage, as a floor; the synonyms or redirect stage also sets the measure stage's date from the day the fix went live, which is the date that matters. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when an earlier stage had one of these outcomes, or with skipped: true when it was skipped; all means every condition must hold). The synonyms and redirect stages are alternatives: the qa stage's outcome says which one the chosen fix needs, and the other is offered as a skip."
+  }
+}

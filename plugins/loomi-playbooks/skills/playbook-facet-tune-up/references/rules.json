@@ -1,0 +1,38 @@
+{
+  "about": "Stages and timing for the facet-tune-up playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "measure_after_days": 14,
+  "max_chosen": 10,
+  "wait_outcomes": ["too_early_to_tell"],
+  "playbooks": {
+    "facet-tune-up": {
+      "title": "Facet tune-up",
+      "product": "discovery",
+      "stages": [
+        {"name": "review", "skill": "facet-optimizer", "writes": false,
+         "do": "Review the filters on the top searches and categories, add the boost, bury, hide and always-show recommendations as findings, and agree which to make.",
+         "outcomes": ["changes_chosen", "nothing_to_change"]},
+        {"name": "qa", "skill": "discovery-change-qa", "writes": false,
+         "do": "Check each chosen facet change before anything is written: scope, facets both shown and hidden, clashes and running tests. Drop or change what fails.",
+         "outcomes": ["go", "no_go"],
+         "skip_when": [{"stage": "review", "outcomes": ["nothing_to_change"], "reason": "the review found no facet change worth making."}]},
+        {"name": "fix", "skill": "facet-rule-fixer", "writes": true,
+         "do": "Plan the checked changes, update the rule that covers each page or create a new rule switched off, switch it on, each batch after its own yes.",
+         "outcomes": ["live", "left_switched_off", "nothing_written"],
+         "skip_when": [{"stage": "review", "outcomes": ["nothing_to_change"], "reason": "the review found no facet change worth making."},
+                       {"stage": "qa", "outcomes": ["no_go"], "reason": "every chosen change failed QA."}]},
+        {"name": "measure", "skill": "change-impact-tracker", "writes": false,
+         "do": "Check the busiest changed facet rule paid off on the pages it covers, with the change and its live date from the hand-off file.",
+         "outcomes": ["worked", "no_clear_effect", "made_it_worse", "too_early_to_tell"],
+         "not_before": {"after_stage": "fix", "days": "measure_after_days"},
+         "skip_when": [{"stage": "fix", "outcomes": ["left_switched_off", "nothing_written"], "reason": "no facet change went live, so there is nothing to measure."},
+                       {"stage": "fix", "skipped": true, "reason": "the fix stage was skipped, so nothing changed."}]}
+      ]
+    }
+  },
+  "notes": {
+    "measure_after_days": "Days after the fix stage finishes (the facet rules went live) before the measure stage is due. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell.",
+    "max_chosen": "How many findings can be chosen at once. The review recommends several changes; each chosen one gets its own change file and plan in the fix stage, so each change is tied to its finding.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when an earlier stage had one of these outcomes, or with skipped: true when it was skipped)."
+  }
+}

@@ -20,7 +20,7 @@ The find stage maps the eight flows. Three become findings:
 
 `engagement-scenario-builder` swaps the consent category after its own yes (C2, update). The user sets the project variable in the Engagement UI.
 
-`scenario-qa` returns GO WITH CAUTION (one link not checked). The user switches the flow on in Engagement the same day, and the qa stage is recorded done with outcome `started`. The switch-on goes in the change log too, with source `engagement-ui`, so the quarter close sees it:
+The user doesn't want an A/B test this time, so the test stage is skipped; later, `status` offers the ab-read-out stage as a skip. `scenario-qa` returns GO WITH CAUTION (one link not checked). The user switches the flow on in Engagement the same day, and the qa stage is recorded done with outcome `started`. The switch-on goes in the change log too, with source `engagement-ui`, so the quarter close sees it:
 
 ```
 - C3: start scenario 6a1f00000000000000000001 on 2026-11-05 (in place, live)
@@ -30,6 +30,6 @@ The find stage maps the eight flows. Three become findings:
 **Next:** health with engagement-journey-health, not before 2026-11-19.
 ```
 
-**Session 2 (20 November).** The flow sent 2,300 emails; one step's delivery is fine, no suppression: **healthy**.
+**Session 2 (20 November).** The flow sent 2,300 emails; one step's delivery is fine, no suppression: **healthy**. The ab-read-out stage is skipped (no test).
 
 **Session 3 (6 December).** `engagement-scenario-performance`: 7,800 sent, 5.1% clicked, 2.9% of recipients bought within 3 days. `change-impact-tracker`: purchases by browsers up against the previous month and the site trend: **worked**, about 3,200 a month (range 1,100 to 5,300). The run is finished; F2 is next.

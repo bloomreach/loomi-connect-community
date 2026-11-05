@@ -1,0 +1,43 @@
+{
+  "about": "Stages and settings for the agency portfolio playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record and how many findings can be chosen at once. The other keys are read by the assistant following SKILL.md. Each key is explained under notes.",
+  "max_chosen": 5,
+  "playbook_for": {
+    "a new, empty or barely tracked project meant to go live (no events, few event types, small customer base)": "playbook-new-project",
+    "no live scenarios, or no campaign ever sent": "playbook-lifecycle-gap",
+    "a shrinking customer base, or a client reporting revenue, orders or conversion down": "playbook-revenue-drop",
+    "a healthy or amber project with no open run, due its regular check": "playbook-weekly-triage",
+    "tracking that stopped in a live project (no recent events, busy event types silent) or far more events per customer than its peers": "engagement-tracking-health",
+    "an overview that couldn't be read, or a test or sandbox project to confirm": "loomi-project-overview"
+  },
+  "playbooks": {
+    "agency-portfolio": {
+      "title": "Agency portfolio",
+      "product": "engagement",
+      "stages": [
+        {
+          "name": "overview",
+          "skill": "portfolio-overview",
+          "writes": false,
+          "do": "Score every Engagement project in the organisation from one overview call, with flags and the skill each flag hands to.",
+          "outcomes": ["projects_flagged", "all_green"]
+        },
+        {
+          "name": "deeper",
+          "skill": "portfolio-overview",
+          "writes": false,
+          "do": "After the user agrees the call count, run the overview's deeper mode on the lowest-scoring projects: events in the last 7 days and live scenarios.",
+          "outcomes": ["checked", "partly_checked"],
+          "skip_when": [
+            {"stage": "overview", "outcomes": ["all_green"], "reason": "every project is green: there is nothing to look at more closely."},
+            {"stage": "overview", "skipped": true, "reason": "the overview was skipped, so there are no scores to pick projects from."}
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "max_chosen": "The most flagged projects the run hands off, and how many can be chosen at once: each chosen project goes to someone to start or resume its playbook. More than this in one go and none get done; the rest wait for the next portfolio run.",
+    "playbook_for": "Which playbook starts or resumes for a flagged project, by what the overview and deeper mode found. These are skill names: the playbooks are separate skills, each run in its own hand-off file. Where no playbook fits, a single skill is named instead (engagement-tracking-health, loomi-project-overview), as portfolio-overview's own hand-offs do. When a playbook isn't installed, name the skill from the overview's hand-off instead.",
+    "playbooks": "Each playbook's title, product and stages in order. Both stages run portfolio-overview: the default one-call mode, then its deeper mode on the lowest-scoring projects (it costs calls per project, so it is a stage of its own with its own yes). skip_when suggests skipping deeper mode when the overview found every project green or was skipped. Picking the projects and their playbooks isn't a stage: no skill does it, so the playbook does it from the overview and the list of each project's runs."
+  }
+}

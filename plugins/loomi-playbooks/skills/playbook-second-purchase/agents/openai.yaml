@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Second Purchase"
+  short_description: "Measure repeat purchase, launch a post-purchase flow timed to it, then check the second-purchase rate moved"
+policy:
+  # Writes skill: its launch and adapt stages clone and build Engagement scenarios, so it only runs when called by name.
+  allow_implicit_invocation: false

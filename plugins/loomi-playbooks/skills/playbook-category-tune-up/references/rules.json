@@ -1,0 +1,39 @@
+{
+  "about": "Stages and timing for the category-tune-up playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "measure_after_days": 14,
+  "max_chosen": 10,
+  "wait_outcomes": ["too_early_to_tell"],
+  "playbooks": {
+    "category-tune-up": {
+      "title": "Category tune-up",
+      "product": "discovery",
+      "stages": [
+        {"name": "health", "skill": "discovery-category-health", "writes": false,
+         "do": "Check category pages against like-for-like peers, empty dynamic categories, category rules and buried products, and add the fixes as findings.",
+         "outcomes": ["fixes_found", "healthy"]},
+        {"name": "dynamic", "skill": "discovery-dynamic-category-review", "writes": false,
+         "do": "Review every dynamic category's definition, size, overlaps and performance, and add the fixes as findings for the dashboard.",
+         "outcomes": ["fixes_found", "nothing_to_fix", "no_dynamic_categories"]},
+        {"name": "suggest", "skill": "collection-suggester", "writes": false,
+         "do": "Suggest new collections shoppers want but can't browse to, with a rule and a live preview each, and agree which to build.",
+         "outcomes": ["suggestion_chosen", "nothing_to_suggest"]},
+        {"name": "build", "skill": "topic-collection-builder", "writes": false,
+         "do": "Build the chosen collection in depth: products scored for how strongly they belong, rule-based definitions tested for what they wrongly include and miss, and the dashboard steps.",
+         "outcomes": ["definition_ready", "manual_list_only", "not_buildable"],
+         "skip_when": [{"stage": "suggest", "outcomes": ["nothing_to_suggest"], "reason": "no new collection was worth building."}]},
+        {"name": "measure", "skill": "change-impact-tracker", "writes": false,
+         "do": "Check the category or dynamic category the user changed in the dashboard paid off, with the change and its live date from the hand-off file.",
+         "outcomes": ["worked", "no_clear_effect", "made_it_worse", "too_early_to_tell", "nothing_changed"],
+         "not_before": {"after_stage": "health", "days": "measure_after_days"},
+         "skip_when": [{"all": [{"stage": "health", "outcomes": ["healthy"]}, {"stage": "dynamic", "outcomes": ["nothing_to_fix", "no_dynamic_categories"]}, {"stage": "suggest", "outcomes": ["nothing_to_suggest"]}],
+                        "reason": "no stage found anything to change, so there is nothing to measure."}]}
+      ]
+    }
+  },
+  "notes": {
+    "measure_after_days": "Days before the measure stage is due. The script counts them from the health stage, as a floor; when the user reports a dashboard change, the run also sets the measure stage's date from the day it went live, which is the date that matters. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell.",
+    "max_chosen": "How many findings can be chosen at once: the category and dynamic category fixes the user agrees to make in the dashboard, and the collection to build.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when an earlier stage had one of these outcomes; all means every condition must hold). Every stage skill is read-only: the user makes the changes in the Discovery dashboard, and the run records them so the measure stage and playbook-quarter-close see them."
+  }
+}

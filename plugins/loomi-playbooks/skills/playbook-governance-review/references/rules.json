@@ -1,0 +1,83 @@
+{
+  "about": "Stages and settings for the governance review playbook. scripts/handoff.py reads this file: the stages it tracks and the outcomes each stage can record. The other keys are read by the assistant following SKILL.md. No stage waits for another: the whole review can run in one session. Each key is explained under notes.",
+  "review_every_days": 91,
+  "max_chosen": 50,
+  "owners": {
+    "access": "organisation or project administrator",
+    "integrations": "project administrator",
+    "retention": "project administrator and data protection lead",
+    "datahub": "Data Hub administrator",
+    "ad-audiences": "paid media owner",
+    "catalog-exposure": "Discovery administrator or feed team",
+    "hidden-config": "merchandiser who owns the rule"
+  },
+  "playbooks": {
+    "governance-review": {
+      "title": "Governance review",
+      "product": "both",
+      "stages": [
+        {
+          "name": "access",
+          "skill": "project-access-review",
+          "writes": false,
+          "do": "Review who has access to the Engagement projects in scope and add the removals, downgrades and confirmations as findings, grouped per project and never naming a person.",
+          "outcomes": ["actions_found", "access_clean"],
+          "product": "engagement"
+        },
+        {
+          "name": "integrations",
+          "skill": "integration-inventory",
+          "writes": false,
+          "do": "Inventory the project's integrations, API triggers, project variables and webhook steps, and add stored credentials, broken references and unused items as findings, never a secret.",
+          "outcomes": ["findings_found", "inventory_clean"],
+          "product": "engagement"
+        },
+        {
+          "name": "retention",
+          "skill": "data-retention-review",
+          "writes": false,
+          "do": "Compare event retention with the windows definitions read, and add breaks, over-kept data and personal properties as changes to consider. Not legal advice.",
+          "outcomes": ["changes_to_consider", "retention_fine"],
+          "product": "engagement"
+        },
+        {
+          "name": "datahub",
+          "skill": "datahub-collection-audit",
+          "writes": false,
+          "do": "Audit the Data Hub workspace's item collections and add the high and medium fixes as findings with the owner the audit names. Record no_datahub when no workspace has Data Hub.",
+          "outcomes": ["fixes_found", "collections_clean", "no_datahub"]
+        },
+        {
+          "name": "ad-audiences",
+          "skill": "ad-audience-sync-health",
+          "writes": false,
+          "do": "Review the audiences sent to ad platforms and the autosegments, and add audiences without advertising consent, on archived segments, tiny, duplicated or failing as findings.",
+          "outcomes": ["findings_found", "audiences_healthy", "no_ad_audiences"],
+          "product": "engagement"
+        },
+        {
+          "name": "catalog-exposure",
+          "skill": "discovery-catalog-config-audit",
+          "writes": false,
+          "do": "Audit the Discovery catalog's attribute settings and add internal fields returned to the storefront or facetable, and other high fixes, as findings.",
+          "outcomes": ["fixes_found", "config_clean"],
+          "product": "discovery"
+        },
+        {
+          "name": "hidden-config",
+          "skill": "discovery-hidden-config-audit",
+          "writes": false,
+          "do": "Audit Discovery audiences and API parameter overrides, and add forgotten, broken or over-broad ones as findings.",
+          "outcomes": ["cleanup_found", "config_clean"],
+          "product": "discovery"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "review_every_days": "How often the review runs: about a quarter. The next run is a new hand-off file started this many days after the last one; step 0 lists the folder so the new run starts from the previous run's open findings.",
+    "max_chosen": "How many findings can be marked chosen at once: the ones the owners have agreed to act on this quarter. The review writes nothing, so chosen only means agreed; findings are marked done when the owner says the change is made.",
+    "owners": "Who usually acts on each stage's findings, by stage name. The playbook puts it in each finding's owner field (plain text: a team or role, never a person's name), and the summary groups the findings by owner. Override it with the owner the stage skill names on a row (datahub-collection-audit names one per fix) or the one the user gives.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes (none does here), what to do, the outcomes it can record and the product it needs: status suggests skipping the Engagement stages when the run has no Engagement project and the Discovery stages when it has no Discovery account. The datahub stage names no product: Data Hub sits under the cloud organisation, so a Discovery or an Engagement customer may have it, and the stage records no_datahub when no workspace has it. No skip_when entries: each audit stands alone, and one finding nothing doesn't make another pointless. The findings list with owners isn't a stage: no skill makes it, so the playbook builds it from the stages' findings."
+  }
+}

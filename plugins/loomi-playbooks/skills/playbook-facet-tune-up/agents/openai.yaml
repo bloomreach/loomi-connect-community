@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Facet Tune-up"
+  short_description: "Review Discovery filters, check each change, apply it to the facet rules and measure the result"
+policy:
+  # Writes skill: its fix stage changes live facet rules (a global rule covers every page), so it only runs when called by name.
+  allow_implicit_invocation: false
