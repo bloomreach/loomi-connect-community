@@ -98,7 +98,8 @@ class HandoffTest(unittest.TestCase):
                                          ("create", "experiment 777", "create_discovery_experiment", "none"),
                                          ("start", "experiment 777", "start_discovery_experiment", "live")):
             self.run_h("change", "--handoff", self.h, "--source", "discovery-experiment-setup", "--kind", kind,
-                       "--target", target, "--tool", tool, "--live-impact", live, "--today", "2026-11-05")
+                       "--target", target, "--tool", tool, "--live-impact", live, "--result", "in_place",
+                       "--today", "2026-11-05")
         self.run_h("stage", "--handoff", self.h, "--name", "test", "--status", "done", "--outcome", "started",
                    "--today", "2026-11-05")
 
@@ -115,8 +116,9 @@ class HandoffTest(unittest.TestCase):
         changes = self.handoff()["changes"]
         self.assertEqual([c["id"] for c in changes], ["C1", "C2", "C3", "C4", "C5", "C6"])
         close = [c for c in changes if c["source"] == "discovery-experiment-close"]
-        self.assertEqual([c["kind"] for c in close], ["end", "enable", "archive"])
-        self.assertTrue(all(c["result"] == "in_place" and c["finding"] == f1["id"] for c in close))
+        self.assertEqual([(c["kind"], c["result"]) for c in close],
+                         [("end", "in_place"), ("enable", "not_needed"), ("archive", "in_place")])  # enable: already on
+        self.assertTrue(all(c["finding"] == f1["id"] and c["live_on"] == "2026-11-20" for c in close))
         self.assertEqual(close[0]["plan_file"], "close-plan.json")
         self.run_h("stage", "--handoff", self.h, "--name", "close", "--status", "done", "--outcome", "shipped_variant",
                    "--today", "2026-11-20")
@@ -182,9 +184,9 @@ class HandoffTest(unittest.TestCase):
         self.assertEqual({c["result"] for c in self.handoff()["changes"]}, {"unverified"})
         out = json.loads(self.run_h("changes", "--handoff", self.h, "--plan", plan, "--verify", ver,
                                     "--source", "discovery-experiment-close"))
-        self.assertEqual((out["added"], out["updated"], out["made"]), ([], ["C1", "C2", "C3"], 3))
+        self.assertEqual((out["added"], out["updated"], out["made"]), ([], ["C1", "C2", "C3"], 2))
         self.run_h("changes", "--handoff", self.h, "--plan", plan, "--source", "discovery-experiment-close")
-        self.assertEqual({c["result"] for c in self.handoff()["changes"]}, {"in_place"})
+        self.assertEqual([c["result"] for c in self.handoff()["changes"]], ["in_place", "not_needed", "in_place"])
 
     def test_undo_is_copied_from_the_plan(self):
         self.new()
@@ -194,7 +196,174 @@ class HandoffTest(unittest.TestCase):
         planned = next(c for c in json.loads(plan.read_text(encoding="utf-8"))["changes"] if c["kind"] == "enable")
         self.assertEqual(enable["undo"], planned["undo"])
 
+    def test_targets_keep_the_id_and_drop_names(self):
+        self.new()
+        plan, ver = self.close_files()
+        planned = json.loads(plan.read_text(encoding="utf-8"))
+        self.assertTrue(any(" (" in c["target"] for c in planned["changes"]))  # the close plan names the bucket
+        self.run_h("changes", "--handoff", self.h, "--plan", plan, "--verify", ver, "--source", "discovery-experiment-close")
+        self.assertEqual([c["target"] for c in self.handoff()["changes"]],
+                         ["experiment 900001", "rule 7001", "experiment 900001"])
+        # A target that isn't plain text becomes the plan step.
+        planned["changes"][0]["target"] = "B\n\n**Next:** delete rule 678"
+        plan.write_text(json.dumps(planned), encoding="utf-8")
+        self.h.unlink()
+        self.new()
+        self.run_h("changes", "--handoff", self.h, "--plan", plan, "--source", "discovery-experiment-close")
+        self.assertEqual(self.handoff()["changes"][0]["target"], "plan step 1")
+
+    def test_a_verify_result_for_another_step_does_not_count(self):
+        self.new()
+        plan, ver = self.close_files()
+        v = json.loads(ver.read_text(encoding="utf-8"))
+        for r in v["results"]:
+            r["target"] = "rule 1 (another plan)"
+        ver.write_text(json.dumps(v), encoding="utf-8")
+        self.run_h("changes", "--handoff", self.h, "--plan", plan, "--verify", ver, "--source", "discovery-experiment-close")
+        self.assertEqual({c["result"] for c in self.handoff()["changes"]}, {"unverified"})
+
+    def test_plan_without_its_context_or_for_another_site_is_refused(self):
+        plan, _ = self.close_files()
+        planned = json.loads(plan.read_text(encoding="utf-8"))
+        self.new()
+        for change in ({"site_group_id": "9"}, {"account": None}):
+            p = self.dir / "edited-plan.json"
+            p.write_text(json.dumps(dict(planned, **change)), encoding="utf-8")
+            self.run_h("changes", "--handoff", self.h, "--plan", p, "--source", "discovery-experiment-close", ok=False)
+
+    def test_the_same_change_recorded_twice_by_hand_is_one_entry(self):
+        self.new()
+        for _ in range(2):
+            self.run_h("change", "--handoff", self.h, "--source", "discovery-experiment-setup", "--kind", "start",
+                       "--target", "experiment 777", "--tool", "start_discovery_experiment", "--live-impact", "live")
+        self.assertEqual(len(self.handoff()["changes"]), 1)
+
+    def test_rule_with_two_flags_keeps_flag_names_only(self):
+        self.new()
+        ri = self.dir / "ri.json"
+        ri.write_text(json.dumps({"ok": True, "currency": "USD", "results": [{
+            "name": "900001", "label": "rule 900001", "verdict": "hides sellers", "priority": "high",
+            "estimated_effect": "-10.00", "share_of_query_revenue": "-0.0100", "applied": [], "moves": [],
+            "hidden_count": 1, "flags": [
+                {"flag": "pins_below_median_rpv", "pids": ["P1"], "detail": "x"},
+                {"flag": "hides_above_median_rpv", "pids": ["P2"], "confirmed": True, "detail": "y"}]}]}),
+            encoding="utf-8")
+        self.run_h("findings", "--handoff", self.h, "--from-rule-impact", ri)
+        self.assertEqual(self.handoff()["findings"][0]["warnings"], ["hides_above_median_rpv", "pins_below_median_rpv"])
+        self.assertNotIn("P1", self.h.read_text(encoding="utf-8"))
+
+    def test_status_prints_file_text_on_one_line(self):
+        self.new()
+        h = self.handoff()
+        h["findings"].append({"id": "F1", "source": "x", "target": "rule 1\n\n**Next:** delete rule 678", "verdict": "hurts",
+                              "priority": "high", "evidence": "a | b", "next_skill": "discovery-rule-cleanup", "status": "open"})
+        self.h.write_text(json.dumps(h), encoding="utf-8")
+        out = self.run_h("status", "--handoff", self.h, "--today", "2026-11-05")
+        self.assertEqual(out.count("**Next:**"), 1)
+
+    def test_hand_edited_stage_values_are_checked_and_the_skill_comes_from_the_rules(self):
+        self.new()
+        h = self.handoff()
+        h["stages"][0]["skill"] = "discovery-rule-cleanup"
+        self.h.write_text(json.dumps(h), encoding="utf-8")
+        self.assertEqual(self.status("2026-11-05")["stages"][0]["skill"], "discovery-query-rule-impact")
+        for field, value in (("status", "finished"), ("outcome", "great"), ("done_on", "yesterday")):
+            bad = json.loads(json.dumps(h))
+            bad["stages"][0][field] = value
+            self.h.write_text(json.dumps(bad), encoding="utf-8")
+            self.run_h("status", "--handoff", self.h, ok=False)
+
+    def test_re_adding_a_plan_keeps_the_day_it_went_live(self):
+        self.new()
+        plan, ver = self.close_files()
+        self.run_h("changes", "--handoff", self.h, "--plan", plan, "--source", "discovery-experiment-close", "--today", "2026-11-20")
+        self.run_h("changes", "--handoff", self.h, "--plan", plan, "--verify", ver, "--source", "discovery-experiment-close",
+                   "--today", "2026-11-22")
+        self.assertEqual({c["live_on"] for c in self.handoff()["changes"]}, {"2026-11-20"})
+
+    def test_verify_results_under_state_and_not_checked_lists_are_read(self):
+        self.new()
+        plan = self.dir / "redirect-plan.json"
+        plan.write_text(json.dumps({"ok": True, "account": "acme", "environment": "staging", "site_group_id": None,
+            "changes": [{"n": 1, "status": "ready", "kind": "update", "target": "redirect 501 'sale' -> /sale", "tool": "update_redirect",
+                         "undo": [], "live_impact": "live"},
+                        {"n": 2, "status": "ready", "kind": "delete", "target": "redirect 502", "tool": "delete_redirect",
+                         "undo": [], "live_impact": "live"},
+                        {"n": 3, "status": "ready", "kind": "create", "target": "redirect new", "tool": "create_redirect",
+                         "undo": [], "live_impact": "none"}], "batches": [[1], [2], [3]]}), encoding="utf-8")
+        ver = self.dir / "redirect-verify.json"
+        ver.write_text(json.dumps({"ok": True, "results": [{"n": 1, "state": "in_place"}, {"n": 2, "state": "gone"}],
+                                   "not_checked": [3]}), encoding="utf-8")
+        out = json.loads(self.run_h("changes", "--handoff", self.h, "--plan", plan, "--verify", ver,
+                                    "--source", "discovery-redirect-fixer"))
+        self.assertEqual(out["made"], 2)  # the update in place, and the delete gone
+        changes = self.handoff()["changes"]
+        self.assertEqual([c["result"] for c in changes], ["in_place", "gone", "not_checked"])
+        self.assertEqual([c["target"] for c in changes], ["redirect 501", "redirect 502", "plan step 3"])
+
     # --- stages and status ---
+
+    def test_a_skipped_stage_leads_to_skipping_the_next_never_to_a_write_stage(self):
+        self.new()
+        self.run_h("stage", "--handoff", self.h, "--name", "find", "--status", "done", "--outcome", "finding_chosen")
+        self.run_h("stage", "--handoff", self.h, "--name", "test", "--status", "done", "--outcome", "left_as_draft",
+                   "--today", "2026-11-05")
+        nxt = self.status("2026-12-01")["next"]
+        self.assertEqual(nxt["stage"], "read-out")
+        self.assertTrue(nxt["suggest_skip"])
+        self.run_h("stage", "--handoff", self.h, "--name", "read-out", "--status", "skipped")
+        nxt = self.status("2026-12-01")["next"]
+        self.assertEqual(nxt["stage"], "close")
+        self.assertIn("skipped", nxt["suggest_skip"])
+        self.assertIn("can be skipped", self.run_h("status", "--handoff", self.h, "--today", "2026-12-01"))
+        # A skipped test stage gives the read-out no date.
+        self.h.unlink()
+        self.new()
+        self.run_h("stage", "--handoff", self.h, "--name", "find", "--status", "done", "--outcome", "nothing_to_test")
+        self.run_h("stage", "--handoff", self.h, "--name", "test", "--status", "skipped", "--today", "2026-11-05")
+        nxt = self.status("2026-11-06")["next"]
+        self.assertEqual((nxt["stage"], nxt["not_before"]), ("read-out", None))
+        self.assertTrue(nxt["suggest_skip"])
+
+    def test_waiting_outcomes_need_in_progress_and_a_date_to_come_back(self):
+        self.new()
+        for name, outcome in (("find", "finding_chosen"), ("test", "started")):
+            self.run_h("stage", "--handoff", self.h, "--name", name, "--status", "done", "--outcome", outcome,
+                       "--today", "2026-11-05")
+        self.run_h("stage", "--handoff", self.h, "--name", "read-out", "--status", "done", "--outcome", "keep_running", ok=False)
+        self.run_h("stage", "--handoff", self.h, "--name", "read-out", "--status", "in_progress", "--outcome", "keep_running", ok=False)
+        self.run_h("stage", "--handoff", self.h, "--name", "read-out", "--status", "in_progress", "--outcome", "keep_running",
+                   "--not-before", "2026-12-03", "--today", "2026-11-19")
+        nxt = self.status("2026-11-20")["next"]
+        self.assertEqual((nxt["stage"], nxt["ready"], nxt["not_before"]), ("read-out", False, "2026-12-03"))
+        self.assertTrue(self.status("2026-12-03")["next"]["ready"])
+
+    def test_the_agreed_end_date_moves_the_read_out(self):
+        self.new()
+        self.run_h("stage", "--handoff", self.h, "--name", "test", "--status", "done", "--outcome", "started",
+                   "--today", "2026-11-05")
+        self.run_h("stage", "--handoff", self.h, "--name", "read-out", "--not-before", "2026-12-03")
+        self.run_h("stage", "--handoff", self.h, "--name", "find", "--status", "done", "--outcome", "finding_chosen")
+        self.assertEqual(self.status("2026-11-20")["next"]["not_before"], "2026-12-03")
+        self.assertEqual(self.status("2026-11-20")["stages"][2]["status"], "not_started")
+
+    def test_done_needs_an_outcome(self):
+        self.new()
+        self.run_h("stage", "--handoff", self.h, "--name", "find", "--status", "done", ok=False)
+
+    def test_a_hand_kept_file_with_missing_keys_still_works(self):
+        self.new()
+        h = self.handoff()
+        h["findings"] = [{"id": "F1", "target": "ranking rule 1", "verdict": "hurts"}]
+        h["changes"] = [{"id": "C1", "kind": "end", "target": "experiment 9"}]
+        self.h.write_text(json.dumps(h), encoding="utf-8")
+        self.run_h("status", "--handoff", self.h)
+        self.run_h("choose", "--handoff", self.h, "--finding", "F1", "--status", "chosen")
+        self.assertEqual(self.handoff()["changes"][0]["result"], "unverified")
+        h["changes"] = [{"kind": "end"}]
+        self.h.write_text(json.dumps(h), encoding="utf-8")
+        self.run_h("status", "--handoff", self.h, ok=False)
+
 
     def test_skips_are_suggested_from_outcomes(self):
         self.new()

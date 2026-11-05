@@ -115,6 +115,7 @@ const D=__DATA__;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const COLORS={"loomi-engagement":"var(--eng)","loomi-discovery":"var(--disc)","loomi-platform":"var(--plat)","loomi-product-data":"var(--prod)","loomi-playbooks":"var(--play)"};
+const label=p=>({"loomi-discovery":"search","loomi-engagement":"marketing"})[p]||p.replace("loomi-","");
 const W=D.skills.filter(s=>s.writes).length;
 $("title").innerHTML=`<em>${D.skills.length}</em> skills across ${D.plugins.length} plugins`;
 $("lede").innerHTML=`${D.skills.length-W} only read. ${W} can change something, and each of those shows exactly what it will change and waits for a yes. Using claude.ai or ChatGPT? Download a skill's <b>.zip</b> and follow the <a href="quickstart.html">quickstart</a>.`;
@@ -124,14 +125,14 @@ $("plugins").innerHTML=D.plugins.map(p=>{const r=p.skills-p.writes;
   return `<div class="prow"><div class="pname" style="color:${COLORS[p.name]}">${esc(p.name)}</div><div class="barc" role="img" aria-label="${r} read-only, ${p.writes} writes"><i style="width:${r/max*100}%;background:${COLORS[p.name]}"></i><i class="w" style="width:${p.writes/max*100}%"></i></div><div class="pcount">${p.skills}</div></div>`;}).join("");
 let plugin="all",wonly=false;
 const chips=$("chips");
-["all",...D.plugins.map(p=>p.name)].forEach(p=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=p.replace("loomi-","");b.setAttribute("aria-pressed",p==="all");
+["all",...D.plugins.map(p=>p.name)].forEach(p=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=label(p);b.setAttribute("aria-pressed",p==="all");
   b.onclick=()=>{plugin=p;[...chips.children].forEach(c=>c.setAttribute("aria-pressed",c===b));render();};chips.appendChild(b);});
 $("wonly").onclick=e=>{wonly=!wonly;e.currentTarget.setAttribute("aria-pressed",wonly);render();};
 $("q").oninput=render;
 function render(){const t=$("q").value.trim().toLowerCase();
   const rows=D.skills.filter(s=>(plugin==="all"||s.plugin===plugin)&&(!wonly||s.writes)&&(!t||s.name.includes(t)||s.summary.toLowerCase().includes(t)));
   $("count").textContent=rows.length+" of "+D.skills.length;
-  $("list").innerHTML=rows.map(s=>`<div class="sk"><div class="pl" style="color:${COLORS[s.plugin]}">${esc(s.plugin.replace("loomi-",""))}</div><h3><a href="${D.repo}/tree/main/plugins/${esc(s.plugin)}/skills/${esc(s.name)}">${esc(s.name)}</a>${s.writes?'<span class="wtag">writes</span>':''}<a class="dl" href="downloads/${esc(s.name)}.zip" download aria-label="Download ${esc(s.name)} as a zip">.zip</a></h3><p>${esc(s.summary)}</p></div>`).join("")
+  $("list").innerHTML=rows.map(s=>`<div class="sk"><div class="pl" style="color:${COLORS[s.plugin]}">${esc(label(s.plugin))}</div><h3><a href="${D.repo}/tree/main/plugins/${esc(s.plugin)}/skills/${esc(s.name)}">${esc(s.name)}</a>${s.writes?'<span class="wtag">writes</span>':''}<a class="dl" href="downloads/${esc(s.name)}.zip" download aria-label="Download ${esc(s.name)} as a zip">.zip</a></h3><p>${esc(s.summary)}</p></div>`).join("")
     ||'<p style="color:var(--muted);padding:12px 0">No skills match. Clear the search or pick another plugin.</p>';}
 render();
 </script>
