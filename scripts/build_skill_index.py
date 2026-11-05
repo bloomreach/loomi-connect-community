@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 REPO_URL = "https://github.com/bloomreach/loomi-connect-community"
 TOOLS_FILE = "docs/published-tools.txt"
 TOOL_LIST_MAX_AGE_DAYS = 30
-PLUGIN_ORDER = ["loomi-engagement", "loomi-discovery", "loomi-platform", "loomi-product-data"]
+PLUGIN_ORDER = ["loomi-engagement", "loomi-discovery", "loomi-platform", "loomi-product-data", "loomi-playbooks"]
 TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".html", ".txt"}
 BOT_EMAILS = {"noreply@anthropic.com"}
 

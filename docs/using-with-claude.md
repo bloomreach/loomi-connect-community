@@ -14,6 +14,7 @@ This repository is a Claude Code plugin marketplace.
 /plugin install loomi-discovery@loomi-connect-community
 /plugin install loomi-platform@loomi-connect-community
 /plugin install loomi-product-data@loomi-connect-community
+/plugin install loomi-playbooks@loomi-connect-community
 ```
 
 From a shell:
@@ -24,6 +25,7 @@ claude plugin install loomi-engagement@loomi-connect-community
 claude plugin install loomi-discovery@loomi-connect-community
 claude plugin install loomi-platform@loomi-connect-community
 claude plugin install loomi-product-data@loomi-connect-community
+claude plugin install loomi-playbooks@loomi-connect-community
 ```
 
 To get new versions:

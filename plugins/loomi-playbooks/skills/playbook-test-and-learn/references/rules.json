@@ -1,0 +1,48 @@
+{
+  "about": "Stages and timing for the test-and-learn playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "min_test_days": 14,
+  "measure_after_days": 14,
+  "wait_outcomes": ["keep_running", "too_early_to_tell"],
+  "finding_verdicts": ["hurts", "hides sellers"],
+  "next_skill": {
+    "hurts": "discovery-experiment-setup",
+    "hides sellers": "discovery-experiment-setup",
+    "default": "discovery-experiment-setup"
+  },
+  "playbooks": {
+    "test-and-learn": {
+      "title": "Test and learn",
+      "product": "discovery",
+      "stages": [
+        {"name": "find", "skill": "discovery-query-rule-impact", "writes": false,
+         "do": "Measure what each rule does to the query, add the findings, and ask the user which one to test.",
+         "outcomes": ["finding_chosen", "nothing_to_test"]},
+        {"name": "test", "skill": "discovery-experiment-setup", "writes": true,
+         "do": "Set up an A/B test of today's rule against a fixed variant (Pattern 2), and start it after its own yes.",
+         "outcomes": ["started", "left_as_draft", "not_testable"],
+         "skip_when": [{"stage": "find", "outcomes": ["nothing_to_test"], "reason": "the find stage found nothing worth testing."}]},
+        {"name": "read-out", "skill": "discovery-experiment-readout", "writes": false,
+         "do": "Read the test's result. Don't stop early on a good-looking day.",
+         "outcomes": ["winner", "no_winner", "keep_running"],
+         "not_before": {"after_stage": "test", "days": "min_test_days"},
+         "skip_when": [{"stage": "test", "outcomes": ["left_as_draft", "not_testable"], "reason": "no test is running."}]},
+        {"name": "close", "skill": "discovery-experiment-close", "writes": true,
+         "do": "End the test keeping the winner (or today's rule), check every rule, then archive it, each step after its own yes.",
+         "outcomes": ["shipped_variant", "kept_control"]},
+        {"name": "confirm", "skill": "change-impact-tracker", "writes": false,
+         "do": "Check the shipped change holds at full traffic, with the change and its live date from the hand-off file.",
+         "outcomes": ["worked", "no_clear_effect", "made_it_worse", "too_early_to_tell"],
+         "not_before": {"after_stage": "close", "days": "measure_after_days"},
+         "skip_when": [{"stage": "close", "outcomes": ["kept_control"], "reason": "nothing changed for shoppers, so there is nothing to confirm."}]}
+      ]
+    }
+  },
+  "notes": {
+    "min_test_days": "Days after the test stage finishes (the test started) before the read-out stage is due. discovery-experiment-setup recommends at least 14 days in whole weeks; use the end date agreed at setup when it's later.",
+    "measure_after_days": "Days after the close stage finishes (the winner went to full traffic) before the confirm stage is due. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "finding_verdicts": "rule_impact.py verdicts that become findings. Rules that help or are neutral are left out unless the findings command gets --all.",
+    "next_skill": "The skill that acts on a finding, by verdict. A rule that hurts or hides sellers is tested before it's changed, so the next skill is discovery-experiment-setup.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes)."
+  }
+}

@@ -5,7 +5,7 @@
 <!-- One or two sentences. -->
 
 **Type:** New skill / Skill update / Subagent / Docs / Other
-**Plugin:** loomi-engagement / loomi-discovery / loomi-platform / loomi-product-data
+**Plugin:** loomi-engagement / loomi-discovery / loomi-platform / loomi-product-data / loomi-playbooks
 **Access:** Read-only / **Writes**: list exactly what it can change
 
 ## Testing

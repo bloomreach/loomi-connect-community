@@ -87,6 +87,8 @@ class BuildSkillIndexTest(unittest.TestCase):
             for f in ("index", "skills", "quickstart", "tools"):
                 html = (out / f"{f}.html").read_text(encoding="utf-8")
                 self.assertNotRegex(html, r"\b(Discovery|Engagement)\b", f"{f}.html uses the old product names")
+            skills = (out / "skills.html").read_text(encoding="utf-8")
+            self.assertIn('"loomi-discovery":"search","loomi-engagement":"marketing"', skills, "plugin pills use the current product names")
             payload = json.loads(re.search(r"const D=(\{.*?\});\n", page, re.S).group(1))
             self.assertEqual({s["name"] for s in payload["skills"]}, {s["name"] for s in self.data["skills"]})
             self.assertNotRegex(json.dumps(payload["contributors"]), r"@")

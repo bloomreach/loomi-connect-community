@@ -199,6 +199,8 @@ A write skill's script turns the request into a **plan file** before anything is
 - A skill that never deletes may give `undo: []` with an `undo_note` saying how a person removes the item.
 - `verify` has no `gone` state when nothing is deleted. Any error that names the project, organisation or access, or a 401, 403 or 429, stops the run; only a not-found on the item itself is `not_in_place`.
 
+A skill whose result another skill acts on, or that records changes for a later check, can also write to a **hand-off file**: see [hand-off-format.md](hand-off-format.md). Playbooks (`plugins/loomi-playbooks/`) chain skills through it.
+
 ### Scripts
 
 - Put scripts in the skill's `scripts/` folder.
@@ -221,7 +223,7 @@ A write skill's script turns the request into a **plan file** before anything is
 ## Testing
 
 1. **Validate:** run `python3 scripts/validate_skills.py`, and `claude plugin validate .` if you have Claude Code installed. See [what the validator checks](#what-the-validator-checks).
-2. **Test the scripts**, if the skill has any. Tests live in `tests/<area>/test_<skill>_<script>.py`, where the area is `engagement`, `discovery`, `platform` or `product_data`. Use the standard library's `unittest`, with synthetic fixtures in `tests/fixtures/<area>/`: never real IDs or customer data. Run them with `python3 -m unittest discover -s tests -t .`. CI runs them on every PR.
+2. **Test the scripts**, if the skill has any. Tests live in `tests/<area>/test_<skill>_<script>.py`, where the area is `engagement`, `discovery`, `platform`, `product_data` or `playbooks`. Use the standard library's `unittest`, with synthetic fixtures in `tests/fixtures/<area>/`: never real IDs or customer data. Run them with `python3 -m unittest discover -s tests -t .`. CI runs them on every PR.
 3. **Check that it triggers:** in a fresh session, ask in your own words for what the skill does, without naming the skill. It should load. Then ask for something nearby that it should not handle, and check that it doesn't load.
 4. **Run it for real** against a sandbox or test project. Check that the output follows the format you specified.
 5. **Test on both platforms if you can:** one Claude client (Claude Code is easiest) and one OpenAI client (Codex is easiest). See [using-with-claude.md](using-with-claude.md) and [using-with-openai.md](using-with-openai.md).
