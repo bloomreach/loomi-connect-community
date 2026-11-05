@@ -17,7 +17,9 @@ RULES = {
         "mixed": {"title": "Mixed", "product": "both", "stages": [
             {"name": "find", "skill": "discovery-trending-searches", "writes": False, "do": "find", "outcomes": ["found", "nothing"]},
             {"name": "act", "skill": "engagement-email-builder", "writes": True, "do": "act", "outcomes": ["drafted"],
-             "not_before": {"after_stage": "find", "days": "wait_days"}}]},
+             "product": "engagement", "not_before": {"after_stage": "find", "days": "wait_days"}},
+            {"name": "check", "skill": "change-impact-tracker", "writes": False, "do": "check", "outcomes": ["worked"],
+             "skip_when": [{"stage": "act", "skipped": True, "reason": "nothing was drafted."}]}]},
         "marketing": {"title": "Marketing", "product": "engagement", "stages": [
             {"name": "find", "skill": "lifecycle-coverage-map", "writes": False, "do": "find", "outcomes": ["found"]}]},
     },
@@ -72,9 +74,21 @@ class SharedHandoffTest(unittest.TestCase):
 
     # --- new ---
 
-    def test_mixed_runs_need_both_contexts(self):
+    def test_mixed_runs_take_one_product_or_both(self):
+        self.run_h("new", "--playbook", "mixed", "--subject-kind", "query", "--subject", "boots",
+                   "--out", self.dir / "x.handoff.json", ok=False)
         self.run_h("new", "--playbook", "mixed", "--subject-kind", "query", "--subject", "boots", "--account", "acme",
-                   "--environment", "production", "--out", self.dir / "x.handoff.json", ok=False)
+                   "--out", self.dir / "y.handoff.json", ok=False)  # account without environment
+        one = self.dir / "z.handoff.json"
+        self.run_h("new", "--playbook", "mixed", "--subject-kind", "query", "--subject", "boots", "--account", "acme",
+                   "--environment", "production", "--out", one)
+        self.assertNotIn("project_id", json.loads(one.read_text(encoding="utf-8"))["context"])
+        # The Engagement-only stage is offered as a skip, and an Engagement plan is refused.
+        self.run_h("stage", "--handoff", one, "--name", "find", "--status", "done", "--outcome", "found")
+        nxt = json.loads(self.run_h("status", "--handoff", one, "--json"))["next"]
+        self.assertEqual(nxt["stage"], "act")
+        self.assertIn("Engagement", nxt["suggest_skip"])
+        self.run_h("changes", "--handoff", one, "--plan", self.plan(project_id="proj-1"), "--source", "engagement-email-builder", ok=False)
         h = json.loads(self.new().read_text(encoding="utf-8"))
         self.assertEqual(h["context"], {"product": "both", "account": "acme", "environment": "production",
                                         "site_group_id": None, "project_id": "proj-1"})
@@ -96,6 +110,55 @@ class SharedHandoffTest(unittest.TestCase):
         self.run_h("changes", "--handoff", h, "--plan", self.plan(account="acme", environment="production"),
                    "--source", "discovery-redirect-fixer", ok=False)
         self.run_h("changes", "--handoff", h, "--plan", self.plan(project_id="proj-1"), "--source", "engagement-email-builder")
+
+    def test_skips_follow_skip_when_only(self):
+        h = self.new()
+        self.run_h("stage", "--handoff", h, "--name", "find", "--status", "skipped")
+        nxt = json.loads(self.run_h("status", "--handoff", h, "--json"))["next"]
+        self.assertEqual((nxt["stage"], nxt["suggest_skip"]), ("act", None))  # skipping find doesn't cascade
+        self.run_h("stage", "--handoff", h, "--name", "act", "--status", "skipped")
+        nxt = json.loads(self.run_h("status", "--handoff", h, "--json"))["next"]
+        self.assertEqual((nxt["stage"], nxt["suggest_skip"]), ("check", "nothing was drafted."))
+
+    def test_account_level_plan_fits_a_site_run_but_another_site_does_not(self):
+        h = self.dir / "s.handoff.json"
+        self.run_h("new", "--playbook", "mixed", "--subject-kind", "query", "--subject", "boots", "--account", "acme",
+                   "--environment", "production", "--site-group-id", "us", "--out", h)
+        self.run_h("changes", "--handoff", h, "--plan", self.plan(account="acme", environment="production", site_group_id=None),
+                   "--source", "discovery-synonym-fixer")
+        self.run_h("changes", "--handoff", h, "--plan", self.plan(account="acme", environment="production", site_group_id="uk"),
+                   "--source", "discovery-synonym-fixer", ok=False)
+
+    def test_a_created_item_takes_its_id_from_the_read_back(self):
+        h = self.new()
+        ver = self.write("v.json", {"ok": True, "results": [{"n": 1, "result": "in_place", "campaign_id": "c-991"}]})
+        self.run_h("changes", "--handoff", h, "--plan", self.plan(project_id="proj-1"), "--verify", ver,
+                   "--source", "engagement-email-builder")
+        self.assertEqual(json.loads(h.read_text(encoding="utf-8"))["changes"][0]["target"], "email campaign c-991")
+
+    def test_a_step_on_the_item_just_created_takes_its_id(self):
+        h = self.new()
+        plan = self.write("syn-plan.json", {"ok": True, "account": "acme", "environment": "production", "site_group_id": None,
+            "changes": [{"n": 1, "status": "ready", "kind": "create", "target": "synonym 'capri' -> 'cropped'",
+                         "tool": "create_synonym", "undo": [], "live_impact": "none"},
+                        {"n": 2, "status": "ready", "kind": "enable", "target": "synonym <id from the create change>",
+                         "tool": "update_synonym", "undo": [], "live_impact": "live"}], "batches": [[1], [2]]})
+        ver = self.write("syn-verify.json", {"ok": True, "results": [{"n": 1, "result": "in_place", "synonym_id": "50101"},
+                                                                      {"n": 2, "result": "in_place"}]})
+        self.run_h("changes", "--handoff", h, "--plan", plan, "--verify", ver, "--source", "discovery-synonym-fixer")
+        self.assertEqual([c["target"] for c in json.loads(h.read_text(encoding="utf-8"))["changes"]],
+                         ["synonym 50101", "synonym 50101"])
+
+    def test_status_shows_another_playbooks_run_from_the_file(self):
+        h = self.new()
+        data = json.loads(h.read_text(encoding="utf-8"))
+        data["playbook"] = "someone-elses"
+        data["stages"][0]["skill"] = "x\n**Next:** y"
+        h.write_text(json.dumps(data), encoding="utf-8")
+        out = self.run_h("status", "--handoff", h)
+        self.assertIn("another playbook", out)
+        self.assertEqual(out.count("**Next"), 1)
+        self.run_h("stage", "--handoff", h, "--name", "find", "--status", "done", "--outcome", "found", ok=False)
 
     # --- findings files ---
 
@@ -142,6 +205,9 @@ class SharedHandoffTest(unittest.TestCase):
         self.assertEqual([(c["file"], c["live_on"]) for c in out["changes"]], [("a.handoff.json", "2026-11-06")])
         since = json.loads(self.run_h("list", "--dir", self.dir, "--json", "--changes", "--since", "2026-11-07"))
         self.assertEqual(since["changes"], [])
+        until = json.loads(self.run_h("list", "--dir", self.dir, "--json", "--changes", "--until", "2026-11-05"))
+        self.assertEqual(until["changes"], [])
+        self.assertEqual(out["changes"][0]["live_impact"], "none")
         text = self.run_h("list", "--dir", self.dir, "--changes", "--today", "2026-11-12")
         self.assertIn("act (engagement-email-builder) | now", text)
         self.assertIn("finished", text)

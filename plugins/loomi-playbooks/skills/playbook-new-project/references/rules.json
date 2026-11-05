@@ -1,0 +1,97 @@
+{
+  "about": "Stages and settings for the new project playbook. scripts/handoff.py reads this file: the stages it tracks and the outcomes each stage can record. The other keys are read by the assistant following SKILL.md. Each key is explained under notes.",
+  "plan_days": 30,
+  "plan_order": [
+    "data blockers",
+    "configuration fixes",
+    "lifecycle gaps",
+    "search and category problems",
+    "weekly routine"
+  ],
+  "playbook_for": {
+    "data blockers": "the fixing skill the stage named (tracking, feeds and IDs are developer fixes, not a playbook)",
+    "configuration fixes": "the dashboard change the stage gave, then playbook-findability",
+    "lifecycle gaps": "playbook-lifecycle-gap",
+    "search and category problems": "playbook-findability, or playbook-test-and-learn when a merchandising rule may be the cause",
+    "weekly routine": "playbook-weekly-triage, every Monday from the second week"
+  },
+  "playbooks": {
+    "new-project": {
+      "title": "New project, first 30 days",
+      "product": "both",
+      "stages": [
+        {
+          "name": "overview",
+          "skill": "loomi-project-overview",
+          "writes": false,
+          "do": "Get oriented in the Engagement project: its data, its main events and their names.",
+          "outcomes": [
+            "oriented"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "readiness",
+          "skill": "implementation-readiness",
+          "writes": false,
+          "do": "Run the go-live checklist for both products, using the event names the overview found.",
+          "outcomes": [
+            "not_ready",
+            "ready_with_fixes",
+            "incomplete",
+            "ready"
+          ]
+        },
+        {
+          "name": "tracking",
+          "skill": "engagement-tracking-health",
+          "writes": false,
+          "do": "Check Engagement event volumes, junk events and property fill rates.",
+          "outcomes": [
+            "healthy",
+            "problems_found"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "feeds",
+          "skill": "data-feed-health",
+          "writes": false,
+          "do": "Check the Discovery pixel, catalog feed and index jobs, Data Hub and Engagement catalog jobs and mapping.",
+          "outcomes": [
+            "green",
+            "amber",
+            "red"
+          ]
+        },
+        {
+          "name": "catalog-config",
+          "skill": "discovery-catalog-config-audit",
+          "writes": false,
+          "do": "Review the Discovery catalog's attribute settings against what the feed fills.",
+          "outcomes": [
+            "no_high_fixes",
+            "high_fixes"
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "lifecycle",
+          "skill": "lifecycle-coverage-map",
+          "writes": false,
+          "do": "Map which of the eight lifecycle flows run, and size the gaps.",
+          "outcomes": [
+            "mapped"
+          ],
+          "product": "engagement"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "plan_days": "How many days the plan covers, from the day the run started: the first month of the project.",
+    "plan_order": "The order the plan puts its work in. Data comes first because every report and test after it depends on tracking and feeds; configuration next because it sits under every search and category page; then flows, then merchandising, then the weekly routine that keeps it going.",
+    "playbook_for": "Which playbook, or skill, takes each part of the plan, in words. The playbooks are separate skills, so when one isn't installed, name the skill the stage linked instead; in plan.json, next_skill is always one skill name.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, and product (the stage needs Discovery or Engagement: status suggests skipping it when the run doesn't have that product). The 30-day plan isn't a stage: no skill does it."
+  }
+}

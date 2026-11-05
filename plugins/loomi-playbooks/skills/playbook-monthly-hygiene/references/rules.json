@@ -1,0 +1,124 @@
+{
+  "about": "Stages for the monthly-hygiene playbook. scripts/handoff.py reads this file: the stages it tracks and the outcomes each stage can record. No stage waits for another: the whole sweep can run in one session. Each stage names the product it needs, so a run with only one product is offered the other product's stages as skips. Each key is explained under notes.",
+  "playbooks": {
+    "monthly-hygiene": {
+      "title": "Monthly hygiene",
+      "product": "both",
+      "stages": [
+        {
+          "name": "rule-audit",
+          "skill": "discovery-rule-audit",
+          "writes": false,
+          "do": "Audit every Discovery merchandising rule and add the ranking and facet rules to clean up as findings.",
+          "outcomes": [
+            "cleanup_found",
+            "rules_clean"
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "rule-cleanup",
+          "skill": "discovery-rule-cleanup",
+          "writes": true,
+          "do": "Build one cleanup plan from the findings the user approves, then write it batch by batch, each after its own yes, with each delete on its own.",
+          "outcomes": [
+            "cleaned_up",
+            "no_changes"
+          ],
+          "skip_when": [
+            {
+              "stage": "rule-audit",
+              "outcomes": [
+                "rules_clean"
+              ],
+              "reason": "the rule audit found nothing to clean up."
+            },
+            {
+              "stage": "rule-audit",
+              "skipped": true,
+              "reason": "the rule audit was skipped this month."
+            }
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "redirect-audit",
+          "skill": "discovery-redirect-audit",
+          "writes": false,
+          "do": "Audit every search redirect and add the fixes as findings.",
+          "outcomes": [
+            "fixes_found",
+            "redirects_clean"
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "redirect-fix",
+          "skill": "discovery-redirect-fixer",
+          "writes": true,
+          "do": "Build one redirect plan from the fixes the user approves, then write it batch by batch, each after its own yes, with each switch-on and delete on its own.",
+          "outcomes": [
+            "fixed",
+            "no_changes"
+          ],
+          "skip_when": [
+            {
+              "stage": "redirect-audit",
+              "outcomes": [
+                "redirects_clean"
+              ],
+              "reason": "the redirect audit found nothing to fix."
+            },
+            {
+              "stage": "redirect-audit",
+              "skipped": true,
+              "reason": "the redirect audit was skipped this month."
+            }
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "asset-cleanup",
+          "skill": "engagement-asset-cleanup",
+          "writes": false,
+          "do": "List the Engagement project's stale drafts, test copies and unused definitions, and add the delete and archive candidates as findings.",
+          "outcomes": [
+            "candidates_found",
+            "project_clean"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "dependency-map",
+          "skill": "engagement-dependency-map",
+          "writes": false,
+          "do": "Map what depends on each candidate and give the user a safe deletion order to act on in the Engagement UI. Nothing is deleted here.",
+          "outcomes": [
+            "order_ready",
+            "all_blocked"
+          ],
+          "skip_when": [
+            {
+              "stage": "asset-cleanup",
+              "outcomes": [
+                "project_clean"
+              ],
+              "reason": "the asset cleanup found no candidates."
+            },
+            {
+              "stage": "asset-cleanup",
+              "skipped": true,
+              "reason": "the asset cleanup was skipped this month."
+            }
+          ],
+          "product": "engagement"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes).",
+    "max_chosen": "How many findings can be chosen at once. Each write stage plans every finding the user approves together, up to this many; the rest wait for next month."
+  },
+  "max_chosen": 50
+}

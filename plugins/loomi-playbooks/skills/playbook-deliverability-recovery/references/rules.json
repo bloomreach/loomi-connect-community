@@ -1,0 +1,224 @@
+{
+  "about": "Stages and timing for the deliverability-recovery playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "recheck_after_days": 28,
+  "wait_outcomes": [
+    "too_early_to_tell"
+  ],
+  "playbooks": {
+    "deliverability-recovery": {
+      "title": "Deliverability recovery",
+      "product": "engagement",
+      "stages": [
+        {
+          "name": "trend",
+          "skill": "deliverability-trend",
+          "writes": false,
+          "do": "Trend delivery, bounces, complaints and unsubscribes by week and find where problems come from; add them as findings.",
+          "outcomes": [
+            "problems_found",
+            "healthy"
+          ]
+        },
+        {
+          "name": "frequency",
+          "skill": "contact-frequency-audit",
+          "writes": false,
+          "do": "Measure how many messages customers get and where opt-outs climb; add over-messaging as a finding with the cap it recommends.",
+          "outcomes": [
+            "over_messaging",
+            "no_fatigue"
+          ],
+          "skip_when": [
+            {
+              "stage": "trend",
+              "outcomes": [
+                "healthy"
+              ],
+              "reason": "deliverability is within its guard-rails and not drifting, so there is nothing to recover."
+            }
+          ]
+        },
+        {
+          "name": "reach",
+          "skill": "contactability-audit",
+          "writes": false,
+          "do": "Measure who can be reached with consent and how consent is moving; add gaps as findings, then choose the finding a sunset or re-permission flow will address.",
+          "outcomes": [
+            "finding_chosen",
+            "nothing_for_a_flow"
+          ],
+          "skip_when": [
+            {
+              "stage": "trend",
+              "outcomes": [
+                "healthy"
+              ],
+              "reason": "deliverability is within its guard-rails and not drifting, so there is nothing to recover."
+            }
+          ]
+        },
+        {
+          "name": "launch",
+          "skill": "scenario-template-launcher",
+          "writes": true,
+          "do": "Clone a proven sunset or re-permission scenario as a draft after its own yes, or find there is nothing to clone.",
+          "outcomes": [
+            "cloned",
+            "no_source",
+            "existing_flow",
+            "stopped"
+          ],
+          "skip_when": [
+            {
+              "stage": "trend",
+              "outcomes": [
+                "healthy"
+              ],
+              "reason": "deliverability is within its guard-rails and not drifting, so there is nothing to recover."
+            },
+            {
+              "stage": "reach",
+              "outcomes": [
+                "nothing_for_a_flow"
+              ],
+              "reason": "no finding calls for a sunset or re-permission flow; caps and suppression are set in the Engagement UI."
+            }
+          ]
+        },
+        {
+          "name": "adapt",
+          "skill": "engagement-scenario-builder",
+          "writes": true,
+          "do": "Build the flow from the outline when there was nothing to clone, or make the launch fix list's step changes in the draft, each after its own yes.",
+          "outcomes": [
+            "built",
+            "changed",
+            "no_changes_needed",
+            "not_built"
+          ],
+          "skip_when": [
+            {
+              "stage": "trend",
+              "outcomes": [
+                "healthy"
+              ],
+              "reason": "deliverability is within its guard-rails and not drifting, so there is nothing to recover."
+            },
+            {
+              "stage": "reach",
+              "outcomes": [
+                "nothing_for_a_flow"
+              ],
+              "reason": "no finding calls for a sunset or re-permission flow; caps and suppression are set in the Engagement UI."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            }
+          ]
+        },
+        {
+          "name": "qa",
+          "skill": "scenario-qa",
+          "writes": false,
+          "do": "QA the draft until it is GO, then wait for the user to switch it on in the Engagement UI and record the day it started.",
+          "outcomes": [
+            "started",
+            "not_launched"
+          ],
+          "skip_when": [
+            {
+              "stage": "trend",
+              "outcomes": [
+                "healthy"
+              ],
+              "reason": "deliverability is within its guard-rails and not drifting, so there is nothing to recover."
+            },
+            {
+              "stage": "reach",
+              "outcomes": [
+                "nothing_for_a_flow"
+              ],
+              "reason": "no finding calls for a sunset or re-permission flow; caps and suppression are set in the Engagement UI."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            }
+          ]
+        },
+        {
+          "name": "recheck",
+          "skill": "deliverability-trend",
+          "writes": false,
+          "do": "Trend deliverability again and compare the weeks since the flow started with the weeks before.",
+          "outcomes": [
+            "improved",
+            "no_clear_change",
+            "worse",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": "qa",
+            "days": "recheck_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "trend",
+              "outcomes": [
+                "healthy"
+              ],
+              "reason": "deliverability is within its guard-rails and not drifting, so there is nothing to recover."
+            },
+            {
+              "stage": "reach",
+              "outcomes": [
+                "nothing_for_a_flow"
+              ],
+              "reason": "no finding calls for a sunset or re-permission flow; caps and suppression are set in the Engagement UI."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the flow was never switched on."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "recheck_after_days": "Days after the qa stage finishes (the day the user switched the flow on) before the recheck stage is due. deliverability-trend pools its last 4 whole weeks (recent_weeks in its rules) against the earlier weeks, so after 28 days the recent pool is all after the start.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes; skips don't cascade, so each stage lists every earlier outcome that ends the run). The adapt and qa stages are not in the original proposal: scenario-template-launcher never edits its clone, hands flows with nothing to clone to engagement-scenario-builder, and hands every clone to scenario-qa; and the flow must be switched on, with its start date recorded, before the recheck can measure it. Frequency caps and suppression found by the first three stages are set by the user in the Engagement UI: no skill writes frequency policies."
+  }
+}

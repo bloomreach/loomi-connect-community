@@ -204,13 +204,19 @@ def cmd_new(a):
             fail(f"{a.subject_file} is empty.")
     pb = RULES["playbooks"][a.playbook]
     context = {"product": pb["product"]}
-    if pb["product"] in ("discovery", "both"):
-        if not a.account or not a.environment:
-            fail("This playbook works on Discovery: it needs --account and --environment.")
+    has_disc, has_eng = bool(a.account or a.environment), bool(a.project_id)
+    if has_disc and not (a.account and a.environment):
+        fail("Discovery needs both --account and --environment.")
+    if pb["product"] == "discovery" and not has_disc:
+        fail("This playbook works on Discovery: it needs --account and --environment.")
+    if pb["product"] == "engagement" and not has_eng:
+        fail("This playbook works on Engagement: it needs --project-id.")
+    if pb["product"] == "both" and not (has_disc or has_eng):
+        fail("This playbook works on Discovery and Engagement: give --account and --environment, --project-id, "
+             "or both (a customer with one product gives that one).")
+    if pb["product"] in ("discovery", "both") and has_disc:
         context.update(account=a.account, environment=a.environment, site_group_id=a.site_group_id)
-    if pb["product"] in ("engagement", "both"):
-        if not a.project_id:
-            fail("This playbook works on Engagement: it needs --project-id.")
+    if pb["product"] in ("engagement", "both") and has_eng:
         context.update(project_id=a.project_id)
     h = {
         "format": FORMAT, "playbook": a.playbook, "started_on": today(a).isoformat(),
@@ -340,8 +346,9 @@ def cmd_choose(a):
     f = next((x for x in h["findings"] if x["id"] == a.finding), None)
     if f is None:
         fail(f"No finding {a.finding} in {a.handoff}.")
-    if a.status == "chosen" and any(x["status"] == "chosen" and x["id"] != a.finding for x in h["findings"]):
-        fail("Another finding is already chosen. A run tests one change at a time: mark that one done or "
+    limit = int(RULES.get("max_chosen", 1))
+    if a.status == "chosen" and sum(x["status"] == "chosen" and x["id"] != a.finding for x in h["findings"]) >= limit:
+        fail(f"{limit} finding(s) already chosen (max_chosen). Mark one done or "
              "dismissed first, or start a new run.")
     f["status"] = a.status
     save(h, a.handoff, a)
@@ -353,15 +360,17 @@ def cmd_choose(a):
 def check_context(h, plan, path):
     ctx = h["context"]
     engagement_plan = plan.get("project_id") is not None
-    if engagement_plan and ctx["product"] == "discovery":
-        fail(f"{path} is an Engagement plan, but this run is for Discovery only.")
-    if not engagement_plan and ctx["product"] == "engagement":
-        fail(f"{path} isn't an Engagement plan (it has no project_id), but this run is for Engagement only.")
+    if engagement_plan and not ctx.get("project_id"):
+        fail(f"{path} is an Engagement plan, but this run has no Engagement project.")
+    if not engagement_plan and not ctx.get("account"):
+        fail(f"{path} isn't an Engagement plan (it has no project_id), and this run has no Discovery account.")
     keys = ("project_id",) if engagement_plan else ("account", "environment", "site_group_id")
     for k in keys:
         if k != "site_group_id" and plan.get(k) is None:
             fail(f"{path} has no {k}, so it can't be tied to this run.")
         theirs, ours = plan.get(k), ctx.get(k)
+        if k == "site_group_id" and theirs is None:
+            continue  # an account-level change (no site) covers every site, including this run's
         if (theirs is not None or ours is not None) and str(theirs) != str(ours):
             fail(f"{path} is for {k} {theirs!r}, but this run is for {ours!r}. "
                  "Record it in the hand-off file of the run it belongs to.")
@@ -381,6 +390,18 @@ def id_target(target, n):
     they stay out of the change log, and anything that isn't plain text is replaced by the plan step."""
     m = re.match(r"^([A-Za-z][A-Za-z _-]*?\s[\w.:-]*\d[\w.:-]*)(?=$|[\s(,;'\"])", str(target or "").strip())
     return m.group(1) if m and PLAIN.match(m.group(1)) else f"plan step {n}"
+
+
+def target_for(c, created_id, created=None):
+    """A plan's target as type and ID. A create has no ID until it's made: take it from the read-back when given.
+    A later step on the item just created (its target says "id from the create") takes the create's target."""
+    t = id_target(c.get("target"), c.get("n"))
+    if t.startswith("plan step ") and created and c.get("kind") != "create" and "id from" in str(c.get("target") or "").lower():
+        return created
+    if t.startswith("plan step ") and created_id:
+        noun = re.sub(r"^(create|clone|upsert|update)_", "", str(c.get("tool") or "item")).replace("_", " ")
+        t = f"{noun} {created_id}" if PLAIN.match(f"{noun} {created_id}") else t
+    return t
 
 
 def upsert_change(h, entry, keep=()):
@@ -427,10 +448,13 @@ def cmd_changes(a):
     fid = finding_arg(h, a.finding)
     live_on = (a.live_on or today(a)).isoformat()
     added, updated = [], []
+    created = None  # the last item this plan created, for a later step that refers to it ("<id from the create change>")
     for c in sorted(plan["changes"], key=lambda c: c.get("n", 0)):
         if c.get("status") != "ready":
             continue
         v = verified.get(c.get("n"), {})
+        created_id = next((str(v[k]) for k in sorted(v) if (k == "id" or k.endswith("_id")) and v[k] is not None
+                           and PLAIN.match(str(v[k]))), None)
         same = "target" not in v or str(v["target"]) == str(c.get("target"))
         result = (v.get("result") or v.get("state") or "unverified") if same else "unverified"
         if same and str(v.get("action") or "").startswith("none"):
@@ -439,10 +463,12 @@ def cmd_changes(a):
             result = "unverified"
         entry = {
             "source": a.source, "finding": fid, "plan_file": Path(a.plan).name, "plan_n": c.get("n"),
-            "kind": c.get("kind"), "target": id_target(c.get("target"), c.get("n")), "tool": c.get("tool"),
+            "kind": c.get("kind"), "target": target_for(c, created_id, created), "tool": c.get("tool"),
             "live_impact": c.get("live_impact"), "result": result, "live_on": live_on,
             "undo": c.get("undo") or [], "undo_note": c.get("undo_note"),
         }
+        if c.get("kind") == "create" and not entry["target"].startswith("plan step "):
+            created = entry["target"]
         cid, new = upsert_change(h, entry, keep=[k for k, given in (("live_on", a.live_on), ("finding", a.finding)) if not given])
         (added if new else updated).append(cid)
     save(h, a.handoff, a)
@@ -512,20 +538,23 @@ def earliest(h, rule):
     return date.fromisoformat(after["done_on"]) + timedelta(days=int(RULES[nb["days"]]))
 
 
+def has_product(h, product):
+    ctx = h["context"]
+    return bool(ctx.get("account")) if product == "discovery" else bool(ctx.get("project_id"))
+
+
 def next_step(h, now):
     """The first stage not finished, with why and when."""
-    previous = None
     for rule in stages_for(h["playbook"]):
         s = stage_record(h, rule["name"])
         if s["status"] in ("done", "skipped"):
-            previous = s
             continue
         skip = None
-        if previous is not None and previous["status"] == "skipped":
-            skip = f"the {previous['name']} stage before it was skipped."
+        if rule.get("product") and not has_product(h, rule["product"]):
+            skip = f"it needs {rule['product'].capitalize()}, which this run doesn't have."
         for cond in rule.get("skip_when", []):
             other = stage_record(h, cond["stage"])
-            if other["outcome"] in cond["outcomes"]:
+            if (cond.get("skipped") and other["status"] == "skipped") or other["outcome"] in cond.get("outcomes", []):
                 skip = cond["reason"]
         dates = [d for d in (earliest(h, rule), s.get("not_before") and date.fromisoformat(s["not_before"])) if d]
         when = max(dates) if dates else None
@@ -540,7 +569,32 @@ def flat(v):
     return re.sub(r"[\r\n|`*]+", " ", str(v))[:200]
 
 
+def other_status(a):
+    """A run from a playbook this copy doesn't know: shown from the file as data, nothing changed."""
+    h = load_json(a.handoff, "hand-off file")
+    if not isinstance(h, dict) or h.get("format") != FORMAT:
+        fail(f"{a.handoff} isn't a {FORMAT} hand-off file.")
+    stages = [x for x in h.get("stages") or [] if isinstance(x, dict)]
+    nxt = h.get("next") if isinstance(h.get("next"), dict) else None
+    if a.json:
+        print(json.dumps({"ok": True, "playbook": flat(h.get("playbook")), "known": False, "stages": stages, "next": nxt},
+                         indent=2, ensure_ascii=False))
+        return
+    print(f"## {flat(h.get('playbook'))}: {flat((h.get('subject') or {}).get('kind'))} (started {flat(h.get('started_on'))})\n")
+    print("This run belongs to another playbook: shown from the file. Use that playbook to continue it.\n")
+    print("| Stage | Skill | Status | Outcome | Done |")
+    print("|---|---|---|---|---|")
+    for x in stages:
+        print(f"| {flat(x.get('name'))} | {flat(x.get('skill'))} | {flat(x.get('status'))} | {flat(x.get('outcome') or '')} | {flat(x.get('done_on') or '')} |")
+    if nxt:
+        print(f"\n**Next (as recorded):** {flat(nxt.get('stage'))} with {flat(nxt.get('skill'))}"
+              + (f", not before {flat(nxt.get('not_before'))}" if nxt.get("not_before") else ""))
+
+
 def cmd_status(a):
+    raw = load_json(a.handoff, "hand-off file")
+    if isinstance(raw, dict) and raw.get("format") == FORMAT and raw.get("playbook") not in RULES["playbooks"]:
+        return other_status(a)
     h = read_handoff(a.handoff)
     now = today(a)
     nxt = next_step(h, now)
@@ -561,7 +615,8 @@ def cmd_status(a):
         print("\n**Findings to act on:**")
         for f in out["open_findings"]:
             print(f"- {flat(f['id'])} ({flat(f['status'])}, {flat(f.get('priority'))}): {flat(f.get('target'))} "
-                  f"{flat(f.get('verdict'))}; {flat(f.get('evidence'))}. Next: {flat(f.get('next_skill'))}")
+                  f"{flat(f.get('verdict'))}; {flat(f.get('evidence'))}."
+                  + (f" Next: {flat(f['next_skill'])}" if f.get("next_skill") else ""))
     if h["changes"]:
         print("\n**Changes made in this run:**")
         for c in h["changes"]:
@@ -613,7 +668,9 @@ def cmd_list(a):
             "stages_done": sum(s.get("status") in ("done", "skipped") for s in stages), "stages": len(stages),
             "next_stage": None if not nxt else flat(nxt.get("stage")), "next_skill": None if not nxt else flat(nxt.get("skill")),
             "not_before": due.isoformat() if due else None, "due": bool(nxt) and (due is None or now >= due),
-            "suggest_skip": bool(nxt and nxt.get("suggest_skip")), "finished": bool(finished),
+            "suggest_skip": bool(nxt and nxt.get("suggest_skip")),
+            "skip_reason": flat(nxt.get("suggest_skip")) if nxt and nxt.get("suggest_skip") else None,
+            "finished": bool(finished),
             "last_outcome": next((flat(s.get("outcome")) for s in reversed(stages) if s.get("outcome")), None),
             "open_findings": sum(isinstance(f, dict) and f.get("status") in ("open", "chosen") for f in h.get("findings") or []),
             "changes_made": len(made_here),
@@ -622,9 +679,12 @@ def cmd_list(a):
             live = str(c.get("live_on") or "")
             if a.since and (not live or live < a.since.isoformat()):
                 continue
+            if a.until and (not live or live > a.until.isoformat()):
+                continue
             changes.append({"file": p.name, "playbook": flat(h.get("playbook")), "id": flat(c.get("id")),
                             "kind": flat(c.get("kind")), "target": flat(c.get("target")), "live_on": flat(live),
-                            "source": flat(c.get("source"))})
+                            "source": flat(c.get("source")), "live_impact": flat(c.get("live_impact")),
+                            "finding": flat(c.get("finding")) if c.get("finding") else None})
     changes.sort(key=lambda c: (c["live_on"], c["file"], c["id"]))
     if a.json:
         print(json.dumps({"ok": True, "today": now.isoformat(), "runs": runs, "changes": changes}, indent=2, ensure_ascii=False))
@@ -643,9 +703,10 @@ def cmd_list(a):
         due = "" if r["finished"] or not r["next_stage"] else ("now" if r["due"] else f"from {r['not_before']}")
         print(f"| {flat(r['file'])} | {r['playbook']} | {r['subject']} | {r['stages_done']}/{r['stages']} stages | {nxt} | {due} |")
     if a.changes:
-        print(f"\n**Changes made{' since ' + a.since.isoformat() if a.since else ''}:**")
+        window = (f" since {a.since.isoformat()}" if a.since else "") + (f" until {a.until.isoformat()}" if a.until else "")
+        print(f"\n**Changes made{window}:**")
         for c in changes:
-            print(f"- {c['live_on']}: {c['kind']} {c['target']} ({c['playbook']}, {c['file']})")
+            print(f"- {c['live_on']}: {c['kind']} {c['target']}{', live' if c['live_impact'] == 'live' else ''} ({c['playbook']}, {c['file']})")
         if not changes:
             print("- none")
 
@@ -729,6 +790,7 @@ def main():
     p.add_argument("--dir", default=".", help="the folder holding the *.handoff.json files (default: the current folder)")
     p.add_argument("--changes", action="store_true", help="also list the changes the runs made")
     p.add_argument("--since", type=day_arg, help="with --changes: only changes live on or after this date")
+    p.add_argument("--until", type=day_arg, help="with --changes: only changes live on or before this date")
     p.add_argument("--json", action="store_true", help="print JSON instead of Markdown")
     p.add_argument("--today", type=day_arg, help="today's date, YYYY-MM-DD (default: today in UTC)")
     p.set_defaults(fn=cmd_list)

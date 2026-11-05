@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Peak Event"
+  short_description: "Plan, check and review one peak trading event across search and marketing, from campaigns to post-event revenue"
+policy:
+  allow_implicit_invocation: true

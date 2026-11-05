@@ -25,15 +25,18 @@
          "do": "Read the test's result. Don't stop early on a good-looking day.",
          "outcomes": ["winner", "no_winner", "keep_running"],
          "not_before": {"after_stage": "test", "days": "min_test_days"},
-         "skip_when": [{"stage": "test", "outcomes": ["left_as_draft", "not_testable"], "reason": "no test is running."}]},
+         "skip_when": [{"stage": "test", "outcomes": ["left_as_draft", "not_testable"], "reason": "no test is running."},
+                       {"stage": "test", "skipped": true, "reason": "the test stage was skipped, so no test is running."}]},
         {"name": "close", "skill": "discovery-experiment-close", "writes": true,
          "do": "End the test keeping the winner (or today's rule), check every rule, then archive it, each step after its own yes.",
-         "outcomes": ["shipped_variant", "kept_control"]},
+         "outcomes": ["shipped_variant", "kept_control"],
+         "skip_when": [{"stage": "read-out", "skipped": true, "reason": "the read-out was skipped: there is no result to act on."}]},
         {"name": "confirm", "skill": "change-impact-tracker", "writes": false,
          "do": "Check the shipped change holds at full traffic, with the change and its live date from the hand-off file.",
          "outcomes": ["worked", "no_clear_effect", "made_it_worse", "too_early_to_tell"],
          "not_before": {"after_stage": "close", "days": "measure_after_days"},
-         "skip_when": [{"stage": "close", "outcomes": ["kept_control"], "reason": "nothing changed for shoppers, so there is nothing to confirm."}]}
+         "skip_when": [{"stage": "close", "outcomes": ["kept_control"], "reason": "nothing changed for shoppers, so there is nothing to confirm."},
+                       {"stage": "close", "skipped": true, "reason": "the close was skipped: nothing was rolled out."}]}
       ]
     }
   },
@@ -43,6 +46,6 @@
     "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
     "finding_verdicts": "rule_impact.py verdicts that become findings. Rules that help or are neutral are left out unless the findings command gets --all.",
     "next_skill": "The skill that acts on a finding, by verdict. A rule that hurts or hides sellers is tested before it's changed, so the next skill is discovery-experiment-setup.",
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes)."
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when an earlier stage had one of these outcomes, or with skipped: true when it was skipped). A stage may also name the product it needs; status suggests skipping it when the run doesn't have that product. max_chosen (default 1) is how many findings a run may act on at once."
   }
 }

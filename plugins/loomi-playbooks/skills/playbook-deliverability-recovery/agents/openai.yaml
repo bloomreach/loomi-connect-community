@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Deliverability Recovery"
+  short_description: "Find why Engagement deliverability is slipping, launch a sunset flow and recheck the trend"
+policy:
+  # Writes skill: its launch and adapt stages clone and build Engagement scenarios, so it only runs when called by name.
+  allow_implicit_invocation: false

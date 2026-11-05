@@ -22,7 +22,7 @@ Skills here follow the open [Agent Skills](https://agentskills.io/specification)
 | [`loomi-discovery`](plugins/loomi-discovery/) | Skills for Bloomreach Discovery: search and category performance, merchandising rules |
 | [`loomi-platform`](plugins/loomi-platform/) | Skills that span products: weekly briefing and quarterly review, revenue anomalies, peak and go-live readiness, data and feed health, catalog parity, Data Hub collections and data retention, campaign planning, collections and change impact, and turning search demand into campaigns |
 | [`loomi-product-data`](plugins/loomi-product-data/) | Product data for search engines and AI answers (SEO, AEO and GEO): find weak product data, suggest enhancements from images, attributes and shopper searches, and catch wrong prices and messy attribute values |
-| [`loomi-playbooks`](plugins/loomi-playbooks/) | Playbooks that chain skills into one job, from finding a problem to fixing, testing and measuring it, across sessions. First: test and learn for Discovery merchandising rules |
+| [`loomi-playbooks`](plugins/loomi-playbooks/) | Playbooks that chain skills into one job, from finding a problem to fixing, testing and measuring it, across sessions: test and learn, findability, search demand to revenue, lifecycle gaps, catalog truth, revenue drops, peak events, weekly triage, quarter close and more |
 
 Each plugin is a folder of skills under `skills/<skill-name>/SKILL.md`, plus a manifest for Claude (`.claude-plugin/`) and one for Codex (`.codex-plugin/`).
 

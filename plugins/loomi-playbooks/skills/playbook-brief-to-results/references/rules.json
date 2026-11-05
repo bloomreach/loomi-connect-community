@@ -1,0 +1,201 @@
+{
+  "about": "Stages and timing for the brief-to-results playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "digest_after_days": 7,
+  "wait_outcomes": [
+    "not_sent_yet"
+  ],
+  "playbooks": {
+    "brief-to-results": {
+      "title": "Brief to results",
+      "product": "engagement",
+      "stages": [
+        {
+          "name": "build-email",
+          "skill": "engagement-email-builder",
+          "writes": true,
+          "do": "Turn the brief into an email campaign draft after its own yes. For an SMS brief, skip this stage.",
+          "outcomes": [
+            "created",
+            "not_created"
+          ]
+        },
+        {
+          "name": "build-sms",
+          "skill": "engagement-sms-builder",
+          "writes": true,
+          "do": "For an SMS brief, turn it into an SMS campaign draft after its own yes. For an email brief, skip this stage.",
+          "outcomes": [
+            "created",
+            "not_created"
+          ],
+          "skip_when": [
+            {
+              "stage": "build-email",
+              "outcomes": [
+                "created"
+              ],
+              "reason": "the email builder made the draft; skip this stage for an email."
+            },
+            {
+              "stage": "build-email",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            }
+          ]
+        },
+        {
+          "name": "qa",
+          "skill": "campaign-qa",
+          "writes": false,
+          "do": "QA the draft until it is GO, then wait for the user to set the send time and start it in the Engagement UI.",
+          "outcomes": [
+            "scheduled",
+            "not_scheduled"
+          ],
+          "skip_when": [
+            {
+              "stage": "build-email",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            },
+            {
+              "stage": "build-sms",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            }
+          ]
+        },
+        {
+          "name": "preflight",
+          "skill": "engagement-send-preflight",
+          "writes": false,
+          "do": "Check everything due to send around the campaign's send day, the new campaign first: GO or NO-GO for each send.",
+          "outcomes": [
+            "go",
+            "go_with_caution",
+            "held"
+          ],
+          "skip_when": [
+            {
+              "stage": "build-email",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            },
+            {
+              "stage": "build-sms",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_scheduled"
+              ],
+              "reason": "the campaign was never scheduled."
+            }
+          ]
+        },
+        {
+          "name": "collisions",
+          "skill": "engagement-send-collision-check",
+          "writes": false,
+          "do": "Check the campaign against the other sends to the same people around its send day, and the frequency caps.",
+          "outcomes": [
+            "no_collisions",
+            "collisions_fixed",
+            "collisions_accepted"
+          ],
+          "skip_when": [
+            {
+              "stage": "build-email",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            },
+            {
+              "stage": "build-sms",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_scheduled"
+              ],
+              "reason": "the campaign was never scheduled."
+            },
+            {
+              "stage": "preflight",
+              "outcomes": [
+                "held"
+              ],
+              "reason": "the send was held."
+            }
+          ]
+        },
+        {
+          "name": "digest",
+          "skill": "engagement-campaign-digest",
+          "writes": false,
+          "do": "Read how the campaign did against the rest of that week, and write what to keep or change into findings for the next brief.",
+          "outcomes": [
+            "reported",
+            "not_sent_yet"
+          ],
+          "not_before": {
+            "after_stage": "collisions",
+            "days": "digest_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "build-email",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            },
+            {
+              "stage": "build-sms",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "the user stopped before any draft was made."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_scheduled"
+              ],
+              "reason": "the campaign was never scheduled."
+            },
+            {
+              "stage": "preflight",
+              "outcomes": [
+                "held"
+              ],
+              "reason": "the send was held."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "digest_after_days": "Days after the send before the digest stage is due. The collisions stage usually finishes before the send, so the qa stage also records the send day plus this number as the digest's --not-before date. engagement-campaign-digest reads a full week by default, and most clicks and orders from a send arrive within days.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes). The email and SMS builders are two stages because a stage's skill comes from these rules, never from the file: a run skips the one it doesn't use. campaign-qa comes before the user schedules the send; send-preflight and the collision check read the campaign calendar, which leaves drafts out, so they run once the send is scheduled."
+  }
+}

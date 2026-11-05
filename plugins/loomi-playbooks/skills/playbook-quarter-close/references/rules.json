@@ -1,0 +1,58 @@
+{
+  "about": "Stages and settings for the quarter close playbook. scripts/handoff.py reads this file: the stages it tracks and the outcomes each stage can record. The other keys are read by the assistant following SKILL.md. Each key is explained under notes.",
+  "min_days_live": 14,
+  "max_changes_to_measure": 8,
+  "plan_weeks": 13,
+  "playbook_for": {
+    "a play to fix a search query or category where a merchandising rule may be the cause, or a change with no clear effect worth testing": "playbook-test-and-learn",
+    "a play on dead-end, zero-result or no-revenue searches, or products shoppers can't find": "playbook-findability",
+    "a play to build, fix or restart a lifecycle flow": "playbook-lifecycle-gap",
+    "a play to find and fix why revenue fell": "playbook-revenue-drop",
+    "a play on rising search demand worth a campaign or a collection": "playbook-search-demand-to-revenue"
+  },
+  "playbooks": {
+    "quarter-close": {
+      "title": "Quarter close",
+      "product": "both",
+      "stages": [
+        {
+          "name": "measure",
+          "skill": "change-impact-tracker",
+          "writes": false,
+          "do": "Measure each live change the playbook runs made this quarter that no confirm stage has measured yet, one change at a time.",
+          "outcomes": [
+            "measured",
+            "some_too_early",
+            "nothing_to_measure"
+          ]
+        },
+        {
+          "name": "review",
+          "skill": "qbr-report",
+          "writes": false,
+          "do": "Build the QBR, with the work done and what each change earned taken from the runs and the measure stage.",
+          "outcomes": [
+            "reviewed"
+          ]
+        },
+        {
+          "name": "plan",
+          "skill": "campaign-planner",
+          "writes": false,
+          "do": "Plan next quarter's campaigns from the retail calendar, last year's evidence and current demand.",
+          "outcomes": [
+            "planned"
+          ],
+          "product": "engagement"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "min_days_live": "A change must have been live at least this many days before the measure stage measures it. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell; younger changes are listed as too early, with the date to measure them.",
+    "max_changes_to_measure": "The most changes the measure stage measures in one session. Each change-impact-tracker run is a dozen or more calls; pick the ones with the most at stake and list the rest for later.",
+    "plan_weeks": "The window the plan stage gives campaign-planner: next quarter, from its first day.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, and product (campaign-planner needs Engagement: status suggests skipping the plan stage when the run has no project). The list of runs and changes (step 0) and the playbooks to run next (the output) aren't stages: no skill does them.",
+    "playbook_for": "Which playbook runs each kind of next-quarter play. These are skill names; the playbooks are separate skills, so when one isn't installed, name the skill the QBR play links instead."
+  }
+}

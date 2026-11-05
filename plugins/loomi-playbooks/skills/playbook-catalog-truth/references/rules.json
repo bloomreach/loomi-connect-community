@@ -1,0 +1,75 @@
+{
+  "about": "Stages and timing for the catalog-truth playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "recheck_after_days": 7,
+  "playbooks": {
+    "catalog-truth": {
+      "title": "Catalog truth",
+      "product": "both",
+      "stages": [
+        {
+          "name": "parity",
+          "skill": "catalog-parity-check",
+          "writes": false,
+          "do": "Compare the Discovery and Engagement catalogs on a sample: missing products, stock, price, sale price, URL, image and title. Add each failing check as a finding.",
+          "outcomes": [
+            "mismatches_found",
+            "in_sync"
+          ]
+        },
+        {
+          "name": "prices",
+          "skill": "price-anomaly-finder",
+          "writes": false,
+          "do": "Find wrong prices across the whole Discovery catalog, each with its owner. Add each failing check as a finding for the feed or pricing team.",
+          "outcomes": [
+            "anomalies_found",
+            "clean"
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "variants",
+          "skill": "discovery-variant-health",
+          "writes": false,
+          "do": "Check the products on page one and the top sellers at variant level: stock, prices, SKUs and images. Add each failing check as a finding for the feed team.",
+          "outcomes": [
+            "problems_found",
+            "clean"
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "fix",
+          "skill": "engagement-catalog-fixer",
+          "writes": true,
+          "do": "Fix the Engagement catalog items the parity check found wrong, each batch after its own yes. Record not_needed when the parity check found nothing to fix there.",
+          "outcomes": [
+            "fixed",
+            "stopped",
+            "not_needed"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "recheck",
+          "skill": "catalog-parity-check",
+          "writes": false,
+          "do": "Run the parity check again on the same catalogs: did the fixes hold through the next import, and did the feed team's fixes land?",
+          "outcomes": [
+            "fixes_held",
+            "overwritten",
+            "still_mismatched"
+          ],
+          "not_before": {
+            "after_stage": "fix",
+            "days": "recheck_after_days"
+          }
+        }
+      ]
+    }
+  },
+  "notes": {
+    "recheck_after_days": "Days after the fix stage finishes before the recheck stage is due. engagement-catalog-fixer's fixes last only until the next catalog import overwrites them, and the feed team needs time to fix the Discovery side; a week covers several import cycles and a working week.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). The fix stage records not_needed rather than being skipped when there's nothing to fix in Engagement: its date starts the recheck wait, which the feed team's fixes need too."
+  }
+}

@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Weekly Triage"
+  short_description: "Monday triage: runs due this week, the weekly briefing, why revenue moved, and the playbook for each top problem"
+policy:
+  allow_implicit_invocation: true

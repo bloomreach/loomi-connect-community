@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Supplier Review"
+  short_description: "Score a brand, A/B test a boost where it's buried, and take the result into the supplier meeting"
+policy:
+  # Writes skill: its test and close stages create, start and end live A/B tests, so it only runs when called by name.
+  allow_implicit_invocation: false

@@ -51,6 +51,9 @@ class PlaybookDefinitionsTest(unittest.TestCase):
                     self.assertEqual(s["writes"], stage_writes,
                                      f"stage {s['name']}: writes must match {s['skill']}'s access")
                     self.assertTrue(s["do"].strip())
+                    if "product" in s:
+                        self.assertIn(s["product"], {"discovery", "engagement"})
+                        self.assertEqual(spec["product"], "both", "only a playbook on both products marks stage products")
                     self.assertTrue(s["outcomes"])
                     outcomes |= set(s["outcomes"])
                     nb = s.get("not_before")
@@ -60,7 +63,8 @@ class PlaybookDefinitionsTest(unittest.TestCase):
                     for cond in s.get("skip_when", []):
                         self.assertIn(cond["stage"], names[:i], "skip_when must look at an earlier stage")
                         other = next(x for x in stages if x["name"] == cond["stage"])
-                        self.assertLessEqual(set(cond["outcomes"]), set(other["outcomes"]))
+                        self.assertTrue(cond.get("skipped") is True or cond.get("outcomes"), "skip_when needs outcomes or skipped")
+                        self.assertLessEqual(set(cond.get("outcomes", [])), set(other["outcomes"]))
                         self.assertTrue(cond["reason"])
                 self.assertLessEqual(set(rules.get("wait_outcomes", [])), outcomes)
                 writes = any(s["writes"] for s in stages)

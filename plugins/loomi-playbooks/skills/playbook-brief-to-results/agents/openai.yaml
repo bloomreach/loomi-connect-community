@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Brief to Results"
+  short_description: "Turn an Engagement campaign brief into a checked draft, then preflight it and read its results"
+policy:
+  # Writes skill: its build stages create Engagement email and SMS campaign drafts, so it only runs when called by name.
+  allow_implicit_invocation: false

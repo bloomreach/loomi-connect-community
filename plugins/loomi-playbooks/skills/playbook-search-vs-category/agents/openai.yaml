@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Search vs Category"
+  short_description: "Redirect a category-name search that lands worse than its category page, and check it helped"
+policy:
+  # Writes skill: its fix stage creates and switches on live search redirects, so it only runs when called by name.
+  allow_implicit_invocation: false
