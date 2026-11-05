@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Quarter Close"
+  short_description: "Measure the quarter's unconfirmed changes, build a QBR with what the work earned, plan next quarter"
+policy:
+  allow_implicit_invocation: true

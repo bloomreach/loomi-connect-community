@@ -1,0 +1,57 @@
+{
+  "about": "Stages and settings for the weekly triage playbook. scripts/handoff.py reads this file: the stages it tracks and the outcomes each stage can record. The other keys are read by the assistant following SKILL.md. Each key is explained under notes.",
+  "look_ahead_days": 6,
+  "max_problems": 3,
+  "playbook_for": {
+    "a search query or category losing money, where a merchandising rule may be the cause": "playbook-test-and-learn",
+    "dead-end, zero-result or no-revenue searches, or products shoppers can't find": "playbook-findability",
+    "a missing, stopped or weak lifecycle flow, or marketing results falling": "playbook-lifecycle-gap",
+    "revenue, conversion or order value down with a cause the explain stage found": "playbook-revenue-drop",
+    "rising or new searches with demand worth a campaign or a collection": "playbook-search-demand-to-revenue"
+  },
+  "playbooks": {
+    "weekly-triage": {
+      "title": "Weekly triage",
+      "product": "both",
+      "stages": [
+        {
+          "name": "briefing",
+          "skill": "weekly-ecommerce-briefing",
+          "writes": false,
+          "do": "Build the Monday briefing for the last 7 days, with its health alerts and its three things to do this week.",
+          "outcomes": [
+            "big_change",
+            "no_big_change"
+          ]
+        },
+        {
+          "name": "explain",
+          "skill": "revenue-anomaly-explainer",
+          "writes": false,
+          "do": "Explain the week's big revenue, conversion or order value change, with ranked causes and the skill or playbook for each.",
+          "outcomes": [
+            "cause_found",
+            "no_single_cause",
+            "data_problem"
+          ],
+          "skip_when": [
+            {
+              "stage": "briefing",
+              "outcomes": [
+                "no_big_change"
+              ],
+              "reason": "the briefing shows no big change to explain."
+            }
+          ],
+          "product": "discovery"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "look_ahead_days": "Days after today that still count as this week when listing the other runs: on a Monday, 6 reaches Sunday. Step 0 passes today plus this many days to handoff.py list --today, so a read-out or confirm due on Thursday shows as due.",
+    "max_problems": "The most problems the triage hands off in one week. More than this and none get done: the rest wait for next week's briefing.",
+    "playbook_for": "Which playbook starts, or resumes, for each kind of problem. These are skill names; the playbooks are separate skills, so when one isn't installed, name the stage skill the briefing or the explain stage linked instead.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, product (revenue-anomaly-explainer covers Discovery: status suggests skipping it when the run has no Discovery account) and skip_when (suggest skipping when another stage had one of these outcomes). Picking the problems isn't a stage: no skill does it, so the playbook does it from the stages' results and the list of runs."
+  }
+}

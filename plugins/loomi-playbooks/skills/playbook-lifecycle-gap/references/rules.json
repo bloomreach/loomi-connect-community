@@ -1,0 +1,249 @@
+{
+  "about": "Stages and timing for the lifecycle-gap playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "health_check_days": 14,
+  "measure_after_days": 30,
+  "wait_outcomes": [
+    "too_early_to_tell"
+  ],
+  "playbooks": {
+    "lifecycle-gap": {
+      "title": "Lifecycle gap",
+      "product": "engagement",
+      "stages": [
+        {
+          "name": "find",
+          "skill": "lifecycle-coverage-map",
+          "writes": false,
+          "do": "Map which lifecycle flows the project runs, add the missing, weak, draft and stopped ones as findings, and ask the user which gap to fill.",
+          "outcomes": [
+            "gap_chosen",
+            "no_gaps"
+          ]
+        },
+        {
+          "name": "launch",
+          "skill": "scenario-template-launcher",
+          "writes": true,
+          "do": "Clone a proven scenario for the chosen flow as a draft after its own yes, or find there is nothing to clone or that a draft already exists.",
+          "outcomes": [
+            "cloned",
+            "no_source",
+            "existing_flow",
+            "stopped"
+          ],
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "no_gaps"
+              ],
+              "reason": "the find stage found no lifecycle flow missing or weak."
+            }
+          ]
+        },
+        {
+          "name": "adapt",
+          "skill": "engagement-scenario-builder",
+          "writes": true,
+          "do": "Build the flow from the outline when there was nothing to clone, or make the launch fix list's step changes in the draft, each after its own yes.",
+          "outcomes": [
+            "built",
+            "changed",
+            "no_changes_needed",
+            "not_built"
+          ],
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "no_gaps"
+              ],
+              "reason": "the find stage found no lifecycle flow missing or weak."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            }
+          ]
+        },
+        {
+          "name": "qa",
+          "skill": "scenario-qa",
+          "writes": false,
+          "do": "QA the draft until it is GO; a NO-GO fix goes back through the adapt stage's write skill (engagement-scenario-builder), with its own yes, and is QA'd again. Then wait for the user to switch it on in the Engagement UI, record the day it started, and record the switch-on as a change (source engagement-ui).",
+          "outcomes": [
+            "started",
+            "not_launched"
+          ],
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "no_gaps"
+              ],
+              "reason": "the find stage found no lifecycle flow missing or weak."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            }
+          ]
+        },
+        {
+          "name": "health",
+          "skill": "engagement-journey-health",
+          "writes": false,
+          "do": "Check the new flow is sending: not suppressed, not failing, not stuck behind a condition nobody passes.",
+          "outcomes": [
+            "healthy",
+            "issues_found",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": "qa",
+            "days": "health_check_days"
+          },
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "no_gaps"
+              ],
+              "reason": "the find stage found no lifecycle flow missing or weak."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the flow was never switched on."
+            }
+          ]
+        },
+        {
+          "name": "performance",
+          "skill": "engagement-scenario-performance",
+          "writes": false,
+          "do": "Read the flow's results step by step since it started: sends, clicks, unsubscribes and recipients who bought soon after.",
+          "outcomes": [
+            "measured",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": "qa",
+            "days": "measure_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "no_gaps"
+              ],
+              "reason": "the find stage found no lifecycle flow missing or weak."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the flow was never switched on."
+            }
+          ]
+        },
+        {
+          "name": "impact",
+          "skill": "change-impact-tracker",
+          "writes": false,
+          "do": "Measure the business outcome the flow targets before and after it started, against a control, for a revenue verdict with a range.",
+          "outcomes": [
+            "worked",
+            "no_clear_effect",
+            "made_it_worse",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": "qa",
+            "days": "measure_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "no_gaps"
+              ],
+              "reason": "the find stage found no lifecycle flow missing or weak."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the flow was never switched on."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "health_check_days": "Days after the qa stage finishes (the day the user switched the flow on) before the health stage is due. engagement-journey-health compares two 14-day halves; a flow younger than that can look quiet for good reasons.",
+    "measure_after_days": "Days after the flow started before the performance and impact stages are due. engagement-scenario-performance reads the last 30 days by default, and change-impact-tracker needs about 14 days after a change for a verdict other than too early to tell; 30 gives both a full month of a flow that fires on behaviour.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes; skips don't cascade, so each stage lists every earlier outcome that ends the run). The adapt stage is not in the original proposal: scenario-template-launcher never edits the clone and hands step changes, and flows with nothing to clone, to engagement-scenario-builder. The impact stage is added because engagement-scenario-performance counts buyers, not revenue; change-impact-tracker measures before and after, as there is no Engagement A/B setup skill."
+  }
+}

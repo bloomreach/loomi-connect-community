@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Findability"
+  short_description: "Fix dead-end searches at the root: product data, searchable attributes and synonyms, then count what recovered"
+policy:
+  # Writes skill: its synonyms stage creates and switches on live Discovery synonyms, so it only runs when called by name.
+  allow_implicit_invocation: false

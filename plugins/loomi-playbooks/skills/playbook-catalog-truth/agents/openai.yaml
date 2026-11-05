@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Catalog Truth"
+  short_description: "Make search, recommendations and email agree on product data, fix Engagement items and recheck"
+policy:
+  # Writes skill: its fix stage overwrites live Engagement catalog items, so it only runs when called by name.
+  allow_implicit_invocation: false

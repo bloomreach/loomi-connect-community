@@ -1,0 +1,244 @@
+{
+  "about": "Stages and timing for the search-demand-to-revenue playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "digest_after_days": 7,
+  "measure_after_days": 14,
+  "wait_outcomes": [
+    "not_sent_yet",
+    "too_early_to_tell"
+  ],
+  "playbooks": {
+    "search-demand-to-revenue": {
+      "title": "Search demand to revenue",
+      "product": "both",
+      "stages": [
+        {
+          "name": "find",
+          "skill": "discovery-trending-searches",
+          "writes": false,
+          "do": "Find the rising and new searches, add the ones worth acting on as findings, and ask the user which one to take forward.",
+          "outcomes": [
+            "selling",
+            "failing",
+            "nothing_to_act_on"
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "triage",
+          "skill": "discovery-zero-results-triage",
+          "writes": false,
+          "do": "For a search that fails shoppers, work out why: a synonym or spelling fix, a catalog gap, a redirect candidate or noise.",
+          "outcomes": [
+            "synonym_fix",
+            "catalog_gap",
+            "redirect_candidate",
+            "noise"
+          ],
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "nothing_to_act_on"
+              ],
+              "reason": "the find stage found no search worth acting on."
+            },
+            {
+              "stage": "find",
+              "outcomes": [
+                "selling"
+              ],
+              "reason": "the search already finds and sells products: there's no dead end to triage."
+            }
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "fix",
+          "skill": "discovery-synonym-fixer",
+          "writes": true,
+          "do": "Make the synonym the triage found, switched off first and on after its own yes.",
+          "outcomes": [
+            "synonym_live",
+            "left_off"
+          ],
+          "skip_when": [
+            {
+              "stage": "triage",
+              "skipped": true,
+              "reason": "the triage was skipped: the search already sells, or there's nothing to act on."
+            },
+            {
+              "stage": "triage",
+              "outcomes": [
+                "catalog_gap",
+                "redirect_candidate",
+                "noise"
+              ],
+              "reason": "the triage found no synonym fix: a catalog gap, a redirect or noise."
+            }
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "collection",
+          "skill": "topic-collection-builder",
+          "writes": false,
+          "do": "Define the landing collection for the search, so the campaign links to a page that returns products. Skip it when a page that returns the right products already exists.",
+          "outcomes": [
+            "definition_ready",
+            "manual_list"
+          ],
+          "product": "discovery",
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "nothing_to_act_on"
+              ],
+              "reason": "the find stage found no search worth acting on."
+            },
+            {
+              "stage": "triage",
+              "outcomes": [
+                "noise"
+              ],
+              "reason": "the search is noise: nothing to fix or promote."
+            }
+          ]
+        },
+        {
+          "name": "campaign",
+          "skill": "search-demand-to-campaign",
+          "writes": true,
+          "do": "Size who searched for it and recommend a campaign; create an email or SMS draft only if the user asks, after its own yes.",
+          "outcomes": [
+            "draft_created",
+            "brief_only"
+          ],
+          "product": "engagement",
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "nothing_to_act_on"
+              ],
+              "reason": "the find stage found no search worth acting on."
+            },
+            {
+              "stage": "triage",
+              "outcomes": [
+                "noise"
+              ],
+              "reason": "the search is noise: nothing to fix or promote."
+            }
+          ]
+        },
+        {
+          "name": "digest",
+          "skill": "engagement-campaign-digest",
+          "writes": false,
+          "do": "Read how the campaign did once a person has sent it. Record never_sent when the draft won't be sent.",
+          "outcomes": [
+            "read",
+            "not_sent_yet",
+            "never_sent"
+          ],
+          "not_before": {
+            "after_stage": "campaign",
+            "days": "digest_after_days"
+          },
+          "product": "engagement",
+          "skip_when": [
+            {
+              "stage": "campaign",
+              "outcomes": [
+                "brief_only"
+              ],
+              "reason": "no draft was created, so there's no send to read."
+            },
+            {
+              "stage": "campaign",
+              "skipped": true,
+              "reason": "no campaign was made."
+            }
+          ]
+        },
+        {
+          "name": "measure",
+          "skill": "change-impact-tracker",
+          "writes": false,
+          "do": "Check whether the site fix (or, without one, the campaign launch) moved the search's revenue, with the change and its date from the hand-off file. Skip it when neither happened.",
+          "outcomes": [
+            "worked",
+            "no_clear_effect",
+            "made_it_worse",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": "fix",
+            "days": "measure_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "nothing_to_act_on"
+              ],
+              "reason": "the find stage found no search worth acting on."
+            },
+            {
+              "stage": "triage",
+              "outcomes": [
+                "noise"
+              ],
+              "reason": "the search is noise: nothing to fix or promote."
+            },
+            {
+              "all": [
+                {
+                  "stage": "fix",
+                  "outcomes": [
+                    "left_off"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "campaign",
+                  "outcomes": [
+                    "brief_only"
+                  ],
+                  "skipped": true
+                }
+              ],
+              "reason": "nothing changed: no synonym went live and no campaign was made."
+            },
+            {
+              "all": [
+                {
+                  "stage": "fix",
+                  "outcomes": [
+                    "left_off"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "digest",
+                  "outcomes": [
+                    "never_sent"
+                  ]
+                }
+              ],
+              "reason": "nothing changed: no synonym went live and the campaign was never sent."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "digest_after_days": "Days after the campaign stage finishes (the draft exists) before the digest stage is due. engagement-campaign-digest reads a whole week by default; when the user gives the send date, the digest is due this many days after it (record it with stage --not-before).",
+    "measure_after_days": "Days after the fix stage finishes before the measure stage is due. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell. When there's no site fix and the campaign launch is measured, count from the send date instead (stage --not-before).",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet: the campaign hasn't been sent, or the change needs more data. The script records them only with status in_progress and a --not-before date to come back on. The digest stage's never_sent is the final outcome for a draft that won't be sent, so a run doesn't wait on not_sent_yet for ever.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). A run without Engagement gets the campaign and digest stages offered for skipping. A skip_when entry with all lists conditions that must every one hold; a condition with both outcomes and skipped: true holds for either. The measure stage is offered as a skip when nothing changed: no synonym went live, and the campaign wasn't made or never sent."
+  }
+}

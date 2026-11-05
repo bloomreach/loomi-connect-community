@@ -1,0 +1,207 @@
+{
+  "about": "Stages and timing for the revenue-drop playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "recovery_check_days": 7,
+  "wait_outcomes": [
+    "data_not_ready"
+  ],
+  "playbooks": {
+    "revenue-drop": {
+      "title": "Revenue drop",
+      "product": "both",
+      "stages": [
+        {
+          "name": "explain",
+          "skill": "revenue-anomaly-explainer",
+          "writes": false,
+          "do": "Break the drop down and rank its causes; add each candidate cause as a finding, and note which suspects it already ruled out.",
+          "outcomes": [
+            "cause_found",
+            "no_single_cause",
+            "within_normal"
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "feeds",
+          "skill": "data-feed-health",
+          "writes": false,
+          "do": "Check the pixel, the catalog feeds and the index jobs. Record ruled_out without running it when the explainer's pixel and catalog checks were clean.",
+          "outcomes": [
+            "feeds_ok",
+            "feed_problem",
+            "ruled_out"
+          ],
+          "skip_when": [
+            {
+              "stage": "explain",
+              "outcomes": [
+                "within_normal"
+              ],
+              "reason": "the change is within normal variation: there is no incident to chase."
+            }
+          ]
+        },
+        {
+          "name": "api",
+          "skill": "discovery-api-health",
+          "writes": false,
+          "do": "Check whether search itself broke: request volumes and errors by type and day. Record ruled_out when the explainer's daily shape shows no outage.",
+          "outcomes": [
+            "api_ok",
+            "api_problem",
+            "ruled_out"
+          ],
+          "product": "discovery",
+          "skip_when": [
+            {
+              "stage": "explain",
+              "outcomes": [
+                "within_normal"
+              ],
+              "reason": "the change is within normal variation: there is no incident to chase."
+            }
+          ]
+        },
+        {
+          "name": "journeys",
+          "skill": "engagement-journey-health",
+          "writes": false,
+          "do": "Check whether a live Engagement flow stopped sending or broke. Record ruled_out when the drop is all in search or category browsing with no fall in returning traffic.",
+          "outcomes": [
+            "journeys_ok",
+            "journey_broken",
+            "ruled_out"
+          ],
+          "product": "engagement",
+          "skip_when": [
+            {
+              "stage": "explain",
+              "outcomes": [
+                "within_normal"
+              ],
+              "reason": "the change is within normal variation: there is no incident to chase."
+            }
+          ]
+        },
+        {
+          "name": "change",
+          "skill": "change-impact-tracker",
+          "writes": false,
+          "do": "Measure the recent merchandising change the explainer suspects: did it cause the drop?",
+          "outcomes": [
+            "made_it_worse",
+            "worked",
+            "no_clear_effect",
+            "too_early_to_tell",
+            "no_recent_change"
+          ],
+          "skip_when": [
+            {
+              "stage": "explain",
+              "outcomes": [
+                "within_normal"
+              ],
+              "reason": "the change is within normal variation: there is no incident to chase."
+            }
+          ]
+        },
+        {
+          "name": "rollback",
+          "skill": "discovery-rule-cleanup",
+          "writes": true,
+          "do": "Switch off (or end) the rule that made it worse, from a fresh read and its own plan, staging first, each batch after its own yes.",
+          "outcomes": [
+            "rolled_back",
+            "kept"
+          ],
+          "product": "discovery",
+          "skip_when": [
+            {
+              "stage": "explain",
+              "outcomes": [
+                "within_normal"
+              ],
+              "reason": "the change is within normal variation: there is no incident to chase."
+            },
+            {
+              "stage": "change",
+              "outcomes": [
+                "worked",
+                "no_clear_effect",
+                "no_recent_change"
+              ],
+              "reason": "no rule is to blame."
+            }
+          ]
+        },
+        {
+          "name": "recovery",
+          "skill": "revenue-anomaly-explainer",
+          "writes": false,
+          "do": "After the fix has had time, compare the days since the fix with the days of the drop: did revenue recover?",
+          "outcomes": [
+            "recovered",
+            "partly_recovered",
+            "still_down",
+            "data_not_ready"
+          ],
+          "not_before": {
+            "after_stage": "rollback",
+            "days": "recovery_check_days"
+          },
+          "product": "discovery",
+          "skip_when": [
+            {
+              "stage": "explain",
+              "outcomes": [
+                "within_normal"
+              ],
+              "reason": "the change is within normal variation: there is no incident to chase."
+            },
+            {
+              "all": [
+                {
+                  "stage": "rollback",
+                  "outcomes": [
+                    "kept"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "feeds",
+                  "outcomes": [
+                    "feeds_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "api",
+                  "outcomes": [
+                    "api_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "journeys",
+                  "outcomes": [
+                    "journeys_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                }
+              ],
+              "reason": "no rule was rolled back and the feeds, API and journeys checks found nothing to fix, so there is no fix to measure. If a fix landed elsewhere, set the recovery date with stage --not-before instead."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "recovery_check_days": "Days after the rollback stage finishes before the recovery stage is due. A week gives a whole weekday cycle after the fix, and Discovery reporting runs about 2 days behind. When the fix was a feed or flow repair outside this run, or the rollback was skipped, record the fix date plus this on the recovery stage with stage --not-before.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet: the recovery stage found too few days since the fix in the reports. The script records them only with status in_progress and a --not-before date to come back on. The change stage's too_early_to_tell is a final outcome here, not a wait: in an incident the rollback decision can't wait for two weeks of data, so it rests on discovery-rule-cleanup's own impact check.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). Checks the explainer already ruled out record ruled_out, which says why they weren't run; only a drop within normal variation skips the rest of the run. A skip_when entry with all lists conditions that must every one hold: the recovery stage is offered as a skip when the rollback was skipped or kept and no feed, API or flow problem was found (each check fine, ruled out or skipped), since nothing was fixed."
+  }
+}

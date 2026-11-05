@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Monthly Hygiene"
+  short_description: "One monthly sweep of Discovery rules and redirects and Engagement assets, with one plan to review per write stage"
+policy:
+  # Writes skill: its cleanup and redirect stages disable, change and delete live Discovery rules and redirects, so it only runs when called by name.
+  allow_implicit_invocation: false

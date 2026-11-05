@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Prediction Activation"
+  short_description: "Put an unused Engagement prediction to work in a segment and a flow, then measure it"
+policy:
+  # Writes skill: its segment, launch and adapt stages create segments and Engagement scenarios, so it only runs when called by name.
+  allow_implicit_invocation: false

@@ -1,0 +1,100 @@
+{
+  "about": "Stages and timing for the peak-event playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "send_checks_days_before_event": 7,
+  "review_after_event_days": 3,
+  "wait_outcomes": [
+    "data_not_ready"
+  ],
+  "playbooks": {
+    "peak-event": {
+      "title": "Peak event",
+      "product": "both",
+      "stages": [
+        {
+          "name": "plan",
+          "skill": "campaign-planner",
+          "writes": false,
+          "do": "Rank the campaigns to run around the event, with send windows, audiences and clashes on the calendar.",
+          "outcomes": [
+            "ideas_ranked",
+            "calendar_covered"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "collections",
+          "skill": "topic-collection-builder",
+          "writes": false,
+          "do": "Define the event's landing collections, one topic at a time, for the user to set up in the dashboard. Skip it when the landing pages exist and work.",
+          "outcomes": [
+            "definitions_ready",
+            "manual_list"
+          ],
+          "product": "discovery"
+        },
+        {
+          "name": "readiness",
+          "skill": "peak-readiness-check",
+          "writes": false,
+          "do": "Check data, merchandising, search, marketing and on-site readiness for the event window; blockers first.",
+          "outcomes": [
+            "ready",
+            "blockers_found"
+          ]
+        },
+        {
+          "name": "vouchers",
+          "skill": "voucher-pool-health",
+          "writes": false,
+          "do": "Check every voucher pool will last through the event's planned sends. Record no_vouchers when the event uses none.",
+          "outcomes": [
+            "pools_ok",
+            "pools_at_risk",
+            "no_vouchers"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "preflight",
+          "skill": "engagement-send-preflight",
+          "writes": false,
+          "do": "Check every send scheduled in the event window: GO, GO WITH CAUTION or NO-GO, with what to fix.",
+          "outcomes": [
+            "all_go",
+            "fixes_needed"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "collisions",
+          "skill": "engagement-send-collision-check",
+          "writes": false,
+          "do": "Check the event window's sends for overlapping audiences, busy days, email and SMS on the same day, and missing frequency caps.",
+          "outcomes": [
+            "no_collisions",
+            "collisions_found"
+          ],
+          "product": "engagement"
+        },
+        {
+          "name": "review",
+          "skill": "revenue-anomaly-explainer",
+          "writes": false,
+          "do": "After the event, compare the event period with the period before it and explain what moved revenue.",
+          "outcomes": [
+            "explained",
+            "within_normal",
+            "data_not_ready"
+          ],
+          "product": "discovery"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "send_checks_days_before_event": "Days before the event starts when the preflight (and so the collisions) stage becomes due: sends are scheduled by then, and there's still time to fix them. The assistant records it with stage --name preflight --not-before at the start of the run, from the event start date the user gives.",
+    "review_after_event_days": "Days after the event ends before the review stage is due. Discovery reporting runs about 2 days behind, and the explainer needs the whole event period. The assistant records it with stage --name review --not-before at the start of the run, from the event end date the user gives.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet: the review found the event's last days not yet in the reports. The script records them only with status in_progress and a --not-before date to come back on.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when. This playbook has no not_before: its waits are keyed on the event dates the user gives, recorded with stage --not-before. A run with only one product gets the other product's stages offered for skipping."
+  }
+}

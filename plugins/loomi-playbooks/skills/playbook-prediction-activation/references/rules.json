@@ -1,0 +1,258 @@
+{
+  "about": "Stages and timing for the prediction-activation playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "measure_after_days": 30,
+  "wait_outcomes": [
+    "too_early_to_tell"
+  ],
+  "playbooks": {
+    "prediction-activation": {
+      "title": "Prediction activation",
+      "product": "engagement",
+      "stages": [
+        {
+          "name": "check",
+          "skill": "prediction-activation-check",
+          "writes": false,
+          "do": "Find the predictions nothing targets with, add them as findings with an activation idea each, and ask the user which one to activate.",
+          "outcomes": [
+            "model_chosen",
+            "nothing_to_activate"
+          ]
+        },
+        {
+          "name": "segment",
+          "skill": "engagement-segment-builder",
+          "writes": true,
+          "do": "Define and size the audience on the chosen prediction's score band, reuse a segment that already matches, or create one after its own yes.",
+          "outcomes": [
+            "created",
+            "reused_existing",
+            "built_in_ui",
+            "not_created"
+          ],
+          "skip_when": [
+            {
+              "stage": "check",
+              "outcomes": [
+                "nothing_to_activate"
+              ],
+              "reason": "every healthy prediction already drives targeting."
+            }
+          ]
+        },
+        {
+          "name": "launch",
+          "skill": "scenario-template-launcher",
+          "writes": true,
+          "do": "Clone a proven scenario for the activation idea as a draft after its own yes, or find there is nothing to clone.",
+          "outcomes": [
+            "cloned",
+            "no_source",
+            "existing_flow",
+            "stopped"
+          ],
+          "skip_when": [
+            {
+              "stage": "check",
+              "outcomes": [
+                "nothing_to_activate"
+              ],
+              "reason": "every healthy prediction already drives targeting."
+            },
+            {
+              "stage": "segment",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "there is no audience for the flow."
+            }
+          ]
+        },
+        {
+          "name": "adapt",
+          "skill": "engagement-scenario-builder",
+          "writes": true,
+          "do": "Point the draft's audience condition at the new segment and make the fix list's step changes, or build the flow from the outline, each after its own yes.",
+          "outcomes": [
+            "built",
+            "changed",
+            "no_changes_needed",
+            "not_built"
+          ],
+          "skip_when": [
+            {
+              "stage": "check",
+              "outcomes": [
+                "nothing_to_activate"
+              ],
+              "reason": "every healthy prediction already drives targeting."
+            },
+            {
+              "stage": "segment",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "there is no audience for the flow."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            }
+          ]
+        },
+        {
+          "name": "qa",
+          "skill": "scenario-qa",
+          "writes": false,
+          "do": "QA the draft until it is GO; a NO-GO fix goes back through the adapt stage's write skill (engagement-scenario-builder), with its own yes, and is QA'd again. Then wait for the user to switch it on in the Engagement UI, record the day it started, and record the switch-on as a change (source engagement-ui).",
+          "outcomes": [
+            "started",
+            "not_launched"
+          ],
+          "skip_when": [
+            {
+              "stage": "check",
+              "outcomes": [
+                "nothing_to_activate"
+              ],
+              "reason": "every healthy prediction already drives targeting."
+            },
+            {
+              "stage": "segment",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "there is no audience for the flow."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            }
+          ]
+        },
+        {
+          "name": "performance",
+          "skill": "engagement-scenario-performance",
+          "writes": false,
+          "do": "Read the flow's results step by step since it started: sends, clicks, unsubscribes and recipients who bought soon after.",
+          "outcomes": [
+            "measured",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": "qa",
+            "days": "measure_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "check",
+              "outcomes": [
+                "nothing_to_activate"
+              ],
+              "reason": "every healthy prediction already drives targeting."
+            },
+            {
+              "stage": "segment",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "there is no audience for the flow."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the flow was never switched on."
+            }
+          ]
+        },
+        {
+          "name": "impact",
+          "skill": "change-impact-tracker",
+          "writes": false,
+          "do": "Measure the outcome the prediction targets (purchases by the at-risk or likely-to-buy group) before and after the flow started, against a control.",
+          "outcomes": [
+            "worked",
+            "no_clear_effect",
+            "made_it_worse",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": "qa",
+            "days": "measure_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "check",
+              "outcomes": [
+                "nothing_to_activate"
+              ],
+              "reason": "every healthy prediction already drives targeting."
+            },
+            {
+              "stage": "segment",
+              "outcomes": [
+                "not_created"
+              ],
+              "reason": "there is no audience for the flow."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the flow was never switched on."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "measure_after_days": "Days after the qa stage finishes (the day the user switched the flow on) before the performance and impact stages are due. engagement-scenario-performance reads the last 30 days by default, and change-impact-tracker needs about 14 days after a change for a verdict other than too early to tell.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes; skips don't cascade, so each stage lists every earlier outcome that ends the run). Three stages are not in the original proposal: adapt, because scenario-template-launcher clones a source as it is and never edits it, so pointing the clone at the new segment is engagement-scenario-builder's job; qa, because the launcher hands every clone to scenario-qa and the flow must be switched on before anything can be measured; and impact, because engagement-scenario-performance counts buyers, not revenue, and there is no Engagement A/B setup skill, so change-impact-tracker measures before and after."
+  }
+}

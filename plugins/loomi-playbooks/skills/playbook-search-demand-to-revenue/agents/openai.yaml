@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Search Demand to Revenue"
+  short_description: "Turn one site search into a search fix and a campaign, then measure whether it paid"
+policy:
+  # Writes skill: its fix and campaign stages create live synonyms and campaign drafts, so it only runs when called by name.
+  allow_implicit_invocation: false

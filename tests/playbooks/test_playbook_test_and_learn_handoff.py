@@ -188,13 +188,14 @@ class HandoffTest(unittest.TestCase):
         self.run_h("changes", "--handoff", self.h, "--plan", plan, "--source", "discovery-experiment-close")
         self.assertEqual([c["result"] for c in self.handoff()["changes"]], ["in_place", "not_needed", "in_place"])
 
-    def test_undo_is_copied_from_the_plan(self):
+    def test_undo_keeps_the_tool_and_never_the_payload(self):
         self.new()
         plan, ver = self.close_files()
         self.run_h("changes", "--handoff", self.h, "--plan", plan, "--verify", ver, "--source", "discovery-experiment-close")
         enable = next(c for c in self.handoff()["changes"] if c["kind"] == "enable")
         planned = next(c for c in json.loads(plan.read_text(encoding="utf-8"))["changes"] if c["kind"] == "enable")
-        self.assertEqual(enable["undo"], planned["undo"])
+        self.assertEqual(enable["undo"], [{"tool": u["tool"]} for u in planned["undo"]])
+        self.assertEqual(enable["plan_file"], "close-plan.json")  # the plan file keeps the full undo
 
     def test_targets_keep_the_id_and_drop_names(self):
         self.new()

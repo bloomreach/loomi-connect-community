@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: New Project"
+  short_description: "First 30 days of a new project: readiness, tracking, feeds, catalog and lifecycle checks, then a plan"
+policy:
+  allow_implicit_invocation: true

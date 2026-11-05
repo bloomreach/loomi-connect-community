@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Revenue Drop"
+  short_description: "Incident runbook: explain a revenue drop, check what's left, roll back a harmful rule, confirm recovery"
+policy:
+  # Writes skill: its rollback stage switches off live Discovery rules, so it only runs when called by name.
+  allow_implicit_invocation: false

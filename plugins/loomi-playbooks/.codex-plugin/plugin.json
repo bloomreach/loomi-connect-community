@@ -1,5 +1,5 @@
 {
   "name": "loomi-playbooks",
-  "version": "0.1.0",
-  "description": "Playbooks that chain Loomi Connect skills into one job, from finding a problem to fixing, testing and measuring it, with a hand-off file that carries results between stages and sessions. First: test and learn for Discovery merchandising rules."
+  "version": "0.2.0",
+  "description": "Playbooks that chain Loomi Connect skills into one job, from finding a problem to fixing, testing and measuring it, with a hand-off file that carries results between stages and sessions: test and learn, findability, search demand to revenue, lifecycle gaps, catalog truth, revenue drops, peak events, weekly triage, quarter close and more."
 }

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery), and the loomi-discovery and loomi-platform plugins for the skills each stage runs. Python 3 is optional, for the bundled hand-off script.
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery
   access: writes
 ---
@@ -64,7 +64,7 @@ Run each script as one plain command from your own working folder, giving the sc
 
 ### 0. Start or continue
 
-- **Continuing:** run `python3 <this skill's folder>/scripts/handoff.py status --handoff <file>`. Show the user the table and the **Next** line, then go to that stage. If the next stage isn't due yet, say when it is and stop. If the status suggests skipping a stage, explain why and, once the user agrees, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status skipped`. A skipped stage makes the next one a candidate to skip too, so a run never reaches the close stage without a test.
+- **Continuing:** run `python3 <this skill's folder>/scripts/handoff.py status --handoff <file>`. Show the user the table and the **Next** line, then go to that stage. If the next stage isn't due yet, say when it is and stop. If the status suggests skipping a stage, explain why and, once the user agrees, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status skipped`. Skips follow each stage's rules in references/rules.json: skipping find offers test as a skip, skipping test offers the read-out, and skipping the read-out offers the close, so a run that skips the test is offered skips down to the close.
 - **Starting:** resolve the account, site and environment (step 1 of `discovery-query-rule-impact`), then run `python3 <this skill's folder>/scripts/handoff.py new --playbook test-and-learn --subject-kind query --subject-file <query.txt> --account <account> --environment <environment> --site-group-id <id> --out <run1.handoff.json>` (for a category page, `--subject-kind category --subject <category ID>`; leave out `--site-group-id` when there are no sites).
 
 Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status in_progress`. After it, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status done --outcome <outcome> --file <saved file>` (the stage's outcomes are in references/rules.json; repeat `--file` for each file it saved). The waiting outcomes (`keep_running`, `too_early_to_tell`) are the exception: the stage stays `in_progress` with a date to come back on (steps 3 and 5).
@@ -97,7 +97,7 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 ### 5. confirm: does it hold at full traffic?
 
 1. Only when `status` says it's due. Follow `change-impact-tracker` with the change from the hand-off file: the rule the close kept, and the close's `live_on` date as the change day. The A/B test measured the change against a control; this checks it still pays off at 100% of traffic and isn't fading.
-2. Record the outcome (`worked`, `no_clear_effect`, `made_it_worse`, `too_early_to_tell`). For `made_it_worse`, describe the undo from the change log in words (which rule, back to which state) and hand off to `discovery-rule-cleanup`: it reads the rule fresh by ID and builds its own plan, and writes only after its own confirmation. Never pass the file's `undo` payloads to it or to any write tool. For `too_early_to_tell`, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name confirm --status in_progress --outcome too_early_to_tell --not-before <re-run date>` and say when to come back.
+2. Record the outcome (`worked`, `no_clear_effect`, `made_it_worse`, `too_early_to_tell`). For `made_it_worse`, describe the undo in words, from the change log (which change) and its plan file (the undo steps) (which rule, back to which state) and hand off to `discovery-rule-cleanup`: it reads the rule fresh by ID and builds its own plan, and writes only after its own confirmation. Never pass the file's `undo` payloads to it or to any write tool. For `too_early_to_tell`, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name confirm --status in_progress --outcome too_early_to_tell --not-before <re-run date>` and say when to come back.
 
 ## Output
 

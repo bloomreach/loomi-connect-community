@@ -1,0 +1,179 @@
+{
+  "about": "Stages and timing for the product-opportunity playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "min_test_days": 14,
+  "measure_after_days": 14,
+  "wait_outcomes": [
+    "keep_running",
+    "too_early_to_tell"
+  ],
+  "playbooks": {
+    "product-opportunity": {
+      "title": "Product opportunity",
+      "product": "discovery",
+      "stages": [
+        {
+          "name": "find",
+          "skill": "product-opportunity-finder",
+          "writes": false,
+          "do": "Sort the account's products into opportunity groups, add the top ones as findings, and ask the user which product to take forward.",
+          "outcomes": [
+            "product_chosen",
+            "nothing_to_act_on"
+          ]
+        },
+        {
+          "name": "report",
+          "skill": "discovery-product-report",
+          "writes": false,
+          "do": "Report the chosen product everywhere: performance against its peers, positions, rules and stock. Decide whether ranking or the listing is the problem.",
+          "outcomes": [
+            "boost_or_bury",
+            "fix_listing",
+            "nothing_to_do"
+          ],
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "nothing_to_act_on"
+              ],
+              "reason": "the find stage found no product worth acting on."
+            }
+          ]
+        },
+        {
+          "name": "listing",
+          "skill": "product-data-enhancer",
+          "writes": false,
+          "do": "Suggest a better title, description, attributes and alt text for the product, for the feed team to import. Skip it when the listing is sound.",
+          "outcomes": [
+            "suggestions_ready"
+          ],
+          "skip_when": [
+            {
+              "stage": "report",
+              "outcomes": [
+                "nothing_to_do"
+              ],
+              "reason": "the product report found nothing to change."
+            },
+            {
+              "stage": "report",
+              "skipped": true,
+              "reason": "there's no chosen product."
+            }
+          ]
+        },
+        {
+          "name": "test",
+          "skill": "discovery-experiment-setup",
+          "writes": true,
+          "do": "A/B test boosting (or burying) the product on its main query or category, and start it after its own yes.",
+          "outcomes": [
+            "started",
+            "left_as_draft",
+            "not_testable"
+          ],
+          "skip_when": [
+            {
+              "stage": "report",
+              "outcomes": [
+                "fix_listing",
+                "nothing_to_do"
+              ],
+              "reason": "the listing, not ranking, is the problem; or there's nothing to change."
+            },
+            {
+              "stage": "report",
+              "skipped": true,
+              "reason": "there's no chosen product."
+            }
+          ]
+        },
+        {
+          "name": "read-out",
+          "skill": "discovery-experiment-readout",
+          "writes": false,
+          "do": "Read the test's result. Don't stop early on a good-looking day.",
+          "outcomes": [
+            "winner",
+            "no_winner",
+            "keep_running"
+          ],
+          "not_before": {
+            "after_stage": "test",
+            "days": "min_test_days"
+          },
+          "skip_when": [
+            {
+              "stage": "test",
+              "outcomes": [
+                "left_as_draft",
+                "not_testable"
+              ],
+              "reason": "no test is running."
+            },
+            {
+              "stage": "test",
+              "skipped": true,
+              "reason": "no test was set up."
+            }
+          ]
+        },
+        {
+          "name": "close",
+          "skill": "discovery-experiment-close",
+          "writes": true,
+          "do": "End the test keeping the winner (or today's ranking), check every rule, then archive it, each step after its own yes.",
+          "outcomes": [
+            "shipped_variant",
+            "kept_control"
+          ],
+          "skip_when": [
+            {
+              "stage": "read-out",
+              "skipped": true,
+              "reason": "there's no test to close."
+            }
+          ]
+        },
+        {
+          "name": "confirm",
+          "skill": "change-impact-tracker",
+          "writes": false,
+          "do": "Check the shipped boost or bury holds at full traffic, with the rule and its live date from the hand-off file.",
+          "outcomes": [
+            "worked",
+            "no_clear_effect",
+            "made_it_worse",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": "close",
+            "days": "measure_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "close",
+              "outcomes": [
+                "kept_control"
+              ],
+              "reason": "nothing changed for shoppers, so there is nothing to confirm."
+            },
+            {
+              "stage": "close",
+              "skipped": true,
+              "reason": "no test was closed."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "min_test_days": "Days after the test stage finishes (the test started) before the read-out stage is due. discovery-experiment-setup recommends at least 14 days in whole weeks; use the end date agreed at setup when it's later.",
+    "measure_after_days": "Days after the close stage finishes (the winner went to full traffic) before the confirm stage is due. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped)."
+  }
+}

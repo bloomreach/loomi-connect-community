@@ -1,0 +1,140 @@
+{
+  "about": "Stages and timing for the findability playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "recheck_after_days": 28,
+  "playbooks": {
+    "findability": {
+      "title": "Findability",
+      "product": "discovery",
+      "stages": [
+        {
+          "name": "triage",
+          "skill": "discovery-zero-results-triage",
+          "writes": false,
+          "do": "Triage the dead-end searches, add the synonym, data and catalog-gap findings, and agree with the user which to act on.",
+          "outcomes": [
+            "fixes_found",
+            "nothing_to_fix"
+          ]
+        },
+        {
+          "name": "audit",
+          "skill": "product-data-audit",
+          "writes": false,
+          "do": "Audit the product data behind the dead-end searches: titles and attributes missing the words shoppers use.",
+          "outcomes": [
+            "gaps_found",
+            "data_fine"
+          ],
+          "skip_when": [
+            {
+              "stage": "triage",
+              "outcomes": [
+                "nothing_to_fix"
+              ],
+              "reason": "the triage found no dead-end searches worth acting on."
+            }
+          ]
+        },
+        {
+          "name": "enhance",
+          "skill": "product-data-enhancer",
+          "writes": false,
+          "do": "Write reviewed title and attribute suggestions for the audit's top products, as files for the feed team. Nothing changes in Bloomreach.",
+          "outcomes": [
+            "suggestions_ready",
+            "nothing_to_enhance"
+          ],
+          "skip_when": [
+            {
+              "stage": "audit",
+              "outcomes": [
+                "data_fine"
+              ],
+              "reason": "the audit found no products whose data needs work."
+            },
+            {
+              "stage": "audit",
+              "skipped": true,
+              "reason": "the audit stage was skipped, so there are no products to enhance."
+            }
+          ]
+        },
+        {
+          "name": "config",
+          "skill": "discovery-catalog-config-audit",
+          "writes": false,
+          "do": "Check the attributes shoppers' words live in are searchable, and list the dashboard settings to change.",
+          "outcomes": [
+            "config_fixes_found",
+            "config_fine"
+          ],
+          "skip_when": [
+            {
+              "stage": "triage",
+              "outcomes": [
+                "nothing_to_fix"
+              ],
+              "reason": "the triage found no dead-end searches worth acting on."
+            }
+          ]
+        },
+        {
+          "name": "synonyms",
+          "skill": "discovery-synonym-fixer",
+          "writes": true,
+          "do": "Plan the triage's synonym fixes, preview each, create them switched off and switch each on, every batch after its own yes.",
+          "outcomes": [
+            "synonyms_live",
+            "left_switched_off",
+            "nothing_to_add"
+          ],
+          "skip_when": [
+            {
+              "stage": "triage",
+              "outcomes": [
+                "nothing_to_fix"
+              ],
+              "reason": "the triage found no dead-end searches worth acting on."
+            }
+          ]
+        },
+        {
+          "name": "recheck",
+          "skill": "discovery-zero-results-triage",
+          "writes": false,
+          "do": "Triage again over the days since the synonyms went live, and count which of the run's dead-end searches recovered.",
+          "outcomes": [
+            "recovered",
+            "partly_recovered",
+            "not_recovered"
+          ],
+          "not_before": {
+            "after_stage": "synonyms",
+            "days": "recheck_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "synonyms",
+              "outcomes": [
+                "left_switched_off",
+                "nothing_to_add"
+              ],
+              "reason": "no synonym went live, so there is nothing to re-check."
+            },
+            {
+              "stage": "synonyms",
+              "skipped": true,
+              "reason": "the synonyms stage was skipped, so no synonym went live."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "recheck_after_days": "Days after the synonyms stage finishes (the synonyms were switched on) before the recheck stage is due. discovery-zero-results-triage reads 30 days by default; four whole weeks after the hourly synonym sync gives it a window that starts after the change, with the same weekday mix.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes).",
+    "max_chosen": "How many findings can be chosen at once. The synonyms stage acts on every synonym fix the user agrees in one plan, up to this many."
+  },
+  "max_chosen": 20
+}
