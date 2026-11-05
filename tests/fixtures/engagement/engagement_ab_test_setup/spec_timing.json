@@ -1,0 +1,22 @@
+{
+ "test": "timing",
+ "edge": {
+  "from_node": 0,
+  "from_output": 0,
+  "to_node": 1
+ },
+ "split_name": "Timing: 4h vs 24h",
+ "control": {
+  "name": "After 4 hours",
+  "percentage": 50
+ },
+ "variant": {
+  "name": "After 24 hours",
+  "percentage": 50
+ },
+ "timing": {
+  "units": "hours",
+  "count": 24
+ },
+ "metric": "conversion"
+}

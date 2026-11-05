@@ -58,7 +58,8 @@ class PlaybookDefinitionsTest(unittest.TestCase):
                     outcomes |= set(s["outcomes"])
                     nb = s.get("not_before")
                     if nb:
-                        self.assertIn(nb["after_stage"], names[:i], "not_before must follow an earlier stage")
+                        for after in (nb["after_stage"] if isinstance(nb["after_stage"], list) else [nb["after_stage"]]):
+                            self.assertIn(after, names[:i], "not_before must follow an earlier stage")
                         self.assertIsInstance(rules.get(nb["days"]), int, f"{nb['days']} must be a number in rules.json")
                     for entry in s.get("skip_when", []):
                         self.assertTrue(entry["reason"])

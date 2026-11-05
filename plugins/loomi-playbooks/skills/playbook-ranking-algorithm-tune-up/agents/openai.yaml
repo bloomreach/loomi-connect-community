@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Ranking Algorithm Tune-up"
+  short_description: "Review Discovery ranking algorithms, A/B test a corrected copy, keep the winner and confirm it holds"
+policy:
+  # Writes skill: its copy, test and close stages create an algorithm, start and end live A/B tests, so it only runs when called by name.
+  allow_implicit_invocation: false

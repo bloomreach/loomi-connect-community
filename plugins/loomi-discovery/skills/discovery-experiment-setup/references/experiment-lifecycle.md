@@ -58,6 +58,14 @@ This reference is drawn from the Loomi Connect tool schemas. The write calls the
 3. Enable the variant with `update_ranking_rule(rule_id=<variant>, enabled=true)`, with its own "yes". The tool description says to enable it before creating the test, but this skill **never enables a rule before the experiment exists**. **Unverified:** whether enabling a variant makes it serve outside a test, so treat it as possibly live for all shoppers of the query.
 4. `start_discovery_experiment`, straight afterwards.
 
+**Pattern 3: Algorithm A vs algorithm B** (is a new or corrected ranking algorithm better?). A page's algorithm comes from a rule of type `ranking_algo` (`customizationItems.ranking_algo.id` = the `algoId`), or from the account default when no such rule covers the page. The rule-list tools leave `ranking_algo` rules out; the product grid's `customizations.explain` shows them, and `get_ranking_rule` reads one by ID. The `discovery-experiments` guide lists ranking algorithm changes among what can be tested, and a demo account held a draft experiment whose two buckets were a `ranking_algo` rule (`sitesearch_global`) and its variant.
+
+- **3a, an algorithm rule covers the scope** (no audience, no schedule): `create_ranking_rule_variant(base_rule_id=<that rule>, ranking_algo_id=<new algoId>)` → variant (disabled); the draft experiment with `control: true` on the base rule and `control: false` on the variant; enable the variant with its own "yes"; start. As Pattern 2.
+- **3b, the account default ranks the scope:** `create_ranking_rule(queries=<scope>, ranking_algo_id=<new algoId>, enabled=false)` → rule; the draft experiment with a control bucket without `customization_id` and a test bucket on the rule; start. As Pattern 1. **Untested:** whether the new rule's `ruleType` reads back as `ranking_algo` or `ranking`; check `customizationItems.ranking_algo.id` with `get_ranking_rule`.
+- A rule with an audience or a schedule can't be tested, and `create_ranking_rule_variant` rejects it as a parent (the `discovery-merchandising` guide).
+- Global scopes: `{"query": "*", "queryType": "sitesearch_global"}` (every search) or `"category_global"` (every category page), `matchType: "EXACT_MATCH"`. Only one un-targeted global rule per `queryType`; when one exists, it's the 3a base rule.
+- The algorithm under test must be `Available` in `search_ranking_algorithms` and for the same page type (`KEYWORD` for search, `CATEGORY` for category pages).
+
 ## Payload templates
 
 ### create_ranking_rule (site search, for a test)
@@ -101,6 +109,33 @@ This reference is drawn from the Loomi Connect tool schemas. The write calls the
 ```
 
 `traffic_percentage` at the top level is the share of eligible traffic in the test. Bucket percentages split that share.
+
+### Pattern 3a: create_ranking_rule_variant (new algorithm on today's algorithm rule)
+
+```json
+{
+  "account_name": "<account>",
+  "base_rule_id": 1234570,
+  "name": "TEST search algorithm - corrected copy",
+  "ranking_algo_id": "br-newcopy1"
+}
+```
+
+The variant inherits the base rule's queries and scope. Then the experiment as in Pattern 2, with the base rule as control.
+
+### Pattern 3b: create_ranking_rule (new algorithm where the default ranks today)
+
+```json
+{
+  "account_name": "<account>",
+  "name": "TEST search algorithm - corrected copy",
+  "enabled": false,
+  "queries": [{"query": "*", "queryType": "sitesearch_global", "matchType": "EXACT_MATCH"}],
+  "ranking_algo_id": "br-newcopy1"
+}
+```
+
+Then the experiment as in Pattern 1: control bucket without `customization_id`, test bucket on the new rule.
 
 ### start_discovery_experiment
 

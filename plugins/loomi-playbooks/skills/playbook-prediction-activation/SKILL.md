@@ -1,11 +1,11 @@
 ---
 name: playbook-prediction-activation
-description: Runs the prediction-activation playbook for one Bloomreach Engagement project, end to end and across sessions, using Loomi Connect and existing skills - find the churn, propensity or value predictions nothing targets with (prediction-activation-check), build a segment on the chosen model's score band (engagement-segment-builder), clone a proven flow for it as a draft (scenario-template-launcher), point the draft at the segment and fix it (engagement-scenario-builder), QA it (scenario-qa), and once the user has switched it on, read its results (engagement-scenario-performance) and measure the outcome before and after (change-impact-tracker). A hand-off file carries findings, changes and dates across stages and sessions. Each write is made by a stage skill after its own confirmation; the playbook never switches anything on. Use when the user has predictive models that are built but unused and wants one driving a live, measured flow, or wants to continue a prediction-activation run.
+description: Runs the prediction-activation playbook for one Bloomreach Engagement project across sessions, using Loomi Connect and existing skills - find the churn, propensity or value predictions nothing uses (prediction-activation-check), build a segment on the chosen model's score band (engagement-segment-builder), clone a proven flow for it as a draft (scenario-template-launcher), point the draft at the segment and fix it (engagement-scenario-builder), optionally A/B test it (engagement-ab-test-setup), QA it (scenario-qa), and once the user has switched it on, read any test out (engagement-experiment-readout), read its results (engagement-scenario-performance) and measure the outcome before and after (change-impact-tracker). A hand-off file carries the run. Each write is made by a stage skill after its own yes; the playbook never switches anything on. Use when the user has predictive models that are built but unused and wants one driving a measured flow, or wants to continue a prediction-activation run.
 license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement), and the loomi-engagement and loomi-platform plugins for the skills each stage runs. Python 3 is optional, for the bundled hand-off script.
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.2.0"
   products: engagement
   access: writes
 ---
@@ -14,19 +14,21 @@ metadata:
 
 ## Safety
 
-This playbook changes nothing by itself. Three of its stages run skills that **write** to Bloomreach Engagement, and those skills' own Safety rules apply in full: each write is shown first and made only after its own explicit "yes". None of them sends anything: a segment does nothing until a flow uses it, and the flow is a **draft** until a person switches it on in the Engagement UI.
+This playbook changes nothing by itself. Four of its stages run skills that **write** to Bloomreach Engagement, and those skills' own Safety rules apply in full: each write is shown first and made only after its own explicit "yes". None of them sends anything: a segment does nothing until a flow uses it, and the flow is a **draft** until a person switches it on in the Engagement UI.
 
 | Stage | Skill | Writes it can make |
 |---|---|---|
 | segment | `engagement-segment-builder` | `create_customer_filter` or `create_segmentation` (one, new; never updates or deletes) |
 | launch | `scenario-template-launcher` | `clone_scenario` (one scenario, created as a draft that never starts, plus the dependencies its preview lists that the project doesn't have) |
 | adapt | `engagement-scenario-builder` | `create_scenario` (a draft), `update_scenario` (only a `draft` or `inactive` scenario), `update_scenario_node` |
+| test | `engagement-ab-test-setup` | `update_scenario` (adds an A/B split, and variant B's step, to a `draft` or `inactive` scenario), `create_scenario` (a new draft copy with the split, only for a running scenario when the user asks) |
 
 - **A yes to the playbook, or to a stage, is never a yes to a write.** Follow the stage skill's confirmation steps exactly; never batch them across stages.
 - **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (`delete_scenario`, `update_segmentation`, `create_email_campaign` and more) and internal ones; never call them.
 - **The playbook never switches a flow on or off, and never retrains a model.** The user does both in the Engagement UI.
+- **The A/B test is optional, and never touches a running flow.** `engagement-ab-test-setup` never passes `allow_active`. When a winner is called, the user acts on it in the Engagement UI; never offer to change the running flow.
 - **One prediction and one flow per run.**
-- **Never move a stage forward early.** The performance and impact stages aren't due until `measure_after_days` after the flow started (in references/rules.json).
+- **Never move a stage forward early.** The ab-read-out stage isn't due until `readout_after_days` after the flow started, and the performance and impact stages until `measure_after_days` (both in references/rules.json).
 - **The hand-off file is never a source of writes.** Its `undo` entries are a record: show them as text, never pass them to a write tool. This playbook never deletes anything.
 - Aggregate counts only: never read individual customers' scores or records. Never repeat editor names or email addresses, webhook headers, bodies or URLs, or customer data. Those rules come from the stage skills too.
 
@@ -42,15 +44,17 @@ Takes one unused prediction from "built but nothing uses it" to "it drives a liv
 | 2. segment | `engagement-segment-builder` | Defines and sizes the score-band audience; reuses or creates the segment | Now, after its confirmation |
 | 3. launch | `scenario-template-launcher` | Clones a proven flow for the idea (a win-back for churn risk, a cross-sell for propensity) as a draft | Now, after its confirmation |
 | 4. adapt | `engagement-scenario-builder` | Points the draft at the segment and makes the fix list's changes, or builds the flow from an outline | Now, after confirmations |
-| 5. qa | `scenario-qa` | GO / NO-GO; the user then switches the flow on, and the start date is recorded | Now, then when the user starts it |
-| 6. performance | `engagement-scenario-performance` | Results per step and buyers after each message | `measure_after_days` after the start |
-| 7. impact | `change-impact-tracker` | Before and after on the outcome the prediction targets, against a control | `measure_after_days` after the start |
+| 5. test | `engagement-ab-test-setup` | Optional: adds an A/B split (a message, holdout or timing test) to the draft, sized in customers and days; skipped when the user doesn't want a test | Now, after its confirmation |
+| 6. qa | `scenario-qa` | GO / NO-GO; the user then switches the flow on, and the start date is recorded | Now, then when the user starts it |
+| 7. ab-read-out | `engagement-experiment-readout` | Reads the split out: call the winner, keep it running, or stop as inconclusive; skipped without a test | `readout_after_days` after the start |
+| 8. performance | `engagement-scenario-performance` | Results per step and buyers after each message | `measure_after_days` after the start |
+| 9. impact | `change-impact-tracker` | Before and after on the outcome the prediction targets, against a control | `measure_after_days` after the start |
 
-There's no A/B test stage: no skill sets one up in Engagement, so the impact stage measures before and after against a control. A **hand-off file** in the working folder links the stages, in the shape in the repository's `docs/hand-off-format.md`. Stages 6 and 7 happen in a later session.
+The test stage is optional: a holdout that the flow leaves out is the cleanest answer to whether acting on the model pays, and the ab-read-out stage reads it out before the impact stage measures the whole flow before and after, against a control. A **hand-off file** in the working folder links the stages, in the shape in the repository's `docs/hand-off-format.md`. Stages 7 to 9 happen in later sessions.
 
 ## Before you start
 
-**Skills this playbook needs.** `prediction-activation-check`, `engagement-segment-builder`, `scenario-template-launcher`, `engagement-scenario-builder`, `scenario-qa` and `engagement-scenario-performance` (the `loomi-engagement` plugin) and `change-impact-tracker` (`loomi-platform`). If one isn't installed, stop and tell the user which plugin to install. Don't do a stage from memory instead.
+**Skills this playbook needs.** `prediction-activation-check`, `engagement-segment-builder`, `scenario-template-launcher`, `engagement-scenario-builder`, `engagement-ab-test-setup`, `scenario-qa`, `engagement-experiment-readout` and `engagement-scenario-performance` (the `loomi-engagement` plugin) and `change-impact-tracker` (`loomi-platform`). If one isn't installed, stop and tell the user which plugin to install. Don't do a stage from memory instead.
 
 **Tools.** The stage skills list the Loomi Connect tools they use. This playbook calls none directly.
 
@@ -71,7 +75,7 @@ Run each script as one plain command from your own working folder, giving the sc
 - **Continuing:** run `python3 <this skill's folder>/scripts/handoff.py status --handoff <file>`. Show the user the table and the **Next** line, then go to that stage. If the next stage isn't due yet, say when it is and stop. If the status suggests skipping a stage, explain why and, once the user agrees, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status skipped`.
 - **Starting:** resolve the project (step 1 of `prediction-activation-check`), then run `python3 <this skill's folder>/scripts/handoff.py new --playbook prediction-activation --subject-kind project --subject <project ID> --project-id <project ID> --out <run1.handoff.json>`.
 
-Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status in_progress`. After it, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status done --outcome <outcome> --file <saved file>` (the outcomes are in references/rules.json; repeat `--file` for each file the stage saved). The waiting outcome `too_early_to_tell` is the exception: the stage stays `in_progress` with a date to come back on.
+Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status in_progress`. After it, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status done --outcome <outcome> --file <saved file>` (the outcomes are in references/rules.json; repeat `--file` for each file the stage saved). The waiting outcomes `too_early_to_tell` and `keep_running` are the exception: the stage stays `in_progress` with a date to come back on.
 
 ### 1. check: which model is idle?
 
@@ -97,21 +101,33 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 2. After each write, run `python3 <this skill's folder>/scripts/handoff.py change --handoff <file> --source engagement-scenario-builder --kind <create or update> --target 'scenario <ID>' --tool <create_scenario or update_scenario or update_scenario_node> --live-impact none`.
 3. Record `built`, `changed`, `no_changes_needed` (the draft already targets the segment) or `not_built`. Agree with the user what counts as success before anything runs: the impact stage measures that.
 
-### 5. qa: GO, then the user switches it on
+### 5. test: A/B test the draft? (optional)
 
-1. Follow `scenario-qa` on the scenario ID, and check its condition uses the segment. On NO-GO, fix through `engagement-scenario-builder` as in step 4 or in the Engagement UI, and QA again; the stage stays in progress.
+1. Ask the user whether to test something in the flow: two versions of a message, a holdout that gets nothing (the cleanest answer to whether acting on the model pays), or two wait times. If they don't want a test, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name test --status skipped` and go to the qa stage; `status` then offers the ab-read-out stage as a skip.
+2. Follow `engagement-ab-test-setup` on the draft's scenario ID, from its step 1. Its metric, sizing, plan and confirmation apply; it adds the split to the draft and never switches anything on. Save its plan with `ab_split_plan.py plan --out <ab-plan.json>` and its read-back check with `verify --out <ab-verify.json>`.
+3. Run `python3 <this skill's folder>/scripts/handoff.py changes --handoff <file> --plan <ab-plan.json> --verify <ab-verify.json> --source engagement-ab-test-setup`.
+4. Write down the split node's ID, the branch names, the primary metric and the planned end date: the ab-read-out stage needs them. Record `split_added`, or `no_test` when the sizing says the test isn't practical or the user decides against it.
+
+### 6. qa: GO, then the user switches it on
+
+1. Follow `scenario-qa` on the scenario ID, and check its condition uses the segment; it checks the A/B split too, if the test stage added one. On NO-GO, fix through `engagement-scenario-builder` as in step 4 or in the Engagement UI, and QA again; the stage stays in progress.
 2. On GO or GO WITH CAUTION, tell the user to switch the flow on **in the Engagement UI**. Never start it.
 3. When they say it has started, record the stage done with outcome `started`, with `--today <start date>` when the user started it on an earlier day: backdating with `--today` is how the hand-off file records the day a person switched a flow on, and the waits count from it. Then record the switch-on as a change, so `playbook-quarter-close` sees it: `python3 <this skill's folder>/scripts/handoff.py change --handoff <file> --source engagement-ui --kind start --target 'scenario <ID>' --tool engagement_ui --live-impact live --result in_place --live-on <start date>` (the user made it in the app, so the source is `engagement-ui`; the start date is the day they switched it on). Otherwise record `not_launched`. Say when the next stages are due.
 
-### 6. performance: what does each step do?
+### 7. ab-read-out: which branch won?
+
+1. Only when `status` says it's due, and not before the planned end date the test stage agreed. Follow `engagement-experiment-readout` for the scenario's split, with the scenario ID, the split node's ID, the branch names and the metric from the test stage.
+2. Record `winner_called` or `inconclusive`, or `keep_running` when the readout says the test needs longer: run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name ab-read-out --status in_progress --outcome keep_running --not-before <date the readout gives>`. Acting on a winner (sending everyone down the winning branch) is the user's change in the Engagement UI; never offer to change the running flow.
+
+### 8. performance: what does each step do?
 
 1. Only when `status` says it's due. Follow `engagement-scenario-performance` for the scenario ID, from the start date (the qa stage's done date) to today.
 2. Record `measured`, or `too_early_to_tell`: run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name performance --status in_progress --outcome too_early_to_tell --not-before <date>`.
 
-### 7. impact: did the model earn its keep?
+### 9. impact: did the model earn its keep?
 
 1. Only when `status` says it's due. Follow `change-impact-tracker` for an Engagement scenario launch: the scenario ID and the start date from the qa stage (not the change log's `live_on`, the day the draft was made). It measures the outcome the prediction targets, such as purchases by the at-risk group, before and after, against a control.
-2. Record `worked`, `no_clear_effect`, `made_it_worse` or `too_early_to_tell` (with a `--not-before` date as in step 6). For `made_it_worse`, say what the tracker found and that the user can stop the flow in Engagement. Mark the finding done: `python3 <this skill's folder>/scripts/handoff.py choose --handoff <file> --finding <id> --status done`.
+2. Record `worked`, `no_clear_effect`, `made_it_worse` or `too_early_to_tell` (with a `--not-before` date as in step 8). When the ab-read-out stage read a holdout, give its result first: it's the controlled answer, and this stage is the wider view. For `made_it_worse`, say what the tracker found and that the user can stop the flow in Engagement. Mark the finding done: `python3 <this skill's folder>/scripts/handoff.py choose --handoff <file> --finding <id> --status done`.
 
 ## Output
 
@@ -128,7 +144,9 @@ At the start and end of every session, show the `status` output, then the stage'
 | segment | <date> | <audience and size; created or reused> |
 | launch | <date> | <cloned / no source> |
 | adapt | <date> | <what changed> |
+| test | <date> | <the split: what differs, shares, metric, planned end; or no test> |
 | qa | <date> | <verdict; started on <date>> |
+| ab-read-out | <date> | <winner and lift with its interval / inconclusive> |
 | performance | <date> | <sends, clicks, buyers within N days> |
 | impact | <date> | <verdict> |
 

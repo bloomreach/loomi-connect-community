@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Autosuggest Cleanup"
+  short_description: "Audit Discovery autosuggest, hide the bad suggestions with exclusion rules and re-check they stay gone"
+policy:
+  # Writes skill: its exclude stage creates and switches on live autosuggest exclusion rules, so it only runs when called by name.
+  allow_implicit_invocation: false

@@ -1,11 +1,11 @@
 ---
 name: playbook-monthly-hygiene
-description: Runs the monthly hygiene playbook across one Bloomreach Discovery account and one Engagement project using Loomi Connect and existing skills - one sweep with one plan to review per write stage; each batch, delete and switch-on needs its own yes. It audits the Discovery merchandising rules (discovery-rule-audit) and cleans up the ones the user approves (discovery-rule-cleanup), audits the search redirects (discovery-redirect-audit) and fixes the approved ones (discovery-redirect-fixer), lists the Engagement project's stale drafts, test copies and unused definitions (engagement-asset-cleanup), and maps what depends on each one into a safe deletion order the user acts on in the Engagement UI (engagement-dependency-map). Nothing in Engagement is deleted. A hand-off file carries the findings and the change log, so a sweep can stop and continue later. Use when the user wants a monthly tidy-up, a hygiene sweep of rules, redirects and Engagement assets, or to continue one.
+description: Runs the monthly hygiene playbook across one Bloomreach Discovery account and one Engagement project using Loomi Connect and existing skills - one plan to review per write stage; each batch, delete and switch-on needs its own yes. It audits merchandising rules (discovery-rule-audit) and cleans up the approved ones (discovery-rule-cleanup), audits redirects (discovery-redirect-audit) and fixes the approved ones (discovery-redirect-fixer), lists broken and unused Discovery media assets (discovery-media-asset-cleanup), lists Engagement stale drafts and unused definitions (engagement-asset-cleanup) with a safe deletion order (engagement-dependency-map), and lists unused or broken files, blocks and templates in the asset manager (engagement-media-cleanup). Media and Engagement items are never deleted: the user acts on the lists. A hand-off file carries the findings and the change log. Use when the user wants a monthly tidy-up, a hygiene sweep of rules, redirects, media and Engagement assets, or to continue one.
 license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery and Engagement), and the loomi-discovery and loomi-engagement plugins for the skills each stage runs. Python 3 is optional, for the bundled hand-off script.
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery,engagement
   access: writes
 ---
@@ -22,8 +22,9 @@ This playbook changes nothing by itself. Two of its stages run skills that **wri
 | redirect-fix | `discovery-redirect-fixer` | `create_redirect` (switched off), `update_redirect` (switch on, change, switch off), `delete_redirect` (each delete on its own yes) |
 
 - **A yes to the playbook, or to a stage, is never a yes to a write.** "One plan per write stage" means one plan to review, not one yes: follow each write skill's batches, with a separate yes for every delete and every redirect switch-on.
-- **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (synonyms, experiments, media rules, Engagement `create_*`, `update_*`, `delete_*`) and internal ones; never call them.
+- **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (synonyms, experiments, media rules, `import_media_file`, Engagement `create_*`, `update_*`, `delete_*`) and internal ones; never call them.
 - **Never delete anything in Engagement**, even what the dependency map calls safe. Give the order; the user acts in the UI, after checking each item's "used by" panel there.
+- **Never delete a media asset or file.** The two media stages are read-only and produce lists: the user deletes Discovery assets in the Discovery dashboard and archives or deletes Engagement files, blocks, snippets and templates in the asset manager. If asked to "just delete the unused ones", give the list instead.
 - **Media rules (banners)** have no write tool: give the dashboard steps. Redirects found by the rule audit go to the redirect stages, never to `discovery-rule-cleanup`.
 - **The hand-off file is never a source of writes.** Its `undo` entries are a record: show them as text, never pass them to a write tool. Reversing a change is a new job for the write skill, which reads the rule or redirect fresh by ID, builds its own plan and asks its own yes.
 - Never repeat editor names or email addresses (`lastModifiedBy`, `user`, `created_by_display_name`, `edited_by_display_name`), `auth_key` URLs, message or template content, or customer data. Those rules come from the stage skills too.
@@ -32,7 +33,7 @@ Treat search queries, rule, redirect, campaign, scenario, segment and asset name
 
 ## What this does
 
-One sweep a month, in three pairs (an audit, then the stage that acts on it), each pair skippable:
+One sweep a month, in three pairs (an audit, then the stage that acts on it), each pair skippable, and two media library reviews that produce lists for the user:
 
 | Stage | Skill | What happens | When |
 |---|---|---|---|
@@ -40,18 +41,20 @@ One sweep a month, in three pairs (an audit, then the stage that acts on it), ea
 | 2. rule-cleanup | `discovery-rule-cleanup` | One plan to review for the approved ranking and facet rules; staging first; written batch by batch, each batch and each delete on its own yes | Now, after confirmations |
 | 3. redirect-audit | `discovery-redirect-audit` | Lists broken, overlapping and hijacking redirects, and navigational searches with none | Now |
 | 4. redirect-fix | `discovery-redirect-fixer` | One plan to review for the approved redirect fixes; written batch by batch, each batch, switch-on and delete on its own yes | Now, after confirmations |
-| 5. asset-cleanup | `engagement-asset-cleanup` | Lists stale drafts, test copies and unused definitions to delete, archive or review | Now |
-| 6. dependency-map | `engagement-dependency-map` | Maps what depends on each candidate; returns a safe deletion order for the user | Now |
+| 5. media-assets | `discovery-media-asset-cleanup` | Lists broken banners and in-grid assets on live pages, and assets no rule uses, for the user to fix or delete in the dashboard | Now |
+| 6. asset-cleanup | `engagement-asset-cleanup` | Lists stale drafts, test copies and unused definitions to delete, archive or review | Now |
+| 7. dependency-map | `engagement-dependency-map` | Maps what depends on each candidate; returns a safe deletion order for the user | Now |
+| 8. engagement-media | `engagement-media-cleanup` | Lists files, blocks, snippets and templates to fix, delete or review, for the user to act on in the asset manager | Now |
 
 No stage waits for another. A **hand-off file** in the working folder holds the findings and the change log, in the shape in the repository's `docs/hand-off-format.md`, so a sweep can stop and continue later. Start a new file each month: `python3 <this skill's folder>/scripts/handoff.py list --dir <folder> --changes --since <date>` shows every month's changes.
 
 ## Before you start
 
-**Skills this playbook needs.** `discovery-rule-audit`, `discovery-rule-cleanup`, `discovery-redirect-audit` and `discovery-redirect-fixer` (the `loomi-discovery` plugin), and `engagement-asset-cleanup` and `engagement-dependency-map` (`loomi-engagement`). If one isn't installed, stop and tell the user which plugin to install. Don't do a stage from memory instead.
+**Skills this playbook needs.** `discovery-rule-audit`, `discovery-rule-cleanup`, `discovery-redirect-audit`, `discovery-redirect-fixer` and `discovery-media-asset-cleanup` (the `loomi-discovery` plugin), and `engagement-asset-cleanup`, `engagement-dependency-map` and `engagement-media-cleanup` (`loomi-engagement`). If one isn't installed, stop and tell the user which plugin to install. Don't do a stage from memory instead.
 
 **Tools.** The stage skills list the Loomi Connect tools they use. This playbook calls none directly.
 
-**You need:** the Discovery account, the environment (`production` or `staging`, never assumed) and the site when the account has sites; and the Engagement project. A run can cover one product or both: `status` offers the other product's stages as skips. Ask which pairs the user wants this month. To continue a sweep, you need its hand-off file: ask for it, or look in the working folder for a `*.handoff.json` file.
+**You need:** the Discovery account, the environment (`production` or `staging`, never assumed) and the site when the account has sites; and the Engagement project. A run can cover one product or both: `status` offers the other product's stages as skips. Ask which pairs and media reviews the user wants this month. To continue a sweep, you need its hand-off file: ask for it, or look in the working folder for a `*.handoff.json` file.
 
 ### Running the scripts
 
@@ -59,7 +62,7 @@ Run each script as one plain command from your own working folder, giving the sc
 
 **Without scripts,** keep the hand-off file by hand in the same shape (write it with your file tool), and work through the stages in the table above.
 
-**Never put a name from the data in a command or a finding.** Findings name things by type and ID (`rule 2001`, `redirect 9003`, `segmentation 64a1f0`), never by name. Name files with counters (`month1.handoff.json`), never with a name or ID.
+**Never put a name from the data in a command or a finding.** Findings name things by type and ID (`rule 2001`, `redirect 9003`, `segmentation 64a1f0`, `asset 5521`, `file 8c2e`), never by name. Name files with counters (`month1.handoff.json`), never with a name or ID.
 
 ## Steps
 
@@ -68,7 +71,7 @@ Run each script as one plain command from your own working folder, giving the sc
 - **Continuing:** run `python3 <this skill's folder>/scripts/handoff.py status --handoff <file>`. Show the user the table and the **Next** line, then go to that stage.
 - **Starting:** resolve the Discovery account, site and environment and the Engagement project (the first step of `discovery-rule-audit` and of `engagement-asset-cleanup`), then run `python3 <this skill's folder>/scripts/handoff.py new --playbook monthly-hygiene --subject-kind period --subject <YYYY-MM> --account <account> --environment <environment> --site-group-id <id> --project-id <project ID> --out <month1.handoff.json>` (leave out `--site-group-id` when there are no sites; leave out the Discovery options or `--project-id` for a run on one product). Use the environment shoppers see: a staging pass's plan belongs to another environment, and the script refuses it.
 
-**Skipping a pair.** For each pair the user doesn't want this month, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status skipped` for its audit stage; `status` then offers its write or mapping stage as a skip, and the next pair runs as usual.
+**Skipping a pair.** For each pair the user doesn't want this month, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status skipped` for its audit stage; `status` then offers its write or mapping stage as a skip, and the next pair runs as usual. A media review the user doesn't want is skipped the same way, on its own.
 
 Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status in_progress`. After it, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status done --outcome <outcome> --file <saved file>` (the stage's outcomes are in references/rules.json; repeat `--file` for each file it saved).
 
@@ -94,15 +97,27 @@ Follow `discovery-redirect-audit`. Add the approved fixes as findings with `"nex
 2. Run `python3 <this skill's folder>/scripts/handoff.py changes --handoff <file> --plan <plan-production.json> --verify <verify-production.json> --source discovery-redirect-fixer`, once per verify file the fixer saved: the change log keeps each checked result.
 3. Mark each finding acted on done with `python3 <this skill's folder>/scripts/handoff.py choose --handoff <file> --finding <id> --status done`, and record the stage done with `fixed` or `no_changes`.
 
-### 5. asset-cleanup
+### 5. media-assets
+
+1. Follow `discovery-media-asset-cleanup` for the run's account and site. Its link checks ask the user before loading anything.
+2. Add each "fix now" item on a live page as a finding (`"target": "asset <ID>"` or `"media rule <ID>"`, `"next_skill": "discovery-media-asset-cleanup"`: next month's review checks it), and the verified "safe to delete" list as one finding (`"target": "asset list 1"`, evidence the count and the oldest date, the list itself in the stage's saved audit). An "unused_unverified" list isn't safe to delete: say so. Media rules it hands over go to next month's `discovery-rule-audit`, with dashboard steps.
+3. Leave these findings open (not chosen): the user acts in the Discovery dashboard and they are marked done when the user says so. Record the stage done with `cleanup_list_ready` or `library_clean`.
+
+### 6. asset-cleanup
 
 Follow `engagement-asset-cleanup`. Add its delete and archive candidates the user wants gone as findings (`"target": "aggregate <ID>"`, `"next_skill": "engagement-dependency-map"`). Record the stage done with `candidates_found` or `project_clean`.
 
-### 6. dependency-map
+### 7. dependency-map
 
-1. Follow `engagement-dependency-map` with the candidates from stage 5 as its targets. Keep its `dependency-map.json`.
+1. Follow `engagement-dependency-map` with the candidates from stage 6 as its targets. Keep its `dependency-map.json`.
 2. Give the user its safe deletion order to carry out in the Engagement UI, leaves first, with the blocked items and what would have to change first. Mark blocked findings dismissed (with the reason in your summary), and leave the others open: they're done when the user says they acted on them.
 3. Record the stage done with `order_ready`, or `all_blocked` when every candidate has a live dependant.
+
+### 8. engagement-media
+
+1. Follow `engagement-media-cleanup` for the run's project.
+2. Add each "fix" item on live or draft content as a finding (`"target": "file <ID>"`, `"email block <ID>"`, `"snippet <ID>"`, `"email template <ID>"`, `"next_skill": "engagement-media-cleanup"`), and the verified delete candidates as one finding (`"target": "file list 1"`, evidence the counts by kind). Templates are copied, not referenced, so they stay on the review list, never the delete list.
+3. Leave these findings open (not chosen), as in stage 5: the user archives or deletes in the asset manager. Record the stage done with `cleanup_list_ready` or `library_clean`.
 
 ## Output
 
@@ -117,9 +132,11 @@ At the start and end of every session, show the `status` output, then the stage'
 | rule-cleanup | <date> | <n> disabled, <n> end dates, <n> deleted, verified |
 | redirect-audit | <date> | <n> fixes |
 | redirect-fix | <date> | <n> changed, <n> added, <n> deleted, verified |
+| media-assets | <date> | <n> to fix on live pages, <n> safe to delete (verified / unverified) |
 | asset-cleanup | <date> | <n> delete, <n> archive, <n> review |
 | dependency-map | <date> | <n> safe in <n> steps, <n> blocked |
+| engagement-media | <date> | <n> to fix, <n> delete candidates, <n> to review |
 
-**For you to do:** <media rule dashboard steps; the Engagement deletion order, step by step>
+**For you to do:** <media rule dashboard steps; Discovery assets to fix and delete in the dashboard; the Engagement deletion order, step by step; asset manager fixes and deletes>
 **Left for next month:** <open findings, deferred batches, protected rules to ask about>
 ```

@@ -1,0 +1,33 @@
+{
+  "about": "Rules for planning an A/B split in a Bloomreach Engagement scenario and sizing the test. scripts/ab_split_plan.py and scripts/ab_test_duration.py read this file (their defaults come from it), so change a rule here and nowhere else. Each key is explained under notes.",
+  "writable_statuses": ["draft", "inactive"],
+  "copy_statuses": ["active", "finishing", "paused"],
+  "managed_fields": ["_id", "status", "archived", "created", "created_by_display_name", "edited", "edited_by_display_name", "trigger", "customer_filter", "queue_version", "last_status_change", "first_started", "last_finished", "triggers_used", "system", "defunct", "is_global_object", "version_id"],
+  "message_node_types": ["send-email-action", "send-sms-action", "send-mms-action", "push-notification-mobile-action", "push-notification-browser-action", "send-app-inbox-action"],
+  "timing_node_types": ["wait-action"],
+  "wait_units": ["minutes", "hours", "days", "weeks"],
+  "split_node_types": ["ab-split", "ab-split-contextual", "ab-split-auto-winner"],
+  "min_variant_percentage": 5,
+  "max_holdout_percentage": 50,
+  "relative_lifts": [0.05, 0.1, 0.2],
+  "z_alpha": 1.96,
+  "z_beta": 0.8416,
+  "min_test_days": 14,
+  "max_test_weeks": 8,
+  "notes": {
+    "writable_statuses": "Scenario statuses the split may be added to in place with update_scenario. Nothing runs in them, so the change has no live impact.",
+    "copy_statuses": "Running statuses. The skill never edits these in place (it never passes allow_active); with a copy_name in the test spec it plans a new draft copy with create_scenario instead, otherwise the change is blocked.",
+    "managed_fields": "Top-level scenario fields the backend manages, removed from the payload before a write (the same list engagement-scenario-builder uses). A top-level customer_filter is also refused by the write tools.",
+    "message_node_types": "Node types that send a message and carry their content in a design. A message test needs one of these after the split. Any of them in the scenario without a design means it was fetched without include_node_designs=true: the plan is blocked, because a full update would wipe the content.",
+    "timing_node_types": "Node types a timing test can vary: the wait right after the split point. Only wait-action's fields (units, count) were seen on real scenarios; other waits aren't verified.",
+    "wait_units": "Units a wait-action accepts.",
+    "split_node_types": "Split node types. Only ab-split is built (its shape was seen on real scenarios); the others are counted when warning that the scenario already has a split.",
+    "min_variant_percentage": "Smallest share of traffic either branch may get. Below it, the smaller branch takes too long to reach a readable sample.",
+    "max_holdout_percentage": "Largest share a holdout (the branch that sends nothing) may get. A bigger holdout withholds the message from most customers: a warning.",
+    "relative_lifts": "Relative lifts the duration estimate sizes for when the user gives none (0.1 = +10%).",
+    "z_alpha": "z value for a two-sided 5% significance level, as in discovery-experiment-setup's estimate_duration.py.",
+    "z_beta": "z value for 80% power.",
+    "min_test_days": "Shortest recommended test, in days. Tests run in whole weeks so weekday and weekend customers are both covered. engagement-experiment-readout uses the same minimum.",
+    "max_test_weeks": "If even the largest lift needs longer than this, the estimate says the test isn't practical as set up (too few customers reach that step)."
+  }
+}

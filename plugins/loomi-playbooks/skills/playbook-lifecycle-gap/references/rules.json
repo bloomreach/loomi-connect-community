@@ -2,8 +2,10 @@
   "about": "Stages and timing for the lifecycle-gap playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
   "health_check_days": 14,
   "measure_after_days": 30,
+  "readout_after_days": 14,
   "wait_outcomes": [
-    "too_early_to_tell"
+    "too_early_to_tell",
+    "keep_running"
   ],
   "playbooks": {
     "lifecycle-gap": {
@@ -70,10 +72,43 @@
           ]
         },
         {
+          "name": "test",
+          "skill": "engagement-ab-test-setup",
+          "writes": true,
+          "do": "Optionally add an A/B split to the draft (a message, holdout or timing test) after its own yes, before QA so QA sees the split; record no_test, or skip the stage, when the user doesn't want a test.",
+          "outcomes": [
+            "split_added",
+            "no_test"
+          ],
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "no_gaps"
+              ],
+              "reason": "the find stage found no lifecycle flow missing or weak."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            }
+          ]
+        },
+        {
           "name": "qa",
           "skill": "scenario-qa",
           "writes": false,
-          "do": "QA the draft until it is GO; a NO-GO fix goes back through the adapt stage's write skill (engagement-scenario-builder), with its own yes, and is QA'd again. Then wait for the user to switch it on in the Engagement UI, record the day it started, and record the switch-on as a change (source engagement-ui).",
+          "do": "QA the draft, with its A/B split if the test stage added one, until it is GO; a NO-GO fix goes back through the adapt stage's write skill (engagement-scenario-builder), with its own yes, and is QA'd again. Then wait for the user to switch it on in the Engagement UI, record the day it started, and record the switch-on as a change (source engagement-ui).",
           "outcomes": [
             "started",
             "not_launched"
@@ -144,6 +179,63 @@
                 "not_launched"
               ],
               "reason": "the flow was never switched on."
+            }
+          ]
+        },
+        {
+          "name": "ab-read-out",
+          "skill": "engagement-experiment-readout",
+          "writes": false,
+          "do": "Read out the test stage's split on its agreed primary metric: call the winner, keep it running until a later date, or stop as inconclusive. The user acts on the verdict in the Engagement UI.",
+          "outcomes": [
+            "winner_called",
+            "inconclusive",
+            "keep_running"
+          ],
+          "not_before": {
+            "after_stage": "qa",
+            "days": "readout_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "find",
+              "outcomes": [
+                "no_gaps"
+              ],
+              "reason": "the find stage found no lifecycle flow missing or weak."
+            },
+            {
+              "stage": "launch",
+              "outcomes": [
+                "stopped"
+              ],
+              "reason": "the user stopped before any flow was made."
+            },
+            {
+              "stage": "adapt",
+              "outcomes": [
+                "not_built"
+              ],
+              "reason": "no flow was built."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the flow was never switched on."
+            },
+            {
+              "stage": "test",
+              "outcomes": [
+                "no_test"
+              ],
+              "reason": "no A/B split was added, so there is no test to read out."
+            },
+            {
+              "stage": "test",
+              "skipped": true,
+              "reason": "the test stage was skipped, so there is no test to read out."
             }
           ]
         },
@@ -243,7 +335,8 @@
   "notes": {
     "health_check_days": "Days after the qa stage finishes (the day the user switched the flow on) before the health stage is due. engagement-journey-health compares two 14-day halves; a flow younger than that can look quiet for good reasons.",
     "measure_after_days": "Days after the flow started before the performance and impact stages are due. engagement-scenario-performance reads the last 30 days by default, and change-impact-tracker needs about 14 days after a change for a verdict other than too early to tell; 30 gives both a full month of a flow that fires on behaviour.",
-    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes; skips don't cascade, so each stage lists every earlier outcome that ends the run). The adapt stage is not in the original proposal: scenario-template-launcher never edits the clone and hands step changes, and flows with nothing to clone, to engagement-scenario-builder. The impact stage is added because engagement-scenario-performance counts buyers, not revenue; change-impact-tracker measures before and after, as there is no Engagement A/B setup skill."
+    "readout_after_days": "Days after the flow started (the qa stage's done date) before the ab-read-out stage is due. engagement-ab-test-setup sizes a test in whole weeks and never below its min_test_days, which engagement-experiment-readout uses too; 14 matches that minimum. When the test stage agreed a later end date, the readout says keep running: record keep_running with that date.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then. keep_running is the ab-read-out stage's wait, when the test needs more customers or days; inconclusive is its way out when the test never reaches its sample.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes; skips don't cascade, so each stage lists every earlier outcome that ends the run). The adapt stage is not in the original proposal: scenario-template-launcher never edits the clone and hands step changes, and flows with nothing to clone, to engagement-scenario-builder. The impact stage is added because engagement-scenario-performance counts buyers, not revenue; change-impact-tracker measures the whole flow before and after, against a control. The test stage is optional: engagement-ab-test-setup adds an A/B split (a message, holdout or timing test) to the draft before the qa stage, so scenario-qa checks the split too, and records its write from its plan and verify files. When the user doesn't want a test, they skip the stage (or it records no_test), and status then offers ab-read-out as a skip. ab-read-out (engagement-experiment-readout) reads the split out before the performance and impact stages, so the controlled answer comes first."
   }
 }

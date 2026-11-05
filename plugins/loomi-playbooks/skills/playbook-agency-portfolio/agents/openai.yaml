@@ -1,0 +1,6 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Agency Portfolio"
+  short_description: "Score every client Engagement project, check the weakest, and name the playbook to start or resume for each"
+policy:
+  allow_implicit_invocation: true

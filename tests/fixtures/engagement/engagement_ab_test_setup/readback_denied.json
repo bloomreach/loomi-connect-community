@@ -1,0 +1,6 @@
+{
+ "result": {
+  "success": false,
+  "error": "Project 'x' not found in any organization"
+ }
+}

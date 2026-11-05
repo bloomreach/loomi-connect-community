@@ -1,0 +1,38 @@
+{
+  "about": "Stages and timing for the onsite-test playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "min_test_days": 14,
+  "wait_outcomes": ["keep_running"],
+  "playbooks": {
+    "onsite-test": {
+      "title": "On-site test",
+      "product": "engagement",
+      "stages": [
+        {"name": "find", "skill": "onsite-experience-audit", "writes": false,
+         "do": "Audit the project's weblayers and web experiments, add the ones worth testing (never tested, poor results) as findings, and ask the user which to test.",
+         "outcomes": ["finding_chosen", "nothing_to_test"]},
+        {"name": "build", "skill": "engagement-weblayer-builder", "writes": false,
+         "do": "Write the challenger's weblayer code for the user to paste into an inactive copy of the weblayer (or a new inactive weblayer) in the Engagement UI, with the Smart triggering conditions to set.",
+         "outcomes": ["code_ready", "not_built"],
+         "skip_when": [{"stage": "find", "outcomes": ["nothing_to_test"], "reason": "the find stage found nothing worth testing."}]},
+        {"name": "qa", "skill": "engagement-weblayer-qa", "writes": false,
+         "do": "QA the inactive weblayer until it is GO; a NO-GO fix goes back through the build stage's skill (engagement-weblayer-builder) and the user pastes it. Then wait for the user to launch the A/B test in the Engagement UI, record the day it started, and record the launch as a change (source engagement-ui).",
+         "outcomes": ["launched", "not_launched"],
+         "skip_when": [{"stage": "find", "outcomes": ["nothing_to_test"], "reason": "the find stage found nothing worth testing."},
+                       {"stage": "build", "outcomes": ["not_built"], "reason": "no challenger was built."}]},
+        {"name": "read-out", "skill": "engagement-experiment-readout", "writes": false,
+         "do": "Read the test's result on the agreed metric. Don't stop early on a good-looking day.",
+         "outcomes": ["winner", "no_winner", "keep_running"],
+         "not_before": {"after_stage": "qa", "days": "min_test_days"},
+         "skip_when": [{"stage": "find", "outcomes": ["nothing_to_test"], "reason": "the find stage found nothing worth testing."},
+                       {"stage": "build", "outcomes": ["not_built"], "reason": "no challenger was built."},
+                       {"stage": "qa", "outcomes": ["not_launched"], "reason": "the test was never launched."},
+                       {"stage": "qa", "skipped": true, "reason": "the qa stage was skipped, so no launch was recorded."}]}
+      ]
+    }
+  },
+  "notes": {
+    "min_test_days": "Days after the qa stage finishes (the day the user launched the test) before the read-out is due. engagement-experiment-readout calls a winner only after at least 14 days in whole weeks; use the planned end date when it's later.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then. no_winner is the way out of a test that never becomes conclusive.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or with skipped: true when it was skipped; skips don't cascade, so each stage lists every earlier outcome that ends the run). Every stage skill is read-only: engagement-weblayer-builder returns code the user pastes, and the user creates the weblayer copy, sets the split and launches it in the Engagement UI, so the playbook is read-only and the launch is recorded as a change with source engagement-ui. The test is the weblayer's own A/B split (challenger against the original, or a Control group); engagement-experiment-readout reads weblayer splits from banner events when asked, and web experiments from search_experiments. The find stage can be skipped when the user brings their own test idea. A scenario A/B test can be set up with engagement-ab-test-setup when the change is a message rather than an on-site experience; it isn't a stage."
+  }
+}

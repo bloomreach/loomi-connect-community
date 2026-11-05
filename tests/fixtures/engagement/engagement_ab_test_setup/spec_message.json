@@ -1,0 +1,20 @@
+{
+ "test": "message",
+ "scenario_id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+ "edge": {
+  "from_node": 1,
+  "from_output": 1,
+  "to_node": 2
+ },
+ "split_name": "A/B: cart reminder discount",
+ "control": {
+  "name": "Control",
+  "percentage": 50
+ },
+ "variant": {
+  "name": "Discount",
+  "percentage": 50
+ },
+ "metric": "conversion",
+ "planned_end": "2026-12-03"
+}

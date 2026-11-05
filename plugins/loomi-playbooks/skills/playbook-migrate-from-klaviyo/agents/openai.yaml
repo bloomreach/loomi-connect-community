@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Migrate from Klaviyo"
+  short_description: "Move Klaviyo emails into Engagement, QA them, then rebuild the first missing flow ready to switch on"
+policy:
+  # Writes skill: its convert, launch and adapt stages upload images and create Engagement scenarios, so it only runs when called by name.
+  allow_implicit_invocation: false

@@ -1,7 +1,7 @@
 {
   "name": "loomi-playbooks",
-  "version": "0.2.0",
-  "description": "Playbooks that chain Loomi Connect skills into one job, from finding a problem to fixing, testing and measuring it, with a hand-off file that carries results between stages and sessions: test and learn, findability, search demand to revenue, lifecycle gaps, catalog truth, revenue drops, peak events, weekly triage, quarter close and more.",
+  "version": "0.3.0",
+  "description": "Playbooks that chain Loomi Connect skills into one job, from finding a problem to fixing, testing and measuring it, with a hand-off file that carries results between stages and sessions: test and learn, fix one search, findability, facets, ranking algorithms, search demand to revenue, lifecycle gaps, second purchase, on-site tests, catalog truth, revenue drops, peak events, governance, weekly triage, quarter close and more.",
   "author": {
     "name": "Bloomreach and contributors"
   },

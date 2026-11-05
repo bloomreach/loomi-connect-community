@@ -209,6 +209,10 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. Every ite
 - `search_discovery_catalog_jobs` ignores `status="failure"`. **(bug?)**
 - `get_pixel_health_status` over a long window can return empty `top_issues` even when the issue rate is 100%.
 
+- Ranking algorithms can be A/B tested: `create_ranking_rule` and `create_ranking_rule_variant` take `ranking_algo_id`, and `ranking_algo` rules and their variants can be experiment buckets (`ruleIdentifierInfo.ruleType: "ranking_algo"`), as can global `algo` rules. The rule-list tools leave `ranking_algo` rules out: find them in the product grid's `customizations.explain`. A variant's parent can't have an audience or schedule, and `enabled` is forced false on a new variant (the `discovery-merchandising` guide). Unverified: whether a rule created with only `ranking_algo_id` reads back as `ruleType` `ranking_algo` (check `customizationItems.ranking_algo.id` with `get_ranking_rule`).
+- `get_ranking_rule` on a draft experiment's deleted bucket rule raises a 404 tool error whose text includes an internal URL: pass it through URL redaction.
+- `search_discovery_experiments`: `user` can be a display name, not only an email. Never repeat it.
+
 ## Engagement
 
 **EQL**
@@ -388,3 +392,7 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. Every ite
 
 **Project variables**
 - **`list_project_variables` describes the Jinja syntax wrongly.** Its description says `{{ project_variable.reference }}`, but the Bloomreach docs use `{{ project_variables.reference }}` (plural). Values come back as strings, even ones that look like booleans or numbers (`"false"`, `"1"`).
+
+- `ab-split-auto-winner` nodes: one saved node had variant ids 1, 3 and 4 while its connections used `connector_index` 1, 2 and 3, so outputs follow position, not id (unlike `ab-split`, numbered by variant id). Copy an existing node rather than building one.
+- `search_scenarios` without `include_node_designs`: the `design` key is missing entirely from `send-email-action` nodes (not null). A write built from that response would drop the message: fetch with designs before any update.
+- The `scenario-write-best-practices` guide's wait-action example uses `value`; saved nodes use `count`.

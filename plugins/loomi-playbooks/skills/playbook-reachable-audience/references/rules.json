@@ -1,0 +1,51 @@
+{
+  "about": "Stages and timing for the reachable-audience playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "min_test_days": 14,
+  "recheck_after_days": 60,
+  "wait_outcomes": ["keep_running", "too_early_to_tell"],
+  "playbooks": {
+    "reachable-audience": {
+      "title": "Reachable audience",
+      "product": "engagement",
+      "stages": [
+        {"name": "reach", "skill": "contactability-audit", "writes": false,
+         "do": "Measure how much of the base can be reached by channel, the consent gap and the monthly opt-ins against opt-outs, as the baseline; add the gaps as findings and ask the user which channel to grow.",
+         "outcomes": ["gap_chosen", "reach_ok"]},
+        {"name": "on-site", "skill": "onsite-experience-audit", "writes": false,
+         "do": "Check whether a capture form (newsletter or phone sign-up weblayer) already runs, whether it was ever tested, and what else shows on the same pages.",
+         "outcomes": ["no_capture_form", "capture_form_found"],
+         "skip_when": [{"stage": "reach", "outcomes": ["reach_ok"], "reason": "the reach stage found no consent gap worth closing."}]},
+        {"name": "build", "skill": "engagement-weblayer-builder", "writes": false,
+         "do": "Write the capture form's weblayer code (or a challenger to the existing form), recording consent the way the project does, for the user to paste into an inactive weblayer in the Engagement UI.",
+         "outcomes": ["code_ready", "not_built"],
+         "skip_when": [{"stage": "reach", "outcomes": ["reach_ok"], "reason": "the reach stage found no consent gap worth closing."}]},
+        {"name": "qa", "skill": "engagement-weblayer-qa", "writes": false,
+         "do": "QA the inactive weblayer until it is GO; a NO-GO fix goes back through the build stage's skill (engagement-weblayer-builder) and the user pastes it. Then wait for the user to launch it as an A/B test in the Engagement UI, record the day it started, and record the launch as a change (source engagement-ui).",
+         "outcomes": ["launched", "not_launched"],
+         "skip_when": [{"stage": "reach", "outcomes": ["reach_ok"], "reason": "the reach stage found no consent gap worth closing."},
+                       {"stage": "build", "outcomes": ["not_built"], "reason": "no capture form was built."}]},
+        {"name": "read-out", "skill": "engagement-experiment-readout", "writes": false,
+         "do": "Read the capture test's result on sign-ups. Don't stop early on a good-looking day.",
+         "outcomes": ["winner", "no_winner", "keep_running"],
+         "not_before": {"after_stage": "qa", "days": "min_test_days"},
+         "skip_when": [{"stage": "reach", "outcomes": ["reach_ok"], "reason": "the reach stage found no consent gap worth closing."},
+                       {"stage": "build", "outcomes": ["not_built"], "reason": "no capture form was built."},
+                       {"stage": "qa", "outcomes": ["not_launched"], "reason": "the form was never launched."},
+                       {"stage": "qa", "skipped": true, "reason": "the qa stage was skipped, so no launch was recorded."}]},
+        {"name": "recheck", "skill": "contactability-audit", "writes": false,
+         "do": "Run the audit again with the baseline's base and categories: did reach on the chosen channel and the monthly opt-ins grow since the launch?",
+         "outcomes": ["reach_grew", "no_clear_change", "reach_fell", "too_early_to_tell"],
+         "not_before": {"after_stage": "qa", "days": "recheck_after_days"},
+         "skip_when": [{"stage": "reach", "outcomes": ["reach_ok"], "reason": "the reach stage found no consent gap worth closing."},
+                       {"stage": "build", "outcomes": ["not_built"], "reason": "no capture form was built."},
+                       {"stage": "qa", "outcomes": ["not_launched"], "reason": "the form was never launched."}]}
+      ]
+    }
+  },
+  "notes": {
+    "min_test_days": "Days after the qa stage finishes (the day the user launched the form) before the read-out is due. engagement-experiment-readout calls a winner only after at least 14 days in whole weeks; use the planned end date when it's later.",
+    "recheck_after_days": "Days after the launch before the recheck is due. contactability-audit reads consent changes by calendar month, so about 60 days gives at least one full month after the launch to set against the baseline's months.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then. no_winner and no_clear_change are the ways out when the wait never gives an answer.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or with skipped: true when it was skipped; skips don't cascade, so each stage lists every earlier outcome that ends the run). Every stage skill is read-only: engagement-weblayer-builder returns code the user pastes, and the user creates the weblayer, sets the split and launches it in the Engagement UI, so the playbook is read-only and the launch is recorded as a change with source engagement-ui. The test is the weblayer's own A/B split (the new form against a Control group, or a challenger against the existing form); engagement-experiment-readout reads weblayer splits from banner events when asked. The on-site stage decides between a new form and a challenger to an existing one. A capture form grows reach only among visitors; re-permission for people with an address but no consent is a message, built outside this run (engagement-segment-builder, then a campaign), and a scenario A/B test can be set up with engagement-ab-test-setup for it; it isn't a stage."
+  }
+}

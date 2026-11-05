@@ -1,0 +1,43 @@
+{
+  "about": "Stages for the migrate-from-klaviyo playbook. scripts/handoff.py reads this file: the stages it tracks and the outcomes each stage can record. No stage waits on another, so there are no timing keys. Each key is explained under notes.",
+  "playbooks": {
+    "migrate-from-klaviyo": {
+      "title": "Migrate from Klaviyo",
+      "product": "engagement",
+      "stages": [
+        {"name": "convert", "skill": "convert-klaviyo-email-to-bloomreach", "writes": true,
+         "do": "Convert the Klaviyo email exports to Bloomreach Jinja and Visual Builder emails, rehost their images and push each one as a draft scenario, after the write plan's own yes.",
+         "outcomes": ["migrated", "migrated_with_gaps", "not_migrated"]},
+        {"name": "jinja", "skill": "engagement-jinja-writer", "writes": false,
+         "do": "Write the Jinja the converter's report left for attention (unmapped properties, cart loops without an aggregate, codes to move to a voucher pool), for the user to paste into the Visual Builder.",
+         "outcomes": ["jinja_written", "nothing_needed"],
+         "skip_when": [{"stage": "convert", "outcomes": ["not_migrated"], "reason": "no email was migrated."}]},
+        {"name": "qa-emails", "skill": "scenario-qa", "writes": false,
+         "do": "QA each migrated draft scenario's email: links, Jinja, compliance and deliverability. A NO-GO fix is made by the user in the Visual Builder (with engagement-jinja-writer for Jinja) or by the convert stage's write skill on a draft it created in that session, and is QA'd again.",
+         "outcomes": ["all_go", "fixes_open"],
+         "skip_when": [{"stage": "convert", "outcomes": ["not_migrated"], "reason": "no email was migrated."}]},
+        {"name": "coverage", "skill": "lifecycle-coverage-map", "writes": false,
+         "do": "Map the project's lifecycle flows against the flows the old Klaviyo account ran; the ones missing here (or only a migrated single-email draft) become findings; ask the user which to rebuild first.",
+         "outcomes": ["gap_chosen", "no_gaps"]},
+        {"name": "launch", "skill": "scenario-template-launcher", "writes": true,
+         "do": "Clone a proven scenario for the chosen flow as a draft after its own yes, or find there is nothing to clone, or that the migrated draft is the flow to build on.",
+         "outcomes": ["cloned", "no_source", "existing_flow", "stopped"],
+         "skip_when": [{"stage": "coverage", "outcomes": ["no_gaps"], "reason": "every flow the old account ran exists here."}]},
+        {"name": "adapt", "skill": "engagement-scenario-builder", "writes": true,
+         "do": "Make the draft a working flow: the waits and the did-not-purchase conditions a migrated flow email needs, the launch fix list's changes, or the whole flow from an outline, each after its own yes.",
+         "outcomes": ["built", "changed", "no_changes_needed", "not_built"],
+         "skip_when": [{"stage": "coverage", "outcomes": ["no_gaps"], "reason": "every flow the old account ran exists here."},
+                       {"stage": "launch", "outcomes": ["stopped"], "reason": "the user stopped before any flow was made."}]},
+        {"name": "qa-flow", "skill": "scenario-qa", "writes": false,
+         "do": "QA the flow until it is GO; a NO-GO fix goes back through the adapt stage's write skill (engagement-scenario-builder), with its own yes, and is QA'd again. Then wait for the user to switch it on in the Engagement UI, and record the switch-on as a change (source engagement-ui).",
+         "outcomes": ["started", "not_launched"],
+         "skip_when": [{"stage": "coverage", "outcomes": ["no_gaps"], "reason": "every flow the old account ran exists here."},
+                       {"stage": "launch", "outcomes": ["stopped"], "reason": "the user stopped before any flow was made."},
+                       {"stage": "adapt", "outcomes": ["not_built"], "reason": "no flow was built."}]}
+      ]
+    }
+  },
+  "notes": {
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, and skip_when (suggest skipping when another stage had one of these outcomes; skips don't cascade, so each stage lists every earlier outcome that ends the run). Changes from the first sketch: the email QA uses scenario-qa, not campaign-qa, because convert-klaviyo-email-to-bloomreach pushes each email as a draft scenario (campaign-qa is for a raw-HTML email campaign, which the converter makes only when asked); and an adapt stage (engagement-scenario-builder) sits between launch and qa-flow, because the launcher never edits its clone and a migrated flow email is one trigger and one email, with no wait or did-not-purchase condition. engagement-jinja-writer writes code the user pastes into the Visual Builder: the Visual Builder design is the email, so Jinja pasted only into the HTML is lost on the next save. The run ends when the first rebuilt flow is switched on; measuring it is a playbook-lifecycle-gap run. A scenario A/B test can be set up with engagement-ab-test-setup to compare a rebuilt flow with the old Klaviyo timing; it isn't a stage."
+  }
+}
