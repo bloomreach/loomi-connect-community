@@ -1,6 +1,6 @@
 # Playbook: monthly hygiene
 
-One monthly sweep across a Discovery account and an Engagement project, by running six existing skills in three pairs: audit the merchandising rules and clean up the approved ones, audit the search redirects and fix the approved ones, then list the Engagement project's stale drafts, test copies and unused definitions and map what depends on them into a safe deletion order you act on in the Engagement UI. Each write stage builds one plan for you to review. A hand-off file in your working folder holds the findings and the change log, so a sweep can stop and continue later, and each month's file shows what was cleaned.
+One monthly sweep across a Discovery account and an Engagement project, by running six existing skills in three pairs: audit the merchandising rules and clean up the approved ones, audit the search redirects and fix the approved ones, then list the Engagement project's stale drafts, test copies and unused definitions and map what depends on them into a safe deletion order you act on in the Engagement UI. Each write stage builds one plan for you to review; each batch, delete and switch-on still needs its own "yes". A hand-off file in your working folder holds the findings and the change log, so a sweep can stop and continue later, and each month's file shows what was cleaned.
 
 | | |
 |---|---|

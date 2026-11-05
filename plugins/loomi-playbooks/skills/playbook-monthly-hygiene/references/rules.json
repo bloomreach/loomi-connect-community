@@ -20,7 +20,7 @@
           "name": "rule-cleanup",
           "skill": "discovery-rule-cleanup",
           "writes": true,
-          "do": "Build one cleanup plan from the findings the user approves, then write it batch by batch, each after its own yes, with each delete on its own.",
+          "do": "Build one cleanup plan for the user to review from the findings they approve, then write it batch by batch, each after its own yes, with each delete on its own.",
           "outcomes": [
             "cleaned_up",
             "no_changes"
@@ -56,7 +56,7 @@
           "name": "redirect-fix",
           "skill": "discovery-redirect-fixer",
           "writes": true,
-          "do": "Build one redirect plan from the fixes the user approves, then write it batch by batch, each after its own yes, with each switch-on and delete on its own.",
+          "do": "Build one redirect plan for the user to review from the fixes they approve, then write it batch by batch, each after its own yes, with each switch-on and delete on its own.",
           "outcomes": [
             "fixed",
             "no_changes"

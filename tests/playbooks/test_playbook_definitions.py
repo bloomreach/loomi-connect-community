@@ -60,12 +60,14 @@ class PlaybookDefinitionsTest(unittest.TestCase):
                     if nb:
                         self.assertIn(nb["after_stage"], names[:i], "not_before must follow an earlier stage")
                         self.assertIsInstance(rules.get(nb["days"]), int, f"{nb['days']} must be a number in rules.json")
-                    for cond in s.get("skip_when", []):
-                        self.assertIn(cond["stage"], names[:i], "skip_when must look at an earlier stage")
-                        other = next(x for x in stages if x["name"] == cond["stage"])
-                        self.assertTrue(cond.get("skipped") is True or cond.get("outcomes"), "skip_when needs outcomes or skipped")
-                        self.assertLessEqual(set(cond.get("outcomes", [])), set(other["outcomes"]))
-                        self.assertTrue(cond["reason"])
+                    for entry in s.get("skip_when", []):
+                        self.assertTrue(entry["reason"])
+                        for cond in entry.get("all", [entry]):
+                            self.assertIn(cond["stage"], names[:i], "skip_when must look at an earlier stage")
+                            other = next(x for x in stages if x["name"] == cond["stage"])
+                            self.assertTrue(cond.get("skipped") is True or cond.get("outcomes"),
+                                            "skip_when needs outcomes or skipped")
+                            self.assertLessEqual(set(cond.get("outcomes", [])), set(other["outcomes"]))
                 self.assertLessEqual(set(rules.get("wait_outcomes", [])), outcomes)
                 writes = any(s["writes"] for s in stages)
                 fm = frontmatter(pb / "SKILL.md")

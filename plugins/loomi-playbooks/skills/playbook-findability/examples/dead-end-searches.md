@@ -13,7 +13,7 @@ The triage confirms 9 dead-end searches from the grid. Each query goes in a numb
 - F4 (open, low): query file 4 redirect candidate; 120 sessions. Next: discovery-redirect-fixer
 ```
 
-The audit scores the 400 products in the categories those searches point at: 61 titles miss the shoppers' word for the product type. The enhancer writes suggestions for the first 20 (batch 1 of 4) as `suggestions.csv` for the feed team. The config audit finds `product_type` isn't searchable: a dashboard setting for the user, recorded as a finding.
+The audit scores the 400 products in the categories those searches point at: 61 titles miss the shoppers' word for the product type. The enhancer writes suggestions for the first 20 (batch 1 of 4) as `suggestions.csv` for the feed team. The config audit finds `product_type` isn't searchable: a dashboard setting for the user. Its name goes in `attribute-1.txt`, and the finding names it as `attribute file 1`.
 
 F1 and F2 are chosen. `discovery-synonym-fixer` runs once for each, with its own plan: a one-way synonym, previewed (GO), created switched off on one yes and switched on with another. Each plan's verify file goes into the change log with `--finding`, and the new synonym's ID comes from the verify result:
 

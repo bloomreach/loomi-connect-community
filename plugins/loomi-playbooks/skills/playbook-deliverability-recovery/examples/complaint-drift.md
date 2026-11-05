@@ -12,7 +12,7 @@ The trend stage finds complaint drift: the last four weeks pooled at 0.14% again
 - F3 (open, low): channel sms consent gap; 22% with a phone have no SMS consent. Next: engagement-segment-builder
 ```
 
-The user sets a 3-a-week cap in Engagement the same day (F2 done). `scenario-template-launcher` finds no sunset flow to clone (`no_source`); `engagement-scenario-builder` builds one from the outline after its yes (C1, create `scenario 6a3c00000000000000000003`). `scenario-qa`: GO. The user switches it on on 6 November.
+The user sets a 3-a-week cap in Engagement the same day (F2 done). `scenario-template-launcher` finds no sunset flow to clone (`no_source`); `engagement-scenario-builder` builds one from the outline after its yes (C1, create `scenario 6a3c00000000000000000003`). `scenario-qa`: GO. The user switches it on on 6 November, recorded as the qa stage's start date and as a change from `engagement-ui` (C2, start `scenario 6a3c00000000000000000003`, live on 2026-11-06).
 
 ```
 **Next:** recheck with deliverability-trend, not before 2026-12-04.

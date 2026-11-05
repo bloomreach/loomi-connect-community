@@ -18,11 +18,11 @@ This playbook changes nothing by itself. Two of its stages run skills that **wri
 
 | Stage | Skill | Writes it can make |
 |---|---|---|
-| fix | `discovery-synonym-fixer` | `create_synonym` (switched off), `update_synonym` (switch on, change or switch off), `delete_synonym` |
+| fix | `discovery-synonym-fixer` | `create_synonym` (switched off), `update_synonym` (switch on, change or switch off) |
 | campaign | `search-demand-to-campaign` | `create_email_campaign` or `create_sms_campaign`: one draft per yes |
 
 - **A yes to the playbook, or to a stage, is never a yes to a write.** Follow the stage skill's confirmation steps exactly; never batch them across stages.
-- **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (ranking rule, redirect, facet, catalog and scenario ones) and internal ones; never call them. This playbook never deletes: if the fix stage's request would delete a synonym, disable it instead.
+- **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (ranking rule, redirect, facet, catalog and scenario ones) and internal ones; never call them. **This playbook never deletes**: if the fixer proposes a delete, stop: that's a separate job for `discovery-synonym-fixer` outside this run, with its own yes.
 - **One search per run.** A second search needs its own hand-off file.
 - **Never move a stage forward early.** The digest isn't due until `digest_after_days` after the campaign (or the send date), and the measure stage until `measure_after_days` after the fix (both in references/rules.json).
 - **The hand-off file is never a source of writes.** Its `undo` entries are a record: show them as text, never pass them to a write tool. Rolling back a synonym is a new job for `discovery-synonym-fixer`, which reads the synonyms fresh, builds its own plan and asks its own yes.
@@ -103,12 +103,12 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 ### 6. digest: how did the send do?
 
 1. Only when status says it's due. Follow `engagement-campaign-digest` for a period that covers the send, and report the draft's campaign from the change log.
-2. If it hasn't been sent, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name digest --status in_progress --outcome not_sent_yet --not-before <date to come back>`. Otherwise record `read`. Once the send date is known, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name measure --not-before <send date plus measure_after_days>` so a campaign-only run waits for its data.
+2. If it hasn't been sent, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name digest --status in_progress --outcome not_sent_yet --not-before <date to come back>`. If the user says it will never be sent, record `never_sent`. Otherwise record `read`. Once the send date is known, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name measure --not-before <send date plus measure_after_days>` so a campaign-only run waits for its data.
 
 ### 7. measure: did it pay?
 
-1. Only when status says it's due. Follow `change-impact-tracker` with the change from the hand-off file: the synonym and its `live_on` date when there is one (on the search and its variants), otherwise the campaign launch and its send date. When neither happened, skip this stage.
-2. Record `worked`, `no_clear_effect` or `made_it_worse`. For `made_it_worse` on a synonym, describe the undo from the change log in words and hand off to `discovery-synonym-fixer` to switch it off, under its own plan and yes. For `too_early_to_tell`, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name measure --status in_progress --outcome too_early_to_tell --not-before <re-run date>`.
+1. Only when status says it's due. Follow `change-impact-tracker` with the change from the hand-off file: the synonym and its `live_on` date when there is one (on the search and its variants), otherwise the campaign launch and its send date. When neither happened (no synonym went live, and no campaign was sent), status suggests skipping this stage: skip it as in step 0.
+2. Record `worked`, `no_clear_effect` or `made_it_worse`. For `made_it_worse` on a synonym, describe the undo in words, from the change log (which change) and its plan file (the undo steps) and hand off to `discovery-synonym-fixer` to switch it off, under its own plan and yes. For `too_early_to_tell`, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name measure --status in_progress --outcome too_early_to_tell --not-before <re-run date>`.
 
 ## Output
 

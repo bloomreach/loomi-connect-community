@@ -5,7 +5,7 @@ Takes one site-search signal and makes it pay twice: it fixes the site so the se
 | | |
 |---|---|
 | **Products** | Discovery and Engagement (Engagement optional: without it, no campaign) |
-| **Access** | **Writes**, through its stage skills only: `discovery-synonym-fixer` creates a synonym switched off and switches it on (live for every shopper after the next sync); `search-demand-to-campaign` creates one email or SMS campaign draft, which sends nothing until a person activates it. Each write only after its own explicit "yes" |
+| **Access** | **Writes**, through its stage skills only: `discovery-synonym-fixer` creates a synonym switched off and switches it on (live for every shopper after the next sync); `search-demand-to-campaign` creates one email or SMS campaign draft, which sends nothing until a person activates it. Each write only after its own explicit "yes". This playbook never deletes: if the synonym fixer proposes a delete, it stops, and the delete is a separate job for `discovery-synonym-fixer` outside the run, with its own yes |
 | **Loomi Connect tools** | Those of its stage skills. Writes: `create_synonym`, `update_synonym`, `create_email_campaign`, `create_sms_campaign` |
 | **Other requirements** | The `loomi-discovery`, `loomi-engagement` and `loomi-platform` plugins. Python 3 for `scripts/handoff.py` (standard library only); the hand-off file can also be kept by hand |
 | **Tested with** | Claude Code: definitions and script tests. Not yet run end to end |

@@ -34,7 +34,7 @@ It changes nothing. Each problem a stage finds becomes a finding with the skill 
 
 **Tools.** The stage skills list the Loomi Connect tools they use. This playbook calls none directly.
 
-**You need:** the event's name, its **start and end dates**, the markets, the Discovery account, the environment (`production` or `staging`, never assumed), the site when the account has sites, and the Engagement project of the same business. A customer with only one of the two products gives that one: `status` then offers to skip the other product's stages (collections and review need Discovery; vouchers, preflight and collisions need Engagement). To continue a run, you need its hand-off file: ask for it, or look in the working folder for a `*.handoff.json` file.
+**You need:** the event's name, its **start and end dates**, the markets, the Discovery account, the environment (`production` or `staging`, never assumed), the site when the account has sites, and the Engagement project of the same business. A customer with only one of the two products gives that one: `status` then offers to skip the other product's stages (collections and review need Discovery; plan, vouchers, preflight and collisions need Engagement, since `campaign-planner` reads the Engagement campaign calendar). To continue a run, you need its hand-off file: ask for it, or look in the working folder for a `*.handoff.json` file.
 
 ### Running the scripts
 

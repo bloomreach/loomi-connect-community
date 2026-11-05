@@ -157,6 +157,42 @@
                 "within_normal"
               ],
               "reason": "the change is within normal variation: there is no incident to chase."
+            },
+            {
+              "all": [
+                {
+                  "stage": "rollback",
+                  "outcomes": [
+                    "kept"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "feeds",
+                  "outcomes": [
+                    "feeds_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "api",
+                  "outcomes": [
+                    "api_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "journeys",
+                  "outcomes": [
+                    "journeys_ok",
+                    "ruled_out"
+                  ],
+                  "skipped": true
+                }
+              ],
+              "reason": "no rule was rolled back and the feeds, API and journeys checks found nothing to fix, so there is no fix to measure. If a fix landed elsewhere, set the recovery date with stage --not-before instead."
             }
           ]
         }
@@ -166,6 +202,6 @@
   "notes": {
     "recovery_check_days": "Days after the rollback stage finishes before the recovery stage is due. A week gives a whole weekday cycle after the fix, and Discovery reporting runs about 2 days behind. When the fix was a feed or flow repair outside this run, or the rollback was skipped, record the fix date plus this on the recovery stage with stage --not-before.",
     "wait_outcomes": "Outcomes that mean a stage isn't finished yet: the recovery stage found too few days since the fix in the reports. The script records them only with status in_progress and a --not-before date to come back on. The change stage's too_early_to_tell is a final outcome here, not a wait: in an incident the rollback decision can't wait for two weeks of data, so it rests on discovery-rule-cleanup's own impact check.",
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). Checks the explainer already ruled out record ruled_out, which says why they weren't run; only a drop within normal variation skips the rest of the run."
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). Checks the explainer already ruled out record ruled_out, which says why they weren't run; only a drop within normal variation skips the rest of the run. A skip_when entry with all lists conditions that must every one hold: the recovery stage is offered as a skip when the rollback was skipped or kept and no feed, API or flow problem was found (each check fine, ruled out or skipped), since nothing was fixed."
   }
 }

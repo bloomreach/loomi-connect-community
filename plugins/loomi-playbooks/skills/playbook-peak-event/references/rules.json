@@ -18,7 +18,8 @@
           "outcomes": [
             "ideas_ranked",
             "calendar_covered"
-          ]
+          ],
+          "product": "engagement"
         },
         {
           "name": "collections",

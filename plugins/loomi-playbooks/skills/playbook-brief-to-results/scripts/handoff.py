@@ -23,6 +23,9 @@ import os
 import re
 import sys
 import tempfile
+import contextlib
+import io
+import unicodedata
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -33,6 +36,10 @@ PLAIN = re.compile(r"^[A-Za-z0-9 _.:-]{1,120}$")
 RESULTS = ("in_place", "not_in_place", "gone", "not_checked", "not_needed", "unverified")
 FINDING_STATUSES = ("open", "chosen", "dismissed", "done")
 STAGE_STATUSES = ("not_started", "in_progress", "done", "skipped")
+# The only words a change target may start with: anything else (a shopper's search, a name) becomes the plan step.
+TARGET_NOUNS = ("ranking rule", "facet rule", "media rule", "rule", "redirect", "synonym", "experiment", "item",
+                "catalog item", "email campaign", "sms campaign", "campaign", "scenario", "segmentation",
+                "customer filter", "ranking algorithm", "exclusion rule", "dynamic category", "variant")
 SUBJECT_KINDS = ("query", "category", "product", "brand", "collection", "flow", "campaign", "segment", "event",
                  "account", "project", "period")
 PRIORITIES = ("high", "medium", "low")
@@ -85,6 +92,12 @@ def read_handoff(path):
     for k in ("context", "subject"):
         if not isinstance(h.get(k), dict):
             fail(f"{path} has no {k}.")
+    if h["subject"].get("kind") not in SUBJECT_KINDS:
+        fail(f"{path}: subject kind must be one of {', '.join(SUBJECT_KINDS)}.")
+    try:
+        date.fromisoformat(str(h.get("started_on")))
+    except ValueError:
+        fail(f"{path}: started_on isn't a YYYY-MM-DD date.")
     for k in ("stages", "findings", "changes"):
         if not isinstance(h.setdefault(k, []), list):
             fail(f"{path}: {k} must be a list.")
@@ -211,6 +224,8 @@ def cmd_new(a):
         fail("This playbook works on Discovery: it needs --account and --environment.")
     if pb["product"] == "engagement" and not has_eng:
         fail("This playbook works on Engagement: it needs --project-id.")
+    if pb.get("requires_both") and not (has_disc and has_eng):
+        fail("This playbook compares Discovery and Engagement: it needs --account, --environment and --project-id.")
     if pb["product"] == "both" and not (has_disc or has_eng):
         fail("This playbook works on Discovery and Engagement: give --account and --environment, --project-id, "
              "or both (a customer with one product gives that one).")
@@ -317,7 +332,10 @@ def findings_from_file(a):
         money = x.get("money_at_stake")
         if money is not None:
             try:
-                money = str(Decimal(str(money)).quantize(Decimal("0.01")))
+                d = Decimal(str(money))
+                if not d.is_finite():
+                    raise InvalidOperation
+                money = str(d.quantize(Decimal("0.01")))
             except InvalidOperation:
                 fail(f"{a.from_file}: finding {i} money_at_stake {money!r} isn't a number.")
         verdict = x.get("verdict")
@@ -369,7 +387,7 @@ def check_context(h, plan, path):
         if k != "site_group_id" and plan.get(k) is None:
             fail(f"{path} has no {k}, so it can't be tied to this run.")
         theirs, ours = plan.get(k), ctx.get(k)
-        if k == "site_group_id" and theirs is None:
+        if k == "site_group_id" and k in plan and theirs is None:
             continue  # an account-level change (no site) covers every site, including this run's
         if (theirs is not None or ours is not None) and str(theirs) != str(ours):
             fail(f"{path} is for {k} {theirs!r}, but this run is for {ours!r}. "
@@ -388,38 +406,70 @@ def finding_arg(h, fid):
 def id_target(target, n):
     """The type and ID part of a plan's target ("rule 7001 (Brand boost)" -> "rule 7001"). Names are data:
     they stay out of the change log, and anything that isn't plain text is replaced by the plan step."""
-    m = re.match(r"^([A-Za-z][A-Za-z _-]*?\s[\w.:-]*\d[\w.:-]*)(?=$|[\s(,;'\"])", str(target or "").strip())
-    return m.group(1) if m and PLAIN.match(m.group(1)) else f"plan step {n}"
+    m = re.match(r"^(" + "|".join(TARGET_NOUNS) + r") ([\w.:-]*\d[\w.:-]*)(?=$|[\s(,;'\"])",
+                 str(target or "").strip(), re.I)
+    return f"{m.group(1).lower()} {m.group(2)}" if m and PLAIN.match(m.group(2)) else f"plan step {n}"
 
 
-def target_for(c, created_id, created=None):
-    """A plan's target as type and ID. A create has no ID until it's made: take it from the read-back when given.
-    A later step on the item just created (its target says "id from the create") takes the create's target."""
+def target_for(h, c, created_id, plan_file):
+    """A plan's target as type and ID. A create is named by the ID its read-back gives, never by its own text. A later
+    step on an item the same plan created ("created by change 1", "<id from the create change>") takes that item's
+    target from the change log."""
+    if c.get("kind") == "create" and created_id:
+        noun = re.sub(r"^(create|clone|upsert)_", "", str(c.get("tool") or "item")).replace("_", " ")
+        if PLAIN.match(f"{noun} {created_id}"):
+            return f"{noun} {created_id}"
     t = id_target(c.get("target"), c.get("n"))
-    if t.startswith("plan step ") and created and c.get("kind") != "create" and "id from" in str(c.get("target") or "").lower():
-        return created
-    if t.startswith("plan step ") and created_id:
-        noun = re.sub(r"^(create|clone|upsert|update)_", "", str(c.get("tool") or "item")).replace("_", " ")
-        t = f"{noun} {created_id}" if PLAIN.match(f"{noun} {created_id}") else t
+    if not t.startswith("plan step ") or c.get("kind") == "create":
+        return t
+    raw = str(c.get("target") or "") + " " + json.dumps(c.get("payload") or {})
+    m = re.search(r"created by change (\d+)", raw, re.I)
+    ref = int(m.group(1)) if m else None
+    if ref is None and re.search(r"id from the create", raw, re.I):
+        earlier = [x for x in h["changes"] if x.get("plan_file") == plan_file and x.get("kind") == "create"
+                   and isinstance(x.get("plan_n"), int) and x["plan_n"] < (c.get("n") or 0)]
+        ref = max((x["plan_n"] for x in earlier), default=None)
+    made_by = next((x for x in h["changes"] if x.get("plan_file") == plan_file and x.get("plan_n") == ref), None)
+    if made_by and not str(made_by["target"]).startswith("plan step "):
+        return made_by["target"]
     return t
 
 
+CHECKED = ("in_place", "not_in_place", "gone", "not_needed")
+
+
+def upsert_plan_change(h, entry, live_given, finding_given):
+    """One entry per plan step (source, plan file, step), however many times its plan is added or verified, batch by
+    batch. A checked result is never replaced by not_checked or unverified, and a resolved target never by "plan step N".
+    live_on stays the day the step was first recorded, unless an earlier check showed it not yet made."""
+    old = next((c for c in h["changes"] if c["source"] == entry["source"] and c.get("plan_file") == entry["plan_file"]
+                and c.get("plan_n") == entry["plan_n"]), None)
+    if old is None:
+        entry["id"] = next_id(h["changes"], "C")
+        h["changes"].append(entry)
+        return entry["id"], True
+    entry["id"] = old["id"]
+    if entry["result"] in ("not_checked", "unverified") and old["result"] in CHECKED:
+        entry["result"] = old["result"]
+    if str(entry["target"]).startswith("plan step ") and not str(old["target"]).startswith("plan step "):
+        entry["target"] = old["target"]
+    if not live_given and (made(old) or old["result"] == "unverified" or not made(entry)):
+        # Kept when it was made before or recorded unchecked (its day stands), or still isn't made. A step an earlier
+        # check showed as not yet made (a later batch) went live the day it's first seen made.
+        entry["live_on"] = old.get("live_on")
+    if not finding_given:
+        entry["finding"] = old.get("finding")
+    old.update(entry)
+    return old["id"], False
+
+
 def upsert_change(h, entry, keep=()):
+    """A change recorded without a plan file: the same source, kind, target and tool is one entry."""
     for c in h["changes"]:
         if entry.get("plan_n") is None and c.get("plan_n") is None and all(
                 c.get(k) == entry.get(k) for k in ("source", "kind", "target", "tool")):
             entry["id"] = c["id"]
             for k in keep:
-                entry[k] = c.get(k)
-            c.update(entry)
-            return c["id"], False
-        if c["source"] == entry["source"] and c.get("plan_n") == entry.get("plan_n") \
-                and c.get("plan_file") == entry.get("plan_file") and c["target"] == entry["target"] \
-                and entry.get("plan_n") is not None:
-            entry["id"] = c["id"]
-            if entry["result"] == "unverified":  # re-adding a plan without its verify result keeps the checked one
-                entry["result"] = c["result"]
-            for k in keep:  # not given this time: keep what was recorded (the live date is the change day)
                 entry[k] = c.get(k)
             c.update(entry)
             return c["id"], False
@@ -448,7 +498,6 @@ def cmd_changes(a):
     fid = finding_arg(h, a.finding)
     live_on = (a.live_on or today(a)).isoformat()
     added, updated = [], []
-    created = None  # the last item this plan created, for a later step that refers to it ("<id from the create change>")
     for c in sorted(plan["changes"], key=lambda c: c.get("n", 0)):
         if c.get("status") != "ready":
             continue
@@ -463,13 +512,13 @@ def cmd_changes(a):
             result = "unverified"
         entry = {
             "source": a.source, "finding": fid, "plan_file": Path(a.plan).name, "plan_n": c.get("n"),
-            "kind": c.get("kind"), "target": target_for(c, created_id, created), "tool": c.get("tool"),
+            "kind": c.get("kind"), "target": target_for(h, c, created_id, Path(a.plan).name), "tool": c.get("tool"),
             "live_impact": c.get("live_impact"), "result": result, "live_on": live_on,
-            "undo": c.get("undo") or [], "undo_note": c.get("undo_note"),
+            # Only the undo tools: payloads can hold whole records (margin, cost). The plan file keeps them.
+            "undo": [{"tool": u.get("tool")} for u in (c.get("undo") or []) if isinstance(u, dict)],
+            "undo_note": flat(c["undo_note"]) if c.get("undo_note") else None,
         }
-        if c.get("kind") == "create" and not entry["target"].startswith("plan step "):
-            created = entry["target"]
-        cid, new = upsert_change(h, entry, keep=[k for k, given in (("live_on", a.live_on), ("finding", a.finding)) if not given])
+        cid, new = upsert_plan_change(h, entry, bool(a.live_on), bool(a.finding))
         (added if new else updated).append(cid)
     save(h, a.handoff, a)
     print(json.dumps({"ok": True, "added": added, "updated": updated,
@@ -538,6 +587,12 @@ def earliest(h, rule):
     return date.fromisoformat(after["done_on"]) + timedelta(days=int(RULES[nb["days"]]))
 
 
+def condition_holds(h, cond):
+    """A skip_when condition: an earlier stage had one of these outcomes, or (skipped: true) was skipped."""
+    other = stage_record(h, cond["stage"])
+    return bool((cond.get("skipped") and other["status"] == "skipped") or other["outcome"] in cond.get("outcomes", []))
+
+
 def has_product(h, product):
     ctx = h["context"]
     return bool(ctx.get("account")) if product == "discovery" else bool(ctx.get("project_id"))
@@ -553,8 +608,7 @@ def next_step(h, now):
         if rule.get("product") and not has_product(h, rule["product"]):
             skip = f"it needs {rule['product'].capitalize()}, which this run doesn't have."
         for cond in rule.get("skip_when", []):
-            other = stage_record(h, cond["stage"])
-            if (cond.get("skipped") and other["status"] == "skipped") or other["outcome"] in cond.get("outcomes", []):
+            if all(condition_holds(h, c) for c in cond.get("all", [cond])):
                 skip = cond["reason"]
         dates = [d for d in (earliest(h, rule), s.get("not_before") and date.fromisoformat(s["not_before"])) if d]
         when = max(dates) if dates else None
@@ -565,8 +619,17 @@ def next_step(h, now):
 
 
 def flat(v):
-    """Print a value from the file on one line: no line breaks or table bars, so it can't add rows or a Next line."""
-    return re.sub(r"[\r\n|`*]+", " ", str(v))[:200]
+    """Print a value from the file on one line, as plain text: no line breaks or table bars (so it can't add rows or a
+    Next line), no Markdown or HTML punctuation (no links, images or tags), and no invisible format characters."""
+    text = "".join(ch for ch in str(v) if unicodedata.category(ch) != "Cf")
+    return re.sub(r"[\r\n|`*\[\]()<>!]+", " ", text)[:200]
+
+
+def checked_text(v, pattern=None):
+    """A value from another run's file, shown only when it has the expected shape."""
+    if v is None:
+        return None
+    return str(v) if (pattern or PLAIN).match(str(v)) else "(not shown)"
 
 
 def other_status(a):
@@ -577,18 +640,25 @@ def other_status(a):
     stages = [x for x in h.get("stages") or [] if isinstance(x, dict)]
     nxt = h.get("next") if isinstance(h.get("next"), dict) else None
     if a.json:
-        print(json.dumps({"ok": True, "playbook": flat(h.get("playbook")), "known": False, "stages": stages, "next": nxt},
-                         indent=2, ensure_ascii=False))
+        print(json.dumps({"ok": True, "playbook": checked_text(h.get("playbook"), SKILL_NAME), "known": False,
+                          "stages": [{k: checked_text(x.get(k), SKILL_NAME if k == "skill" else None)
+                                      for k in ("name", "skill", "status", "outcome", "done_on")} for x in stages],
+                          "next": None if not nxt else {"stage": checked_text(nxt.get("stage")),
+                                                        "skill": checked_text(nxt.get("skill"), SKILL_NAME),
+                                                        "not_before": checked_text(nxt.get("not_before"))}},
+                         indent=2))
         return
-    print(f"## {flat(h.get('playbook'))}: {flat((h.get('subject') or {}).get('kind'))} (started {flat(h.get('started_on'))})\n")
+    print(f"## {checked_text(h.get('playbook'), SKILL_NAME)}: {checked_text((h.get('subject') or {}).get('kind'))} "
+          f"(started {checked_text(h.get('started_on'))})\n")
     print("This run belongs to another playbook: shown from the file. Use that playbook to continue it.\n")
     print("| Stage | Skill | Status | Outcome | Done |")
     print("|---|---|---|---|---|")
     for x in stages:
-        print(f"| {flat(x.get('name'))} | {flat(x.get('skill'))} | {flat(x.get('status'))} | {flat(x.get('outcome') or '')} | {flat(x.get('done_on') or '')} |")
+        print(f"| {checked_text(x.get('name'))} | {checked_text(x.get('skill'), SKILL_NAME)} | {checked_text(x.get('status'))} "
+              f"| {checked_text(x.get('outcome')) or ''} | {checked_text(x.get('done_on')) or ''} |")
     if nxt:
-        print(f"\n**Next (as recorded):** {flat(nxt.get('stage'))} with {flat(nxt.get('skill'))}"
-              + (f", not before {flat(nxt.get('not_before'))}" if nxt.get("not_before") else ""))
+        print(f"\n**Next (as recorded):** {checked_text(nxt.get('stage'))} with {checked_text(nxt.get('skill'), SKILL_NAME)}"
+              + (f", not before {checked_text(nxt.get('not_before'))}" if nxt.get("not_before") else ""))
 
 
 def cmd_status(a):
@@ -603,10 +673,10 @@ def cmd_status(a):
            "open_findings": [f for f in h["findings"] if f["status"] in ("open", "chosen")],
            "changes": h["changes"]}
     if a.json:
-        print(json.dumps(out, indent=2, ensure_ascii=False))
+        print(json.dumps(out, indent=2))
         return
     title = RULES["playbooks"][h["playbook"]]["title"]
-    print(f"## {title}: {h['subject']['kind']} (started {h['started_on']})\n")
+    print(f"## {flat(title)}: {flat(h['subject']['kind'])} (started {flat(h['started_on'])})\n")
     print("| Stage | Skill | Status | Outcome | Done |")
     print("|---|---|---|---|---|")
     for s in h["stages"]:
@@ -654,6 +724,18 @@ def cmd_list(a):
             continue
         stages = [s for s in h.get("stages") or [] if isinstance(s, dict)]
         nxt = h.get("next") if isinstance(h.get("next"), dict) else None
+        next_unknown = False
+        if nxt is None and "next" not in h:
+            # Written before next was stored, or kept by hand: work it out when this copy knows the playbook.
+            if h.get("playbook") in RULES["playbooks"]:
+                try:
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        known = read_handoff(p)
+                    nxt = next_step(known, now)
+                except SystemExit:
+                    next_unknown = True
+            else:
+                next_unknown = True
         due = None
         if nxt and nxt.get("not_before"):
             try:
@@ -661,17 +743,19 @@ def cmd_list(a):
             except ValueError:
                 due = None
         made_here = [c for c in h.get("changes") or [] if isinstance(c, dict) and made(dict(CHANGE_DEFAULTS, **c))]
-        finished = nxt is None and stages and all(s.get("status") in ("done", "skipped") for s in stages)
+        finished = nxt is None and not next_unknown and stages and all(s.get("status") in ("done", "skipped") for s in stages)
         runs.append({
-            "file": p.name, "playbook": flat(h.get("playbook")), "subject": flat((h.get("subject") or {}).get("kind")),
-            "subject_value": flat((h.get("subject") or {}).get("value"))[:80], "started_on": flat(h.get("started_on")),
+            "file": flat(p.name), "playbook": checked_text(h.get("playbook"), SKILL_NAME),
+            "subject": checked_text((h.get("subject") or {}).get("kind")),
+            "subject_value": flat((h.get("subject") or {}).get("value"))[:80], "started_on": checked_text(h.get("started_on")),
             "stages_done": sum(s.get("status") in ("done", "skipped") for s in stages), "stages": len(stages),
-            "next_stage": None if not nxt else flat(nxt.get("stage")), "next_skill": None if not nxt else flat(nxt.get("skill")),
+            "next_stage": None if not nxt else checked_text(nxt.get("stage")),
+            "next_skill": None if not nxt else checked_text(nxt.get("skill"), SKILL_NAME),
             "not_before": due.isoformat() if due else None, "due": bool(nxt) and (due is None or now >= due),
-            "suggest_skip": bool(nxt and nxt.get("suggest_skip")),
-            "skip_reason": flat(nxt.get("suggest_skip")) if nxt and nxt.get("suggest_skip") else None,
+            "suggest_skip": bool(nxt and nxt.get("suggest_skip")), "next_unknown": next_unknown,
+            "skip_reason": checked_text(flat(nxt.get("suggest_skip")).rstrip(".")) if nxt and nxt.get("suggest_skip") else None,
             "finished": bool(finished),
-            "last_outcome": next((flat(s.get("outcome")) for s in reversed(stages) if s.get("outcome")), None),
+            "last_outcome": next((checked_text(s.get("outcome")) for s in reversed(stages) if s.get("outcome")), None),
             "open_findings": sum(isinstance(f, dict) and f.get("status") in ("open", "chosen") for f in h.get("findings") or []),
             "changes_made": len(made_here),
         })
@@ -681,13 +765,14 @@ def cmd_list(a):
                 continue
             if a.until and (not live or live > a.until.isoformat()):
                 continue
-            changes.append({"file": p.name, "playbook": flat(h.get("playbook")), "id": flat(c.get("id")),
-                            "kind": flat(c.get("kind")), "target": flat(c.get("target")), "live_on": flat(live),
-                            "source": flat(c.get("source")), "live_impact": flat(c.get("live_impact")),
-                            "finding": flat(c.get("finding")) if c.get("finding") else None})
+            changes.append({"file": flat(p.name), "playbook": checked_text(h.get("playbook"), SKILL_NAME),
+                            "id": checked_text(c.get("id")), "kind": checked_text(c.get("kind")),
+                            "target": checked_text(c.get("target")), "live_on": checked_text(live),
+                            "source": checked_text(c.get("source"), SKILL_NAME), "live_impact": checked_text(c.get("live_impact")),
+                            "finding": checked_text(c.get("finding")) if c.get("finding") else None})
     changes.sort(key=lambda c: (c["live_on"], c["file"], c["id"]))
     if a.json:
-        print(json.dumps({"ok": True, "today": now.isoformat(), "runs": runs, "changes": changes}, indent=2, ensure_ascii=False))
+        print(json.dumps({"ok": True, "today": now.isoformat(), "runs": runs, "changes": changes}, indent=2))
         return
     if not runs:
         print(f"No *.handoff.json files in {a.dir}.")
@@ -698,7 +783,7 @@ def cmd_list(a):
         if "error" in r:
             print(f"| {flat(r['file'])} | | | {r['error']} | | |")
             continue
-        nxt = "finished" if r["finished"] else (f"{r['next_stage']} ({r['next_skill']})" + (", can be skipped" if r["suggest_skip"] else "")
+        nxt = "finished" if r["finished"] else "unknown: open it with its own playbook" if r["next_unknown"] else (f"{r['next_stage']} ({r['next_skill']})" + (", can be skipped" if r["suggest_skip"] else "")
                                                  if r["next_stage"] else "")
         due = "" if r["finished"] or not r["next_stage"] else ("now" if r["due"] else f"from {r['not_before']}")
         print(f"| {flat(r['file'])} | {r['playbook']} | {r['subject']} | {r['stages_done']}/{r['stages']} stages | {nxt} | {due} |")

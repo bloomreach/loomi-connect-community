@@ -12,7 +12,7 @@ Illustrative only: the project, campaign IDs and all numbers are made up.
 
 build-sms is skipped.
 
-`campaign-qa` returns NO-GO: one product link 404s. The user fixes the link in the Engagement HTML editor; QA again: GO. The user sets the send for 11 November and starts it. The qa stage is recorded `scheduled`, and the digest gets `--not-before 2026-11-18`.
+`campaign-qa` returns NO-GO: one product link 404s. The user fixes the link in the Engagement HTML editor; QA again: GO. The user sets the send for 11 November and starts it. The qa stage is recorded `scheduled`, the scheduled send goes in the change log as a change from `engagement-ui` (C2, start `email campaign 6a2b00000000000000000002`, live on 2026-11-11), and the digest gets `--not-before 2026-11-18`.
 
 **Session 2 (10 November).** The preflight shows the campaign GO, and one other send NO-GO (not this run's). The collision check finds a promo email to an overlapping segment four hours earlier on 11 November; the user moves the promo to 13 November in Engagement: `collisions_fixed`.
 

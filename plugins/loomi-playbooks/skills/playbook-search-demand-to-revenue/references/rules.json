@@ -137,10 +137,11 @@
           "name": "digest",
           "skill": "engagement-campaign-digest",
           "writes": false,
-          "do": "Read how the campaign did once a person has sent it.",
+          "do": "Read how the campaign did once a person has sent it. Record never_sent when the draft won't be sent.",
           "outcomes": [
             "read",
-            "not_sent_yet"
+            "not_sent_yet",
+            "never_sent"
           ],
           "not_before": {
             "after_stage": "campaign",
@@ -191,6 +192,43 @@
                 "noise"
               ],
               "reason": "the search is noise: nothing to fix or promote."
+            },
+            {
+              "all": [
+                {
+                  "stage": "fix",
+                  "outcomes": [
+                    "left_off"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "campaign",
+                  "outcomes": [
+                    "brief_only"
+                  ],
+                  "skipped": true
+                }
+              ],
+              "reason": "nothing changed: no synonym went live and no campaign was made."
+            },
+            {
+              "all": [
+                {
+                  "stage": "fix",
+                  "outcomes": [
+                    "left_off"
+                  ],
+                  "skipped": true
+                },
+                {
+                  "stage": "digest",
+                  "outcomes": [
+                    "never_sent"
+                  ]
+                }
+              ],
+              "reason": "nothing changed: no synonym went live and the campaign was never sent."
             }
           ]
         }
@@ -200,7 +238,7 @@
   "notes": {
     "digest_after_days": "Days after the campaign stage finishes (the draft exists) before the digest stage is due. engagement-campaign-digest reads a whole week by default; when the user gives the send date, the digest is due this many days after it (record it with stage --not-before).",
     "measure_after_days": "Days after the fix stage finishes before the measure stage is due. change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell. When there's no site fix and the campaign launch is measured, count from the send date instead (stage --not-before).",
-    "wait_outcomes": "Outcomes that mean a stage isn't finished yet: the campaign hasn't been sent, or the change needs more data. The script records them only with status in_progress and a --not-before date to come back on.",
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). A run without Engagement gets the campaign and digest stages offered for skipping."
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet: the campaign hasn't been sent, or the change needs more data. The script records them only with status in_progress and a --not-before date to come back on. The digest stage's never_sent is the final outcome for a draft that won't be sent, so a run doesn't wait on not_sent_yet for ever.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). A run without Engagement gets the campaign and digest stages offered for skipping. A skip_when entry with all lists conditions that must every one hold; a condition with both outcomes and skipped: true holds for either. The measure stage is offered as a skip when nothing changed: no synonym went live, and the campaign wasn't made or never sent."
   }
 }

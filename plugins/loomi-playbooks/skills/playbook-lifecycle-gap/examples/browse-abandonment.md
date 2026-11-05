@@ -20,7 +20,11 @@ The find stage maps the eight flows. Three become findings:
 
 `engagement-scenario-builder` swaps the consent category after its own yes (C2, update). The user sets the project variable in the Engagement UI.
 
-`scenario-qa` returns GO WITH CAUTION (one link not checked). The user switches the flow on in Engagement the same day, and the qa stage is recorded done with outcome `started`.
+`scenario-qa` returns GO WITH CAUTION (one link not checked). The user switches the flow on in Engagement the same day, and the qa stage is recorded done with outcome `started`. The switch-on goes in the change log too, with source `engagement-ui`, so the quarter close sees it:
+
+```
+- C3: start scenario 6a1f00000000000000000001 on 2026-11-05 (in place, live)
+```
 
 ```
 **Next:** health with engagement-journey-health, not before 2026-11-19.

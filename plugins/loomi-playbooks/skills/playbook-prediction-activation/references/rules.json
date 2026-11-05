@@ -107,7 +107,7 @@
           "name": "qa",
           "skill": "scenario-qa",
           "writes": false,
-          "do": "QA the draft until it is GO, then wait for the user to switch it on in the Engagement UI and record the day it started.",
+          "do": "QA the draft until it is GO; a NO-GO fix goes back through the adapt stage's write skill (engagement-scenario-builder), with its own yes, and is QA'd again. Then wait for the user to switch it on in the Engagement UI, record the day it started, and record the switch-on as a change (source engagement-ui).",
           "outcomes": [
             "started",
             "not_launched"

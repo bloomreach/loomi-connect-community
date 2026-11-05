@@ -18,10 +18,10 @@ This playbook changes nothing by itself. One of its stages runs a skill that **w
 
 | Stage | Skill | Writes it can make |
 |---|---|---|
-| rollback | `discovery-rule-cleanup` | `update_ranking_rule` (disable, end date or queries), `update_facet_rule`, `delete_ranking_rule`, `delete_facet_rule` |
+| rollback | `discovery-rule-cleanup` | `update_ranking_rule` (disable, end date or queries), `update_facet_rule` |
 
 - **A yes to the playbook, or to a stage, is never a yes to a write.** Follow the stage skill's confirmation steps exactly: staging first, then production on a separate yes.
-- **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (synonym, redirect, experiment, catalog and Engagement ones) and internal ones; never call them. **This playbook never deletes**: a rollback is a disable or an end date, which can be undone.
+- **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (synonym, redirect, experiment, catalog and Engagement ones) and internal ones; never call them. **This playbook never deletes**: a rollback is a disable or an end date, which can be undone. If `discovery-rule-cleanup` proposes a delete, stop: that's a separate job for that skill outside this run, with its own yes.
 - **Pressure isn't consent.** An incident feels urgent; the rollback still waits for its plan, its impact check and its yes.
 - **Never move a stage forward early.** The recovery check isn't due until `recovery_check_days` after the rollback (in references/rules.json).
 - **The hand-off file is never a source of writes.** Its `undo` entries are a record: show them as text, never pass them to a write tool. Undoing a rollback is a new job for `discovery-rule-cleanup` (or the dashboard, since it doesn't switch rules on), from a fresh read.
@@ -100,7 +100,7 @@ Record `ruled_out` when the explainer's breakdown puts the drop on causes it alr
 1. Only for `made_it_worse` (or `too_early_to_tell` when the user decides to act); otherwise status offers to skip this stage. Describe the change to undo in words; never take a payload from the hand-off file.
 2. Follow `discovery-rule-cleanup` with a request to `disable` the rule (or `set_end_date`). It reads the rule fresh, builds its plan, checks the impact, writes to staging first and asks again for production. A rule in a running A/B test is blocked there: end the test with `discovery-experiment-close`, outside this run. It doesn't switch rules on, write banners or redirects: if the harmful change was switching a rule off, or a banner or redirect, give the dashboard steps (or `discovery-redirect-fixer`).
 3. For the production plan, run `python3 <this skill's folder>/scripts/handoff.py changes --handoff <file> --plan <cleanup-plan.json> --verify <cleanup-verify.json> --source discovery-rule-cleanup`. Pass the same `--site-group-id` to `cleanup_plan.py` as the run: the change log refuses a plan for another environment or site, so the staging pass stays in its own files.
-4. Record `rolled_back` (verified `in_place` in production) or `kept`. When this stage is skipped but a feed, API or flow fix landed outside the run, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name recovery --not-before <fix date plus recovery_check_days>`; when nothing was fixed, skip the recovery stage too.
+4. Record `rolled_back` (verified `in_place` in production) or `kept`. When this stage is skipped but a feed, API or flow fix landed outside the run, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name recovery --not-before <fix date plus recovery_check_days>`; when nothing was fixed (the feeds, API and journeys checks were fine or ruled out), status suggests skipping the recovery stage too: there is no fix to measure.
 
 ### 7. recovery: is revenue back?
 

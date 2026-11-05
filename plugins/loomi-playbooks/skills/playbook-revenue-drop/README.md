@@ -5,7 +5,7 @@ An incident runbook for a drop in revenue, conversion or order value. It explain
 | | |
 |---|---|
 | **Products** | Discovery and Engagement (Engagement optional: without it, the journeys stage is skipped) |
-| **Access** | **Writes**, through its stage skills only: `discovery-rule-cleanup` switches off (or sets an end date on) the rule that made the drop worse, live at once, staging first and production on a separate yes, each batch only after its own explicit "yes". This playbook never deletes |
+| **Access** | **Writes**, through its stage skills only: `discovery-rule-cleanup` switches off (or sets an end date on) the rule that made the drop worse, live at once, staging first and production on a separate yes, each batch only after its own explicit "yes". This playbook never deletes: if the cleanup skill proposes a delete, it stops, and the delete is a separate job for `discovery-rule-cleanup` outside the run, with its own yes |
 | **Loomi Connect tools** | Those of its stage skills. Writes: `update_ranking_rule`, `update_facet_rule` |
 | **Other requirements** | The `loomi-platform`, `loomi-discovery` and `loomi-engagement` plugins. Python 3 for `scripts/handoff.py` (standard library only); the hand-off file can also be kept by hand |
 | **Tested with** | Claude Code: definitions and script tests. Not yet run end to end |

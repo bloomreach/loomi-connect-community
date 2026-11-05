@@ -18,10 +18,10 @@ This playbook changes nothing by itself. One of its stages runs a skill that **w
 
 | Stage | Skill | Writes it can make |
 |---|---|---|
-| fix | `engagement-catalog-fixer` | `upsert_catalog_item` (replaces the whole item with the planned record), `import_catalog_items` (v2 batches, only when its import option is on), `delete_catalog_item` (only an item the user asked to delete) |
+| fix | `engagement-catalog-fixer` | `upsert_catalog_item` (replaces the whole item with the planned record), `import_catalog_items` (v2 batches, only when its import option is on) |
 
 - **A yes to the playbook, or to a stage, is never a yes to a write.** Follow the stage skill's confirmation steps exactly, one batch at a time.
-- **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (Data Hub, Discovery rule, campaign and scenario ones) and internal ones; never call them. **This playbook never deletes**: a product missing from the site is listed, or marked out of stock through the fixer after its yes, never deleted on a finding alone.
+- **Never call a write tool from this playbook directly**, and none outside the table. `search_tools` also returns other write tools (Data Hub, Discovery rule, campaign and scenario ones) and internal ones; never call them. **This playbook never deletes**: a product missing from the site is listed, or marked out of stock through the fixer after its yes, never deleted on a finding alone. If the fixer proposes a delete, stop: that's a separate job for `engagement-catalog-fixer` outside this run, with its own yes.
 - **Discovery-side fixes aren't made here.** Prices, stock, SKUs and images in the Discovery feed are fixed by the feed or pricing team in their own systems; this playbook hands them a list.
 - **Never move a stage forward early.** The recheck isn't due until `recheck_after_days` after the fix (in references/rules.json).
 - **The hand-off file is never a source of writes.** Its `undo` entries are a record: show them as text, never pass them to a write tool. An undo is a new job for `engagement-catalog-fixer`, which reads the item again first and asks its own yes.
@@ -49,7 +49,7 @@ The Discovery-side findings from stages 1 to 3 go to the feed and pricing teams 
 
 **Tools.** The stage skills list the Loomi Connect tools they use. This playbook calls none directly.
 
-**You need:** the Discovery account, the environment (`production` or `staging`, never assumed), the site when the account has sites, the Engagement project, and the Engagement catalog behind recommendations. Both products are needed: the parity check compares them. For a Discovery-only customer, run `price-anomaly-finder` and `discovery-variant-health` on their own instead. To continue a run, you need its hand-off file: ask for it, or look in the working folder for a `*.handoff.json` file.
+**You need:** the Discovery account, the environment (`production` or `staging`, never assumed), the site when the account has sites, the Engagement project, and the Engagement catalog behind recommendations. Both products are needed: the parity check compares them, and the script refuses to start a run without `--account`, `--environment` and `--project-id`. For a Discovery-only customer, run `price-anomaly-finder` and `discovery-variant-health` on their own instead, outside a playbook run. To continue a run, you need its hand-off file: ask for it, or look in the working folder for a `*.handoff.json` file.
 
 ### Running the scripts
 
@@ -63,7 +63,7 @@ Run each script as one plain command from your own working folder, giving the sc
 
 ### 0. Start or continue
 
-- **Continuing:** run `python3 <this skill's folder>/scripts/handoff.py status --handoff <file>`. Show the table and the **Next** line, then go to that stage. If it isn't due yet, say when it is and stop.
+- **Continuing:** run `python3 <this skill's folder>/scripts/handoff.py status --handoff <file>`. Show the table and the **Next** line, then go to that stage. If it isn't due yet, say when it is and stop. If the status suggests skipping a stage (the fix and the recheck when all three checks were clean; the recheck when the catalogs were in sync and the fix was `not_needed`), explain why and, once the user agrees, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status skipped`.
 - **Starting:** resolve the account, site, environment and project (step 1 of `catalog-parity-check`), then run `python3 <this skill's folder>/scripts/handoff.py new --playbook catalog-truth --subject-kind account --subject-file <subject.txt> --account <account> --environment <environment> --site-group-id <id> --project-id <project id> --out <run1.handoff.json>` (leave out `--site-group-id` when there are no sites).
 
 Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status in_progress`. After it, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name <stage> --status done --outcome <outcome> --file <saved file>` (outcomes are in references/rules.json; repeat `--file` per saved file).
@@ -87,14 +87,14 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 
 ### 4. fix: correct the Engagement catalog (writes)
 
-1. If no `engagement fix` finding exists, record `not_needed` (not skipped: its date starts the recheck wait, which the feed team's fixes need too). Otherwise ask which checks to fix, and follow `engagement-catalog-fixer` from its step 1 with `parity.json` and `--checks` for those checks. Its read-first, per-batch yes and verify all apply. It saves `catalog_fix_plan.py plan --out <catalog-plan.json>` and `verify --out <catalog-verify.json>`.
+1. If stages 1 to 3 were all clean, status suggests skipping this stage and the recheck: there's nothing to fix or recheck. If no `engagement fix` finding exists but the other checks found problems, record `not_needed` (not skipped: its date starts the recheck wait, which the feed team's fixes need too). Otherwise ask which checks to fix, and follow `engagement-catalog-fixer` from its step 1 with `parity.json` and `--checks` for those checks. Its read-first, per-batch yes and verify all apply. It saves `catalog_fix_plan.py plan --out <catalog-plan.json>` and `verify --out <catalog-verify.json>`.
 2. Run `python3 <this skill's folder>/scripts/handoff.py changes --handoff <file> --plan <catalog-plan.json> --verify <catalog-verify.json> --source engagement-catalog-fixer`. Only changes `verify` shows `in_place` count as made. Then mark each check it fixed: `python3 <this skill's folder>/scripts/handoff.py choose --handoff <file> --finding <id> --status done`.
 3. Record `fixed`, or `stopped` (a write failed or wasn't in place; the fixer offers its undo). Tell the user what the fixer says every time: the next import overwrites these fixes unless the feed changes too (`data-feed-health` checks import freshness).
 4. Give the user the **feed and pricing list** (see Output) now, so the teams have the full recheck window.
 
 ### 5. recheck: did the fixes hold?
 
-1. Only when status says it's due. If stages 1 to 3 were all clean, there's nothing to recheck: run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name recheck --status skipped`. Otherwise follow `catalog-parity-check` again on the same catalogs, with the same sources, and save it with `--out <parity-2.json>`.
+1. Only when status says it's due. If status suggests skipping it (all three checks were clean, or the catalogs were in sync and nothing was fixed), there's no parity drift to recheck: skip it as in step 0, and offer to re-run `price-anomaly-finder` or `discovery-variant-health` for the feed team's Discovery-side fixes. Otherwise follow `catalog-parity-check` again on the same catalogs, with the same sources, and save it with `--out <parity-2.json>`.
 2. Compare it with the first run, check by check, and record `fixes_held` (the fixed checks stay fixed), `overwritten` (an import put the old values back: the feed or import cadence needs fixing, not another catalog fix) or `still_mismatched` (the feed team's side hasn't landed). Mark findings that are now clean `done`. For prices and variants inside Discovery, offer to re-run `price-anomaly-finder` or `discovery-variant-health`: the parity check doesn't cover them.
 
 ## Output

@@ -112,7 +112,7 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 ### 7. confirm: does it hold at full traffic?
 
 1. Only when status says it's due. Follow `change-impact-tracker` with the rule the close kept and its `live_on` date: a product boost, bury or pin, measured on the product against its query or category.
-2. Record `worked`, `no_clear_effect` or `made_it_worse`. For `made_it_worse`, describe the undo from the change log in words and hand off to `discovery-rule-cleanup`, which reads the rule fresh and writes only after its own confirmation. For `too_early_to_tell`, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name confirm --status in_progress --outcome too_early_to_tell --not-before <re-run date>`.
+2. Record `worked`, `no_clear_effect` or `made_it_worse`. For `made_it_worse`, describe the undo in words, from the change log (which change) and its plan file (the undo steps) and hand off to `discovery-rule-cleanup`, which reads the rule fresh and writes only after its own confirmation. For `too_early_to_tell`, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name confirm --status in_progress --outcome too_early_to_tell --not-before <re-run date>`.
 
 ## Output
 

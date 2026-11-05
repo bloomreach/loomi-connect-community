@@ -5,8 +5,8 @@ Gets products found for the words shoppers use, by running five existing skills 
 | | |
 |---|---|
 | **Products** | Discovery |
-| **Access** | **Writes**, through its stage skills only: `discovery-synonym-fixer` creates synonyms switched off, switches them on (live after the next sync) and can change or delete one. Each write only after its own explicit "yes". Product data and catalog settings are suggestions for people to apply, never written |
-| **Loomi Connect tools** | Those of its stage skills. Writes: `create_synonym`, `update_synonym`, `delete_synonym` |
+| **Access** | **Writes**, through its stage skills only: `discovery-synonym-fixer` creates synonyms switched off, switches them on (live after the next sync) and can change or switch one off. Each write only after its own explicit "yes". This playbook never deletes: if the fixer proposes a delete, it stops, and the delete is a separate job for `discovery-synonym-fixer` outside the run, with its own yes. Product data and catalog settings are suggestions for people to apply, never written |
+| **Loomi Connect tools** | Those of its stage skills. Writes: `create_synonym`, `update_synonym` |
 | **Other requirements** | The `loomi-discovery` and `loomi-product-data` plugins; a client that can view images for the enhance stage (it falls back to text-only). Python 3 for `scripts/handoff.py` (standard library only); the hand-off file can also be kept by hand |
 | **Tested with** | Claude Code: definitions and script tests. Not yet run end to end |
 | **Maintainer** | @bloomreach |

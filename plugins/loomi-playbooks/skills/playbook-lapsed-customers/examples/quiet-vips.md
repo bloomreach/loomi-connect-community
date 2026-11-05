@@ -17,7 +17,7 @@ The refine stage tests the lapsing patterns. P3, high-value customers slowing do
 - F3 (chosen, high): pattern P3 uncovered; about 3,900 customers, 81% reachable; 9,400.00 in 30 days at the stated rates. Next: engagement-segment-builder
 ```
 
-`engagement-segment-builder` creates the audience after its yes (C1, `segmentation 6a6d00000000000000000009`). `scenario-template-launcher` clones a win-back flow from the sister brand's project (C2, create `scenario 6a6e0000000000000000000a`); `engagement-scenario-builder` points it at the segment and shortens the first wait (C3, update `scenario 6a6e0000000000000000000a`). `scenario-qa`: GO. The user switches it on on 7 November.
+`engagement-segment-builder` creates the audience after its yes (C1, `segmentation 6a6d00000000000000000009`). `scenario-template-launcher` clones a win-back flow from the sister brand's project (C2, create `scenario 6a6e0000000000000000000a`); `engagement-scenario-builder` points it at the segment and shortens the first wait (C3, update `scenario 6a6e0000000000000000000a`). `scenario-qa`: GO. The user switches it on on 7 November, recorded as the qa stage's start date and as a change from `engagement-ui` (C4, start `scenario 6a6e0000000000000000000a`, live on 2026-11-07).
 
 ```
 **Next:** performance with engagement-scenario-performance, not before 2026-12-19.

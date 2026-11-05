@@ -1,6 +1,6 @@
 ---
 name: playbook-monthly-hygiene
-description: Runs the monthly hygiene playbook across one Bloomreach Discovery account and one Engagement project using Loomi Connect and existing skills - one sweep with one plan to approve per write stage. It audits the Discovery merchandising rules (discovery-rule-audit) and cleans up the ones the user approves (discovery-rule-cleanup), audits the search redirects (discovery-redirect-audit) and fixes the approved ones (discovery-redirect-fixer), lists the Engagement project's stale drafts, test copies and unused definitions (engagement-asset-cleanup), and maps what depends on each one into a safe deletion order the user acts on in the Engagement UI (engagement-dependency-map). Nothing in Engagement is deleted. A hand-off file carries the findings and the change log, so a sweep can stop and continue later. Every write is made by the stage's own skill after its own confirmation. Use when the user wants a monthly tidy-up, a hygiene sweep of rules, redirects and Engagement assets, or to continue one.
+description: Runs the monthly hygiene playbook across one Bloomreach Discovery account and one Engagement project using Loomi Connect and existing skills - one sweep with one plan to review per write stage; each batch, delete and switch-on needs its own yes. It audits the Discovery merchandising rules (discovery-rule-audit) and cleans up the ones the user approves (discovery-rule-cleanup), audits the search redirects (discovery-redirect-audit) and fixes the approved ones (discovery-redirect-fixer), lists the Engagement project's stale drafts, test copies and unused definitions (engagement-asset-cleanup), and maps what depends on each one into a safe deletion order the user acts on in the Engagement UI (engagement-dependency-map). Nothing in Engagement is deleted. A hand-off file carries the findings and the change log, so a sweep can stop and continue later. Use when the user wants a monthly tidy-up, a hygiene sweep of rules, redirects and Engagement assets, or to continue one.
 license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery and Engagement), and the loomi-discovery and loomi-engagement plugins for the skills each stage runs. Python 3 is optional, for the bundled hand-off script.
 metadata:
@@ -37,9 +37,9 @@ One sweep a month, in three pairs (an audit, then the stage that acts on it), ea
 | Stage | Skill | What happens | When |
 |---|---|---|---|
 | 1. rule-audit | `discovery-rule-audit` | Lists every merchandising rule's problems: expired but on, failing sync, duplicates, no traffic, stuck tests | Now |
-| 2. rule-cleanup | `discovery-rule-cleanup` | One plan for the approved ranking and facet rules; staging first; written batch by batch | Now, after confirmations |
+| 2. rule-cleanup | `discovery-rule-cleanup` | One plan to review for the approved ranking and facet rules; staging first; written batch by batch, each batch and each delete on its own yes | Now, after confirmations |
 | 3. redirect-audit | `discovery-redirect-audit` | Lists broken, overlapping and hijacking redirects, and navigational searches with none | Now |
-| 4. redirect-fix | `discovery-redirect-fixer` | One plan for the approved redirect fixes; written batch by batch | Now, after confirmations |
+| 4. redirect-fix | `discovery-redirect-fixer` | One plan to review for the approved redirect fixes; written batch by batch, each batch, switch-on and delete on its own yes | Now, after confirmations |
 | 5. asset-cleanup | `engagement-asset-cleanup` | Lists stale drafts, test copies and unused definitions to delete, archive or review | Now |
 | 6. dependency-map | `engagement-dependency-map` | Maps what depends on each candidate; returns a safe deletion order for the user | Now |
 

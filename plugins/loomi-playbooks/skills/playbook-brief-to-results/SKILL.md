@@ -90,7 +90,7 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 
 1. Follow `campaign-qa` on the draft's ID. On NO-GO, fix and QA again; the stage stays in progress. An SMS draft can be revised by `engagement-sms-builder` (recorded as in step 2). The email builder never edits a draft: the user fixes it in the Engagement HTML editor, or the builder makes a new draft (a new create, recorded as in step 1) and the user deletes the old one.
 2. On GO or GO WITH CAUTION, tell the user to set the send time and start the campaign **in the Engagement UI**. Never do it.
-3. When they say it's scheduled, record the stage done with outcome `scheduled` (with `--today <date>` if they scheduled it on an earlier day: backdating is how the hand-off file records a person's action in the app), then record when the digest is due: `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name digest --not-before <send day plus digest_after_days>`. If they decide not to send, record `not_scheduled`.
+3. When they say it's scheduled, record the stage done with outcome `scheduled` (with `--today <date>` if they scheduled it on an earlier day: backdating is how the hand-off file records a person's action in the app). Record the scheduled send as a change, so `playbook-quarter-close` sees it: `python3 <this skill's folder>/scripts/handoff.py change --handoff <file> --source engagement-ui --kind start --target 'email campaign <ID>' --tool engagement_ui --live-impact live --result in_place --live-on <send day>` (`--target 'sms campaign <ID>'` for a text message; the user made it in the app, so the source is `engagement-ui`). Then record when the digest is due: `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name digest --not-before <send day plus digest_after_days>`. If they decide not to send, record `not_scheduled`.
 
 ### 4. preflight: is the week ready?
 
@@ -105,7 +105,7 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 ### 6. digest: how did it do?
 
 1. Only when `status` says it's due. Follow `engagement-campaign-digest` for the period that contains the send, against the period before. Report the campaign's row first: sends, delivery, opens, clicks, bounces, unsubscribes and revenue where available, and where it ranks.
-2. If it hasn't sent yet, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name digest --status in_progress --outcome not_sent_yet --not-before <new send day plus digest_after_days>`.
+2. If it hasn't sent yet, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name digest --status in_progress --outcome not_sent_yet --not-before <new send day plus digest_after_days>`. If the user decides it will never be sent, record the stage done with outcome `never_sent` and stop: there is nothing to read.
 3. Write what to keep or change next time into a findings file (`<findings-1.json>`): `{"findings": [{"target": "<email or sms> campaign <ID>", "verdict": "<keep, change or fix, in plain words>", "priority": "<high, medium or low>", "money_at_stake": "<revenue where the digest has it>", "currency": "<currency>", "evidence": "<the rate and how it compares, counts only>", "next_skill": "<engagement-email-builder or engagement-sms-builder>"}]}`. Run `python3 <this skill's folder>/scripts/handoff.py findings --handoff <file> --from-file <findings-1.json> --source engagement-campaign-digest`, then record the stage done with outcome `reported`.
 
 ## Output

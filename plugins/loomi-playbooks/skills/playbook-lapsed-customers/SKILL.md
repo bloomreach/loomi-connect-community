@@ -108,7 +108,7 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 
 1. Follow `scenario-qa` on the scenario ID, and check its condition uses the segment. On NO-GO, fix through `engagement-scenario-builder` as in step 5 or in the Engagement UI, and QA again; the stage stays in progress.
 2. On GO or GO WITH CAUTION, tell the user to switch the flow on **in the Engagement UI**. Never start it.
-3. When they say it has started, record the stage done with outcome `started`, with `--today <start date>` when the user started it on an earlier day: backdating with `--today` is how the hand-off file records the day a person switched a flow on, and the waits count from it. Otherwise record `not_launched`. Say when the next stages are due.
+3. When they say it has started, record the stage done with outcome `started`, with `--today <start date>` when the user started it on an earlier day: backdating with `--today` is how the hand-off file records the day a person switched a flow on, and the waits count from it. Then record the switch-on as a change, so `playbook-quarter-close` sees it: `python3 <this skill's folder>/scripts/handoff.py change --handoff <file> --source engagement-ui --kind start --target 'scenario <ID>' --tool engagement_ui --live-impact live --result in_place --live-on <start date>` (the user made it in the app, so the source is `engagement-ui`; the start date is the day they switched it on). Otherwise record `not_launched`. Say when the next stages are due.
 
 ### 7. performance: what does each step do?
 

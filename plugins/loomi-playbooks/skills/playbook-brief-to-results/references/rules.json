@@ -49,7 +49,7 @@
           "name": "qa",
           "skill": "campaign-qa",
           "writes": false,
-          "do": "QA the draft until it is GO, then wait for the user to set the send time and start it in the Engagement UI.",
+          "do": "QA the draft until it is GO; a NO-GO fix goes back through the build stage's write skill (engagement-sms-builder revises an SMS draft, engagement-email-builder makes a new email draft), with its own yes, and is QA'd again. Then wait for the user to set the send time and start it in the Engagement UI, and record the scheduled send as a change (source engagement-ui).",
           "outcomes": [
             "scheduled",
             "not_scheduled"
@@ -150,10 +150,11 @@
           "name": "digest",
           "skill": "engagement-campaign-digest",
           "writes": false,
-          "do": "Read how the campaign did against the rest of that week, and write what to keep or change into findings for the next brief.",
+          "do": "Read how the campaign did against the rest of that week, and write what to keep or change into findings for the next brief. Record never_sent when the campaign won't be sent.",
           "outcomes": [
             "reported",
-            "not_sent_yet"
+            "not_sent_yet",
+            "never_sent"
           ],
           "not_before": {
             "after_stage": "collisions",
@@ -195,7 +196,7 @@
   },
   "notes": {
     "digest_after_days": "Days after the send before the digest stage is due. The collisions stage usually finishes before the send, so the qa stage also records the send day plus this number as the digest's --not-before date. engagement-campaign-digest reads a full week by default, and most clicks and orders from a send arrive within days.",
-    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then. The digest stage's never_sent is the final outcome for a campaign that won't be sent after all, so a run doesn't wait on not_sent_yet for ever.",
     "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes). The email and SMS builders are two stages because a stage's skill comes from these rules, never from the file: a run skips the one it doesn't use. campaign-qa comes before the user schedules the send; send-preflight and the collision check read the campaign calendar, which leaves drafts out, so they run once the send is scheduled."
   }
 }

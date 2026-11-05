@@ -30,7 +30,7 @@ Start here: these run the others.
 | [playbook-catalog-truth](skills/playbook-catalog-truth/) | Make search, recommendations and email agree on product data: parity, price and variant checks, Engagement catalog fixes, a list for the feed team, and a recheck | **Writes** |
 | [playbook-peak-event](skills/playbook-peak-event/) | Plan, check and review one peak event: campaigns, landing collections, readiness, vouchers, send preflight and collisions, then what moved revenue | Read-only |
 | [playbook-revenue-drop](skills/playbook-revenue-drop/) | Incident runbook for a revenue drop: explain it, check only what's left (feeds, search API, flows, a recent change), roll back a harmful rule and confirm recovery | **Writes** |
-| [playbook-monthly-hygiene](skills/playbook-monthly-hygiene/) | One monthly sweep of Discovery rules and redirects and Engagement assets, with one plan to approve per write stage and a safe deletion order for Engagement | **Writes** |
+| [playbook-monthly-hygiene](skills/playbook-monthly-hygiene/) | One monthly sweep of Discovery rules and redirects and Engagement assets, with one plan to review per write stage and a safe deletion order for Engagement | **Writes** |
 
 ## Marketing (Engagement)
 

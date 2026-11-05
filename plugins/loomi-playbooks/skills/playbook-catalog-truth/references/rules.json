@@ -5,6 +5,7 @@
     "catalog-truth": {
       "title": "Catalog truth",
       "product": "both",
+      "requires_both": true,
       "stages": [
         {
           "name": "parity",
@@ -48,7 +49,32 @@
             "stopped",
             "not_needed"
           ],
-          "product": "engagement"
+          "product": "engagement",
+          "skip_when": [
+            {
+              "all": [
+                {
+                  "stage": "parity",
+                  "outcomes": [
+                    "in_sync"
+                  ]
+                },
+                {
+                  "stage": "prices",
+                  "outcomes": [
+                    "clean"
+                  ]
+                },
+                {
+                  "stage": "variants",
+                  "outcomes": [
+                    "clean"
+                  ]
+                }
+              ],
+              "reason": "all three checks were clean: there is nothing to fix."
+            }
+          ]
         },
         {
           "name": "recheck",
@@ -63,13 +89,55 @@
           "not_before": {
             "after_stage": "fix",
             "days": "recheck_after_days"
-          }
+          },
+          "skip_when": [
+            {
+              "all": [
+                {
+                  "stage": "parity",
+                  "outcomes": [
+                    "in_sync"
+                  ]
+                },
+                {
+                  "stage": "prices",
+                  "outcomes": [
+                    "clean"
+                  ]
+                },
+                {
+                  "stage": "variants",
+                  "outcomes": [
+                    "clean"
+                  ]
+                }
+              ],
+              "reason": "all three checks were clean: there is nothing to recheck."
+            },
+            {
+              "all": [
+                {
+                  "stage": "parity",
+                  "outcomes": [
+                    "in_sync"
+                  ]
+                },
+                {
+                  "stage": "fix",
+                  "outcomes": [
+                    "not_needed"
+                  ]
+                }
+              ],
+              "reason": "the catalogs were in sync and nothing was fixed in Engagement, so a second parity check has nothing to compare. Re-run price-anomaly-finder or discovery-variant-health for the Discovery-side findings instead."
+            }
+          ]
         }
       ]
     }
   },
   "notes": {
     "recheck_after_days": "Days after the fix stage finishes before the recheck stage is due. engagement-catalog-fixer's fixes last only until the next catalog import overwrites them, and the feed team needs time to fix the Discovery side; a week covers several import cycles and a working week.",
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). The fix stage records not_needed rather than being skipped when there's nothing to fix in Engagement: its date starts the recheck wait, which the feed team's fixes need too."
+    "playbooks": "Each playbook's title, product and stages in order. requires_both: true means the playbook compares Discovery and Engagement, so new refuses a run without --account, --environment and --project-id. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when an earlier stage had one of these outcomes, or with skipped: true when it was skipped; an entry with all lists conditions that must every one hold). The fix stage records not_needed rather than being skipped when there's nothing to fix in Engagement but the other checks found problems: its date starts the recheck wait, which the feed team's fixes need too. When all three checks were clean, status suggests skipping both the fix and the recheck."
   }
 }

@@ -36,6 +36,11 @@
                 "nothing_to_test"
               ],
               "reason": "the review found no query where a boost is worth testing."
+            },
+            {
+              "stage": "review",
+              "skipped": true,
+              "reason": "the review stage was skipped, so no query was chosen to test."
             }
           ]
         },
@@ -101,6 +106,6 @@
   "notes": {
     "min_test_days": "Days after the test stage finishes (the test started) before the read-out stage is due. The same as the test-and-learn playbook: discovery-experiment-setup recommends at least 14 days in whole weeks; use the end date agreed at setup when it's later.",
     "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes)."
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or with skipped: true when it was skipped). Skips follow these rules stage by stage: skipping the review offers the test as a skip, which offers the read-out, which offers the close."
   }
 }

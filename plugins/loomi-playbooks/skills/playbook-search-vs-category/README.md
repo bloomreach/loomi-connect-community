@@ -5,8 +5,8 @@ Makes searches for category names ("dresses", "mens pants") land as well as brow
 | | |
 |---|---|
 | **Products** | Discovery |
-| **Access** | **Writes**, through its stage skills only: `discovery-redirect-fixer` creates a redirect switched off, switches it on (live for shoppers) and can change or delete one. Each write only after its own explicit "yes" |
-| **Loomi Connect tools** | Those of its stage skills. Writes: `create_redirect`, `update_redirect`, `delete_redirect` |
+| **Access** | **Writes**, through its stage skills only: `discovery-redirect-fixer` creates a redirect switched off, switches it on (live for shoppers) and can change or switch one off. Each write only after its own explicit "yes". This playbook never deletes: if the fixer proposes a delete, it stops, and the delete is a separate job for `discovery-redirect-fixer` outside the run, with its own yes |
+| **Loomi Connect tools** | Those of its stage skills. Writes: `create_redirect`, `update_redirect` |
 | **Other requirements** | The `loomi-discovery` and `loomi-platform` plugins. Python 3 for `scripts/handoff.py` (standard library only); the hand-off file can also be kept by hand |
 | **Tested with** | Claude Code: definitions and script tests. Not yet run end to end |
 | **Maintainer** | @bloomreach |

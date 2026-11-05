@@ -4,8 +4,8 @@ Makes the same product show the same price, stock and link in search, recommenda
 
 | | |
 |---|---|
-| **Products** | Discovery and Engagement |
-| **Access** | **Writes**, through its stage skills only: `engagement-catalog-fixer` updates Engagement catalog items (live for recommendations and emails within minutes; each upsert replaces the whole item with the planned record), each batch only after its own explicit "yes". This playbook never deletes items |
+| **Products** | Discovery and Engagement (both are required: the hand-off script refuses a run with only one) |
+| **Access** | **Writes**, through its stage skills only: `engagement-catalog-fixer` updates Engagement catalog items (live for recommendations and emails within minutes; each upsert replaces the whole item with the planned record), each batch only after its own explicit "yes". This playbook never deletes items: if the fixer proposes a delete, it stops, and the delete is a separate job for `engagement-catalog-fixer` outside the run, with its own yes |
 | **Loomi Connect tools** | Those of its stage skills. Writes: `upsert_catalog_item`, `import_catalog_items` (v2 batches, off by default) |
 | **Other requirements** | The `loomi-platform`, `loomi-product-data`, `loomi-discovery` and `loomi-engagement` plugins. Python 3 for `scripts/handoff.py` (standard library only); the hand-off file can also be kept by hand |
 | **Tested with** | Claude Code: definitions and script tests. Not yet run end to end |
