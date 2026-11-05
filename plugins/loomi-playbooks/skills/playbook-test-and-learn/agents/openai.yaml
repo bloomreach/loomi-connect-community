@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Test and Learn"
+  short_description: "Find a costly Discovery rule, A/B test a fix, roll out the winner and confirm it holds"
+policy:
+  # Writes skill: its test and close stages create, start and end live A/B tests, so it only runs when called by name.
+  allow_implicit_invocation: false

@@ -25,7 +25,7 @@ If you're not sure something fits, [open an issue](../../issues/new/choose) befo
    cd loomi-connect-community
    git checkout -b skill/campaign-digest
    ```
-2. **Copy the template.** Copy [templates/skill-template/](templates/skill-template/) to `plugins/<plugin>/skills/<skill-name>/`. Choose `loomi-engagement`, `loomi-discovery`, `loomi-platform` (skills that span products) or `loomi-product-data`. If your skill fits none of them, propose a new plugin in an issue first.
+2. **Copy the template.** Copy [templates/skill-template/](templates/skill-template/) to `plugins/<plugin>/skills/<skill-name>/`. Choose `loomi-engagement`, `loomi-discovery`, `loomi-platform` (skills that span products), `loomi-product-data` or `loomi-playbooks` (a playbook that chains other skills; see [docs/hand-off-format.md](docs/hand-off-format.md)). If your skill fits none of them, propose a new plugin in an issue first.
 3. **Write the skill**, following [docs/skill-authoring.md](docs/skill-authoring.md).
 4. **List it** in `plugins/<plugin>/README.md` with the right **Access**, and in [docs/skills-by-task.md](docs/skills-by-task.md). Then regenerate [SKILLS.md](SKILLS.md) with `python3 scripts/build_skill_index.py` (never edit it by hand; CI fails if it is out of date).
 5. **Validate it locally**, and run the unit tests:

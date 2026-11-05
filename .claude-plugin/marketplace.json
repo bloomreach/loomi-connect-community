@@ -53,6 +53,18 @@
         "product-data",
         "seo"
       ]
+    },
+    {
+      "name": "loomi-playbooks",
+      "source": "./plugins/loomi-playbooks",
+      "description": "Playbooks that chain Loomi Connect skills into one job, from finding a problem to fixing, testing and measuring it, with a hand-off file that carries results between stages and sessions. First: test and learn for Discovery merchandising rules.",
+      "category": "marketing",
+      "tags": [
+        "bloomreach",
+        "loomi-connect",
+        "discovery",
+        "playbooks"
+      ]
     }
   ]
 }

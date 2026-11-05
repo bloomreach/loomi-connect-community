@@ -34,7 +34,7 @@ You review **loomi-connect-community** for structure and consistency. The rules 
    - `SKILL.md` near the 500-line limit, or long tables, rubrics and examples that belong in `references/` or `examples/`.
    - `references/` or `examples/` files that `SKILL.md` never points to (the assistant never reads them).
    - Sections out of the authoring guide's order (What this does, Before you start, Steps, Output, Safety), or a missing **Safety** section in a `writes` skill.
-   - A skill in the wrong plugin: cross-product skills belong in `loomi-platform`, product-data skills in `loomi-product-data`.
+   - A skill in the wrong plugin: cross-product skills belong in `loomi-platform`, product-data skills in `loomi-product-data`, and skills that only chain other skills in `loomi-playbooks`.
 5. **Scripts.** Scripts nobody's steps call; arguments documented in `SKILL.md` that the script doesn't take; very long scripts that mix several jobs; non-standard-library imports without a declared requirement.
 6. **Dead files.** Unused assets, empty folders, leftover test files, and files that aren't part of the layout in the authoring guide.
 

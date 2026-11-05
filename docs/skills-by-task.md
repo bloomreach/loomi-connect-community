@@ -89,6 +89,14 @@ Start with the health check, then go deeper where it points you.
 3. [discovery-experiment-close](../plugins/loomi-discovery/skills/discovery-experiment-close/) (**writes**: ends the test and switches rules, after you confirm each step): ship the winner or keep today's behaviour, then archive.
 4. [change-impact-tracker](../plugins/loomi-platform/skills/change-impact-tracker/): "Did my change work?" Before vs after, adjusted for the site-wide trend, for changes made outside a test.
 
+## Playbooks: find, fix, test and measure in one run
+
+A playbook runs several of the skills above in order and carries the results between them in a hand-off file, so you can stop and pick up again when a test has run.
+
+| Ask | Skill |
+|---|---|
+| "Which rule on 'black dress' is costing us money? Test a fix and roll it out if it wins." | [playbook-test-and-learn](../plugins/loomi-playbooks/skills/playbook-test-and-learn/) (**writes** through its test and close stages, after you confirm each step): rule impact, then A/B test, read-out, close and a check that it holds |
+
 ## Planning marketing
 
 | Ask | Skill |

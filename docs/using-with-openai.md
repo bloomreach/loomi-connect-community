@@ -12,7 +12,7 @@ This repository also works as a Codex plugin marketplace. The Codex manifests ar
 codex plugin marketplace add bloomreach/loomi-connect-community
 ```
 
-Then install `loomi-engagement`, `loomi-discovery`, `loomi-platform` and `loomi-product-data` from Codex's plugin directory. To get new versions:
+Then install `loomi-engagement`, `loomi-discovery`, `loomi-platform`, `loomi-product-data` and `loomi-playbooks` from Codex's plugin directory. To get new versions:
 
 ```bash
 codex plugin marketplace upgrade

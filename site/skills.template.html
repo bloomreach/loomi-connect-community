@@ -14,7 +14,7 @@
   --bg:#ffffff; --surface:#f6f6f4; --ink:#000000; --muted:#5b5b57; --line:#e3e3df;
   --spark:#fee31b; --link-line:#b4a813; --spark-ink:#000000; --arctic:#016d92; --arctic-bright:#019ace;
   --write:#c2410c; --write-bg:#fff1e8;
-  --eng:#019ace; --disc:#8873ff; --plat:#04a072; --prod:#ee6c2b;
+  --eng:#019ace; --disc:#8873ff; --plat:#04a072; --prod:#ee6c2b; --play:#c2387a;
   --sans:"Bloomreach Sans","Instrument Sans",Arial,Helvetica,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
@@ -114,7 +114,7 @@ footer .wrap{padding-block:24px 40px;border-top:1px solid var(--line);color:var(
 const D=__DATA__;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const COLORS={"loomi-engagement":"var(--eng)","loomi-discovery":"var(--disc)","loomi-platform":"var(--plat)","loomi-product-data":"var(--prod)"};
+const COLORS={"loomi-engagement":"var(--eng)","loomi-discovery":"var(--disc)","loomi-platform":"var(--plat)","loomi-product-data":"var(--prod)","loomi-playbooks":"var(--play)"};
 const W=D.skills.filter(s=>s.writes).length;
 $("title").innerHTML=`<em>${D.skills.length}</em> skills across ${D.plugins.length} plugins`;
 $("lede").innerHTML=`${D.skills.length-W} only read. ${W} can change something, and each of those shows exactly what it will change and waits for a yes. Using claude.ai or ChatGPT? Download a skill's <b>.zip</b> and follow the <a href="quickstart.html">quickstart</a>.`;
