@@ -270,6 +270,133 @@ class RecheckAndVerifyTest(Base):
         self.assertEqual(r.returncode, 1)
 
 
+class ContentLossTest(Base):
+    def scenario_with(self, node, drop_edited=False):
+        data = json.loads((FX / "scenario_draft.json").read_text(encoding="utf-8"))
+        rec = data["result"]["data"]
+        if node:
+            rec["nodes"].append(node)
+        if drop_edited:
+            rec.pop("edited", None)
+        return self.write(f"scenario_{len(list(self.dir.iterdir()))}.json", data)
+
+    def test_any_design_carrying_step_without_a_design_blocks_the_plan(self):
+        for node in ({"id": 7, "type": "serve-banner-action", "name": "Banner"},
+                     {"id": 7, "type": "some-in-app-action", "name": "In-app"}):
+            with self.subTest(node["type"]):
+                r = run("plan", "--scenario", self.scenario_with(node), "--spec", FX / "spec_message.json",
+                        "--project-id", PROJECT, "--project-name-file", FX / "project.txt",
+                        "--out", self.dir / "plan.json", cwd=self.dir)
+                ch = json.loads(r.stdout)["changes"][0]
+                self.assertEqual(ch["status"], "blocked")
+                self.assertTrue(any("Steps 7 have no design" in p for p in ch["problems"]), ch["problems"])
+
+    def test_no_design_types_pass_without_a_design(self):
+        node = {"id": 7, "type": "per-customer-webhook-action", "name": "Hook", "method": "POST"}
+        r = run("plan", "--scenario", self.scenario_with(node), "--spec", FX / "spec_message.json",
+                "--project-id", PROJECT, "--project-name-file", FX / "project.txt",
+                "--out", self.dir / "plan.json", cwd=self.dir)
+        ch = json.loads(r.stdout)["changes"][0]
+        self.assertEqual(ch["status"], "ready", ch["problems"])
+        self.assertEqual(ch["after"]["design_node_ids"], [2, 4, 9])  # split 8, variant B 9 follow node 7
+
+    def test_verify_reports_steps_that_lost_their_design(self):
+        _, full = self.plan()
+
+        def strip(p):
+            next(n for n in p["nodes"] if n["id"] == 4).pop("design")
+
+        res = json.loads(self.verify(self.readback_from(full, strip)).stdout)["results"][0]
+        self.assertEqual(res["result"], "not_in_place")
+        self.assertIn("steps 4 had a design", res["reason"])
+        self.assertIn("Don't send the plan's stored undo", res["next"])
+
+    def test_restore_builds_a_fresh_plan_from_the_current_read(self):
+        _, full = self.plan()
+        now = self.readback_from(full)  # the split went in, but the user wants it out again
+        r = run("restore", "--plan", self.dir / "plan.json", "--scenario", now, "--out", self.dir / "restore.json",
+                cwd=self.dir)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        printed = json.loads(r.stdout)["changes"][0]
+        self.assertEqual(printed["payload"], "(in the --out file)")
+        ch = json.loads((self.dir / "restore.json").read_text(encoding="utf-8"))["changes"][0]
+        self.assertEqual((ch["status"], ch["tool"]), ("ready", "update_scenario"))
+        payload = ch["payload"]["payload"]
+        self.assertEqual(sorted(n["id"] for n in payload["nodes"]), [0, 1, 2, 3, 4])
+        self.assertIn((1, 1, 2), edges(payload))
+        self.assertTrue(any("Remove the A/B split step 5" in w for w in ch["description"]))
+        r = run("recheck", "--plan", self.dir / "restore.json", "--scenario", now, cwd=self.dir)
+        self.assertTrue(json.loads(r.stdout)["unchanged"])
+        restored = self.write("restored.json", {"result": {"success": True, "data": dict(
+            payload, _id="aaaaaaaaaaaaaaaaaaaaaaaa", status="draft")}})
+        r = run("verify", "--plan", self.dir / "restore.json", "--readback", f"1={restored}", cwd=self.dir)
+        self.assertEqual(json.loads(r.stdout)["results"][0]["result"], "in_place")
+
+    def test_restore_is_blocked_when_the_read_lacks_designs(self):
+        _, full = self.plan()
+        now = self.readback_from(full, lambda p: next(n for n in p["nodes"] if n["id"] == 2).pop("design"))
+        r = run("restore", "--plan", self.dir / "plan.json", "--scenario", now, "--out", self.dir / "restore.json",
+                cwd=self.dir)
+        ch = json.loads(r.stdout)["changes"][0]
+        self.assertEqual(ch["status"], "blocked")
+
+
+class RecheckHashTest(Base):
+    def test_an_edit_counts_as_a_change_when_edited_is_missing_from_both_fetches(self):
+        data = json.loads((FX / "scenario_draft.json").read_text(encoding="utf-8"))
+        data["result"]["data"].pop("edited")
+        first = self.write("first.json", data)
+        self.plan(scenario=first)
+        r = run("recheck", "--plan", self.dir / "plan.json", "--scenario", first, cwd=self.dir)
+        self.assertTrue(json.loads(r.stdout)["unchanged"])
+        data["result"]["data"]["nodes"][1]["count"] = 8
+        r = run("recheck", "--plan", self.dir / "plan.json", "--scenario", self.write("second.json", data),
+                cwd=self.dir)
+        out = json.loads(r.stdout)
+        self.assertFalse(out["unchanged"])
+        self.assertEqual(out["changed"], ["content_hash"])
+
+    def test_a_plan_without_a_hash_counts_as_changed(self):
+        self.plan()
+        plan = json.loads((self.dir / "plan.json").read_text(encoding="utf-8"))
+        plan["changes"][0]["before"].pop("content_hash")
+        old = self.write("old_plan.json", plan)
+        r = run("recheck", "--plan", old, "--scenario", FX / "scenario_draft.json", cwd=self.dir)
+        self.assertFalse(json.loads(r.stdout)["unchanged"])
+
+
+class WholeSharesTest(Base):
+    def test_whole_percentages_are_written_as_integers(self):
+        spec = json.loads((FX / "spec_message.json").read_text(encoding="utf-8"))
+        spec["control"]["percentage"], spec["variant"]["percentage"] = 80.0, 20.0
+        _, full = self.plan(self.write("s.json", spec))
+        raw = (self.dir / "plan.json").read_text(encoding="utf-8")
+        split = next(n for n in full["changes"][0]["payload"]["payload"]["nodes"] if n["type"] == "ab-split")
+        self.assertEqual([v["percentage"] for v in split["variants"]], [80, 20])
+        self.assertTrue(all(type(v["percentage"]) is int for v in split["variants"]))
+        self.assertNotIn("80.0", raw)
+
+    def test_fractional_percentages_stay_as_they_are(self):
+        spec = json.loads((FX / "spec_message.json").read_text(encoding="utf-8"))
+        spec["control"]["percentage"], spec["variant"]["percentage"] = 87.5, 12.5
+        _, full = self.plan(self.write("s.json", spec))
+        split = next(n for n in full["changes"][0]["payload"]["payload"]["nodes"] if n["type"] == "ab-split")
+        self.assertEqual([v["percentage"] for v in split["variants"]], [87.5, 12.5])
+
+
+class VariantProjectTest(Base):
+    def test_variant_node_from_another_project_is_blocked(self):
+        node = json.loads((FX / "variant_node.json").read_text(encoding="utf-8"))
+        rec = node.get("result", node)
+        rec = rec.get("data", rec) if isinstance(rec, dict) else rec
+        rec = rec.get("node", rec) if isinstance(rec.get("node"), dict) else rec
+        rec["project_id"] = "11111111-1111-1111-1111-111111111111"
+        _, full = self.plan(extra=("--variant-node", self.write("vn.json", node)))
+        ch = full["changes"][0]
+        self.assertEqual(ch["status"], "blocked")
+        self.assertTrue(any("another project" in p for p in ch["problems"]))
+
+
 class RulesTest(unittest.TestCase):
     def test_every_rules_key_has_a_note(self):
         rules = json.loads((SKILL / "references/rules.json").read_text(encoding="utf-8"))

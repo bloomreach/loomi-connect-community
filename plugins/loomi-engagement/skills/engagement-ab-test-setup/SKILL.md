@@ -21,9 +21,9 @@ This skill **can write** to Bloomreach Engagement, but only after the user says 
 | Add an A/B split (and variant B's step) to a **draft** or **inactive** scenario | `update_scenario` (full payload from the plan file) | None: the scenario isn't running. Nothing reaches customers until someone switches it on in Engagement |
 | For a running scenario, only when the user asks: a **new draft copy** with the split | `create_scenario` | None: always created as a draft. The running flow is unchanged |
 
-- **One write per test, after its own explicit "yes"** that names the scenario and the project. A yes to the test idea isn't a yes to the write. If anything in the plan changes, show it again and ask again.
+- **One write per test, after its own explicit "yes"** that names the scenario and the project. A yes to the test idea isn't a yes to the write. If anything in the plan changes, show it again and ask again. Putting a failed update right (step 7) is a separate write with its own plan and its own yes.
 - **Never pass `allow_active`.** Never start, stop, pause, archive or delete a scenario; switching the flow on is for the user, in the Engagement app. Say so every time.
-- **Write only what's in the saved plan file**, with the plan's payload exactly. Re-fetch the scenario just before the write and stop if it changed (`recheck`). Never retry a write blindly: if a response is lost, search for the change first (`search_scenarios`, by ID or, for a copy, by name in the list).
+- **Write only what's in the saved plan file**, with the plan's payload exactly. Re-fetch the scenario just before the write and stop if it changed (`recheck`). **Never send the plan's stored undo**: it's a record of the flow before the write, not a call to make. Never retry a write blindly: if a response is lost, search for the change first (`search_scenarios`, by ID or, for a copy, by name in the list).
 - Builds only the `ab-split` node, whose shape was read from saved scenarios. **Never build `ab-split-contextual`, `ab-split-auto-winner` or `segmentation-fork`**, and never change an existing split's variants (they're fixed once it has run).
 - **Never call** these write tools, which `search_tools` also returns: `update_scenario_node`, `delete_scenario`, `clone_scenario`, `create_email_campaign`, `update_email_campaign`, `delete_email_campaign`, `create_sms_campaign`, any segment, customer filter, catalog or Discovery write tool, or anything tagged `internal`.
 - **Email campaign A/B tests are out of scope.** The Loomi Connect guide `email-template-best-practices` documents a `manual` split for `create_email_campaign`, but building two email designs is a different job and it's untested; and `update_email_campaign` collapses an A/B campaign's split. Hand standalone email tests to the Engagement app.
@@ -81,7 +81,7 @@ If the user named a project, use it. Otherwise call `list_cloud_organizations`, 
 
 - **Branch names** that say what differs ("Control", "10% off"; "Send", "Holdout"; "After 4 hours", "After 24 hours"). The readout matches them on the split events, so keep them short and different.
 - **Shares.** 50/50 for message and timing tests reaches a result fastest. For a holdout, a small share (often 10 to 20%) keeps most customers getting the message; each branch needs at least `min_variant_percentage` in [references/rules.json](references/rules.json).
-- **Variant B's message** (message test): a copy of the control that the user edits in Engagement before switching on, or an existing message step from this or another scenario (fetch it with `search_scenario_nodes`, `node_id` and `include_design=true`, saved as `<work>/variant-node.json`). This skill doesn't write message content: for new content, the user edits the copy in Engagement, or `engagement-email-builder` drafts it as a campaign to copy from.
+- **Variant B's message** (message test): a copy of the control that the user edits in Engagement before switching on, or an existing message step from this or another scenario **in the same project** (fetch it with `search_scenario_nodes`, `node_id` and `include_design=true`, saved as `<work>/variant-node.json`). A step from another project's scenario can't be used: its consent categories, senders and references belong to that project, and the plan blocks it when the node detail shows another `project_id`. This skill doesn't write message content: for new content, the user edits the copy in Engagement, or `engagement-email-builder` drafts it as a campaign to copy from.
 - **The primary metric**, and how the readout will count it: a conversion event within an attribution window, revenue, or clicks (message tests only). One metric decides the test; others are guardrails.
 - **The variant's wait** (timing test): units and count.
 
@@ -103,19 +103,25 @@ Write the test spec to `<work>/spec.json` with your file-writing tool, in the fo
 python3 <this skill's folder>/scripts/ab_split_plan.py plan --scenario <work>/scenario.json --spec <work>/spec.json --project-id <project id> --project-name-file <work>/project.txt --variant-node <work>/variant-node.json --out <work>/plan.json
 ```
 
-(leave out `--variant-node` unless step 3 chose one). The change is `ready` or `blocked` with its `problems`; fix the spec or fetch again and re-plan. What the script prints leaves out the payload; the `--out` file holds it and the undo. Never print the payload or quote it: it holds whole message designs.
+(leave out `--variant-node` unless step 3 chose one). The change is `ready` or `blocked` with its `problems`; fix the spec or fetch again and re-plan. Any step without a `design`, other than the types in `no_design_node_types` in [references/rules.json](references/rules.json), blocks the plan: the scenario was fetched without designs, and a full update would wipe that content. What the script prints leaves out the payload; the `--out` file holds it and a record of the flow before the change. Never print the payload or quote it: it holds whole message designs.
 
 ### 6. Show the plan and confirm
 
-Show the outline of the change (see **Output**): the test, the split point, the branches and shares, variant B's step, the connections removed and added, the metric, the size and end date, every warning, and "nothing runs until you switch it on in Engagement". Then ask: "Add this split to '<scenario>' in <project>? It stays <draft/inactive>. (yes / no)". For a copy: "Create a new draft copy '<copy name>' with this split? The running flow is unchanged. (yes / no)".
+Show the outline of the change (see **Output**): the test, the split point, the branches and shares, variant B's step, the connections removed and added, the metric, the size and end date, every warning, and "nothing runs until you switch it on in Engagement". Then ask: "Add this split to '<scenario>' in <project>? It stays <draft/inactive>. (yes / no)". For a copy: "Create a new draft copy '<copy name>' with this split? The running flow is unchanged. (yes / no)". For a copy, also say that `create_scenario` sets the copy's frequency policy to `Default` (not the project's own default) and its email steps to `transfer_user_identity` disabled (see `docs/known-tool-behaviour.md`), so the user must compare both with the original flow in Engagement before switching the copy on.
 
 ### 7. Write, then verify
 
 1. Read `get_guide('scenario-write-best-practices')` once per session before the first write.
 2. Fetch the scenario again (`search_scenarios`, `scenario_id`, `include_node_designs=true`), save it, and run `python3 <this skill's folder>/scripts/ab_split_plan.py recheck --plan <work>/plan.json --scenario <work>/scenario-now.json`. If it reports a change, someone edited the flow: stop and start again from step 2.
 3. Make the change's call with the `payload` from the plan file exactly (`project_id`, `scenario_id`, `payload` for `update_scenario`; `project_id`, `payload` for `create_scenario`), with `call_tool` if needed. Check `success`; note the new ID for a copy.
-4. Read it back: `search_scenarios` with the `scenario_id` (the copy's new ID for a copy), saved as `<work>/readback.json`, and run `python3 <this skill's folder>/scripts/ab_split_plan.py verify --plan <work>/plan.json --readback 1=<work>/readback.json --out <work>/verify.json`.
-5. `in_place`: done. `not_in_place`: stop, say what differs, and offer the plan's undo for an update (`update_scenario` with the saved payload, after its own yes). An `alert` means the flow isn't draft or inactive: tell the user at once.
+4. Read it back: `search_scenarios` with the `scenario_id` (the copy's new ID for a copy) and `include_node_designs=true`, saved as `<work>/readback.json`, and run `python3 <this skill's folder>/scripts/ab_split_plan.py verify --plan <work>/plan.json --readback 1=<work>/readback.json --out <work>/verify.json`.
+5. `in_place`: done. `not_in_place`: stop and say what differs (its `reason`, including any step that lost its design). An `alert` means the flow isn't draft or inactive: tell the user at once. Never send the plan's stored undo. To put an update right:
+   1. Fetch the scenario again (`search_scenarios`, `scenario_id`, `include_node_designs=true`), saved as `<work>/scenario-restore.json`.
+   2. Run `python3 <this skill's folder>/scripts/ab_split_plan.py restore --plan <work>/plan.json --scenario <work>/scenario-restore.json --out <work>/restore.json`. It builds a fresh plan from that read that takes out the split and variant B and puts the original connection back.
+   3. Describe what it would restore in words (its `description`), with its `problems` if it's blocked. If steps have lost their designs, a restore can't bring the content back: the user restores it in Engagement.
+   4. Ask for its own yes, then fetch again and `recheck --plan <work>/restore.json`, write its payload, and `verify --plan <work>/restore.json` as above. If that isn't in place either, stop and hand it to the user in the Engagement app.
+
+   For a copy, nothing is restored: the user deletes the draft copy in Engagement.
 
 ### 8. Hand over
 

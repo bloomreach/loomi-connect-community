@@ -101,7 +101,7 @@ Before each stage, run `python3 <this skill's folder>/scripts/handoff.py stage -
 1. Ask the user whether to test something in the flow: two versions of a message, a holdout that gets nothing (the cleanest answer to whether the flow earns money), or two wait times. If they don't want a test, run `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name test --status skipped` and go to the qa stage; `status` then offers the ab-read-out stage as a skip.
 2. Follow `engagement-ab-test-setup` on the draft's scenario ID, from its step 1. Its metric, sizing, plan and confirmation apply; it adds the split to the draft and never switches anything on. Save its plan with `ab_split_plan.py plan --out <ab-plan.json>` and its read-back check with `verify --out <ab-verify.json>`.
 3. Run `python3 <this skill's folder>/scripts/handoff.py changes --handoff <file> --plan <ab-plan.json> --verify <ab-verify.json> --source engagement-ab-test-setup`.
-4. Write down the split node's ID, the branch names, the primary metric and the planned end date: the ab-read-out stage needs them. Record `split_added`, or `no_test` when the sizing says the test isn't practical or the user decides against it.
+4. Write down the split node's ID, the branch names, the primary metric and the planned end date: the ab-read-out stage needs them. Record the planned end date on the ab-read-out stage, so `status` doesn't offer it before then: `python3 <this skill's folder>/scripts/handoff.py stage --handoff <file> --name ab-read-out --not-before <planned end date>`. Record `split_added`, or `no_test` when the sizing says the test isn't practical or the user decides against it.
 
 ### 5. qa: GO, then the user switches it on
 

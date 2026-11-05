@@ -54,9 +54,14 @@ after:   from_node --> split --1 (control)--> wait (as today)  --> next
 ## Blocked when
 
 - the scenario's status isn't in `writable_statuses` (and there's no `copy_name` for a running one);
-- any message step has no `design` (fetch again with `include_node_designs=true`);
+- any step has no `design`, unless its type is in `no_design_node_types` (fetch again with `include_node_designs=true`). `serve-banner-action`, in-app steps and any type not on that list count as carrying a design;
+- `--variant-node` shows a `project_id` other than the confirmed project (variant B must come from the same project);
 - the `edge` isn't in the scenario, or `to_node` is the wrong type for the test;
 - the shares don't add up to 100, a share is below `min_variant_percentage`, or the names are missing or equal;
 - a timing test's wait is the same as today's.
 
-Warnings: a split already in the scenario; a holdout above `max_holdout_percentage`; variant B copied from the control (identical content); variant B taken from another step (check its consent category, sender and personalisation); a new copy of a running flow (stop the old one when the copy goes live).
+Warnings: a split already in the scenario; a holdout above `max_holdout_percentage`; variant B copied from the control (identical content); variant B taken from another step (check it's from this project, and its consent category, sender and personalisation); a new copy of a running flow (stop the old one when the copy goes live, and compare its frequency policy and email steps' `transfer_user_identity`, which `create_scenario` sets to `Default` and disabled, with the original).
+
+Shares that are whole numbers are written as integers (`50`, not `50.0`).
+
+`recheck` compares a hash of the scenario without its managed fields, so any edit counts as a change even when `edited` is missing. The plan keeps the flow as it was before the change as a record only: after a `not_in_place` update, `restore` builds a fresh plan from a new read instead.

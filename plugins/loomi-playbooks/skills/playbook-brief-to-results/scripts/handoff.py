@@ -614,8 +614,8 @@ def next_step(h, now):
         if rule.get("product") and not has_product(h, rule["product"]):
             skip = f"it needs {rule['product'].capitalize()}, which this run doesn't have."
         for cond in rule.get("skip_when", []):
-            if all(condition_holds(h, c) for c in cond.get("all", [cond])):
-                skip = cond["reason"]
+            if skip is None and all(condition_holds(h, c) for c in cond.get("all", [cond])):
+                skip = cond["reason"]  # the first reason that applies (a missing product comes first)
         dates = [d for d in (earliest(h, rule), s.get("not_before") and date.fromisoformat(s["not_before"])) if d]
         when = max(dates) if dates else None
         return {"stage": rule["name"], "skill": rule["skill"], "writes": rule["writes"], "do": rule["do"],
@@ -755,6 +755,8 @@ def cmd_list(a):
             "file": flat(p.name), "playbook": checked_text(h.get("playbook"), SKILL_NAME),
             "subject": checked_text((h.get("subject") or {}).get("kind")),
             "subject_value": flat((h.get("subject") or {}).get("value"))[:80], "started_on": checked_text(h.get("started_on")),
+            "project_id": checked_text((h.get("context") or {}).get("project_id")),
+            "account": checked_text((h.get("context") or {}).get("account")),
             "stages_done": sum(s.get("status") in ("done", "skipped") for s in stages), "stages": len(stages),
             "next_stage": None if not nxt else checked_text(nxt.get("stage")),
             "next_skill": None if not nxt else checked_text(nxt.get("skill"), SKILL_NAME),

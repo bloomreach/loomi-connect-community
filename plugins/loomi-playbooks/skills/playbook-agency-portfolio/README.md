@@ -7,7 +7,7 @@ For agencies, partners and multi-brand teams with many Engagement projects. It s
 | **Products** | Engagement |
 | **Access** | Read-only |
 | **Loomi Connect tools** | Those of `portfolio-overview`, all read-only |
-| **Other requirements** | The `loomi-engagement` plugin. Python 3 for `scripts/handoff.py` (standard library only); the hand-off file can also be kept by hand. Each client project's runs kept in a folder of their own |
+| **Other requirements** | The `loomi-engagement` plugin. Python 3 for `scripts/handoff.py` (standard library only); the hand-off file can also be kept by hand. Each client project's runs kept in a folder of their own, or all in one shared folder |
 | **Tested with** | Claude Code: definitions and script tests. Not yet run end to end |
 | **Maintainer** | @bloomreach |
 
@@ -31,6 +31,6 @@ For agencies, partners and multi-brand teams with many Engagement projects. It s
 ## Notes and limitations
 
 - The playbooks it names (`playbook-new-project`, `playbook-lifecycle-gap`, `playbook-revenue-drop`, `playbook-weekly-triage`) are separate skills, each run for one project in its own hand-off file. Where no playbook fits (tracking that stopped, an unreadable overview), it names a single skill.
-- `handoff.py list` shows a run's playbook, subject and next stage, but not its project. Runs started with `--subject-kind project` show the project ID; for the rest, keep each project's runs in a folder of their own.
+- `handoff.py list` shows each run's playbook, subject, next stage, and its `project_id` and `account` from the run's context, so the playbook matches a project's runs by `project_id` whatever the subject kind. One shared folder for every project works, as do separate folders.
 - The hand-off script needs a project ID for an Engagement run, so the portfolio run is started with one project of the organisation; its subject is the organisation, and it covers every project.
 - The overview has no revenue, campaign count or last-event date. A revenue drop is picked only when a client reports one, and recent activity is known only for projects deeper mode checked.

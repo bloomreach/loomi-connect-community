@@ -22,10 +22,10 @@
   "stale_days": 7,
   "list_limit": 10,
   "owners": {
-    "feed": "Whoever sends the data (the feed or integration team)",
-    "config": "The Data Hub administrator for this workspace",
-    "pipeline": "The Data Hub administrator; Bloomreach support if a job keeps failing",
-    "downstream": "The Engagement or Discovery owner who uses the catalog"
+    "feed": "feed or integration team",
+    "config": "Data Hub administrator",
+    "pipeline": "Data Hub administrator",
+    "downstream": "Engagement or Discovery catalog owner"
   },
   "notes": {
     "required_min_fill": "An identifier or a field the configuration marks required, filled on fewer than this share of sampled records, is high.",
@@ -43,6 +43,6 @@
     "data_job_types": "Job types that write data into a collection. Their latest success sets freshness; other job types (configuration-update, destination syncs) are reported on failure only.",
     "stale_days": "A collection whose latest successful data job is older than this many days (against --today) is medium.",
     "list_limit": "At most this many names are quoted in one finding.",
-    "owners": "Who usually fixes each kind of finding; every finding names one of these."
+    "owners": "Who usually fixes each kind of finding; every finding names one of these. Plain roles only (letters, digits, spaces and _ . : -, at most 120 characters), never a person's name, so the playbooks can copy them into a findings list as they are. feed is whoever sends the data; config is the Data Hub administrator for this workspace; pipeline is the Data Hub administrator, with Bloomreach support if a job keeps failing; downstream is the Engagement or Discovery owner who uses the catalog."
   }
 }

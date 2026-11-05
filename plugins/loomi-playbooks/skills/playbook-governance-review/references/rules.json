@@ -6,7 +6,7 @@
     "access": "organisation or project administrator",
     "integrations": "project administrator",
     "retention": "project administrator and data protection lead",
-    "datahub": "the owner named on the audit's row",
+    "datahub": "Data Hub administrator",
     "ad-audiences": "paid media owner",
     "catalog-exposure": "Discovery administrator or feed team",
     "hidden-config": "merchandiser who owns the rule"

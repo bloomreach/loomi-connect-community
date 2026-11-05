@@ -322,7 +322,10 @@
             "data_not_ready"
           ],
           "not_before": {
-            "after_stage": "rollback",
+            "after_stage": [
+              "change",
+              "rollback"
+            ],
             "days": "recovery_check_days"
           },
           "product": "discovery",
@@ -411,7 +414,10 @@
             "data_not_ready"
           ],
           "not_before": {
-            "after_stage": "rollback",
+            "after_stage": [
+              "change",
+              "rollback"
+            ],
             "days": "recovery_check_days"
           },
           "product": "engagement",
@@ -494,6 +500,6 @@
   "notes": {
     "recovery_check_days": "Days after the rollback stage finishes before the recovery stages are due. A week gives a whole weekday cycle after the fix, and Discovery reporting runs about 2 days behind. When the fix was a feed, flow or campaign change outside this run, or the rollback was skipped, record the fix date plus this on each recovery stage with stage --not-before.",
     "wait_outcomes": "Outcomes that mean a stage isn't finished yet: a recovery stage found too few days since the fix in the data. The script records them only with status in_progress and a --not-before date to come back on. The change stage's too_early_to_tell is a final outcome here, not a wait: in an incident the rollback decision can't wait for two weeks of data, so it rests on discovery-rule-cleanup's own impact check.",
-    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product: the Discovery path is explain, api, rollback and recovery; the Marketing path is engagement-explain, numbers, journeys, funnel and engagement-recovery; feeds and change serve both), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). Checks an explainer already ruled out record ruled_out, which says why they weren't run, and numbers records not_needed when no two numbers disagree. A skip_when entry with all lists conditions that must every one hold. The rest of the run is offered as a skip when neither explainer found a drop beyond normal variation (each within_normal, or skipped because the run lacks that product), or when the numbers stage finds the gap is a difference in definitions (definition_gap). The numbers stage itself is never skipped for within_normal: a user's number that says revenue fell against an explainer that says it didn't is exactly what it reconciles. Each recovery stage is offered as a skip when its own explainer found no drop, and when nothing was fixed: the rollback was skipped or kept, the change stage found no harmful Engagement change, and the feeds, API, journeys and funnel checks found nothing (each fine, ruled out or skipped)."
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, which product it needs in a run on both (product: the Discovery path is explain, api, rollback and recovery; the Marketing path is engagement-explain, numbers, journeys, funnel and engagement-recovery; feeds and change serve both), what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done; the recovery stages count from the later of change and rollback, so an Engagement-only run, where rollback is skipped, still waits after the change stage) and skip_when (suggest skipping when another stage had one of these outcomes, or was skipped). Checks an explainer already ruled out record ruled_out, which says why they weren't run, and numbers records not_needed when no two numbers disagree. A skip_when entry with all lists conditions that must every one hold. The rest of the run is offered as a skip when neither explainer found a drop beyond normal variation (each within_normal, or skipped because the run lacks that product), or when the numbers stage finds the gap is a difference in definitions (definition_gap). The numbers stage itself is never skipped for within_normal: a user's number that says revenue fell against an explainer that says it didn't is exactly what it reconciles. Each recovery stage is offered as a skip when its own explainer found no drop, and when nothing was fixed: the rollback was skipped or kept, the change stage found no harmful Engagement change, and the feeds, API, journeys and funnel checks found nothing (each fine, ruled out or skipped)."
   }
 }

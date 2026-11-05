@@ -341,6 +341,7 @@ class SharedHandoffTest(unittest.TestCase):
                          ("act", "2026-11-12", False))
         self.assertTrue(runs["b.handoff.json"]["finished"])
         self.assertIn("error", runs["notes.handoff.json"])
+        self.assertEqual((runs["a.handoff.json"]["project_id"], runs["a.handoff.json"]["account"]), ("proj-1", "acme"))
         self.assertEqual([(c["file"], c["live_on"]) for c in out["changes"]], [("a.handoff.json", "2026-11-06")])
         since = json.loads(self.run_h("list", "--dir", self.dir, "--json", "--changes", "--since", "2026-11-07"))
         self.assertEqual(since["changes"], [])

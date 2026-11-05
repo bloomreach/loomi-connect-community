@@ -23,15 +23,16 @@ See [examples/cart-reminder-discount.md](examples/cart-reminder-discount.md).
 ## How it works
 
 1. Finds the scenario and shows its steps; you pick the connection to split on.
-2. Agrees the test type, branch names and shares, variant B's message (a copy you edit in Engagement, or an existing message step), and the primary metric.
+2. Agrees the test type, branch names and shares, variant B's message (a copy you edit in Engagement, or an existing message step from the same project), and the primary metric.
 3. `scripts/ab_test_duration.py` sizes it from how many customers reach that step and today's rate (two-proportion formula, uneven splits supported), in whole weeks.
-4. `scripts/ab_split_plan.py plan` builds the full scenario payload with the `ab-split` node and its connections, blocks unsafe plans (running flow, missing message designs, wrong step type, bad shares) and keeps an undo. The test spec format is in [references/test-spec.md](references/test-spec.md); thresholds in [references/rules.json](references/rules.json).
-5. After a yes, it re-checks the flow hasn't changed, writes, reads it back and verifies with `ab_split_plan.py verify`.
+4. `scripts/ab_split_plan.py plan` builds the full scenario payload with the `ab-split` node and its connections, blocks unsafe plans (running flow, any step missing its design, wrong step type, bad shares, variant B from another project) and keeps a record of the flow before the change. The test spec format is in [references/test-spec.md](references/test-spec.md); thresholds in [references/rules.json](references/rules.json).
+5. After a yes, it re-checks the flow hasn't changed (a hash of the flow), writes, reads it back with designs and verifies with `ab_split_plan.py verify`, including that no step lost its design. If it isn't in place, `ab_split_plan.py restore` builds a fresh plan from a new read to take the split out, which gets its own yes; the stored record is never sent.
 
 ## Notes and limitations
 
 - Only the `ab-split` node is built: its shape was read from saved scenarios. Personalised (`ab-split-contextual`) and auto-winner splits, and segment forks, aren't verified, so they're out of scope.
 - Two branches per split. A message test's variant B starts as a copy of the control: edit its content in Engagement before switching the flow on.
+- A new draft copy of a running flow gets the `Default` frequency policy and email steps with `transfer_user_identity` disabled (`create_scenario` sets them): compare both with the original before switching the copy on.
 - Standalone email campaign A/B tests are out of scope. The `email-template-best-practices` guide documents a `manual` split for `create_email_campaign`, but it's untested here and building email content is another job; `update_email_campaign` collapses an A/B campaign's split.
 - Flow-level settings (conversion goal, description) aren't kept by the write tools; the metric goes in the plan and the hand-over for the readout.
 - Implicit invocation is turned off for OpenAI clients (`agents/openai.yaml`), because this skill writes.

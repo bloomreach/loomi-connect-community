@@ -7,6 +7,7 @@ Usage:
          --project-name-file project.txt [--variant-node node.json] [--out plan.json]
   python3 ab_split_plan.py recheck --plan plan.json --scenario fresh.json [--out result.json]
   python3 ab_split_plan.py verify --plan plan.json --readback 1=readback.json [--out result.json]
+  python3 ab_split_plan.py restore --plan plan.json --scenario now.json --out restore.json
 
 plan: --scenario is the saved search_scenarios detail (scenario_id, include_node_designs=true). --spec is the test
 spec (references/test-spec.md): the test type (message, holdout or timing), the connection to split, the split and
@@ -16,15 +17,23 @@ variant B is a copy of the control message. The plan has one change in the shape
 (Engagement variant): update_scenario for a draft or inactive scenario, or, with copy_name in the spec, a new draft
 copy with create_scenario for a running one.
 
-recheck: --scenario is the scenario fetched again just before the write. Reports whether it changed since the plan.
+recheck: --scenario is the scenario fetched again just before the write. Reports whether it changed since the plan:
+a hash of the scenario stripped of managed fields, so an edit shows even when `edited` is missing.
 
 verify: --readback 1=FILE is the search_scenarios detail fetched after the write (the new ID for a copy). Reports
-the change as in_place or not_in_place. An error about the project, organisation or access stops it.
+the change as in_place or not_in_place, including any step that had a design in the payload and has none in the
+read-back. An error about the project, organisation or access stops it.
+
+restore: after a not_in_place update, --scenario is the scenario fetched again now (include_node_designs=true). It
+builds a fresh plan from that read (never from the stored undo, which is kept in the plan only as a record) that
+removes the split and variant B and puts the original connection back, described in words. Recheck it and get its
+own yes before writing it; verify it like any plan.
 
 It never calls Loomi Connect: the assistant makes the one write, after confirmation. Standard library only.
 """
 import argparse
 import copy
+import hashlib
 import json
 import re
 import sys
@@ -125,6 +134,21 @@ def as_share(v):
     return float(v)
 
 
+def whole(v):
+    """A share as an int when it's a whole number (50, not 50.0), else as it is."""
+    return int(v) if isinstance(v, float) and v.is_integer() else v
+
+
+def design_ids(nodes):
+    return sorted(n.get("id") for n in nodes if isinstance(n, dict) and n.get("design"))
+
+
+def missing_designs(nodes):
+    """Nodes whose type carries a design (anything not in no_design_node_types) but that have none."""
+    return sorted(n.get("id") for n in nodes if isinstance(n, dict)
+                  and n.get("type") not in RULES["no_design_node_types"] and not n.get("design"))
+
+
 # ---------- plan ----------
 
 def check_spec(spec, problems):
@@ -167,9 +191,16 @@ def strip_scenario(rec, drop_versions):
     return payload
 
 
+def content_hash(rec):
+    """sha256 of the scenario without its managed fields, keys sorted: changes whenever anyone edits the flow."""
+    text = json.dumps(strip_scenario(rec, drop_versions=False), sort_keys=True, ensure_ascii=False, default=str)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
 def summary(rec):
     return {"status": rec.get("status"), "edited": rec.get("edited"), "nodes": len(rec.get("nodes") or []),
-            "connections": len(rec.get("connections") or []), "last_node_id": rec.get("last_node_id")}
+            "connections": len(rec.get("connections") or []), "last_node_id": rec.get("last_node_id"),
+            "content_hash": content_hash(rec)}
 
 
 def cmd_plan(a):
@@ -197,6 +228,9 @@ def cmd_plan(a):
         warnings.append(f"The scenario is {status}: it's left as it is, and the split goes into a new draft copy. "
                         "Someone has to stop the running flow and switch the copy on in Engagement, or customers "
                         "could get both.")
+        warnings.append("create_scenario sets the copy's frequency policy to Default (not the project's own default) "
+                        "and its email steps to transfer_user_identity disabled. Compare both with the original flow "
+                        "in Engagement before switching the copy on.")
     else:
         kind, tool = "update", "update_scenario"
         problems.append(f"The scenario's status is {status or 'missing'}. This skill writes only to "
@@ -205,11 +239,11 @@ def cmd_plan(a):
 
     nodes = rec["nodes"]
     by_id = {n.get("id"): n for n in nodes if isinstance(n, dict)}
-    missing_design = sorted(i for i, n in by_id.items()
-                            if n.get("type") in RULES["message_node_types"] and not n.get("design"))
+    missing_design = missing_designs(nodes)
     if missing_design:
-        problems.append("Message steps " + ", ".join(map(str, missing_design)) + " have no design in --scenario: "
-                        "fetch it again with include_node_designs=true, or the write would wipe their content.")
+        problems.append("Steps " + ", ".join(map(str, missing_design)) + " have no design in --scenario: fetch it "
+                        "again with include_node_designs=true, or the write would wipe their content (only the types "
+                        "in no_design_node_types in references/rules.json may have none).")
 
     conns = rec["connections"]
     keys = [edge_key(c) for c in conns]
@@ -233,8 +267,12 @@ def cmd_plan(a):
                             f"{dnode.get('type')}.")
         if a.variant_node:
             vn, err = unwrap(a.variant_node, "search_scenario_nodes node detail")
+            vproject = vn.get("project_id") if vn is not None else None
             if vn is None:
                 problems.append(f"--variant-node: not found ({err}).")
+            elif vproject and str(vproject) != str(a.project_id):
+                problems.append("--variant-node is from another project. Variant B must come from a scenario in the "
+                                "same project (its consent categories, senders and references belong to that project).")
             elif vn.get("type") not in RULES["message_node_types"] or not vn.get("design"):
                 problems.append("--variant-node must be a message step fetched with include_design=true.")
             elif vn.get("type") != dnode.get("type"):
@@ -242,8 +280,8 @@ def cmd_plan(a):
                                 "test one channel at a time.")
             else:
                 variant_node = vn
-                warnings.append("Variant B's message comes from another step: check its consent category, sender "
-                                "and personalisation suit this flow.")
+                warnings.append("Variant B's message comes from another step: check it's from a scenario in this "
+                                "project, and that its consent category, sender and personalisation suit this flow.")
         if variant_node is None and not a.variant_node:
             warnings.append("Variant B is an exact copy of the control message. Change its content in Engagement "
                             "before the flow is switched on, or the test compares two identical messages.")
@@ -272,8 +310,8 @@ def cmd_plan(a):
     if not problems:
         dx, dy = (as_int(dnode.get("x")) or 0), (as_int(dnode.get("y")) or 0)
         split = {"id": split_id, "type": "ab-split", "name": str(spec["split_name"]).strip(), "x": dx, "y": dy + ROW,
-                 "variants": [{"id": 1, "name": names[0], "percentage": shares[0]},
-                              {"id": 2, "name": names[1], "percentage": shares[1]}],
+                 "variants": [{"id": 1, "name": names[0], "percentage": whole(shares[0])},
+                              {"id": 2, "name": names[1], "percentage": whole(shares[1])}],
                  "highest_variant_id_used": 2, "variants_immutable": False, "touched": False}
         new_nodes.append(split)
         out_edges = [c for c in conns if (c.get("source") or {}).get("node_id") == dst]
@@ -306,22 +344,25 @@ def cmd_plan(a):
             problems.append("Node IDs would repeat; read the scenario again.")
 
     after = {"split_node_id": split_id, "split_name": str(spec.get("split_name") or "").strip(),
-             "test": test, "variants": [{"id": 1, "name": names[0], "percentage": shares[0]},
-                                        {"id": 2, "name": names[1], "percentage": shares[1]}],
+             "test": test, "variants": [{"id": 1, "name": names[0], "percentage": whole(shares[0])},
+                                        {"id": 2, "name": names[1], "percentage": whole(shares[1])}],
              "control_node_id": dst, "variant_node_id": b_id if test in ("message", "timing") else None,
              "variant_node_type": (dnode or {}).get("type") if test in ("message", "timing") else None,
              "edges_removed": removed, "edges_added": added,
              "edges_text": {"removed": [edge_text(e) for e in removed], "added": [edge_text(e) for e in added]},
              "timing": {"units": timing.get("units"), "count": as_int(timing.get("count"))} if test == "timing" else None,
-             "metric": spec.get("metric"), "planned_end": spec.get("planned_end"), "last_node_id": payload.get("last_node_id")}
+             "metric": spec.get("metric"), "planned_end": spec.get("planned_end"), "last_node_id": payload.get("last_node_id"),
+             "design_node_ids": design_ids(payload.get("nodes") or [])}
     status_out = "blocked" if problems else "ready"
     if kind == "update":
         call = {"project_id": a.project_id, "scenario_id": scenario_id, "payload": payload}
         undo = [{"tool": "update_scenario",
                  "payload": {"project_id": a.project_id, "scenario_id": scenario_id,
                              "payload": strip_scenario(rec, drop_versions=False)}}]
-        undo_note = ("Puts the scenario back as it was, with update_scenario, while it's still draft or inactive. "
-                     "Once a split has run, delete its branch in the Engagement UI instead.")
+        undo_note = ("A record of the scenario before the write: never send it. If the write isn't in place, fetch "
+                     "the scenario again with include_node_designs=true and run restore, which builds a fresh plan "
+                     "from that read; recheck it and get its own yes. Once a split has run, delete its branch in the "
+                     "Engagement UI instead.")
         target_text = f"scenario {scenario_id}"
     else:
         call = {"project_id": a.project_id, "payload": payload}
@@ -353,7 +394,11 @@ def cmd_recheck(a):
     rec = scenario_record(a.scenario)
     before = ch.get("before") or {}
     now = summary(rec)
+    # The content hash decides: it changes on any edit, even when `edited` is missing from either fetch. A plan
+    # without one (an older plan file) counts as changed. The other fields only say what changed.
     changed = [k for k in ("status", "edited", "nodes", "connections", "last_node_id") if now.get(k) != before.get(k)]
+    if not before.get("content_hash") or now["content_hash"] != before["content_hash"]:
+        changed.append("content_hash")
     return {"ok": True, "unchanged": not changed, "changed": changed, "planned": before, "now": now,
             "next": "Write the planned payload." if not changed else
             "The scenario changed since the plan: someone edited it. Don't write; fetch it again and plan again."}
@@ -377,6 +422,120 @@ def close(a, b):
         return False
 
 
+def split_differences(want, by_id, keys):
+    """What the read-back lacks of a planned split: the node and its variants, the new connections, variant B."""
+    diffs = []
+    split = by_id.get(want["split_node_id"])
+    if not split or split.get("type") != "ab-split":
+        diffs.append(f"no ab-split node {want['split_node_id']}")
+    else:
+        got = sorted((v.get("id"), str(v.get("name")), v.get("percentage")) for v in split.get("variants") or [])
+        exp = sorted((v["id"], v["name"], v["percentage"]) for v in want["variants"])
+        if len(got) != len(exp) or any(g[0] != e[0] or g[1] != e[1] or not close(g[2], e[2])
+                                       for g, e in zip(got, exp)):
+            diffs.append("the split's variants differ from the plan")
+    diffs += [f"missing connection {edge_text(e)}" for e in want["edges_added"] if tuple(e) not in keys]
+    b = want.get("variant_node_id")
+    if b is not None:
+        bn = by_id.get(b)
+        if not bn or bn.get("type") != want.get("variant_node_type"):
+            diffs.append(f"no {want.get('variant_node_type')} node {b}")
+        elif want.get("timing") and (bn.get("units") != want["timing"]["units"]
+                                     or as_int(bn.get("count")) != want["timing"]["count"]):
+            diffs.append(f"node {b}'s wait isn't {want['timing']['count']} {want['timing']['units']}")
+    elif want.get("test") == "holdout" and any(e[0] == want["split_node_id"] and e[1] == 2 for e in keys):
+        diffs.append("the holdout branch leads somewhere")
+    return diffs
+
+
+def cmd_restore(a):
+    """A fresh plan from the scenario as it is now that takes out what the first plan added."""
+    plan = load_plan(a.plan)
+    ch = plan["changes"][0]
+    if ch.get("kind") != "update" or (ch.get("after") or {}).get("restore"):
+        fail("restore works only on a plan that updated a scenario in place. A draft copy is removed in the "
+             "Engagement UI; this skill never deletes.")
+    want = ch["after"]
+    rec = scenario_record(a.scenario)
+    scenario_id = str(rec.get("_id") or rec.get("id") or "")
+    if scenario_id != str(plan.get("scenario_id")):
+        fail(f"{a.scenario}: that's scenario {scenario_id}, not the plan's {plan.get('scenario_id')}.")
+    problems, words = [], []
+    status = str(rec.get("status") or "").lower()
+    if status not in RULES["writable_statuses"]:
+        problems.append(f"The scenario's status is {status or 'missing'}: this skill writes only to "
+                        f"{' or '.join(RULES['writable_statuses'])} scenarios. Tell the user; change it in Engagement.")
+    nodes = [n for n in rec["nodes"] if isinstance(n, dict)]
+    by_id = {n.get("id"): n for n in nodes}
+    missing = missing_designs(nodes)
+    if missing:
+        problems.append("Steps " + ", ".join(map(str, missing)) + " have no design in --scenario. Fetch it again "
+                        "with include_node_designs=true; if they still have none, their content was lost and a "
+                        "restore can't bring it back: the user restores it in Engagement.")
+    remove = []
+    split = by_id.get(want.get("split_node_id"))
+    if split is not None:
+        if split.get("type") == "ab-split" and str(split.get("name") or "") == want.get("split_name"):
+            remove.append(split["id"])
+            words.append(f"Remove the A/B split step {split['id']} ('{want.get('split_name')}').")
+        else:
+            problems.append(f"Step {want.get('split_node_id')} isn't the split this skill added; someone changed "
+                            "the flow. Don't restore; show the user the flow as it is.")
+    b = want.get("variant_node_id")
+    bnode = by_id.get(b) if b is not None else None
+    if bnode is not None:
+        if bnode.get("type") == want.get("variant_node_type"):
+            remove.append(b)
+            words.append(f"Remove variant B's step {b} (a {bnode.get('type')}).")
+        else:
+            problems.append(f"Step {b} isn't the variant step this skill added; someone changed the flow. "
+                            "Don't restore; show the user the flow as it is.")
+    payload = strip_scenario(rec, drop_versions=False)
+    payload["nodes"] = [n for n in payload["nodes"] if not (isinstance(n, dict) and n.get("id") in remove)]
+    conns = [c for c in payload["connections"]
+             if (c.get("source") or {}).get("node_id") not in remove
+             and (c.get("destination") or {}).get("node_id") not in remove]
+    dropped = [list(edge_key(c)) for c in payload["connections"] if c not in conns]
+    keys = {edge_key(c) for c in conns}
+    restored = []
+    for e in want.get("edges_removed") or []:
+        e = tuple(e)
+        if e in keys:
+            continue
+        if e[0] not in by_id or e[2] not in by_id or e[0] in remove or e[2] in remove:
+            problems.append(f"Can't put back connection {edge_text(e)}: one of its steps is gone.")
+            continue
+        conns.append(edge(*e))
+        restored.append(list(e))
+        words.append(f"Put back the original connection {edge_text(e)}.")
+    if dropped:
+        words.append("Remove the connections to and from those steps: "
+                     + ", ".join(edge_text(e) for e in dropped) + ".")
+    payload["connections"] = conns
+    if not words:
+        status_out = "no_change"
+    else:
+        status_out = "blocked" if problems else "ready"
+    after = {"restore": True, "split_node_id": want.get("split_node_id"), "split_name": want.get("split_name"),
+             "variant_node_id": b, "variant_node_type": want.get("variant_node_type"), "nodes_removed": remove,
+             "edges_restored": restored, "edges_removed": dropped,
+             "design_node_ids": design_ids(payload["nodes"])}
+    new = {"n": 1, "status": status_out, "kind": "update", "target": f"scenario {scenario_id} (restore)",
+           "tool": "update_scenario",
+           "payload": {"project_id": plan.get("project_id"), "scenario_id": scenario_id, "payload": payload},
+           "before": summary(rec), "after": after, "description": words, "undo": [],
+           "undo_note": "Built from the scenario as read now. If this isn't in place either, stop and hand it to the "
+                        "user in the Engagement app.",
+           "live_impact": "none",
+           "impact_note": "None: the scenario isn't running. Nothing reaches customers until someone switches it on "
+                          "in Engagement.",
+           "problems": problems, "warnings": []}
+    return {"ok": True, "project_id": plan.get("project_id"), "project_name": plan.get("project_name"),
+            "scenario_id": scenario_id, "changes": [new], "batches": [[1]] if status_out == "ready" else [],
+            "counts": {"ready": int(status_out == "ready"), "blocked": int(status_out == "blocked"),
+                       "no_change": int(status_out == "no_change")}}
+
+
 def cmd_verify(a):
     plan = load_plan(a.plan)
     by_n = {c.get("n"): c for c in plan["changes"] if isinstance(c, dict)}
@@ -387,6 +546,8 @@ def cmd_verify(a):
             fail(f"--readback {n}: the plan has no ready change {n}.")
         want = ch["after"]
         res = {"n": n, "kind": ch.get("kind"), "target": ch.get("target")}
+        if want.get("restore"):
+            res["restore"] = True
         rec, err = unwrap(path, "search_scenarios scenario_id detail")
         if rec is None:
             res.update(result="not_in_place", note=f"The scenario wasn't found ({err}). Before writing again, "
@@ -397,31 +558,18 @@ def cmd_verify(a):
         by_id = {x.get("id"): x for x in rec.get("nodes") or [] if isinstance(x, dict)}
         keys = {edge_key(c) for c in rec.get("connections") or []}
         diffs = []
-        split = by_id.get(want["split_node_id"])
-        if not split or split.get("type") != "ab-split":
-            diffs.append(f"no ab-split node {want['split_node_id']}")
+        lost = sorted(i for i in want.get("design_node_ids") or [] if not (by_id.get(i) or {}).get("design"))
+        if lost:
+            diffs.append("steps " + ", ".join(map(str, lost)) + " had a design in the payload and have none in the "
+                         "read-back (fetch it with include_node_designs=true; if it's still missing, their content "
+                         "was lost)")
+        if want.get("restore"):
+            diffs += [f"step {i} is still there" for i in want.get("nodes_removed") or [] if i in by_id]
+            diffs += [f"missing connection {edge_text(e)}" for e in want.get("edges_restored") or []
+                      if tuple(e) not in keys]
         else:
-            got = sorted((v.get("id"), str(v.get("name")), v.get("percentage")) for v in split.get("variants") or [])
-            exp = sorted((v["id"], v["name"], v["percentage"]) for v in want["variants"])
-            if len(got) != len(exp) or any(g[0] != e[0] or g[1] != e[1] or not close(g[2], e[2])
-                                           for g, e in zip(got, exp)):
-                diffs.append("the split's variants differ from the plan")
-        for e in want["edges_added"]:
-            if tuple(e) not in keys:
-                diffs.append(f"missing connection {edge_text(e)}")
-        for e in want["edges_removed"]:
-            if tuple(e) in keys:
-                diffs.append(f"connection {edge_text(e)} is still there")
-        b = want.get("variant_node_id")
-        if b is not None:
-            bn = by_id.get(b)
-            if not bn or bn.get("type") != want.get("variant_node_type"):
-                diffs.append(f"no {want.get('variant_node_type')} node {b}")
-            elif want.get("timing") and (bn.get("units") != want["timing"]["units"]
-                                         or as_int(bn.get("count")) != want["timing"]["count"]):
-                diffs.append(f"node {b}'s wait isn't {want['timing']['count']} {want['timing']['units']}")
-        elif want.get("test") == "holdout" and any(e[0] == want["split_node_id"] and e[1] == 2 for e in keys):
-            diffs.append("the holdout branch leads somewhere")
+            diffs += split_differences(want, by_id, keys)
+        diffs += [f"connection {edge_text(e)} is still there" for e in want["edges_removed"] if tuple(e) in keys]
         status = str(rec.get("status") or "").lower()
         allowed = ["draft"] if ch.get("kind") == "create" else RULES["writable_statuses"]
         if status not in allowed:
@@ -430,6 +578,11 @@ def cmd_verify(a):
         res["result"] = "not_in_place" if diffs else "in_place"
         if diffs:
             res["differences"] = diffs
+            res["reason"] = "; ".join(diffs)
+            if ch.get("kind") == "update" and not want.get("restore"):
+                res["next"] = ("Don't send the plan's stored undo. Fetch the scenario again with "
+                               "include_node_designs=true, run restore to build a fresh plan from that read, describe "
+                               "it to the user, recheck it and write it only after its own yes.")
         results.append(res)
     unchecked = sorted(n for n, c in by_n.items() if c.get("status") == "ready" and n not in dict(a.readback))
     return {"ok": True, "results": results, "not_checked": unchecked,
@@ -462,8 +615,13 @@ def main():
     v.add_argument("--readback", action="append", type=numbered_file, required=True,
                    help="N=FILE: the search_scenarios detail fetched after change N")
     v.add_argument("--out", help="also write the result to this file")
+    s = sub.add_parser("restore", help="after a not_in_place update: a fresh plan, from the scenario as it is now, "
+                                       "that takes the split out again")
+    s.add_argument("--plan", required=True, help="the plan file from the plan step")
+    s.add_argument("--scenario", required=True, help="the scenario fetched now, with include_node_designs=true")
+    s.add_argument("--out", required=True, help="the restore plan file to write (it holds the payload)")
     a = ap.parse_args()
-    out = {"plan": cmd_plan, "recheck": cmd_recheck, "verify": cmd_verify}[a.cmd](a)
+    out = {"plan": cmd_plan, "recheck": cmd_recheck, "verify": cmd_verify, "restore": cmd_restore}[a.cmd](a)
     text = json.dumps(out, indent=2, ensure_ascii=False)
     if a.out:
         try:
@@ -471,7 +629,7 @@ def main():
                 f.write(text + "\n")
         except OSError as e:
             fail(f"{a.out}: can't write it ({e}).")
-    if a.cmd == "plan":
+    if a.cmd in ("plan", "restore"):
         printable = copy.deepcopy(out)
         for c in printable["changes"]:  # payloads hold whole message designs: keep them in the --out file only
             c["payload"] = "(in the --out file)"

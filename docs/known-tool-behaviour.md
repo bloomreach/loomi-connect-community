@@ -161,6 +161,9 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. Every ite
 - Facet ranges, value merges and renames can't be set through the API; the `create_facet_rule` description says so.
 
 - **Ranking algorithms:** an algorithm is assigned to a page by a rule of type `ranking_algo`, which the three ranking-rule list tools leave out. The grid's `customizations.explain` lists them, and `get_ranking_rule` reads one by ID (`customizationItems.ranking_algo.id`). `br-standard` is the `algoId` of both the search and the category classic ranking. Algorithm records include `createdBy` and `lastModifiedBy` email addresses.
+  - `customizations.explain` entries name each query's type in `queries[].type` (not `queryType`, as the rule tools do) and carry `siteGroupId`. The list is under the literal key `data.debug["customizations.explain"]`: one key with a dot in its name, not `data.debug.customizations.explain`.
+  - A site's default search ranking can be a system-made `ranking_algo` rule pointing at `br-standard` with `isEditable: false`. It shows in `customizations.explain` like any other algorithm rule, but it isn't one to build a variant on.
+  - `get_ranking_rule` found a site-level rule without `site_group_id`.
 - **Ranking algorithm writes** (from the tool schemas; checked on a demo account, 2026-11-04):
   - `update_ranking_algorithm`: sending `weights` to a trained ABR model turns it into ABR_MANUAL for good; legacy `model_metadata` re-syncs the weight file (status Syncing for about 20 minutes); `model_training_status` restarts training. The schema gives no weight ranges.
   - `create_ranking_algorithm` / `create_abr_algorithm`: no enabled flag; a new algorithm ranks nothing until a `ranking_algo` rule assigns it. MANUAL weights must add up to 100. Both document a limit of 5 custom algorithms per catalog; the demo account held 5 per page type. ABR_MERCHANT and ABR_CATALOG start 24–48 hours of training, one at a time.
