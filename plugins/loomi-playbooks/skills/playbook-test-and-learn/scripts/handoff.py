@@ -5,13 +5,17 @@ The hand-off file (docs/hand-off-format.md) is how one skill's result reaches th
 playbook picks up again in a later session (an A/B test runs for weeks). This script is the only
 thing that writes it, so its shape stays the same. It never calls the network.
 
+Every playbook skill ships the same copy of this script; its own references/rules.json defines its stages.
+
   new       start a hand-off file for one playbook run
-  findings  add findings from a saved discovery-query-rule-impact result
+  findings  add findings: from a findings file any skill's result was written into, or a saved
+            discovery-query-rule-impact result
   choose    mark a finding chosen, dismissed or done
   changes   add the changes from any write skill's plan file (and its verify result)
-  change    add one change a skill made without a plan file (discovery-experiment-setup)
+  change    add one change a skill made without a plan file
   stage     record that a stage started, finished or was skipped
   status    print what's done, what's next and the earliest date for it
+  list      list every run in a folder (any playbook): what's due, and the changes made
 """
 import argparse
 import json
@@ -20,6 +24,7 @@ import re
 import sys
 import tempfile
 from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 FORMAT = "loomi-handoff/1"
@@ -28,6 +33,10 @@ PLAIN = re.compile(r"^[A-Za-z0-9 _.:-]{1,120}$")
 RESULTS = ("in_place", "not_in_place", "gone", "not_checked", "not_needed", "unverified")
 FINDING_STATUSES = ("open", "chosen", "dismissed", "done")
 STAGE_STATUSES = ("not_started", "in_progress", "done", "skipped")
+SUBJECT_KINDS = ("query", "category", "product", "brand", "collection", "flow", "campaign", "segment", "event",
+                 "account", "project", "period")
+PRIORITIES = ("high", "medium", "low")
+SKILL_NAME = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 KINDS = ("create", "update", "enable", "disable", "delete", "end", "archive", "start")
 
 
@@ -64,7 +73,7 @@ def plain_arg(s):
 
 
 def today(a):
-    return a.today or datetime.now(timezone.utc).date()
+    return getattr(a, "today", None) or datetime.now(timezone.utc).date()
 
 
 def read_handoff(path):
@@ -155,6 +164,13 @@ def write_json(path, data):
         fail(f"Can't write {path}: {e}")
 
 
+def save(h, path, a):
+    """Write the file with its next step worked out, so `list` can show it without this playbook's rules."""
+    nxt = next_step(h, today(a))
+    h["next"] = None if nxt is None else {k: nxt[k] for k in ("stage", "skill", "writes", "not_before", "suggest_skip")}
+    write_json(path, h)
+
+
 def stages_for(playbook):
     return RULES["playbooks"][playbook]["stages"]
 
@@ -187,15 +203,15 @@ def cmd_new(a):
         if not subject.strip():
             fail(f"{a.subject_file} is empty.")
     pb = RULES["playbooks"][a.playbook]
-    if pb["product"] == "discovery":
+    context = {"product": pb["product"]}
+    if pb["product"] in ("discovery", "both"):
         if not a.account or not a.environment:
-            fail("A Discovery playbook needs --account and --environment.")
-        context = {"product": "discovery", "account": a.account, "environment": a.environment,
-                   "site_group_id": a.site_group_id}
-    else:
+            fail("This playbook works on Discovery: it needs --account and --environment.")
+        context.update(account=a.account, environment=a.environment, site_group_id=a.site_group_id)
+    if pb["product"] in ("engagement", "both"):
         if not a.project_id:
-            fail("An Engagement playbook needs --project-id.")
-        context = {"product": "engagement", "project_id": a.project_id}
+            fail("This playbook works on Engagement: it needs --project-id.")
+        context.update(project_id=a.project_id)
     h = {
         "format": FORMAT, "playbook": a.playbook, "started_on": today(a).isoformat(),
         "context": context,
@@ -204,7 +220,7 @@ def cmd_new(a):
                     "started_on": None, "done_on": None, "files": [], "not_before": None} for s in pb["stages"]],
         "findings": [], "changes": [],
     }
-    write_json(a.out, h)
+    save(h, a.out, a)
     print(json.dumps({"ok": True, "handoff": a.out, "playbook": a.playbook,
                       "stages": [s["name"] for s in h["stages"]]}, indent=2))
 
@@ -227,11 +243,16 @@ def evidence_text(r):
 
 
 def cmd_findings(a):
+    if (a.from_file is None) == (a.from_rule_impact is None):
+        fail("Give --from-file (with --source) or --from-rule-impact, not both.")
+    if a.from_file is not None:
+        return findings_from_file(a)
     h = read_handoff(a.handoff)
     ri = load_json(a.from_rule_impact, "rule impact result")
     if not isinstance(ri, dict) or not ri.get("ok") or not isinstance(ri.get("results"), list):
         fail(f"{a.from_rule_impact} isn't a successful rule_impact.py result (it needs ok: true and results).")
-    wanted = set(RULES["finding_verdicts"])
+    wanted = set(RULES.get("finding_verdicts", ["hurts", "hides sellers"]))
+    next_skills = RULES.get("next_skill", {"default": "discovery-experiment-setup"})
     source = "discovery-query-rule-impact"
     have = {(f["source"], f["target"]) for f in h["findings"]}
     added, skipped = [], []
@@ -250,17 +271,68 @@ def cmd_findings(a):
             "verdict": r.get("verdict"), "priority": r.get("priority"),
             "money_at_stake": r.get("estimated_effect"), "currency": ri.get("currency"),
             "evidence": evidence_text(r), "warnings": sorted(str(f.get("flag")) for f in (r.get("flags") or []) if isinstance(f, dict) and f.get("flag")),
-            "next_skill": RULES["next_skill"].get(r.get("verdict"), RULES["next_skill"]["default"]) if per_rule
+            "next_skill": next_skills.get(r.get("verdict"), next_skills["default"]) if per_rule
             else "discovery-rule-audit",
             "status": "open", "found_on": today(a).isoformat(),
         })
         added.append(fid)
     order = {"high": 0, "medium": 1, "low": 2}
     h["findings"].sort(key=lambda f: (f["status"] != "open", order.get(f["priority"], 3), int(f["id"][1:])))
-    write_json(a.handoff, h)
+    save(h, a.handoff, a)
     print(json.dumps({"ok": True, "added": added, "already_there": sorted(skipped),
                       "left_out": "only verdicts in finding_verdicts (use --all for every rule)" if not a.all else None},
                      indent=2))
+
+
+def findings_from_file(a):
+    """Findings the assistant wrote from a skill's result, in the format's findings shape. Everything is checked:
+    targets are type and ID (plain text), evidence is shortened to one line, money must be a number."""
+    h = read_handoff(a.handoff)
+    if not a.source:
+        fail("--from-file needs --source, the skill whose result the findings come from.")
+    data = load_json(a.from_file, "findings file")
+    items = data.get("findings") if isinstance(data, dict) else data
+    if not isinstance(items, list):
+        fail(f"{a.from_file} needs a findings list.")
+    have = {(f["source"], f["target"]) for f in h["findings"]}
+    added, skipped = [], []
+    for i, x in enumerate(items, 1):
+        if not isinstance(x, dict):
+            fail(f"{a.from_file}: finding {i} isn't an object.")
+        target = str(x.get("target") or "").strip()
+        if not PLAIN.match(target):
+            fail(f"{a.from_file}: finding {i} target {target[:60]!r} must be plain text, type and ID (e.g. 'flow 123', "
+                 "'query file 2'), never a name from the data.")
+        if x.get("priority") not in PRIORITIES:
+            fail(f"{a.from_file}: finding {i} priority must be one of {', '.join(PRIORITIES)}.")
+        nxt = x.get("next_skill")
+        if nxt is not None and not SKILL_NAME.match(str(nxt)):
+            fail(f"{a.from_file}: finding {i} next_skill {nxt!r} isn't a skill name.")
+        money = x.get("money_at_stake")
+        if money is not None:
+            try:
+                money = str(Decimal(str(money)).quantize(Decimal("0.01")))
+            except InvalidOperation:
+                fail(f"{a.from_file}: finding {i} money_at_stake {money!r} isn't a number.")
+        verdict = x.get("verdict")
+        if verdict is not None and not PLAIN.match(str(verdict)):
+            fail(f"{a.from_file}: finding {i} verdict must be plain text.")
+        if (a.source, target) in have:
+            skipped.append(target)
+            continue
+        fid = next_id(h["findings"], "F")
+        h["findings"].append({
+            "id": fid, "source": a.source, "target": target, "rule_id": None, "verdict": verdict,
+            "priority": x["priority"], "money_at_stake": money, "currency": x.get("currency") if PLAIN.match(str(x.get("currency") or "x")) else None,
+            "evidence": flat(x.get("evidence") or ""), "warnings": [], "next_skill": nxt,
+            "status": "open", "found_on": today(a).isoformat(),
+        })
+        have.add((a.source, target))
+        added.append(fid)
+    order = {"high": 0, "medium": 1, "low": 2}
+    h["findings"].sort(key=lambda f: (f["status"] != "open", order.get(f["priority"], 3), int(f["id"][1:])))
+    save(h, a.handoff, a)
+    print(json.dumps({"ok": True, "added": added, "already_there": sorted(skipped)}, indent=2))
 
 
 def cmd_choose(a):
@@ -272,7 +344,7 @@ def cmd_choose(a):
         fail("Another finding is already chosen. A run tests one change at a time: mark that one done or "
              "dismissed first, or start a new run.")
     f["status"] = a.status
-    write_json(a.handoff, h)
+    save(h, a.handoff, a)
     print(json.dumps({"ok": True, "finding": a.finding, "status": a.status}))
 
 
@@ -280,7 +352,12 @@ def cmd_choose(a):
 
 def check_context(h, plan, path):
     ctx = h["context"]
-    keys = ("account", "environment", "site_group_id") if ctx["product"] == "discovery" else ("project_id",)
+    engagement_plan = plan.get("project_id") is not None
+    if engagement_plan and ctx["product"] == "discovery":
+        fail(f"{path} is an Engagement plan, but this run is for Discovery only.")
+    if not engagement_plan and ctx["product"] == "engagement":
+        fail(f"{path} isn't an Engagement plan (it has no project_id), but this run is for Engagement only.")
+    keys = ("project_id",) if engagement_plan else ("account", "environment", "site_group_id")
     for k in keys:
         if k != "site_group_id" and plan.get(k) is None:
             fail(f"{path} has no {k}, so it can't be tied to this run.")
@@ -368,7 +445,7 @@ def cmd_changes(a):
         }
         cid, new = upsert_change(h, entry, keep=[k for k, given in (("live_on", a.live_on), ("finding", a.finding)) if not given])
         (added if new else updated).append(cid)
-    write_json(a.handoff, h)
+    save(h, a.handoff, a)
     print(json.dumps({"ok": True, "added": added, "updated": updated,
                       "made": sum(made(c) for c in h["changes"])}, indent=2))
 
@@ -380,7 +457,7 @@ def cmd_change(a):
              "result": a.result, "live_on": (a.live_on or today(a)).isoformat(), "undo": [],
              "undo_note": a.undo_note}
     cid, _ = upsert_change(h, entry, keep=[k for k, given in (("live_on", a.live_on), ("finding", a.finding)) if not given])
-    write_json(a.handoff, h)
+    save(h, a.handoff, a)
     print(json.dumps({"ok": True, "added": cid}))
 
 
@@ -396,7 +473,7 @@ def cmd_stage(a):
         fail(f"Stage {a.name} outcomes are: {', '.join(rule.get('outcomes', [])) or 'none'}.")
     if a.status is None and a.outcome is None and a.not_before is None and not a.file:
         fail("Nothing to record: give --status, --outcome, --not-before or --file.")
-    if a.outcome in RULES["wait_outcomes"]:
+    if a.outcome in RULES.get("wait_outcomes", []):
         if a.status != "in_progress" or a.not_before is None:
             fail(f"{a.outcome} means the stage isn't finished: record it with --status in_progress and "
                  "--not-before <the date to come back>.")
@@ -418,7 +495,7 @@ def cmd_stage(a):
         if name not in s["files"]:
             s["files"].append(name)
     s["files"].sort()
-    write_json(a.handoff, h)
+    save(h, a.handoff, a)
     print(json.dumps({"ok": True, "stage": a.name, "status": s["status"], "outcome": s["outcome"],
                       "not_before": s["not_before"]}))
 
@@ -502,6 +579,77 @@ def cmd_status(a):
               f"{' (writes, after you confirm each step)' if nxt['writes'] else ''}. {nxt['do']}")
 
 
+def cmd_list(a):
+    """Every *.handoff.json in a folder, from any playbook: what's next and when, and the changes made."""
+    now = today(a)
+    try:
+        files = sorted(p for p in Path(a.dir).glob("*.handoff.json") if p.is_file())
+    except OSError as e:
+        fail(f"Can't read {a.dir}: {e}")
+    runs, changes = [], []
+    for p in files:
+        try:
+            with open(p, encoding="utf-8") as f:
+                h = json.load(f)
+        except (OSError, ValueError):
+            runs.append({"file": p.name, "error": "can't be read as a hand-off file"})
+            continue
+        if not isinstance(h, dict) or h.get("format") != FORMAT:
+            runs.append({"file": p.name, "error": "not a hand-off file"})
+            continue
+        stages = [s for s in h.get("stages") or [] if isinstance(s, dict)]
+        nxt = h.get("next") if isinstance(h.get("next"), dict) else None
+        due = None
+        if nxt and nxt.get("not_before"):
+            try:
+                due = date.fromisoformat(str(nxt["not_before"]))
+            except ValueError:
+                due = None
+        made_here = [c for c in h.get("changes") or [] if isinstance(c, dict) and made(dict(CHANGE_DEFAULTS, **c))]
+        finished = nxt is None and stages and all(s.get("status") in ("done", "skipped") for s in stages)
+        runs.append({
+            "file": p.name, "playbook": flat(h.get("playbook")), "subject": flat((h.get("subject") or {}).get("kind")),
+            "subject_value": flat((h.get("subject") or {}).get("value"))[:80], "started_on": flat(h.get("started_on")),
+            "stages_done": sum(s.get("status") in ("done", "skipped") for s in stages), "stages": len(stages),
+            "next_stage": None if not nxt else flat(nxt.get("stage")), "next_skill": None if not nxt else flat(nxt.get("skill")),
+            "not_before": due.isoformat() if due else None, "due": bool(nxt) and (due is None or now >= due),
+            "suggest_skip": bool(nxt and nxt.get("suggest_skip")), "finished": bool(finished),
+            "last_outcome": next((flat(s.get("outcome")) for s in reversed(stages) if s.get("outcome")), None),
+            "open_findings": sum(isinstance(f, dict) and f.get("status") in ("open", "chosen") for f in h.get("findings") or []),
+            "changes_made": len(made_here),
+        })
+        for c in made_here:
+            live = str(c.get("live_on") or "")
+            if a.since and (not live or live < a.since.isoformat()):
+                continue
+            changes.append({"file": p.name, "playbook": flat(h.get("playbook")), "id": flat(c.get("id")),
+                            "kind": flat(c.get("kind")), "target": flat(c.get("target")), "live_on": flat(live),
+                            "source": flat(c.get("source"))})
+    changes.sort(key=lambda c: (c["live_on"], c["file"], c["id"]))
+    if a.json:
+        print(json.dumps({"ok": True, "today": now.isoformat(), "runs": runs, "changes": changes}, indent=2, ensure_ascii=False))
+        return
+    if not runs:
+        print(f"No *.handoff.json files in {a.dir}.")
+        return
+    print("| Run | Playbook | Subject | Progress | Next | Due |")
+    print("|---|---|---|---|---|---|")
+    for r in runs:
+        if "error" in r:
+            print(f"| {flat(r['file'])} | | | {r['error']} | | |")
+            continue
+        nxt = "finished" if r["finished"] else (f"{r['next_stage']} ({r['next_skill']})" + (", can be skipped" if r["suggest_skip"] else "")
+                                                 if r["next_stage"] else "")
+        due = "" if r["finished"] or not r["next_stage"] else ("now" if r["due"] else f"from {r['not_before']}")
+        print(f"| {flat(r['file'])} | {r['playbook']} | {r['subject']} | {r['stages_done']}/{r['stages']} stages | {nxt} | {due} |")
+    if a.changes:
+        print(f"\n**Changes made{' since ' + a.since.isoformat() if a.since else ''}:**")
+        for c in changes:
+            print(f"- {c['live_on']}: {c['kind']} {c['target']} ({c['playbook']}, {c['file']})")
+        if not changes:
+            print("- none")
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -509,9 +657,9 @@ def main():
 
     p = sub.add_parser("new", help="start a hand-off file for one playbook run")
     p.add_argument("--playbook", required=True, help="playbook name, a key of playbooks in references/rules.json")
-    p.add_argument("--subject-kind", required=True, choices=["query", "category"], help="what the run is about")
-    p.add_argument("--subject", type=plain_arg, help="the query or category ID, if it is plain text")
-    p.add_argument("--subject-file", help="a text file holding the query or category ID exactly as typed")
+    p.add_argument("--subject-kind", required=True, choices=SUBJECT_KINDS, help="what the run is about")
+    p.add_argument("--subject", type=plain_arg, help="an ID or plain label (never a query or name from the data)")
+    p.add_argument("--subject-file", help="a text file holding the subject (a search query, name) exactly as typed")
     p.add_argument("--account", type=plain_arg, help="Discovery account name")
     p.add_argument("--environment", choices=["production", "staging"], help="Discovery environment")
     p.add_argument("--site-group-id", type=plain_arg, help="Discovery site group ID, when the account has sites")
@@ -520,9 +668,11 @@ def main():
     p.add_argument("--out", required=True, help="the hand-off file to create, in your working folder")
     p.set_defaults(fn=cmd_new)
 
-    p = sub.add_parser("findings", help="add findings from a saved rule_impact.py result")
+    p = sub.add_parser("findings", help="add findings from a findings file or a saved rule_impact.py result")
     p.add_argument("--handoff", required=True, help="the hand-off file")
-    p.add_argument("--from-rule-impact", required=True, help="rule_impact.py output saved with --out")
+    p.add_argument("--from-file", help="a JSON file with a findings list in the hand-off format's findings shape")
+    p.add_argument("--source", type=plain_arg, help="with --from-file: the skill whose result the findings come from")
+    p.add_argument("--from-rule-impact", help="rule_impact.py output saved with --out")
     p.add_argument("--all", action="store_true", help="add every measured rule, not only finding_verdicts")
     p.add_argument("--today", type=day_arg, help="today's date, YYYY-MM-DD (default: today in UTC)")
     p.set_defaults(fn=cmd_findings)
@@ -574,6 +724,14 @@ def main():
     p.add_argument("--json", action="store_true", help="print JSON instead of Markdown")
     p.add_argument("--today", type=day_arg, help="today's date, YYYY-MM-DD (default: today in UTC)")
     p.set_defaults(fn=cmd_status)
+
+    p = sub.add_parser("list", help="list every run in a folder, from any playbook")
+    p.add_argument("--dir", default=".", help="the folder holding the *.handoff.json files (default: the current folder)")
+    p.add_argument("--changes", action="store_true", help="also list the changes the runs made")
+    p.add_argument("--since", type=day_arg, help="with --changes: only changes live on or after this date")
+    p.add_argument("--json", action="store_true", help="print JSON instead of Markdown")
+    p.add_argument("--today", type=day_arg, help="today's date, YYYY-MM-DD (default: today in UTC)")
+    p.set_defaults(fn=cmd_list)
 
     a = ap.parse_args()
     a.fn(a)
