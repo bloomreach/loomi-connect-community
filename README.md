@@ -53,6 +53,10 @@ codex plugin marketplace add bloomreach/loomi-connect-community
 
 Then install the plugins from Codex's plugin directory. More detail, including ChatGPT and the API: [docs/using-with-openai.md](docs/using-with-openai.md).
 
+### Smaller or self-hosted models
+
+Any client that can call Loomi Connect's tools can use the skills. With a model you host yourself, offer only the tools for the area you're working in, so the tool list doesn't fill its context: see [docs/using-with-small-models.md](docs/using-with-small-models.md).
+
 ### Without plugins
 
 To link every skill into your personal skills folders for Claude Code (`~/.claude/skills`) and Codex (`~/.agents/skills`), run:

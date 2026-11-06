@@ -99,6 +99,24 @@ class BuildSkillIndexTest(unittest.TestCase):
             self.assertIn("loomi-project-overview/SKILL.md", names)
             self.assertFalse([n for n in names if "__pycache__" in n or not n.startswith("loomi-project-overview/")])
 
+    def test_tool_areas_is_up_to_date(self):
+        self.assertEqual((ROOT / "docs" / "tool-areas.json").read_text(encoding="utf-8"), self.b.render_tool_areas(ROOT, self.data))
+
+    def test_every_tool_is_in_an_area_and_every_skill_uses_one(self):
+        areas = self.b.tool_areas(ROOT, self.data)
+        listed = set(areas["always"]).union(*map(set, areas["areas"].values()))
+        self.assertEqual({t["name"] for t in self.data["tools"]} - listed, set())
+        self.assertTrue({"search_tools", "call_tool"} <= set(areas["always"]))
+        self.assertEqual({s["name"] for s in self.data["skills"]}, set(areas["skills"]))
+        self.assertEqual([n for n, a in areas["skills"].items() if not a], [], "every skill names at least one tool")
+
+    def test_skill_areas_follow_their_tools_and_playbooks_their_stages(self):
+        areas = self.b.tool_areas(ROOT, self.data)["skills"]
+        self.assertEqual(areas["discovery-zero-results-triage"], ["discovery"])
+        self.assertIn("engagement", areas["engagement-weblayer-builder"])
+        for stage in self.b.playbook_stages(ROOT)["playbook-onsite-test"]:
+            self.assertTrue(set(areas[stage]) <= set(areas["playbook-onsite-test"]), stage)
+
     def test_old_tool_list_warns(self):
         self.assertIsNone(self.b.tool_list_age_warning("2026-11-01", dt.date(2026, 11, 4)))
         self.assertIn("days ago", self.b.tool_list_age_warning("2026-09-01", dt.date(2026, 11, 4)))
