@@ -1,0 +1,3 @@
+{"customer": {"first_name": "Alex", "loyalty_tier": "Gold", "email": "customer@example.com"},
+ "event": {}, "catalogs": {}, "aggregates": {},
+ "project_variables": {"company_name": "Example Co"}}

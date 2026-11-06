@@ -1,0 +1,16 @@
+{
+  "customer_properties": {"first_name": "first_name", "last_name": "last_name", "email": "email", "phone": "phone"},
+  "custom_properties": {"TIER": "loyalty_tier", "MMERGE5": "favourite_store", "Unused ESP field": null},
+  "organization": {"name": "{{ project_variables.company_name }}", "full_address": "123 Example St, City, ST 00000", "url": "https://www.example.com"},
+  "unsubscribe_token": "{{ consent.page }}",
+  "tokens": {
+    "*|FACEBOOK:PROFILEURL|*": "https://www.facebook.com/example",
+    "%%[ IF @tier == \"Gold\" THEN ]%%": "{% if customer.loyalty_tier == 'Gold' %}",
+    "%%[ ELSE ]%%": "{% else %}",
+    "%%[ ENDIF ]%%": "{% endif %}",
+    "*|FORWARD|*": ""
+  },
+  "fallbacks": {"first_name": "there"},
+  "image_map": {"https://mcusercontent.com/XXXX/images/logo.png": {"url": "https://brxcdn.com/.../media/original/<id>", "width": 200, "height": 60}},
+  "placeholder_image": "https://placehold.co/600x300/png?text=Image"
+}

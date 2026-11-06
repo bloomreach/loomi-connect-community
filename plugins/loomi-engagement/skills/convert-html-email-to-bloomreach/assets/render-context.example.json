@@ -1,0 +1,7 @@
+{
+ "customer": {"first_name": "Alex", "last_name": "Example", "email": "customer@example.com", "loyalty_tier": "Gold"},
+ "event": {},
+ "catalogs": {"products": {"sku-1001": {"title": "Example Running Short", "price": 68, "image": "https://example.com/a.jpg", "url": "https://example.com/a"}}},
+ "aggregates": {},
+ "project_variables": {"company_name": "Example Brand"}
+}

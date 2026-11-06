@@ -1,0 +1,15 @@
+{
+  "customer_properties": {"first_name": "first_name", "last_name": "last_name", "email": "email", "phone": "phone"},
+  "custom_properties": {"LoyaltyTier": "loyalty_tier"},
+  "organization": {"name": "{{ project_variables.company_name }}", "full_address": "123 Example St, Springfield, ST 00000", "url": "https://www.example.com"},
+  "unsubscribe_token": "{{ consent.page }}",
+  "tokens": {
+    "%%[\nVAR @firstName, @tier\nSET @firstName = AttributeValue(\"FirstName\")\nSET @tier = AttributeValue(\"LoyaltyTier\")\nIF Empty(@firstName) THEN SET @firstName = \"there\" ENDIF\n]%%": "",
+    "%%=v(@firstName)=%%": "{{ customer.first_name | default('there', true) }}",
+    "%%[ IF @tier == \"Gold\" THEN ]%%": "{% if customer.loyalty_tier == 'Gold' %}",
+    "%%[ ELSE ]%%": "{% else %}",
+    "%%[ ENDIF ]%%": "{% endif %}"
+  },
+  "fallbacks": {"first_name": "there"},
+  "image_map": {}
+}

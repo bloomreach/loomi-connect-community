@@ -141,6 +141,7 @@ A playbook runs several of the skills on this page in order and carries the resu
 | "Build me a segment of…" | [engagement-segment-builder](../plugins/loomi-engagement/skills/engagement-segment-builder/) (**writes**, after you confirm) |
 | "Set up a flow that…" / "Change the wait in our welcome series" | [engagement-scenario-builder](../plugins/loomi-engagement/skills/engagement-scenario-builder/) (**writes** a draft, after you confirm) |
 | "Move our Klaviyo emails into Bloomreach" | [convert-klaviyo-email-to-bloomreach](../plugins/loomi-engagement/skills/convert-klaviyo-email-to-bloomreach/) (**writes** drafts and uploads images, after you confirm) |
+| "Move our Mailchimp / SFMC / HubSpot emails into Bloomreach" | [convert-html-email-to-bloomreach](../plugins/loomi-engagement/skills/convert-html-email-to-bloomreach/) (**writes** drafts and uploads images, after you confirm) |
 | "Write a Black Friday email for our lapsed VIPs" | [engagement-email-builder](../plugins/loomi-engagement/skills/engagement-email-builder/) (**writes** a draft, after you confirm) |
 | "Write a text for our lapsed VIPs: 20% off boots this weekend" | [engagement-sms-builder](../plugins/loomi-engagement/skills/engagement-sms-builder/) (**writes** a draft, or revises its own, after you confirm) |
 | "How is our abandoned cart flow doing?" | [engagement-scenario-performance](../plugins/loomi-engagement/skills/engagement-scenario-performance/) |

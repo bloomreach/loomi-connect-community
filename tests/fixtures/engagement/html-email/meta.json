@@ -1,0 +1,11 @@
+{
+  "scenario_name": "[Migrated] Autumn launch",
+  "node_name": "Autumn launch",
+  "subject": "*|FNAME|*, autumn is here",
+  "preheader": "New jackets, boots and more",
+  "sender_name": "Example Co",
+  "sender_email": "hello@example.com",
+  "consent_category": "newsletter",
+  "provider": {"type": "global"},
+  "trigger": {"type": "now"}
+}

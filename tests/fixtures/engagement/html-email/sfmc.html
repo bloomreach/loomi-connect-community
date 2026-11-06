@@ -1,0 +1,34 @@
+%%[
+VAR @firstName, @tier
+SET @firstName = AttributeValue("FirstName")
+SET @tier = AttributeValue("LoyaltyTier")
+IF Empty(@firstName) THEN SET @firstName = "there" ENDIF
+]%%
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Spring sale</title>
+<style>h2{font-family:Georgia,serif;color:#1a1a1a;font-size:28px;margin:0 0 12px} .body-copy{font-family:Arial,sans-serif;font-size:15px;color:#444444;line-height:22px}</style></head>
+<body bgcolor="#eeeeee" style="margin:0">
+<div style="display:none;max-height:0;overflow:hidden">Spring sale ends Sunday</div>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#eeeeee"><tr><td align="center">
+  <table width="640" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+    <tr><td align="center" style="padding:24px 0"><a href="https://www.example.com"><img src="https://image.s10.sfmc-content.com/lib/abc/m/1/logo.png" width="180" alt="Example"></a></td></tr>
+    <tr><td style="padding:0 32px 8px" class="body-copy">
+      <h2>Hello %%=v(@firstName)=%%,</h2>
+      <p>Our spring sale is on. %%[ IF @tier == "Gold" THEN ]%%As a Gold member you get early access.%%[ ELSE ]%%Join our loyalty program for early access.%%[ ENDIF ]%%</p>
+      <p>We have your email as %%emailaddr%%.</p>
+    </td></tr>
+    <tr><td align="center" style="padding:16px 32px 32px">
+      <table cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#d0021b" style="border-radius:24px;padding:14px 32px">
+        <a href="https://www.example.com/sale?utm_source=sfmc" style="color:#ffffff;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;text-decoration:none">Shop the sale</a>
+      </td></tr></table>
+    </td></tr>
+    <tr><td height="24" style="font-size:1px;line-height:24px">&nbsp;</td></tr>
+    <tr><td bgcolor="#222222" style="padding:24px 32px;font-family:Arial,sans-serif;font-size:12px;color:#bbbbbb;text-align:center">
+      %%Member_Busname%%<br>%%Member_Addr%% %%Member_City%%, %%Member_State%% %%Member_PostalCode%%<br>
+      <a href="%%view_email_url%%" style="color:#ffffff">View online</a> | <a href="%%profile_center_url%%" style="color:#ffffff">Preferences</a> | <a href="%%unsub_center_url%%" style="color:#ffffff">Unsubscribe</a><br>
+      &copy; %%xtyear%%
+    </td></tr>
+  </table>
+</td></tr></table>
+<custom name="opencounter" type="tracking"/>
+</body></html>
