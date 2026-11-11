@@ -1,0 +1,33 @@
+{
+  "about": "Stages and timing for the synonym-tune-up playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "measure_after_days": 14,
+  "max_chosen": 20,
+  "wait_outcomes": ["too_early_to_tell"],
+  "playbooks": {
+    "synonym-tune-up": {
+      "title": "Synonym tune-up",
+      "product": "discovery",
+      "stages": [
+        {"name": "review", "skill": "discovery-synonym-review", "writes": false,
+         "do": "Review the user-created and Bloomreach-generated synonyms and what fires on the top queries, add the bad, risky, no-op, leftover test and missing-wording findings, and agree which to fix.",
+         "outcomes": ["changes_chosen", "nothing_to_change"]},
+        {"name": "fix", "skill": "discovery-synonym-fixer", "writes": true,
+         "do": "Plan every chosen fix in one request, preview each create, update and switch-on, write batch by batch after its own yes (each switch-on and delete on its own), and hand Bloomreach-generated ones to the user for the dashboard.",
+         "outcomes": ["live", "cleanup_only", "left_switched_off", "nothing_written"],
+         "skip_when": [{"stage": "review", "outcomes": ["nothing_to_change"], "reason": "the review found no synonym worth fixing."}]},
+        {"name": "measure", "skill": "change-impact-tracker", "writes": false,
+         "do": "Check the busiest synonym change that alters what fires paid off on its query and variants, with the change and its live date from the hand-off file.",
+         "outcomes": ["worked", "no_clear_effect", "made_it_worse", "too_early_to_tell"],
+         "not_before": {"after_stage": "fix", "days": "measure_after_days"},
+         "skip_when": [{"stage": "fix", "outcomes": ["cleanup_only", "left_switched_off", "nothing_written"], "reason": "no change to a synonym that fires on live traffic went live, so there is nothing to measure."},
+                       {"stage": "fix", "skipped": true, "reason": "the fix stage was skipped, so nothing changed."}]}
+      ]
+    }
+  },
+  "notes": {
+    "measure_after_days": "Days after the fix stage finishes (the synonym changes went live) before the measure stage is due. Synonyms sync about hourly in production; change-impact-tracker needs about 14 days of data after a change for a verdict other than too early to tell.",
+    "max_chosen": "How many findings can be chosen at once. The fix stage plans every chosen finding in one request; discovery-synonym-fixer splits it into batches of its own size, with a separate yes for each switch-on and delete.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on, so status never shows the stage as due before then.",
+    "playbooks": "Each playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done) and skip_when (suggest skipping when an earlier stage had one of these outcomes, or with skipped: true when it was skipped)."
+  }
+}

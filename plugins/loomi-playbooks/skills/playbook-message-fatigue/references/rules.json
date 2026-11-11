@@ -1,0 +1,475 @@
+{
+  "about": "Stages and timing for the message-fatigue playbook. scripts/handoff.py reads this file: the stages it tracks, the outcomes each stage can record, and how long to wait between stages. Each key is explained under notes.",
+  "readout_after_days": 14,
+  "recheck_after_days": 28,
+  "wait_outcomes": [
+    "keep_running",
+    "too_early_to_tell"
+  ],
+  "playbooks": {
+    "message-fatigue": {
+      "title": "Message fatigue",
+      "product": "engagement",
+      "stages": [
+        {
+          "name": "measure",
+          "skill": "contact-frequency-audit",
+          "writes": false,
+          "do": "Measure how many messages customers got per channel, the opt-out and click rate at each frequency level and the share over the cap; add each fatigued channel as a finding.",
+          "outcomes": [
+            "fatigue_found",
+            "no_fatigue"
+          ]
+        },
+        {
+          "name": "sources",
+          "skill": "engagement-send-collision-check",
+          "writes": false,
+          "do": "Find the scenarios and campaigns that stack sends on the same audiences, and the always-on flows behind the load; add them as findings and choose one flow to cut, or have the user change one-off campaigns in the Engagement UI.",
+          "outcomes": [
+            "flow_chosen",
+            "campaigns_changed_in_app",
+            "nothing_to_cut"
+          ],
+          "skip_when": [
+            {
+              "stage": "measure",
+              "outcomes": [
+                "no_fatigue"
+              ],
+              "reason": "no channel shows fatigue: opt-outs don't climb with frequency and few customers are over the cap, so there is nothing to cut."
+            }
+          ]
+        },
+        {
+          "name": "cut",
+          "skill": "engagement-scenario-builder",
+          "writes": true,
+          "do": "Add a wait, a frequency or consent condition or a limit to the chosen flow, after its own yes: in place when the flow is draft or stopped, as a new draft copy when it is running; or record test_instead to test the cut first.",
+          "outcomes": [
+            "changed",
+            "copy_made",
+            "test_instead",
+            "not_changed"
+          ],
+          "skip_when": [
+            {
+              "stage": "measure",
+              "outcomes": [
+                "no_fatigue"
+              ],
+              "reason": "no channel shows fatigue: opt-outs don't climb with frequency and few customers are over the cap, so there is nothing to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "nothing_to_cut"
+              ],
+              "reason": "no flow or campaign was picked to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "campaigns_changed_in_app"
+              ],
+              "reason": "the excess came from one-off campaigns, which the user changed in the Engagement UI; no flow is changed in this run."
+            }
+          ]
+        },
+        {
+          "name": "test",
+          "skill": "engagement-ab-test-setup",
+          "writes": true,
+          "do": "Only when the cut stage chose test_instead: add a holdout (skip the extra message) or timing (a longer wait) split to the flow after its own yes, so the cut is measured against today's flow; record no_test when it isn't practical.",
+          "outcomes": [
+            "split_added",
+            "no_test"
+          ],
+          "skip_when": [
+            {
+              "stage": "measure",
+              "outcomes": [
+                "no_fatigue"
+              ],
+              "reason": "no channel shows fatigue: opt-outs don't climb with frequency and few customers are over the cap, so there is nothing to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "nothing_to_cut"
+              ],
+              "reason": "no flow or campaign was picked to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "campaigns_changed_in_app"
+              ],
+              "reason": "the excess came from one-off campaigns, which the user changed in the Engagement UI; no flow is changed in this run."
+            },
+            {
+              "stage": "cut",
+              "outcomes": [
+                "not_changed"
+              ],
+              "reason": "the flow was left as it was."
+            },
+            {
+              "stage": "cut",
+              "outcomes": [
+                "changed",
+                "copy_made"
+              ],
+              "reason": "the cut was made outright, without a test."
+            }
+          ]
+        },
+        {
+          "name": "qa",
+          "skill": "scenario-qa",
+          "writes": false,
+          "do": "QA the changed flow or copy until it is GO; a NO-GO fix goes back through the cut stage's write skill (engagement-scenario-builder), with its own yes, and is QA'd again. Then wait for the user to switch it on in the Engagement UI (stopping the original when it is a copy), and record the switch-on as a change (source engagement-ui).",
+          "outcomes": [
+            "started",
+            "not_launched"
+          ],
+          "skip_when": [
+            {
+              "stage": "measure",
+              "outcomes": [
+                "no_fatigue"
+              ],
+              "reason": "no channel shows fatigue: opt-outs don't climb with frequency and few customers are over the cap, so there is nothing to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "nothing_to_cut"
+              ],
+              "reason": "no flow or campaign was picked to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "campaigns_changed_in_app"
+              ],
+              "reason": "the excess came from one-off campaigns, which the user changed in the Engagement UI; no flow is changed in this run."
+            },
+            {
+              "stage": "cut",
+              "outcomes": [
+                "not_changed"
+              ],
+              "reason": "the flow was left as it was."
+            },
+            {
+              "all": [
+                {
+                  "stage": "cut",
+                  "outcomes": [
+                    "test_instead"
+                  ]
+                },
+                {
+                  "stage": "test",
+                  "outcomes": [
+                    "no_test"
+                  ]
+                }
+              ],
+              "reason": "the cut was to be tested, but no split was added, so nothing changed."
+            },
+            {
+              "all": [
+                {
+                  "stage": "cut",
+                  "outcomes": [
+                    "test_instead"
+                  ]
+                },
+                {
+                  "stage": "test",
+                  "skipped": true
+                }
+              ],
+              "reason": "the cut was to be tested, but the test stage was skipped, so nothing changed."
+            }
+          ]
+        },
+        {
+          "name": "ab-read-out",
+          "skill": "engagement-experiment-readout",
+          "writes": false,
+          "do": "Read out the test stage's split on its agreed metric, with unsubscribes as a guardrail: call the winner, keep the control, keep it running until a later date, or stop as inconclusive. The user acts on the verdict in the Engagement UI.",
+          "outcomes": [
+            "winner_called",
+            "control_kept",
+            "inconclusive",
+            "keep_running"
+          ],
+          "not_before": {
+            "after_stage": "qa",
+            "days": "readout_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "measure",
+              "outcomes": [
+                "no_fatigue"
+              ],
+              "reason": "no channel shows fatigue: opt-outs don't climb with frequency and few customers are over the cap, so there is nothing to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "nothing_to_cut"
+              ],
+              "reason": "no flow or campaign was picked to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "campaigns_changed_in_app"
+              ],
+              "reason": "the excess came from one-off campaigns, which the user changed in the Engagement UI; no flow is changed in this run."
+            },
+            {
+              "stage": "cut",
+              "outcomes": [
+                "not_changed"
+              ],
+              "reason": "the flow was left as it was."
+            },
+            {
+              "all": [
+                {
+                  "stage": "cut",
+                  "outcomes": [
+                    "test_instead"
+                  ]
+                },
+                {
+                  "stage": "test",
+                  "outcomes": [
+                    "no_test"
+                  ]
+                }
+              ],
+              "reason": "the cut was to be tested, but no split was added, so nothing changed."
+            },
+            {
+              "all": [
+                {
+                  "stage": "cut",
+                  "outcomes": [
+                    "test_instead"
+                  ]
+                },
+                {
+                  "stage": "test",
+                  "skipped": true
+                }
+              ],
+              "reason": "the cut was to be tested, but the test stage was skipped, so nothing changed."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the changed flow was never switched on."
+            },
+            {
+              "stage": "cut",
+              "outcomes": [
+                "changed",
+                "copy_made"
+              ],
+              "reason": "the cut was made outright, so there is no test to read out."
+            },
+            {
+              "stage": "test",
+              "skipped": true,
+              "reason": "the test stage was skipped, so there is no test to read out."
+            }
+          ]
+        },
+        {
+          "name": "recheck",
+          "skill": "contact-frequency-audit",
+          "writes": false,
+          "do": "Run the frequency audit again on a window that starts after the change, and compare the share over the cap and the opt-out rate at each level with the measure stage.",
+          "outcomes": [
+            "improved",
+            "no_clear_change",
+            "worse",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": [
+              "sources",
+              "qa"
+            ],
+            "days": "recheck_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "measure",
+              "outcomes": [
+                "no_fatigue"
+              ],
+              "reason": "no channel shows fatigue: opt-outs don't climb with frequency and few customers are over the cap, so there is nothing to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "nothing_to_cut"
+              ],
+              "reason": "no flow or campaign was picked to cut."
+            },
+            {
+              "stage": "cut",
+              "outcomes": [
+                "not_changed"
+              ],
+              "reason": "the flow was left as it was."
+            },
+            {
+              "all": [
+                {
+                  "stage": "cut",
+                  "outcomes": [
+                    "test_instead"
+                  ]
+                },
+                {
+                  "stage": "test",
+                  "outcomes": [
+                    "no_test"
+                  ]
+                }
+              ],
+              "reason": "the cut was to be tested, but no split was added, so nothing changed."
+            },
+            {
+              "all": [
+                {
+                  "stage": "cut",
+                  "outcomes": [
+                    "test_instead"
+                  ]
+                },
+                {
+                  "stage": "test",
+                  "skipped": true
+                }
+              ],
+              "reason": "the cut was to be tested, but the test stage was skipped, so nothing changed."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the changed flow was never switched on."
+            }
+          ]
+        },
+        {
+          "name": "impact",
+          "skill": "change-impact-tracker",
+          "writes": false,
+          "do": "Measure the launch (or the campaign changes) from the change log before and after against a control: clicks, purchases and revenue, so the cut didn't cost more than it saved.",
+          "outcomes": [
+            "worked",
+            "no_clear_effect",
+            "made_it_worse",
+            "too_early_to_tell"
+          ],
+          "not_before": {
+            "after_stage": [
+              "sources",
+              "qa"
+            ],
+            "days": "recheck_after_days"
+          },
+          "skip_when": [
+            {
+              "stage": "measure",
+              "outcomes": [
+                "no_fatigue"
+              ],
+              "reason": "no channel shows fatigue: opt-outs don't climb with frequency and few customers are over the cap, so there is nothing to cut."
+            },
+            {
+              "stage": "sources",
+              "outcomes": [
+                "nothing_to_cut"
+              ],
+              "reason": "no flow or campaign was picked to cut."
+            },
+            {
+              "stage": "cut",
+              "outcomes": [
+                "not_changed"
+              ],
+              "reason": "the flow was left as it was."
+            },
+            {
+              "all": [
+                {
+                  "stage": "cut",
+                  "outcomes": [
+                    "test_instead"
+                  ]
+                },
+                {
+                  "stage": "test",
+                  "outcomes": [
+                    "no_test"
+                  ]
+                }
+              ],
+              "reason": "the cut was to be tested, but no split was added, so nothing changed."
+            },
+            {
+              "all": [
+                {
+                  "stage": "cut",
+                  "outcomes": [
+                    "test_instead"
+                  ]
+                },
+                {
+                  "stage": "test",
+                  "skipped": true
+                }
+              ],
+              "reason": "the cut was to be tested, but the test stage was skipped, so nothing changed."
+            },
+            {
+              "stage": "qa",
+              "outcomes": [
+                "not_launched"
+              ],
+              "reason": "the changed flow was never switched on."
+            },
+            {
+              "stage": "test",
+              "outcomes": [
+                "split_added"
+              ],
+              "reason": "the cut ran as an A/B test, and the ab-read-out stage is the controlled answer on revenue; a before-and-after would only see the variant's share."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": {
+    "readout_after_days": "Days after the flow started (the qa stage's done date) before the ab-read-out stage is due. engagement-ab-test-setup sizes a test in whole weeks and never below its min_test_days, which engagement-experiment-readout uses too; 14 matches that minimum. When the test stage agreed a later end date, it is recorded on the ab-read-out stage with --not-before.",
+    "recheck_after_days": "Days after the change before the recheck and impact stages are due, counted from the later of the sources stage (done on the day the user changed one-off campaigns in the app) and the qa stage (done on the day the user switched the flow on). contact-frequency-audit's default window is 28 days (its window_days), so after 28 days its whole window is after the change; change-impact-tracker caps its windows at 28 days and calls fewer than 14 too early.",
+    "wait_outcomes": "Outcomes that mean a stage isn't finished yet. The script records them only with status in_progress and a --not-before date to come back on. keep_running is the ab-read-out stage's wait (its ways out are inconclusive and control_kept); too_early_to_tell is the recheck's and the impact stage's (their ways out are no_clear_change and no_clear_effect).",
+    "playbooks": "The playbook's title, product and stages in order. A stage names the skill that does it, whether that skill writes, what to do, the outcomes it can record, not_before (wait this rules key's number of days after another stage is done; a list counts from the latest of them that is done) and skip_when (suggest skipping when another stage had one of these outcomes, or every condition under all holds; skips don't cascade, so each stage lists every earlier outcome that ends its path). Two paths: a flow is cut by engagement-scenario-builder (waits, conditions, limits; in place for a draft or stopped flow, a new draft copy for a running one), or tested first by engagement-ab-test-setup (cut stage test_instead), then QA'd and switched on by the user; or the excess is in one-off campaigns, which no stage skill changes, so the user changes them in the Engagement UI and the run goes straight to the recheck and impact stages. Frequency policies are also the user's change in the Engagement UI: no skill writes them."
+  }
+}

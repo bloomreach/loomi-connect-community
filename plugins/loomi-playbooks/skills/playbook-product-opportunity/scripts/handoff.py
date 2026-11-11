@@ -504,7 +504,8 @@ def cmd_changes(a):
     for c in sorted(plan["changes"], key=lambda c: c.get("n", 0)):
         if c.get("status") != "ready":
             continue
-        v = verified.get(c.get("n"), {})
+        # A verify covers only its own batch: a step it doesn't report wasn't checked, and goes live the day one does.
+        v = verified.get(c.get("n"), {"result": "not_checked"} if a.verify else {})
         created_id = next((str(v[k]) for k in sorted(v) if (k == "id" or k.endswith("_id")) and v[k] is not None
                            and PLAIN.match(str(v[k]))), None)
         same = "target" not in v or str(v["target"]) == str(c.get("target"))

@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: Synonym Tune-up"
+  short_description: "Review Discovery synonyms, fix or remove the bad ones and measure the result"
+policy:
+  # Writes skill: its fix stage changes, switches off and can delete live synonyms (every shopper's search), so it only runs when called by name.
+  allow_implicit_invocation: false

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.3"
+  version: "0.1.4"
   products: discovery
   access: read-only
 ---
@@ -87,6 +87,8 @@ Make these checks, one at a time, until one answers:
 ```bash
 python3 <this skill's folder>/scripts/visibility_explain.py --pid <pid> --grid <work>/grid-1.json --match-check <work>/match.json --rules-off <work>/rules-off.json --lookup <work>/lookup.json --catalog <work>/catalog.json --query-file <work>/query.txt --out <work>/visibility.json
 ```
+
+For a category page, leave out `--query-file`: its word check is for a shopper's search words, and a category ID would show as a false data cause.
 
 Pass only the files you have; repeat `--grid` for each page. It returns:
 

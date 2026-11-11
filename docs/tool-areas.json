@@ -510,10 +510,18 @@
       "engagement",
       "discovery"
     ],
+    "playbook-message-fatigue": [
+      "engagement",
+      "discovery"
+    ],
     "playbook-migrate-from-klaviyo": [
       "engagement"
     ],
     "playbook-monthly-hygiene": [
+      "engagement",
+      "discovery"
+    ],
+    "playbook-new-arrivals-launch": [
       "engagement",
       "discovery"
     ],
@@ -569,6 +577,10 @@
       "engagement"
     ],
     "playbook-supplier-review": [
+      "discovery"
+    ],
+    "playbook-synonym-tune-up": [
+      "engagement",
       "discovery"
     ],
     "playbook-test-and-learn": [
