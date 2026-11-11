@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Discovery).
 metadata:
   author: bloomreach
-  version: "0.1.4"
+  version: "0.2.0"
   products: discovery
   access: read-only
 ---
@@ -164,7 +164,8 @@ This skill is **read-only**. It never creates, changes or deletes synonyms or an
 
 If the user asks to apply a fix, hand it off. This skill never uses a write tool, even if asked.
 
-1. Give the exact change for them to make in the Bloomreach Discovery dashboard: the source, the targets, one-way or two-way, enabled or not, and the site or account scope.
-2. Warn them that **synonym changes go live immediately**, and that deletes can't be undone.
-3. Tell them that adding a user synonym doesn't remove a Bloomreach-generated one. Both apply. Entries typed "User Modified" suggest that editing a Bloomreach-generated synonym turns it into a user synonym. Check the synonyms guide or the tool's description before relying on that.
-4. Once they've made the change, re-run the product grid for the affected queries to confirm the effect.
+1. Name the skill that makes the change, and offer to run it: `discovery-synonym-fixer` for any synonym change (add, change terms or direction, enable, disable or delete), `discovery-redirect-fixer` for a search redirect, and `discovery-rule-cleanup` for a ranking or facet rule. Each one shows the change and writes only after the user says yes. Pass it the exact change: the source, the targets, one-way or two-way, enabled or not, and the site or account scope.
+2. If no fixer skill covers the change, give the same exact change for them to make in the Bloomreach Discovery dashboard instead.
+3. Warn them that **synonym changes go live immediately**, and that deletes can't be undone.
+4. Tell them that adding a user synonym doesn't remove a Bloomreach-generated one. Both apply. Entries typed "User Modified" suggest that editing a Bloomreach-generated synonym turns it into a user synonym. Check the synonyms guide or the tool's description before relying on that.
+5. Once the change is made, re-run the product grid for the affected queries to confirm the effect.
