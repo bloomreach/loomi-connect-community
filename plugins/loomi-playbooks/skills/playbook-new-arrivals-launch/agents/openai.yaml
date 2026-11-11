@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Playbook: New Arrivals Launch"
+  short_description: "Get new products seen and sold: boost test in search, a new-in email, then measure both"
+policy:
+  # Writes skill: its stages start and end live A/B tests and create segments and email drafts, so it only runs when called by name.
+  allow_implicit_invocation: false

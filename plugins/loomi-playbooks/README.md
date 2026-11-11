@@ -25,6 +25,7 @@ Start here: these run the others.
 | [playbook-product-opportunity](skills/playbook-product-opportunity/) | Pick a product worth acting on, fix its listing or A/B test a boost or bury, roll out the winner and confirm it holds | **Writes** |
 | [playbook-fix-one-search](skills/playbook-fix-one-search/) | Diagnose one bad search, explain a buried product, check the fix, make it as a synonym or redirect and measure it | **Writes** |
 | [playbook-facet-tune-up](skills/playbook-facet-tune-up/) | Review Discovery filters, check each change, apply it to the facet rules and measure the result | **Writes** |
+| [playbook-synonym-tune-up](skills/playbook-synonym-tune-up/) | Review user and Bloomreach-generated synonyms, switch off, narrow or remove the bad, risky, no-op and test ones, add missing wordings, and measure the busiest change | **Writes** |
 | [playbook-category-tune-up](skills/playbook-category-tune-up/) | Check category pages and dynamic categories, define new collections, and measure the changes you make in the dashboard | Read-only |
 | [playbook-autosuggest-cleanup](skills/playbook-autosuggest-cleanup/) | Audit autosuggest, hide the bad suggestions with exclusion rules and re-check they stay gone | **Writes** |
 | [playbook-ranking-algorithm-tune-up](skills/playbook-ranking-algorithm-tune-up/) | Review ranking algorithms, A/B test a corrected copy against today's, keep the winner and confirm it holds | **Writes** |
@@ -38,6 +39,7 @@ Start here: these run the others.
 | [playbook-peak-event](skills/playbook-peak-event/) | Plan, check and review one peak event: campaigns, landing collections, readiness, vouchers, send preflight and collisions, then what moved revenue | Read-only |
 | [playbook-revenue-drop](skills/playbook-revenue-drop/) | Incident runbook for a revenue drop: explain it, check only what's left (feeds, search API, flows, a recent change), roll back a harmful rule and confirm recovery | **Writes** |
 | [playbook-monthly-hygiene](skills/playbook-monthly-hygiene/) | One monthly sweep of Discovery rules and redirects and Engagement assets, with one plan to review per write stage and a safe deletion order for Engagement | **Writes** |
+| [playbook-new-arrivals-launch](skills/playbook-new-arrivals-launch/) | Get new products seen and sold: find the buried ones, explain why, A/B test a boost, email the people likely to want them, keep the winner and measure both | **Writes** |
 
 ## Marketing (Engagement)
 
@@ -46,6 +48,7 @@ Start here: these run the others.
 | [playbook-lifecycle-gap](skills/playbook-lifecycle-gap/) | Find a missing or weak lifecycle flow, clone a proven one as a draft, fix and QA it, then once you switch it on check it's sending and measure its revenue | **Writes** |
 | [playbook-brief-to-results](skills/playbook-brief-to-results/) | Turn a brief into an email or SMS draft, QA it, preflight the week and check clashes once it's scheduled, then read the results into the next brief | **Writes** |
 | [playbook-deliverability-recovery](skills/playbook-deliverability-recovery/) | Trend deliverability, find over-messaging and consent gaps, launch a sunset or re-permission flow as a draft, then recheck the trend | **Writes** |
+| [playbook-message-fatigue](skills/playbook-message-fatigue/) | Find which flows over-message customers, add waits, frequency or consent conditions (or test the cut with a holdout), QA it, then recheck opt-outs by frequency and revenue | **Writes** |
 | [playbook-prediction-activation](skills/playbook-prediction-activation/) | Find an unused prediction, build a segment on its scores, launch a flow for it as a draft, then measure it once it's live | **Writes** |
 | [playbook-lapsed-customers](skills/playbook-lapsed-customers/) | Size lapsed customers, sharpen the audience, build the segment and a win-back flow as a draft, then measure who came back | **Writes** |
 | [playbook-second-purchase](skills/playbook-second-purchase/) | Measure how many first-time buyers come back and when, launch a post-purchase or replenishment flow timed to it, then rebuild the cohorts to see if the repeat rate moved | **Writes** |

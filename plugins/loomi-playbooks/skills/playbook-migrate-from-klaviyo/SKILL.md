@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement), the loomi-engagement plugin for the skills each stage runs, and for the convert stage Python 3 with beautifulsoup4 and jinja2 in a virtual environment (the converter installs them). Python 3 is optional otherwise, for the bundled hand-off script.
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: engagement
   access: writes
 ---

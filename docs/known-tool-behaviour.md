@@ -82,6 +82,8 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. Every ite
   - Facet names differ from condition attribute names: the `colors` facet is `color`, and `category` is `category_id`.
 - In hybrid mode, a high result count doesn't mean the catalog has the product. "swimwear" returned 1,525 off-topic results. Compare against `search_mode="standard"`.
 - Query rewrites appear only in the grid response (`autoCorrectQuery`, `relaxedQuery`), for example "black friday" → "black frisky".
+- `numFound` counts the results for the rewritten query, not the words typed: "shirt" autocorrected to "sheet" returned 5. Before calling a search one that returns results, check `autoCorrectQuery`. (checked 2026-11-11)
+- On an account with no sites, the account name works as `domain_key`. (checked 2026-11-11)
 - Per-query search settings rules and facet rules appear only in the debug output (`customizations.explain`). Disabled rules still appear there.
 - To preview a dynamic category, use the grid with `search_by="category"` and its `brg_dyn_…` ID.
 - `rows=500` and above return HTTP 500. 200 works; page through for more.

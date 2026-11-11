@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement and/or Discovery, and Data Hub where the customer has it), and the loomi-engagement, loomi-platform and loomi-discovery plugins for the skills each stage runs. Python 3 is optional, for the bundled hand-off script.
 metadata:
   author: bloomreach
-  version: "0.1.0"
+  version: "0.1.1"
   products: discovery,engagement
   access: read-only
 ---

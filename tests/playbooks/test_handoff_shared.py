@@ -217,6 +217,26 @@ class SharedHandoffTest(unittest.TestCase):
                          [("C1", "create", "synonym 3001", "in_place", "2026-11-05"),
                           ("C2", "enable", "synonym 3001", "in_place", "2026-11-06")])
 
+    def test_a_step_left_out_of_a_batch_verify_goes_live_the_day_its_own_batch_is_checked(self):
+        # synonym_plan.py verify --changes <batch> reports only that batch's steps.
+        h = self.dir / "c.handoff.json"
+        self.run_h("new", "--playbook", "mixed", "--subject-kind", "query", "--subject", "x", "--account", "acme",
+                   "--environment", "production", "--out", h)
+        plan = self.write("syn4.json", {"ok": True, "account": "acme", "environment": "production", "site_group_id": None,
+            "changes": [{"n": 1, "status": "ready", "kind": "disable", "target": "synonym 104", "tool": "update_synonym",
+                         "undo": [], "live_impact": "live"},
+                        {"n": 2, "status": "ready", "kind": "enable", "target": "synonym 105", "tool": "update_synonym",
+                         "undo": [], "live_impact": "live"}], "batches": [[1], [2]]})
+        v1 = self.write("v1b.json", {"ok": True, "results": [{"n": 1, "result": "in_place"}]})
+        v2 = self.write("v2b.json", {"ok": True, "results": [{"n": 2, "result": "in_place"}]})
+        self.run_h("changes", "--handoff", h, "--plan", plan, "--verify", v1, "--source", "discovery-synonym-fixer", "--today", "2026-11-01")
+        first = json.loads(h.read_text(encoding="utf-8"))["changes"]
+        self.assertEqual([c["result"] for c in first], ["in_place", "not_checked"])
+        self.run_h("changes", "--handoff", h, "--plan", plan, "--verify", v2, "--source", "discovery-synonym-fixer", "--today", "2026-11-08")
+        changes = json.loads(h.read_text(encoding="utf-8"))["changes"]
+        self.assertEqual([(c["target"], c["result"], c["live_on"]) for c in changes],
+                         [("synonym 104", "in_place", "2026-11-01"), ("synonym 105", "in_place", "2026-11-08")])
+
     def test_requires_both_and_skip_when_all(self):
         self.run_h("new", "--playbook", "paired", "--subject-kind", "account", "--subject", "acme", "--account", "acme",
                    "--environment", "production", "--out", self.dir / "p1.handoff.json", ok=False)
