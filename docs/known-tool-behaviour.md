@@ -342,6 +342,9 @@ Items marked **(bug?)** are worth reporting to the Loomi Connect team. Every ite
 - `update_scenario_node` is a shallow merge: a `design` you send replaces the stored one, so send the whole `design`.
 - `create_scenario` accepted payloads of 28–30 KB intact. A single step's design can be over 70 KB.
 - `search_scenarios` describes `search_scenario_nodes` as "discover-only", but `list_all_tools` lists it.
+- A frequency-policy block on a scenario action was recorded as `status: enqueue_failed` with `message: "Suppressed by frequency policy"`, not `suppressed` (app inbox, 2026-11-13). Scenario `campaign` events carry `campaign_policy` (the policy applied), `campaign_trigger` (`now`, `on event`) and the scenario name **at send time**, so a renamed scenario keeps old names in history; match on `campaign_id`. Some `campaign` events carry only `campaign_trigger` and nothing else.
+- `list_customer_events` has its own limit of 1 call per second (429 "rate limit reached for key 'loomi:list_customer_events…'"). `search_scenarios` rejected `archived=null` in Claude Code; list live and archived scenarios with two calls.
+- `search_scenario_nodes` list mode also returns `trigger: null`; the trigger is a node (`now-trigger`, with `active: false` once a Now trigger has run). Its description says condition outputs are `1` match and `2` don't-match, which matched a live condition.
 - Every message a scenario sends records a `campaign` event with `campaign_id` (the scenario's ID) and `action_id` (the node's `id`), so per-step results come from one cross-tab of `action_id` by `status`. Split assignments are `campaign` events with `action_type = "split"` and the variant's name in `variant`.
 
 **Where assets are used**

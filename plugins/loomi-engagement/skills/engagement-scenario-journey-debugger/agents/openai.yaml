@@ -1,0 +1,7 @@
+# Optional settings for Codex and ChatGPT. Claude ignores this file.
+interface:
+  display_name: "Scenario Journey Debugger"
+  short_description: "Trace one customer through a Bloomreach scenario and find where and why they dropped off"
+policy:
+  # Read-only skill, so it can run when a request matches.
+  allow_implicit_invocation: true
