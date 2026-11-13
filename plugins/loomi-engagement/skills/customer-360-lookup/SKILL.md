@@ -1,11 +1,11 @@
 ---
 name: customer-360-lookup
-description: Summarises one named customer in Bloomreach Engagement using Loomi Connect, for support and account teams. Finds the customer by the email, customer ID or other identifier the user gives, then returns a short customer card (key properties), a recent event timeline, prediction scores, current recommendations, and things support should know, such as failed orders, bounces, unsubscribes and consent. Use when the user asks to look up a customer, for a customer 360 or customer profile, what happened to a specific customer, or why one customer did or didn't get a message. Never for browsing, listing or exporting customers in bulk.
+description: Summarises one named customer in Bloomreach Engagement using Loomi Connect, for support and account teams. Finds the customer by the email, customer ID or other identifier the user gives, then returns a short customer card (key properties), a recent event timeline, prediction scores, current recommendations, and things support should know, such as failed orders, bounces, unsubscribes and consent. Use when the user asks to look up a customer, for a customer 360 or customer profile, what happened to a specific customer, or why one customer did or didn't get a message. To trace one customer through a specific scenario node by node, use engagement-scenario-journey-debugger. Never for browsing, listing or exporting customers in bulk.
 license: Apache-2.0
 compatibility: Requires the Loomi Connect MCP server (Bloomreach Engagement).
 metadata:
   author: bloomreach
-  version: "0.1.2"
+  version: "0.1.3"
   products: engagement
   access: read-only
 ---
